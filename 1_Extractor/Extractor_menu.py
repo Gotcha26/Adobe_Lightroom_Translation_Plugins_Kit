@@ -37,7 +37,8 @@ class InteractiveMenu:
         """Affiche la configuration actuelle."""
         print("Configuration actuelle:")
         print(f"  1. Chemin du plugin      : {self.plugin_path if self.plugin_path else '(non défini)'}")
-        print(f"  2. Répertoire de sortie  : {self.output_dir if self.output_dir else '(à côté du script)'}")
+        default_output = "<plugin>/__i18n_kit__/Extractor/<timestamp>/" if self.plugin_path else "(automatique)"
+        print(f"  2. Répertoire de sortie  : {self.output_dir if self.output_dir else default_output}")
         print(f"  3. Préfixe LOC           : {self.prefix}")
         print(f"  4. Code langue           : {self.lang}")
         print(f"  5. Fichiers à exclure    : {', '.join(self.exclude_files) if self.exclude_files else '(aucun)'}")
@@ -75,28 +76,27 @@ class InteractiveMenu:
         return True
     
     def input_output_dir(self):
-        """Demande le répertoire de sortie."""
-        print("2️⃣  Répertoire de sortie")
+        """Demande le répertoire de sortie (override optionnel)."""
+        print("2️⃣  Répertoire de sortie (override)")
         print("-" * 80)
-        print("Les fichiers seront générés dans un sous-dossier YYYYMMDD_hhmmss")
-        print("\nExemples Windows:")
+        print("Par DEFAUT: Les fichiers seront créés dans:")
+        print("  <plugin>/__i18n_kit__/Extractor/<timestamp>/")
+        print("")
+        print("Pour OVERRIDE (usage avancé), spécifiez un chemin:")
         print("  C:\\Users\\User\\Desktop\\Extraction")
-        print("  .\\output")
-        print("\nExemples Linux/Mac:")
         print("  /home/user/extraction")
-        print("  ./output")
-        print("\n(Appuyer sur ENTRÉE pour le répertoire du script)\n")
-        
-        path = input("Répertoire de sortie (optionnel): ").strip()
-        
+        print("\n(Appuyer sur ENTRÉE pour utiliser le dossier __i18n_kit__ du plugin)\n")
+
+        path = input("Override répertoire de sortie (optionnel): ").strip()
+
         if path:
             normalized_path = os.path.normpath(path)
             os.makedirs(normalized_path, exist_ok=True)
             self.output_dir = normalized_path
-            print(f"✓ Répertoire de sortie: {normalized_path}\n")
+            print(f"✓ Override: {normalized_path}\n")
         else:
             self.output_dir = ""
-            print("✓ Utilisera le répertoire du script\n")
+            print("✓ Utilisera: <plugin>/__i18n_kit__/Extractor/<timestamp>/\n")
     
     def input_prefix(self):
         """Demande le préfixe LOC."""

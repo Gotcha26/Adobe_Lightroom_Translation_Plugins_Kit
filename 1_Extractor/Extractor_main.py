@@ -16,14 +16,14 @@ Usage (Menu interactif):
 
 Options (CLI):
     --plugin-path PATH    Chemin vers le plugin (OBLIGATOIRE)
-    --output-dir PATH     Répertoire de sortie (défaut: à côté du script)
+    --output-dir PATH     Override répertoire de sortie (défaut: __i18n_kit__/)
     --prefix PREFIX       Préfixe des clés LOC (défaut: $$$/Piwigo)
     --lang LANG           Code langue (défaut: en)
     --exclude FILE        Fichiers à exclure (répétable)
     --min-length N        Longueur minimale des chaînes (défaut: 3)
     --no-ignore-log       NE PAS ignorer les lignes de log
 
-Les fichiers générés sont placés dans un sous-dossier YYYYMMDD_hhmmss.
+Les fichiers sont générés dans: <plugin>/__i18n_kit__/Extractor/<timestamp>/
 
 Auteur : Claude (Anthropic) pour Julien Moreau
 Date : 2026-01-27
@@ -34,6 +34,10 @@ import os
 import sys
 import argparse
 from datetime import datetime
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.paths import get_tool_output_path
 
 from Extractor_engine import LocalizableStringExtractor
 from Extractor_output import OutputGenerator
@@ -49,15 +53,17 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     if not os.path.isdir(plugin_path):
         print(f"❌ ERREUR: Répertoire introuvable: {plugin_path}")
         sys.exit(1)
-    
+
     # Déterminer le répertoire de sortie
-    if not output_dir:
-        output_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Créer un sous-dossier avec timestamp
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    timestamped_output_dir = os.path.join(output_dir, timestamp)
-    os.makedirs(timestamped_output_dir, exist_ok=True)
+    # Nouvelle structure: <plugin>/__i18n_kit__/Extractor/<timestamp>/
+    if output_dir:
+        # Override manuel (rétrocompatibilité)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamped_output_dir = os.path.join(output_dir, timestamp)
+        os.makedirs(timestamped_output_dir, exist_ok=True)
+    else:
+        # Nouvelle structure dans le plugin
+        timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
     
     print(f"\n{'=' * 80}")
     print(f"EXTRACTION - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -154,7 +160,7 @@ Exemples:
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
         parser.add_argument('--output-dir', default=None,
-                            help='Répertoire de sortie (défaut: à côté du script)')
+                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_kit__/Extractor/)')
         parser.add_argument('--prefix', default='$$$/Piwigo',
                             help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
         parser.add_argument('--lang', default='en',

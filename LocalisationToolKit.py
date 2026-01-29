@@ -9,17 +9,21 @@ depuis une interface unifiée.
 Structure attendue:
     LocalizationToolkit.py      (ce fichier)
     config.json                 (configuration persistante)
+    common/                    (module commun paths.py)
     1_Extractor/               (scripts d'extraction)
     2_Applicator/              (scripts d'application)
     3_TranslationManager/      (scripts de gestion traductions)
     9_Tools/                   (utilitaires)
 
+Les outils generent leurs sorties dans:
+    <plugin>/__i18n_kit__/<Outil>/<timestamp_YYYYMMDD_HHMMSS>/
+
 Usage:
     python LocalizationToolkit.py
 
 Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-28
-Version : 1.0
+Date : 2026-01-29
+Version : 2.0 - Support structure __i18n_kit__
 """
 
 import os
@@ -29,6 +33,12 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional, Tuple, List
+
+# Ajouter le répertoire courant au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common.paths import (
+    get_i18n_kit_path, find_latest_tool_output, I18N_KIT_DIR, TIMESTAMP_LENGTH
+)
 
 
 # =============================================================================
@@ -98,13 +108,45 @@ class ConfigManager:
     
     def display(self):
         """Affiche la configuration actuelle."""
-        print("\n📋 Configuration actuelle:")
-        print(f"   Plugin path        : {self.config.get('plugin_path', '(non défini)')}")
-        print(f"   Output base dir    : {self.config.get('output_base_dir') or '(à côté du script)'}")
-        print(f"   Préfixe LOC        : {self.config.get('prefix', '$$$/Piwigo')}")
-        print(f"   Langue par défaut  : {self.config.get('lang', 'en')}")
-        print(f"   Dernière extraction: {self.config.get('last_extraction_dir') or '(aucune)'}")
+        plugin_path = self.config.get('plugin_path', '')
+        i18n_kit_path = get_i18n_kit_path(plugin_path) if plugin_path else '(non defini)'
+
+        print("\nConfiguration actuelle:")
+        print(f"   Plugin path        : {plugin_path or '(non defini)'}")
+        print(f"   __i18n_kit__ path  : {i18n_kit_path}")
+        print(f"   Prefixe LOC        : {self.config.get('prefix', '$$$/Piwigo')}")
+        print(f"   Langue par defaut  : {self.config.get('lang', 'en')}")
         print()
+
+        # Afficher les exécutions récentes si le plugin est configuré
+        if plugin_path and os.path.isdir(plugin_path):
+            self._display_recent_executions(plugin_path)
+
+    def _display_recent_executions(self, plugin_path: str):
+        """Affiche les dernières exécutions de chaque outil."""
+        print("   Executions recentes dans __i18n_kit__/:")
+
+        tools = ["Extractor", "Applicator", "TranslationManager"]
+
+        for tool in tools:
+            latest = find_latest_tool_output(plugin_path, tool)
+            if latest:
+                timestamp = os.path.basename(latest)
+                formatted = self._format_timestamp(timestamp)
+                print(f"     {tool:20} : {formatted}")
+            else:
+                print(f"     {tool:20} : (aucune)")
+
+        print()
+
+    def _format_timestamp(self, timestamp: str) -> str:
+        """Formate un timestamp YYYYMMDD_HHMMSS en format lisible."""
+        try:
+            date_part = timestamp[:8]
+            time_part = timestamp[9:15]
+            return f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:8]} {time_part[:2]}:{time_part[2:4]}:{time_part[4:6]}"
+        except:
+            return timestamp
 
 
 # =============================================================================
@@ -220,37 +262,13 @@ class ToolLauncher:
         return self._run_script(script)
     
     def find_latest_extraction(self) -> Optional[str]:
-        """Trouve le dossier d'extraction le plus récent."""
-        output_dir = self.config.get("output_base_dir")
-        if not output_dir:
-            # Chercher dans le dossier Extractor
-            extractor_dir = os.path.join(self.base_dir, TOOL_DIRS["extractor"])
-            if os.path.isdir(extractor_dir):
-                output_dir = extractor_dir
-            else:
-                output_dir = self.base_dir
-        
-        latest_dir = None
-        latest_time = None
-        
-        try:
-            for item in os.listdir(output_dir):
-                item_path = os.path.join(output_dir, item)
-                
-                # Format YYYYMMDD_hhmmss
-                if os.path.isdir(item_path) and len(item) == 15 and item[8] == '_':
-                    try:
-                        if os.path.exists(os.path.join(item_path, "replacements.json")):
-                            item_time = datetime.strptime(item, '%Y%m%d_%H%M%S')
-                            if latest_time is None or item_time > latest_time:
-                                latest_time = item_time
-                                latest_dir = item_path
-                    except ValueError:
-                        continue
-        except Exception:
-            pass
-        
-        return latest_dir
+        """Trouve le dossier d'extraction le plus récent dans __i18n_kit__."""
+        plugin_path = self.config.get("plugin_path")
+        if not plugin_path or not os.path.isdir(plugin_path):
+            return None
+
+        # Utiliser la fonction commune pour trouver la dernière extraction
+        return find_latest_tool_output(plugin_path, "Extractor")
 
 
 # =============================================================================
@@ -272,135 +290,98 @@ class MainMenu:
     def print_header(self):
         """Affiche l'en-tête."""
         print("\n" + "=" * 70)
-        print("  🔧 LIGHTROOM PLUGIN LOCALIZATION TOOLKIT".center(70))
+        print("  LIGHTROOM PLUGIN LOCALIZATION TOOLKIT v2.0".center(70))
         print("=" * 70)
-        
+
         # Afficher le plugin configuré
         plugin = self.config.get("plugin_path", "")
         if plugin and os.path.isdir(plugin):
             plugin_name = os.path.basename(plugin)
-            print(f"  Plugin: {plugin_name} ✓".center(70))
+            print(f"  Plugin: {plugin_name} [OK]".center(70))
         else:
-            print("  ⚠️  Plugin non configuré ou introuvable".center(70))
-        
+            print("  !!! Plugin non configure ou introuvable".center(70))
+
         print("=" * 70 + "\n")
     
     def print_menu(self):
         """Affiche le menu principal."""
         print("OUTILS DE LOCALISATION")
         print("-" * 40)
-        print("  1. 📤 Extractor      - Extraire les chaînes")
-        print("  2. 📥 Applicator     - Appliquer les localisations")
-        print("  3. 🌐 Translation    - Gérer les traductions")
-        print("  4. 🔄 Restore        - Restaurer les backups")
+        print("  1. Extractor      - Extraire les chaines")
+        print("  2. Applicator     - Appliquer les localisations")
+        print("  3. Translation    - Gerer les traductions")
+        print("  4. Restore        - Restaurer les backups")
         print()
         print("CONFIGURATION")
         print("-" * 40)
-        print("  5. ⚙️  Configurer les chemins")
-        print("  6. 📋 Afficher la configuration")
-        print("  7. 🔍 Détecter dernière extraction")
+        print("  5. Configurer le plugin")
+        print("  6. Afficher la configuration")
         print()
-        print("  0. 🚪 Quitter")
+        print("  0. Quitter")
         print()
     
     def input_plugin_path(self):
         """Configure le chemin du plugin."""
-        print("\n📂 Configuration du chemin du plugin")
+        print("\nConfiguration du chemin du plugin")
         print("-" * 60)
-        
+
         current = self.config.get("plugin_path", "")
         if current:
             print(f"Actuel: {current}")
             print()
-        
+
         print("Exemples:")
         print("  D:\\Lightroom\\plugin.lrplugin")
         print("  ./piwigoPublish.lrplugin")
         print()
-        
-        path = input("Nouveau chemin (ENTRÉE pour garder): ").strip()
-        
+
+        path = input("Nouveau chemin (ENTREE pour garder): ").strip()
+
         if path:
             normalized = os.path.normpath(path)
             if os.path.isdir(normalized):
                 self.config.set("plugin_path", normalized)
-                print(f"✓ Plugin configuré: {normalized}")
+                print(f"[OK] Plugin configure: {normalized}")
+
+                # Afficher le chemin __i18n_kit__
+                i18n_path = get_i18n_kit_path(normalized)
+                print(f"     Sorties dans: {i18n_path}")
             else:
-                print(f"❌ Répertoire introuvable: {normalized}")
+                print(f"[ERREUR] Repertoire introuvable: {normalized}")
         else:
-            print("✓ Chemin inchangé")
-    
-    def input_output_dir(self):
-        """Configure le répertoire de sortie."""
-        print("\n📂 Configuration du répertoire de sortie")
-        print("-" * 60)
-        
-        current = self.config.get("output_base_dir", "")
-        print(f"Actuel: {current or '(à côté des scripts)'}")
-        print()
-        
-        path = input("Nouveau chemin (ENTRÉE pour défaut): ").strip()
-        
-        if path:
-            normalized = os.path.normpath(path)
-            os.makedirs(normalized, exist_ok=True)
-            self.config.set("output_base_dir", normalized)
-            print(f"✓ Sortie configurée: {normalized}")
-        else:
-            self.config.set("output_base_dir", "")
-            print("✓ Utilisera le répertoire par défaut")
+            print("[OK] Chemin inchange")
     
     def configure_paths(self):
         """Menu de configuration des chemins."""
         self.clear_screen()
         print("\n" + "=" * 60)
-        print("  CONFIGURATION DES CHEMINS".center(60))
+        print("  CONFIGURATION".center(60))
         print("=" * 60 + "\n")
-        
+
         print("1. Chemin du plugin")
-        print("2. Répertoire de sortie")
-        print("3. Préfixe LOC")
-        print("4. Langue par défaut")
+        print("2. Prefixe LOC")
+        print("3. Langue par defaut")
         print("0. Retour")
         print()
-        
+
         choice = input("Votre choix: ").strip()
-        
+
         if choice == '1':
             self.input_plugin_path()
         elif choice == '2':
-            self.input_output_dir()
-        elif choice == '3':
             current = self.config.get("prefix", "$$$/Piwigo")
-            prefix = input(f"Préfixe LOC [{current}]: ").strip()
+            prefix = input(f"Prefixe LOC [{current}]: ").strip()
             if prefix:
                 self.config.set("prefix", prefix)
-                print(f"✓ Préfixe: {prefix}")
-        elif choice == '4':
+                print(f"[OK] Prefixe: {prefix}")
+        elif choice == '3':
             current = self.config.get("lang", "en")
             lang = input(f"Langue [{current}]: ").strip().lower()
             if lang and len(lang) == 2:
                 self.config.set("lang", lang)
-                print(f"✓ Langue: {lang}")
-        
-        input("\nAppuyez sur ENTRÉE pour continuer...")
-    
-    def detect_extraction(self):
-        """Détecte et configure la dernière extraction."""
-        print("\n🔍 Recherche de la dernière extraction...")
-        
-        latest = self.launcher.find_latest_extraction()
-        
-        if latest:
-            print(f"✓ Trouvé: {latest}")
-            confirm = input("Utiliser ce dossier? [O/n]: ").strip().lower()
-            if confirm in ['o', 'y', '', 'oui', 'yes']:
-                self.config.set("last_extraction_dir", latest)
-                print("✓ Configuré comme dernière extraction")
-        else:
-            print("❌ Aucune extraction trouvée")
-        
-        input("\nAppuyez sur ENTRÉE pour continuer...")
+                print(f"[OK] Langue: {lang}")
+
+        input("\nAppuyez sur ENTREE pour continuer...")
     
     def run(self):
         """Boucle principale du menu."""
@@ -408,45 +389,43 @@ class MainMenu:
             self.clear_screen()
             self.print_header()
             self.print_menu()
-            
-            choice = input("Votre choix (0-7): ").strip()
-            
+
+            choice = input("Votre choix (0-6): ").strip()
+
             if choice == '0':
-                print("\n👋 Au revoir!")
+                print("\nAu revoir!")
                 break
             elif choice == '1':
                 # Vérifier plugin
                 plugin = self.config.get("plugin_path")
                 if not plugin or not os.path.isdir(plugin):
-                    print("\n⚠️  Plugin non configuré!")
+                    print("\n!!! Plugin non configure!")
                     self.input_plugin_path()
                 else:
                     self.launcher.run_extractor()
-                input("\nAppuyez sur ENTRÉE pour continuer...")
+                input("\nAppuyez sur ENTREE pour continuer...")
             elif choice == '2':
                 plugin = self.config.get("plugin_path")
                 if not plugin or not os.path.isdir(plugin):
-                    print("\n⚠️  Plugin non configuré!")
+                    print("\n!!! Plugin non configure!")
                     self.input_plugin_path()
                 else:
                     self.launcher.run_applicator()
-                input("\nAppuyez sur ENTRÉE pour continuer...")
+                input("\nAppuyez sur ENTREE pour continuer...")
             elif choice == '3':
                 self.launcher.run_translation_manager()
-                input("\nAppuyez sur ENTRÉE pour continuer...")
+                input("\nAppuyez sur ENTREE pour continuer...")
             elif choice == '4':
                 self.launcher.run_restore_backup()
-                input("\nAppuyez sur ENTRÉE pour continuer...")
+                input("\nAppuyez sur ENTREE pour continuer...")
             elif choice == '5':
                 self.configure_paths()
             elif choice == '6':
                 self.config.display()
-                input("Appuyez sur ENTRÉE pour continuer...")
-            elif choice == '7':
-                self.detect_extraction()
+                input("Appuyez sur ENTREE pour continuer...")
             else:
-                print("❌ Choix invalide")
-                input("Appuyez sur ENTRÉE pour continuer...")
+                print("[ERREUR] Choix invalide")
+                input("Appuyez sur ENTREE pour continuer...")
 
 
 # =============================================================================

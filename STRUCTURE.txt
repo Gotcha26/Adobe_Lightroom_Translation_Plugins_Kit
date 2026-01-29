@@ -1,0 +1,110 @@
+# 📁 STRUCTURE DU PACKAGE TÉLÉCHARGÉ
+
+Voici l'organisation des fichiers que tu viens de télécharger :
+
+```
+📦 claude_vscode_setup/
+│
+├── 📁 .vscode/
+│   └── 📄 settings.json                    ← Configuration VSCode workspace
+│
+├── 📁 .claude/
+│   └── 📄 refactor-instructions.md         ← Instructions pour Claude Code
+│
+├── 📁 tests/
+│   └── 📄 test_paths.py                    ← Tests unitaires
+│
+├── 📄 README.md                            ← Vue d'ensemble du package
+├── 📄 GUIDE_SETTINGS_WORKSPACE.md          ← Guide détaillé settings.json
+├── 📄 PROMPT_INITIAL_CLAUDE_CODE.md        ← Prompt de démarrage
+├── 📄 INSTALLATION_WINDOWS.md              ← Guide pas à pas Windows 11
+└── 📄 STRUCTURE.txt                        ← Ce fichier
+```
+
+---
+
+## 🎯 OÙ COPIER CES FICHIERS ?
+
+**TOUT copier dans ton projet GitHub** :
+
+```
+D:\Gotcha\Documents\DIY\GitHub\Adobe_Lightroom_Translation_Plugins_Kit\
+```
+
+(Remplacer par le chemin de TON projet)
+
+---
+
+## ✅ RÉSULTAT APRÈS COPIE
+
+Ton projet doit ressembler à ça :
+
+```
+📁 Adobe_Lightroom_Translation_Plugins_Kit/    ← Racine de ton projet
+│
+├── 📁 .vscode/                               ← NOUVEAU
+│   └── 📄 settings.json
+│
+├── 📁 .claude/                               ← NOUVEAU
+│   └── 📄 refactor-instructions.md
+│
+├── 📁 tests/                                 ← NOUVEAU
+│   └── 📄 test_paths.py
+│
+├── 📁 1_Extractor/                           ← Déjà existant
+│   └── ...
+│
+├── 📁 2_Applicator/                          ← Déjà existant
+│   └── ...
+│
+├── 📁 3_TranslationManager/                  ← Déjà existant
+│   └── ...
+│
+├── 📄 LocalisationToolKit.py                 ← Déjà existant
+├── 📄 README.md                              ← NOUVEAU ou mis à jour
+├── 📄 GUIDE_SETTINGS_WORKSPACE.md            ← NOUVEAU
+├── 📄 PROMPT_INITIAL_CLAUDE_CODE.md          ← NOUVEAU
+├── 📄 INSTALLATION_WINDOWS.md                ← NOUVEAU
+└── 📄 STRUCTURE.txt                          ← NOUVEAU
+```
+
+---
+
+## 🪟 IMPORTANT POUR WINDOWS
+
+### Afficher les dossiers cachés
+
+Windows cache les dossiers commençant par `.` comme `.vscode` et `.claude`
+
+**Pour les afficher** :
+1. Ouvrir l'Explorateur Windows
+2. Onglet **Affichage** en haut
+3. Cocher ☑️ **Éléments masqués**
+
+Tu verras alors `.vscode`, `.claude`, et `.git` (en grisé)
+
+---
+
+## 🚀 PAR OÙ COMMENCER ?
+
+**Étape 1** : Lire `INSTALLATION_WINDOWS.md` (guide pas à pas avec captures)
+
+**Étape 2** : Copier les dossiers `.vscode`, `.claude`, `tests` + les fichiers .md
+
+**Étape 3** : Ouvrir le projet dans VSCode
+
+**Étape 4** : Installer Claude Code
+
+**Étape 5** : Suivre le guide `INSTALLATION_WINDOWS.md`
+
+---
+
+## 📞 AIDE
+
+Si tu es bloqué, ouvre `INSTALLATION_WINDOWS.md` qui contient :
+- ✅ Guide pas à pas avec explications visuelles
+- ✅ Captures d'écran descriptives
+- ✅ Section dépannage pour chaque étape
+- ✅ Checklist de validation
+
+**Bon courage ! 🎉**

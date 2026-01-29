@@ -12,6 +12,10 @@ import sys
 from datetime import datetime
 from typing import Tuple, List, Optional
 
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.paths import find_latest_tool_output
+
 
 class ApplicatorMenu:
     """Menu interactif pour configurer l'application des localisations."""
@@ -35,8 +39,11 @@ class ApplicatorMenu:
         """Affiche la configuration actuelle."""
         print("Configuration actuelle:")
         print(f"  1. Chemin du plugin           : {self.plugin_path if self.plugin_path else '(non défini)'}")
-        print(f"  2. Dossier Extractor          : {self.extraction_dir if self.extraction_dir else '(non défini)'}")
-        print(f"  3. Mode dry-run               : {'✓ Oui (simulation)' if self.dry_run else '✗ Non (modifications réelles)'}")
+        extraction_display = self.extraction_dir if self.extraction_dir else "(auto-detection __i18n_kit__/Extractor/)"
+        print(f"  2. Dossier Extractor          : {extraction_display}")
+        print(f"  3. Mode dry-run               : {'Oui (simulation)' if self.dry_run else 'Non (modifications reelles)'}")
+        if self.plugin_path:
+            print(f"  -> Sortie Applicator          : <plugin>/__i18n_kit__/Applicator/<timestamp>/")
         print()
     
     def input_plugin_path(self) -> bool:
@@ -69,100 +76,75 @@ class ApplicatorMenu:
         return True
     
     def find_latest_extraction(self) -> Optional[str]:
-        """Cherche le dossier d'extraction le plus récent."""
+        """Cherche le dossier d'extraction le plus récent dans __i18n_kit__."""
         if not self.plugin_path:
             return None
-        
-        # Chercher les fichiers Extractor au même niveau que le plugin
-        plugin_dir = os.path.dirname(self.plugin_path)
-        
-        # Chercher d'abord dans le répertoire du plugin
-        if os.path.exists(os.path.join(self.plugin_path, "spacing_metadata.json")):
-            return self.plugin_path
-        
-        # Chercher dans le répertoire parent
-        latest_dir = None
-        latest_time = None
-        
-        for item in os.listdir(plugin_dir):
-            item_path = os.path.join(plugin_dir, item)
-            
-            # Chercher les dossiers avec format YYYYMMDD_hhmmss
-            if os.path.isdir(item_path) and len(item) == 15 and item[8] == '_':
-                try:
-                    # Vérifier que c'est un dossier d'extraction
-                    if os.path.exists(os.path.join(item_path, "spacing_metadata.json")):
-                        item_time = datetime.strptime(item, '%Y%m%d_%H%M%S')
-                        if latest_time is None or item_time > latest_time:
-                            latest_time = item_time
-                            latest_dir = item_path
-                except ValueError:
-                    continue
-        
-        return latest_dir
+
+        # Utiliser la fonction commune pour trouver la dernière extraction
+        return find_latest_tool_output(self.plugin_path, "Extractor")
     
     def input_extraction_dir(self) -> bool:
         """Demande le répertoire contenant les fichiers Extractor."""
-        print("2️⃣  Dossier contenant les fichiers Extractor")
+        print("2  Dossier contenant les fichiers Extractor")
         print("-" * 80)
-        
-        # Chercher automatiquement
+
+        # Chercher automatiquement dans __i18n_kit__/Extractor/
         auto_dir = self.find_latest_extraction()
-        
+
         if auto_dir:
-            print(f"Dossier détecté automatiquement:")
+            print(f"Dossier detecte automatiquement:")
             print(f"  {auto_dir}\n")
             print("Options:")
-            print("  1. Utiliser ce dossier")
-            print("  2. Spécifier un autre dossier")
+            print("  1. Utiliser ce dossier (recommande)")
+            print("  2. Specifier un autre dossier")
             print("  3. Annuler")
             print()
-            
+
             choice = input("Votre choix (1-3): ").strip()
-            
-            if choice == '1':
+
+            if choice == '1' or choice == '':
                 self.extraction_dir = auto_dir
-                print(f"✓ Dossier Extractor: {auto_dir}\n")
+                print(f"[OK] Dossier Extractor: {auto_dir}\n")
                 return True
+            elif choice == '3':
+                return False
             elif choice != '2':
-                if choice == '3':
-                    return False
-                print("❌ Choix invalide\n")
+                print("[ERREUR] Choix invalide\n")
                 return self.input_extraction_dir()
-        
+        else:
+            print("Aucune extraction detectee dans __i18n_kit__/Extractor/")
+            print("Vous devez specifier un chemin manuellement.\n")
+
         # Entrée manuelle
-        print("Exemples Windows:")
+        print("Exemples:")
+        print("  <plugin>/__i18n_kit__/Extractor/20260127_091234")
         print("  C:\\Extractions\\20260127_091234")
-        print("  .\\output\\20260127_091234")
-        print("\nExemples Linux/Mac:")
-        print("  /home/user/extractions/20260127_091234")
-        print("  ./output/20260127_091234")
         print()
-        
-        path = input("Chemin du dossier Extractor (obligatoire): ").strip()
-        
+
+        path = input("Chemin du dossier Extractor: ").strip()
+
         if not path:
-            print("❌ Chemin obligatoire!")
+            print("[ERREUR] Chemin obligatoire!")
             return False
-        
+
         # Normaliser le chemin
         normalized_path = os.path.normpath(path)
-        
+
         if not os.path.isdir(normalized_path):
-            print(f"❌ Répertoire introuvable: {normalized_path}")
+            print(f"[ERREUR] Repertoire introuvable: {normalized_path}")
             return False
-        
+
         # Vérifier que les fichiers Extractor existent
         required_files = ["spacing_metadata.json", "replacements.json"]
         missing = [f for f in required_files if not os.path.exists(os.path.join(normalized_path, f))]
-        
+
         if missing:
-            print(f"❌ Fichiers manquants: {', '.join(missing)}")
-            print("   Assurez-vous que c'est un dossier Extractor valide\n")
+            print(f"[ERREUR] Fichiers manquants: {', '.join(missing)}")
+            print("         Assurez-vous que c'est un dossier Extractor valide\n")
             return False
-        
+
         self.extraction_dir = normalized_path
-        print(f"✓ Dossier Extractor: {normalized_path}\n")
+        print(f"[OK] Dossier Extractor: {normalized_path}\n")
         return True
     
     def input_dry_run(self):

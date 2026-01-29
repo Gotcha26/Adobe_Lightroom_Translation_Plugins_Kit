@@ -10,21 +10,26 @@ Usage (Menu interactif):
     python Applicator_main.py
 
 Usage (CLI):
-    python Applicator_main.py --plugin-path /path/to/plugin --extraction-dir /path/to/extraction [--dry-run]
+    python Applicator_main.py --plugin-path /path/to/plugin [--extraction-dir /path/to/extraction] [--dry-run]
+
+Sorties générées dans: <plugin>/__i18n_kit__/Applicator/<timestamp>/
+  - application_report.txt (rapport détaillé)
+  - backups/ (sauvegardes .bak des fichiers modifiés)
 
 Le script :
-1. Lit le fichier replacements.json genere par Extractor
-2. Cree des sauvegardes de tous les fichiers modifies (.bak)
-3. Remplace les chaines hardcodees par des appels LOC avec valeur par defaut
-4. Genere un rapport detaille des changements
+1. Détecte automatiquement la dernière extraction (__i18n_kit__/Extractor/)
+2. Lit le fichier replacements.json genere par Extractor
+3. Cree des sauvegardes dans __i18n_kit__/Applicator/<timestamp>/backups/
+4. Remplace les chaines hardcodees par des appels LOC avec valeur par defaut
+5. Genere un rapport detaille des changements
 
 IMPORTANT: Le format LOC du SDK Lightroom est:
     LOC "$$$/Key=Default Value"
 La valeur par defaut est OBLIGATOIRE sinon Lightroom affiche la cle brute.
 
 Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-28
-Version : 6.0 - Utilise replacements.json directement
+Date : 2026-01-29
+Version : 7.0 - Structure __i18n_kit__ avec auto-detection Extractor
 """
 
 import os
@@ -35,6 +40,10 @@ import shutil
 import argparse
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.paths import get_tool_output_path, find_latest_tool_output
 
 from Applicator_menu import show_interactive_menu
 
@@ -248,8 +257,9 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
     return result, applied_members
 
 
-def process_file_with_replacements(file_path: str, file_replacements: Dict, 
-                                    report: LocalizationReport, dry_run: bool) -> int:
+def process_file_with_replacements(file_path: str, file_replacements: Dict,
+                                    report: LocalizationReport, dry_run: bool,
+                                    backup_dir: str = None) -> int:
     """
     Traite un fichier en utilisant les remplacements du JSON.
     
@@ -309,30 +319,49 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
     
     # Sauvegarder les modifications
     if modified and not dry_run:
-        backup_path = file_path + '.bak'
+        # Créer le backup dans le dossier dédié ou à côté du fichier
+        if backup_dir:
+            os.makedirs(backup_dir, exist_ok=True)
+            backup_path = os.path.join(backup_dir, os.path.basename(file_path) + '.bak')
+        else:
+            backup_path = file_path + '.bak'
         shutil.copy2(file_path, backup_path)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
-    
+
     return total_applied
 
 
-def process_plugin_directory(plugin_path: str, extraction_dir: str, dry_run: bool = False) -> bool:
+def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_run: bool = False) -> bool:
     """Traite tous les fichiers Lua du plugin en utilisant replacements.json."""
-    
+
     if not os.path.isdir(plugin_path):
         print(f"ERREUR: Repertoire du plugin introuvable: {plugin_path}")
         return False
-    
+
+    # Auto-détection du dossier d'extraction si non spécifié
+    if not extraction_dir:
+        extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
+        if not extraction_dir:
+            print("ERREUR: Aucune extraction trouvée dans __i18n_kit__/Extractor/")
+            print("        Lancez d'abord Extractor sur ce plugin.")
+            return False
+        print(f"* Auto-détection: {extraction_dir}")
+
     if not os.path.isdir(extraction_dir):
         print(f"ERREUR: Repertoire Extractor introuvable: {extraction_dir}")
         return False
-    
+
+    # Créer le dossier de sortie Applicator
+    applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
+    backup_dir = os.path.join(applicator_output, "backups")
+
     print("\n" + "=" * 80)
-    print("LOCALISATION DU PLUGIN (v6.0 - basee sur replacements.json)")
+    print("LOCALISATION DU PLUGIN (v7.0 - structure __i18n_kit__)")
     print("=" * 80)
     print(f"Repertoire du plugin   : {plugin_path}")
     print(f"Dossier Extractor      : {extraction_dir}")
+    print(f"Sortie Applicator      : {applicator_output}")
     print(f"Mode                   : {'DRY-RUN (simulation)' if dry_run else 'MODIFICATION REELLE'}")
     print("=" * 80 + "\n")
     
@@ -354,11 +383,11 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str, dry_run: boo
     
     for file_rel_path, file_replacements in sorted(files_data.items()):
         file_path = os.path.join(plugin_path, file_rel_path)
-        
+
         if os.path.exists(file_path):
             print(f"Traitement de {file_rel_path}...")
             replacements_count = process_file_with_replacements(
-                file_path, file_replacements, report, dry_run
+                file_path, file_replacements, report, dry_run, backup_dir
             )
             report.stats['files_processed'] += 1
             if replacements_count > 0:
@@ -370,9 +399,8 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str, dry_run: boo
             print(f"  ! Fichier introuvable: {file_rel_path}")
             report.add_error(file_rel_path, 0, "Fichier introuvable")
     
-    # Generer le rapport
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    report_path = os.path.join(script_dir, "localization_report.txt")
+    # Generer le rapport dans le dossier Applicator
+    report_path = os.path.join(applicator_output, "application_report.txt")
     report.generate(report_path)
     
     print("\n" + "=" * 80)
@@ -383,7 +411,10 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str, dry_run: boo
     print(f"Lignes modifiees        : {report.stats['total_replacements']}")
     print(f"Chaines remplacees      : {report.stats['strings_replaced']}")
     print(f"Chaines ignorees        : {len(report.skipped)}")
-    print(f"\nRapport detaille: {report_path}")
+    print(f"\nSortie Applicator       : {applicator_output}")
+    if not dry_run and report.stats['files_modified'] > 0:
+        print(f"Backups                 : {backup_dir}")
+    print(f"Rapport detaille        : {report_path}")
     
     if dry_run:
         print("\n!!! MODE DRY-RUN: Aucun fichier n'a ete modifie")
@@ -421,17 +452,20 @@ def main():
 Exemples:
   # Mode interactif (menu)
   python Applicator_main.py
-  
-  # Mode CLI
-  python Applicator_main.py --plugin-path ./plugin --extraction-dir ./output/20260127_091234
-  python Applicator_main.py --plugin-path ./plugin --extraction-dir ./output/20260127_091234 --dry-run
+
+  # Mode CLI avec auto-detection de l'extraction
+  python Applicator_main.py --plugin-path ./plugin.lrplugin
+  python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
+
+  # Mode CLI avec extraction specifique
+  python Applicator_main.py --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_kit__/Extractor/20260127_091234
             """
         )
         
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le repertoire du plugin (OBLIGATOIRE)')
-        parser.add_argument('--extraction-dir', required=True,
-                            help='Repertoire contenant les fichiers Extractor (OBLIGATOIRE)')
+        parser.add_argument('--extraction-dir', default=None,
+                            help='Repertoire Extractor (defaut: auto-detection __i18n_kit__/Extractor/)')
         parser.add_argument('--dry-run', action='store_true',
                             help='Mode simulation (affiche sans modifier)')
         

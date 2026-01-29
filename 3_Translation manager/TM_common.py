@@ -162,8 +162,8 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def print_header(version: str = "4.2"):
-    """Affiche l'entête du menu."""
+def print_header(version: str = "5.0"):
+    """Affiche l'entete du menu."""
     print("\n" + "=" * 70)
     print(f"  TRANSLATION MANAGER v{version}".center(70))
     print("  Gestionnaire de traductions multilingues".center(70))
