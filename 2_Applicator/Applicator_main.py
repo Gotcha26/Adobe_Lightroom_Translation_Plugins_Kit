@@ -10,7 +10,13 @@ Usage (Menu interactif):
     python Applicator_main.py
 
 Usage (CLI):
-    python Applicator_main.py --plugin-path /path/to/plugin [--extraction-dir /path/to/extraction] [--dry-run]
+    python Applicator_main.py --plugin-path /path/to/plugin [--extraction-dir /path/to/extraction] [--dry-run] [--no-backup]
+
+Options CLI:
+    --plugin-path PATH     Chemin vers le repertoire du plugin (OBLIGATOIRE)
+    --extraction-dir PATH  Repertoire Extractor (defaut: auto-detection __i18n_kit__/Extractor/)
+    --dry-run              Mode simulation (affiche sans modifier)
+    --no-backup            Ne pas creer de fichiers de sauvegarde .bak (defaut: backup active)
 
 Sorties générées dans: <plugin>/__i18n_kit__/Applicator/<timestamp>/
   - application_report.txt (rapport détaillé)
@@ -259,7 +265,7 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
 
 def process_file_with_replacements(file_path: str, file_replacements: Dict,
                                     report: LocalizationReport, dry_run: bool,
-                                    backup_dir: str = None) -> int:
+                                    backup_dir: str = None, create_backup: bool = True) -> int:
     """
     Traite un fichier en utilisant les remplacements du JSON.
     
@@ -319,20 +325,22 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
     
     # Sauvegarder les modifications
     if modified and not dry_run:
-        # Créer le backup dans le dossier dédié ou à côté du fichier
-        if backup_dir:
-            os.makedirs(backup_dir, exist_ok=True)
-            backup_path = os.path.join(backup_dir, os.path.basename(file_path) + '.bak')
-        else:
-            backup_path = file_path + '.bak'
-        shutil.copy2(file_path, backup_path)
+        # Créer le backup si demandé
+        if create_backup:
+            if backup_dir:
+                os.makedirs(backup_dir, exist_ok=True)
+                backup_path = os.path.join(backup_dir, os.path.basename(file_path) + '.bak')
+            else:
+                backup_path = file_path + '.bak'
+            shutil.copy2(file_path, backup_path)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 
     return total_applied
 
 
-def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_run: bool = False) -> bool:
+def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_run: bool = False,
+                              create_backup: bool = True) -> bool:
     """Traite tous les fichiers Lua du plugin en utilisant replacements.json."""
 
     if not os.path.isdir(plugin_path):
@@ -354,7 +362,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
 
     # Créer le dossier de sortie Applicator
     applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
-    backup_dir = os.path.join(applicator_output, "backups")
+    backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
 
     print("\n" + "=" * 80)
     print("LOCALISATION DU PLUGIN (v7.0 - structure __i18n_kit__)")
@@ -363,6 +371,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
     print(f"Dossier Extractor      : {extraction_dir}")
     print(f"Sortie Applicator      : {applicator_output}")
     print(f"Mode                   : {'DRY-RUN (simulation)' if dry_run else 'MODIFICATION REELLE'}")
+    print(f"Sauvegardes .bak       : {'OUI' if create_backup and not dry_run else 'NON'}")
     print("=" * 80 + "\n")
     
     # Charger replacements.json
@@ -387,7 +396,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
         if os.path.exists(file_path):
             print(f"Traitement de {file_rel_path}...")
             replacements_count = process_file_with_replacements(
-                file_path, file_replacements, report, dry_run, backup_dir
+                file_path, file_replacements, report, dry_run, backup_dir, create_backup
             )
             report.stats['files_processed'] += 1
             if replacements_count > 0:
@@ -412,7 +421,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
     print(f"Chaines remplacees      : {report.stats['strings_replaced']}")
     print(f"Chaines ignorees        : {len(report.skipped)}")
     print(f"\nSortie Applicator       : {applicator_output}")
-    if not dry_run and report.stats['files_modified'] > 0:
+    if not dry_run and report.stats['files_modified'] > 0 and create_backup:
         print(f"Backups                 : {backup_dir}")
     print(f"Rapport detaille        : {report_path}")
     
@@ -438,10 +447,10 @@ def main():
         if result is None:
             print("\nApplication annulee")
             sys.exit(1)
-        
-        plugin_path, extraction_dir, dry_run = result
-        
-        success = process_plugin_directory(plugin_path, extraction_dir, dry_run)
+
+        plugin_path, extraction_dir, dry_run, create_backup = result
+
+        success = process_plugin_directory(plugin_path, extraction_dir, dry_run, create_backup)
         sys.exit(0 if success else 1)
     else:
         # Arguments en ligne de commande
@@ -468,10 +477,17 @@ Exemples:
                             help='Repertoire Extractor (defaut: auto-detection __i18n_kit__/Extractor/)')
         parser.add_argument('--dry-run', action='store_true',
                             help='Mode simulation (affiche sans modifier)')
-        
+        parser.add_argument('--no-backup', action='store_true',
+                            help='Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)')
+
         args = parser.parse_args()
-        
-        success = process_plugin_directory(args.plugin_path, args.extraction_dir, args.dry_run)
+
+        success = process_plugin_directory(
+            args.plugin_path,
+            args.extraction_dir,
+            args.dry_run,
+            create_backup=not args.no_backup
+        )
         sys.exit(0 if success else 1)
 
 

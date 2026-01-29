@@ -11,7 +11,10 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set
 
-from Extractor_config import LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, ALL_STRINGS_PATTERN
+from Extractor_config import (
+    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, ALL_STRINGS_PATTERN,
+    IGNORE_LOC_KEY_PATTERNS, IGNORE_LOC_VALUES
+)
 from Extractor_models import ExtractedString, ExtractionStats
 from Extractor_utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
@@ -204,11 +207,24 @@ class LocalizableStringExtractor:
     def _extract_existing_loc(self, line: str, rel_path: str, file_name: str, line_num: int):
         """Extrait les clés LOC existantes d'une ligne déjà localisée."""
         loc_pattern = re.compile(r'LOC\s*["\'](\$\$\$/[^=]+)=([^"\']+)["\']')
-        
+
         for match in loc_pattern.finditer(line):
             existing_key = match.group(1)
             existing_value = match.group(2)
-            
+
+            # Ignorer les clés techniques (headers HTTP, identifiants, etc.)
+            is_technical_key = any(
+                pattern.search(existing_key) for pattern in IGNORE_LOC_KEY_PATTERNS
+            )
+            if is_technical_key:
+                self.stats.technical_ignored += 1
+                continue
+
+            # Ignorer les valeurs techniques
+            if existing_value in IGNORE_LOC_VALUES:
+                self.stats.technical_ignored += 1
+                continue
+
             entry = ExtractedString(
                 original_text=existing_value,
                 clean_text=existing_value,

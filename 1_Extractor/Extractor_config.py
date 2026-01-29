@@ -113,3 +113,22 @@ STOP_WORDS: Set[str] = {
 
 # Fichiers à exclure par défaut
 DEFAULT_EXCLUDED_FILES: Set[str] = {'JSON.lua'}
+
+# =============================================================================
+# CLÉS LOC TECHNIQUES À IGNORER
+# =============================================================================
+
+# Patterns de clés LOC existantes à ignorer (éléments techniques non-traduisibles)
+# Ces clés sont utilisées pour des headers HTTP, identifiants, etc.
+IGNORE_LOC_KEY_PATTERNS: List[re.Pattern] = [
+    re.compile(r'/UpdateChecker/Accept$'),      # Header HTTP Accept
+    re.compile(r'/UpdateChecker/UserAgent$'),   # Header HTTP User-Agent
+    re.compile(r'/UpdateChecker/PiwigopublishLightroomPlugin$'),  # Identifiant User-Agent
+]
+
+# Valeurs techniques à ignorer dans les LOC existantes
+IGNORE_LOC_VALUES: Set[str] = {
+    'Accept',
+    'User-Agent',
+    'PiwigoPublish-Lightroom-Plugin',
+}

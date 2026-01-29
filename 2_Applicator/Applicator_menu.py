@@ -24,6 +24,7 @@ class ApplicatorMenu:
         self.plugin_path = ""
         self.extraction_dir = ""  # Dossier contenant les fichiers Extractor
         self.dry_run = False
+        self.create_backup = True  # Par défaut, créer des sauvegardes .bak
     
     def clear_screen(self):
         """Efface l'écran (compatible Windows et Linux)."""
@@ -41,7 +42,8 @@ class ApplicatorMenu:
         print(f"  1. Chemin du plugin           : {self.plugin_path if self.plugin_path else '(non défini)'}")
         extraction_display = self.extraction_dir if self.extraction_dir else "(auto-detection __i18n_kit__/Extractor/)"
         print(f"  2. Dossier Extractor          : {extraction_display}")
-        print(f"  3. Mode dry-run               : {'Oui (simulation)' if self.dry_run else 'Non (modifications reelles)'}")
+        print(f"  3. Mode dry-run               : {'✓ Oui (simulation)' if self.dry_run else '✗ Non (modifications reelles)'}")
+        print(f"  4. Sauvegardes .bak           : {'✓ Oui (recommandé)' if self.create_backup else '✗ Non'}")
         if self.plugin_path:
             print(f"  -> Sortie Applicator          : <plugin>/__i18n_kit__/Applicator/<timestamp>/")
         print()
@@ -174,7 +176,37 @@ class ApplicatorMenu:
                     return self.input_dry_run()
             else:
                 print("❌ Entrez 'o' (oui) ou 'n' (non)\n")
-    
+
+    def input_backup(self):
+        """Demande si on doit créer des sauvegardes .bak."""
+        print("4️⃣  Création de sauvegardes")
+        print("-" * 80)
+        print("Avec sauvegarde  : Crée des copies .bak de chaque fichier avant modification")
+        print("Sans sauvegarde  : Modifie les fichiers sans créer de backup")
+        print()
+        print("⚠️  La sauvegarde est FORTEMENT recommandée pour pouvoir revenir en arrière.")
+        print()
+
+        while True:
+            response = input("Créer des sauvegardes .bak? [O/n]: ").strip().lower()
+
+            if response in ['o', 'y', '', 'oui', 'yes']:
+                self.create_backup = True
+                print("✓ Sauvegardes .bak activées\n")
+                break
+            elif response in ['n', 'non', 'no']:
+                # Confirmation
+                confirm = input("⚠️  Êtes-vous sûr de NE PAS vouloir de sauvegardes? [o/N]: ").strip().lower()
+                if confirm in ['o', 'oui', 'yes']:
+                    self.create_backup = False
+                    print("✓ Sauvegardes .bak désactivées\n")
+                    break
+                else:
+                    print("Annulé\n")
+                    return self.input_backup()
+            else:
+                print("❌ Entrez 'o' (oui) ou 'n' (non)\n")
+
     def run(self) -> bool:
         """Lance le menu interactif."""
         self.clear_screen()
@@ -189,9 +221,13 @@ class ApplicatorMenu:
             
             while not self.input_extraction_dir():
                 pass
-            
+
             self.input_dry_run()
-            
+
+            # Demander les sauvegardes seulement si pas en mode dry-run
+            if not self.dry_run:
+                self.input_backup()
+
             # Afficher le résumé
             self.clear_screen()
             self.print_header()
@@ -217,8 +253,8 @@ class ApplicatorMenu:
                 self.print_current_config()
                 
                 while True:
-                    param = input("Paramètre à modifier (1-3) ou 0 pour revenir: ").strip()
-                    
+                    param = input("Paramètre à modifier (1-4) ou 0 pour revenir: ").strip()
+
                     if param == '0':
                         break
                     elif param == '1':
@@ -229,6 +265,11 @@ class ApplicatorMenu:
                             pass
                     elif param == '3':
                         self.input_dry_run()
+                    elif param == '4':
+                        if not self.dry_run:
+                            self.input_backup()
+                        else:
+                            print("⚠️  Les sauvegardes ne sont pas utilisées en mode dry-run\n")
                     else:
                         print("❌ Choix invalide\n")
                         continue
@@ -244,21 +285,22 @@ class ApplicatorMenu:
             else:
                 print("❌ Choix invalide (1-3)\n")
     
-    def to_args(self) -> Tuple[str, str, bool]:
+    def to_args(self) -> Tuple[str, str, bool, bool]:
         """Retourne les arguments sous forme de tuple."""
         return (
             self.plugin_path,
             self.extraction_dir,
-            self.dry_run
+            self.dry_run,
+            self.create_backup
         )
 
 
-def show_interactive_menu() -> Optional[Tuple[str, str, bool]]:
+def show_interactive_menu() -> Optional[Tuple[str, str, bool, bool]]:
     """
     Affiche le menu interactif et retourne les paramètres.
-    
+
     Returns:
-        Tuple avec (plugin_path, extraction_dir, dry_run)
+        Tuple avec (plugin_path, extraction_dir, dry_run, create_backup)
         ou None si l'utilisateur a annulé
     """
     menu = ApplicatorMenu()
