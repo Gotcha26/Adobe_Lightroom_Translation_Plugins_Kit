@@ -1,0 +1,2698 @@
+================================================================================
+RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES
+================================================================================
+
+Date: 2026-01-28 01:45:30
+Plugin: D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin
+Préfixe: $$$/Piwigo
+
+LÉGENDE:
+  ⬅️   = Espace(s) en DÉBUT de chaîne
+  ➡️   = Espace(s) en FIN de chaîne
+  ⬅️➡️ = Espaces des DEUX côtés
+  🔚  = Suffixe détecté (" - ", " -", "...")
+  🔗  = Membre d'une chaîne concaténée
+
+STATISTIQUES
+--------------------------------------------------------------------------------
+Fichiers analysés          : 19
+Fichiers avec chaînes      : 15
+Total chaînes trouvées     : 321
+Clés uniques               : 233
+Lignes de log ignorées     : 250
+Chaînes techniques ignorées: 87
+Chaînes avec espaces       : 37
+Chaînes avec suffixes      : 33
+Lignes concaténées         : 13
+Membres de concaténation   : 28
+Clés LOC existantes        : 1 (déjà localisées, non modifiées)
+
+PATTERNS DÉTECTÉS
+--------------------------------------------------------------------------------
+  title                     : 138
+  LrDialogs.message         : 105
+  value                     : 28
+  tooltip                   : 21
+  LrDialogs.confirm         : 10
+  caption                   : 5
+  actionVerb                : 4
+  message                   : 3
+  cancelVerb                : 3
+  label                     : 2
+  LrPluginName              : 1
+
+================================================================================
+CLÉS LOC EXISTANTES (déjà localisées - incluses dans PluginStrings.txt)
+================================================================================
+
+  🔒 Tagset.lua:25
+     Clé    : $$$/FionaBoston/Title
+     Valeur : Piwigo Publisher Metadata
+
+
+================================================================================
+DÉTAIL PAR FICHIER (pour remplacement)
+================================================================================
+
+--------------------------------------------------------------------------------
+Fichier: CustomMetadata.lua
+Chaînes: 7 (7 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 35] Pattern: title
+  CHERCHER : "Piwigo Host"
+  BASE     : "Piwigo Host"
+  CLÉ      : $$$/Piwigo/CustomMetadata/PiwigoHost
+  REMPLACER: "Piwigo Host" → LOC "$$$/Piwigo/CustomMetadata/PiwigoHost=Piwigo Host"
+
+  [Ligne 44] Pattern: title
+  CHERCHER : "Album Name"
+  BASE     : "Album Name"
+  CLÉ      : $$$/Piwigo/CustomMetadata/AlbumName
+  REMPLACER: "Album Name" → LOC "$$$/Piwigo/CustomMetadata/AlbumName=Album Name"
+
+  [Ligne 53] Pattern: title
+  CHERCHER : "Album URL"
+  BASE     : "Album URL"
+  CLÉ      : $$$/Piwigo/CustomMetadata/AlbumUrl
+  REMPLACER: "Album URL" → LOC "$$$/Piwigo/CustomMetadata/AlbumUrl=Album URL"
+
+  [Ligne 62] Pattern: title
+  CHERCHER : "Photo URL"
+  BASE     : "Photo URL"
+  CLÉ      : $$$/Piwigo/CustomMetadata/PhotoUrl
+  REMPLACER: "Photo URL" → LOC "$$$/Piwigo/CustomMetadata/PhotoUrl=Photo URL"
+
+  [Ligne 71] Pattern: title
+  CHERCHER : "Upload Date"
+  BASE     : "Upload Date"
+  CLÉ      : $$$/Piwigo/CustomMetadata/UploadDate
+  REMPLACER: "Upload Date" → LOC "$$$/Piwigo/CustomMetadata/UploadDate=Upload Date"
+
+  [Ligne 80] Pattern: title
+  CHERCHER : "Upload Time"
+  BASE     : "Upload Time"
+  CLÉ      : $$$/Piwigo/CustomMetadata/UploadTime
+  REMPLACER: "Upload Time" → LOC "$$$/Piwigo/CustomMetadata/UploadTime=Upload Time"
+
+  [Ligne 89] Pattern: title
+  CHERCHER : "pwCommentSync"
+  BASE     : "pwCommentSync"
+  CLÉ      : $$$/Piwigo/CustomMetadata/Pwcommentsync
+  REMPLACER: "pwCommentSync" → LOC "$$$/Piwigo/CustomMetadata/Pwcommentsync=pwCommentSync"
+
+
+--------------------------------------------------------------------------------
+Fichier: Info.lua
+Chaînes: 10 (9 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 25] Pattern: LrPluginName
+  CHERCHER : "Piwigo Publisher"
+  BASE     : "Piwigo Publisher"
+  CLÉ      : $$$/Piwigo/Info/PiwigoPublisher
+  REMPLACER: "Piwigo Publisher" → LOC "$$$/Piwigo/Info/PiwigoPublisher=Piwigo Publisher"
+
+  [Ligne 33] Pattern: title
+  CHERCHER : "Piwigo Publisher"
+  BASE     : "Piwigo Publisher"
+  CLÉ      : $$$/Piwigo/Info/PiwigoPublisher
+  REMPLACER: "Piwigo Publisher" → LOC "$$$/Piwigo/Info/PiwigoPublisher=Piwigo Publisher"
+
+  [Ligne 40] Pattern: title
+  CHERCHER : "myCustomStatus"
+  BASE     : "myCustomStatus"
+  CLÉ      : $$$/Piwigo/Info/Mycustomstatus
+  REMPLACER: "myCustomStatus" → LOC "$$$/Piwigo/Info/Mycustomstatus=myCustomStatus"
+
+  [Ligne 40] Pattern: title
+  CHERCHER : "Status"
+  BASE     : "Status"
+  CLÉ      : $$$/Piwigo/Info/Status
+  REMPLACER: "Status" → LOC "$$$/Piwigo/Info/Status=Status"
+
+  [Ligne 41] Pattern: title
+  CHERCHER : "syncToken"
+  BASE     : "syncToken"
+  CLÉ      : $$$/Piwigo/Info/Synctoken
+  REMPLACER: "syncToken" → LOC "$$$/Piwigo/Info/Synctoken=syncToken"
+
+  [Ligne 41] Pattern: title
+  CHERCHER : "Token"
+  BASE     : "Token"
+  CLÉ      : $$$/Piwigo/Info/Token
+  REMPLACER: "Token" → LOC "$$$/Piwigo/Info/Token=Token"
+
+  [Ligne 49] Pattern: title
+  CHERCHER : "Piwigo Publisher Extra Options"
+  BASE     : "Piwigo Publisher Extra Options"
+  CLÉ      : $$$/Piwigo/Info/PiwigoPublisherExtraOptions
+  REMPLACER: "Piwigo Publisher Extra Options" → LOC "$$$/Piwigo/Info/PiwigoPublisherExtraOptions=Piwigo Publisher Extra Options"
+
+  [Ligne 54] Pattern: title
+  CHERCHER : "Set Piwigo Album Cover from Selected Photo"
+  BASE     : "Set Piwigo Album Cover from Selected Photo"
+  CLÉ      : $$$/Piwigo/Info/SetPiwigoAlbumCover
+  REMPLACER: "Set Piwigo Album Cover from Selected Photo" → LOC "$$$/Piwigo/Info/SetPiwigoAlbumCover=Set Piwigo Album Cover from Selected Photo"
+
+  [Ligne 58] Pattern: title
+  CHERCHER : "Send Metadata to Piwigo for Selected Photos"
+  BASE     : "Send Metadata to Piwigo for Selected Photos"
+  CLÉ      : $$$/Piwigo/Info/SendMetadataPiwigoSelected
+  REMPLACER: "Send Metadata to Piwigo for Selected Photos" → LOC "$$$/Piwigo/Info/SendMetadataPiwigoSelected=Send Metadata to Piwigo for Selected Photos"
+
+  [Ligne 62] Pattern: title
+  CHERCHER : "Convert selected Published Collection to Published Collection Set"
+  BASE     : "Convert selected Published Collection to Published Collection Set"
+  CLÉ      : $$$/Piwigo/Info/ConvertSelectedPublishedCollection
+  REMPLACER: "Convert selected Published Collection to Published Collection Set" → LOC "$$$/Piwigo/Info/ConvertSelectedPublishedCollection=Convert selected Published Collection to Published Collection Set"
+
+
+--------------------------------------------------------------------------------
+Fichier: PWCollToSet.lua
+Chaînes: 10 (10 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 56] Pattern: LrDialogs.message
+  CHERCHER : "CollToSet - Can't access collection object for this publish collection - check selection"
+  BASE     : "CollToSet - Can't access collection object for this publish collection - check selection"
+  CLÉ      : $$$/Piwigo/CollToSet/ColltosetTAccessCollection
+  REMPLACER: "CollToSet - Can't access collection object for this publish collection - check selection" → LOC "$$$/Piwigo/CollToSet/ColltosetTAccessCollection=CollToSet - Can't access collection object for this publish collection - check selection"
+
+  [Ligne 60] Pattern: LrDialogs.message
+  CHERCHER : "CollToSet - You have selected a Published Collection Set - please select a Published Collection"
+  BASE     : "CollToSet - You have selected a Published Collection Set - please select a Published Collection"
+  CLÉ      : $$$/Piwigo/CollToSet/ColltosetYouSelectedPublished
+  REMPLACER: "CollToSet - You have selected a Published Collection Set - please select a Published Collection" → LOC "$$$/Piwigo/CollToSet/ColltosetYouSelectedPublished=CollToSet - You have selected a Published Collection Set - please select a Published Collection"
+
+  [Ligne 65] Pattern: LrDialogs.message
+  CHERCHER : "Please select a Collection within a Piwigo Publisher service"
+  BASE     : "Please select a Collection within a Piwigo Publisher service"
+  CLÉ      : $$$/Piwigo/CollToSet/PleaseSelectCollectionWithin
+  REMPLACER: "Please select a Collection within a Piwigo Publisher service" → LOC "$$$/Piwigo/CollToSet/PleaseSelectCollectionWithin=Please select a Collection within a Piwigo Publisher service"
+
+  [Ligne 69] Pattern: LrDialogs.message
+  CHERCHER : "CollToSet - Can't find publish settings for this publish collection"
+  BASE     : "CollToSet - Can't find publish settings for this publish collection"
+  CLÉ      : $$$/Piwigo/CollToSet/ColltosetTFindPublish
+  REMPLACER: "CollToSet - Can't find publish settings for this publish collection" → LOC "$$$/Piwigo/CollToSet/ColltosetTFindPublish=CollToSet - Can't find publish settings for this publish collection"
+
+  [Ligne 80] Pattern: LrDialogs.message
+  CHERCHER : "Special Collections cannot be converted to Collection Sets"
+  BASE     : "Special Collections cannot be converted to Collection Sets"
+  CLÉ      : $$$/Piwigo/CollToSet/SpecialCollectionsCannotConverted
+  REMPLACER: "Special Collections cannot be converted to Collection Sets" → LOC "$$$/Piwigo/CollToSet/SpecialCollectionsCannotConverted=Special Collections cannot be converted to Collection Sets"
+
+  [Ligne 85] Pattern: LrDialogs.confirm 🔗 CHAÎNE CONCATÉNÉE (4 membres)
+  LIGNE    : local result = LrDialogs.confirm("Covert Publish Collection to Set","Convert " ..selCollName .." to 
+
+  MEMBRE 1 : "Covert Publish Collection to Set" -- 🔗
+    BASE   : "Covert Publish Collection to Set"
+    CLÉ    : $$$/Piwigo/CollToSet/CovertPublishCollectionSet
+
+  MEMBRE 2 : "Convert " -- ➡️🔗
+    BASE   : "Convert"
+    CLÉ    : $$$/Piwigo/CollToSet/Convert
+    ESPACES: 0 début, 1 fin
+
+  MEMBRE 3 : " to a Publish Collection Set?" -- ⬅️🔗
+    BASE   : "to a Publish Collection Set?"
+    CLÉ    : $$$/Piwigo/CollToSet/PublishCollectionSetQuestion
+    ESPACES: 1 début, 0 fin
+
+  MEMBRE 4 : "Cancel" -- 🔗
+    BASE   : "Cancel"
+    CLÉ    : $$$/Piwigo/CollToSet/Cancel
+
+  [Ligne 98] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "CollToSet - Can't create new collection set "
+  BASE     : "CollToSet - Can't create new collection set"
+  CLÉ      : $$$/Piwigo/CollToSet/ColltosetTCreateNew
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "CollToSet - Can't create new collection set " → LOC "$$$/Piwigo/CollToSet/ColltosetTCreateNew=CollToSet - Can't create new collection set" .. " "
+
+
+--------------------------------------------------------------------------------
+Fichier: PWExtraOptions.lua
+Chaînes: 11 (11 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 41] Pattern: LrDialogs.message
+  CHERCHER : "No Piwigo publish services found."
+  BASE     : "No Piwigo publish services found."
+  CLÉ      : $$$/Piwigo/ExtraOptions/NoPiwigoPublishServices
+  REMPLACER: "No Piwigo publish services found." → LOC "$$$/Piwigo/ExtraOptions/NoPiwigoPublishServices=No Piwigo publish services found."
+
+  [Ligne 75] Pattern: title
+  CHERCHER : "Select publish service:"
+  BASE     : "Select publish service:"
+  CLÉ      : $$$/Piwigo/ExtraOptions/SelectPublishService
+  REMPLACER: "Select publish service:" → LOC "$$$/Piwigo/ExtraOptions/SelectPublishService=Select publish service:"
+
+  [Ligne 81] Pattern: value
+  CHERCHER : "selectedService"
+  BASE     : "selectedService"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Selectedservice
+  REMPLACER: "selectedService" → LOC "$$$/Piwigo/ExtraOptions/Selectedservice=selectedService"
+
+  [Ligne 90] Pattern: title
+  CHERCHER : "Applies to selected images"
+  BASE     : "Applies to selected images"
+  CLÉ      : $$$/Piwigo/ExtraOptions/AppliesSelectedImages
+  REMPLACER: "Applies to selected images" → LOC "$$$/Piwigo/ExtraOptions/AppliesSelectedImages=Applies to selected images"
+
+  [Ligne 99] Pattern: title
+  CHERCHER : "Set Piwigo Album Cover"
+  BASE     : "Set Piwigo Album Cover"
+  CLÉ      : $$$/Piwigo/API/SetPiwigoAlbumCover
+  REMPLACER: "Set Piwigo Album Cover" → LOC "$$$/Piwigo/API/SetPiwigoAlbumCover=Set Piwigo Album Cover"
+
+  [Ligne 100] Pattern: tooltip -- ➡️
+  CHERCHER : "Sets selected image as Piwigo album cover "
+  BASE     : "Sets selected image as Piwigo album cover"
+  CLÉ      : $$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Sets selected image as Piwigo album cover " → LOC "$$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo=Sets selected image as Piwigo album cover" .. " "
+
+  [Ligne 107] Pattern: LrDialogs.message
+  CHERCHER : "Error"
+  BASE     : "Error"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Error
+  REMPLACER: "Error" → LOC "$$$/Piwigo/ExtraOptions/Error=Error"
+
+  [Ligne 107] Pattern: LrDialogs.message
+  CHERCHER : "Could not find publish service"
+  BASE     : "Could not find publish service"
+  CLÉ      : $$$/Piwigo/ExtraOptions/CouldFindPublishService
+  REMPLACER: "Could not find publish service" → LOC "$$$/Piwigo/ExtraOptions/CouldFindPublishService=Could not find publish service"
+
+  [Ligne 116] Pattern: title
+  CHERCHER : "Sets selected image as Piwigo album cover for this collection"
+  BASE     : "Sets selected image as Piwigo album cover for this collection"
+  CLÉ      : $$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo2
+  REMPLACER: "Sets selected image as Piwigo album cover for this collection" → LOC "$$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo2=Sets selected image as Piwigo album cover for this collection"
+
+  [Ligne 125] Pattern: title
+  CHERCHER : "Piwigo Extra Options"
+  BASE     : "Piwigo Extra Options"
+  CLÉ      : $$$/Piwigo/ExtraOptions/PiwigoExtraOptions
+  REMPLACER: "Piwigo Extra Options" → LOC "$$$/Piwigo/ExtraOptions/PiwigoExtraOptions=Piwigo Extra Options"
+
+  [Ligne 127] Pattern: actionVerb
+  CHERCHER : "Close"
+  BASE     : "Close"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Close
+  REMPLACER: "Close" → LOC "$$$/Piwigo/ExtraOptions/Close=Close"
+
+
+--------------------------------------------------------------------------------
+Fichier: PWImportService.lua
+Chaînes: 35 (29 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 104] Pattern: LrDialogs.message
+  CHERCHER : "Clone completed"
+  BASE     : "Clone completed"
+  CLÉ      : $$$/Piwigo/ImportService/CloneCompleted
+  REMPLACER: "Clone completed" → LOC "$$$/Piwigo/ImportService/CloneCompleted=Clone completed"
+
+  [Ligne 104] Pattern: LrDialogs.message
+  CHERCHER : "Publish Service Clone omplete."
+  BASE     : "Publish Service Clone omplete."
+  CLÉ      : $$$/Piwigo/ImportService/PublishServiceCloneOmplete
+  REMPLACER: "Publish Service Clone omplete." → LOC "$$$/Piwigo/ImportService/PublishServiceCloneOmplete=Publish Service Clone omplete."
+
+  [Ligne 112] Pattern: LrDialogs.message
+  CHERCHER : "Clone completed"
+  BASE     : "Clone completed"
+  CLÉ      : $$$/Piwigo/ImportService/CloneCompleted
+  REMPLACER: "Clone completed" → LOC "$$$/Piwigo/ImportService/CloneCompleted=Clone completed"
+
+  [Ligne 112] Pattern: LrDialogs.message
+  CHERCHER : "Publish Service Clone omplete."
+  BASE     : "Publish Service Clone omplete."
+  CLÉ      : $$$/Piwigo/ImportService/PublishServiceCloneOmplete
+  REMPLACER: "Publish Service Clone omplete." → LOC "$$$/Piwigo/ImportService/PublishServiceCloneOmplete=Publish Service Clone omplete."
+
+  [Ligne 331] Pattern: LrDialogs.message
+  CHERCHER : "Clone completed"
+  BASE     : "Clone completed"
+  CLÉ      : $$$/Piwigo/ImportService/CloneCompleted
+  REMPLACER: "Clone completed" → LOC "$$$/Piwigo/ImportService/CloneCompleted=Clone completed"
+
+  [Ligne 331] Pattern: LrDialogs.message
+  CHERCHER : "Publish Service Clone Complete."
+  BASE     : "Publish Service Clone Complete."
+  CLÉ      : $$$/Piwigo/ImportService/PublishServiceCloneComplete
+  REMPLACER: "Publish Service Clone Complete." → LOC "$$$/Piwigo/ImportService/PublishServiceCloneComplete=Publish Service Clone Complete."
+
+  [Ligne 509] Pattern: title -- 🔚
+  CHERCHER : "Cloning Collections..."
+  BASE     : "Cloning Collections"
+  CLÉ      : $$$/Piwigo/ImportService/CloningCollections
+  SUFFIXE  : "..."
+  REMPLACER: "Cloning Collections..." → LOC "$$$/Piwigo/ImportService/CloningCollections=Cloning Collections" .. "..."
+
+  [Ligne 510] Pattern: caption -- 🔚
+  CHERCHER : "Starting..."
+  BASE     : "Starting"
+  CLÉ      : $$$/Piwigo/API/Starting
+  SUFFIXE  : "..."
+  REMPLACER: "Starting..." → LOC "$$$/Piwigo/API/Starting=Starting" .. "..."
+
+  [Ligne 522] Pattern: title -- 🔚
+  CHERCHER : "Cloning Images..."
+  BASE     : "Cloning Images"
+  CLÉ      : $$$/Piwigo/ImportService/CloningImages
+  SUFFIXE  : "..."
+  REMPLACER: "Cloning Images..." → LOC "$$$/Piwigo/ImportService/CloningImages=Cloning Images" .. "..."
+
+  [Ligne 523] Pattern: caption -- 🔚
+  CHERCHER : "Starting..."
+  BASE     : "Starting"
+  CLÉ      : $$$/Piwigo/API/Starting
+  SUFFIXE  : "..."
+  REMPLACER: "Starting..." → LOC "$$$/Piwigo/API/Starting=Starting" .. "..."
+
+  [Ligne 724] Pattern: title -- ➡️
+  CHERCHER : "Clone : "
+  BASE     : "Clone :"
+  CLÉ      : $$$/Piwigo/ImportService/Clone
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Clone : " → LOC "$$$/Piwigo/ImportService/Clone=Clone :" .. " "
+
+  [Ligne 743] Pattern: title -- ⬅️➡️
+  CHERCHER : "      to : "
+  BASE     : "to :"
+  CLÉ      : $$$/Piwigo/ImportService/To
+  ESPACES  : 6 début, 1 fin
+  REMPLACER: "      to : " → "      " .. LOC "$$$/Piwigo/ImportService/To=to :" .. " "
+
+  [Ligne 783] Pattern: title -- ➡️
+  CHERCHER : "Collection Sets to clone : "
+  BASE     : "Collection Sets to clone :"
+  CLÉ      : $$$/Piwigo/ImportService/CollectionSetsClone
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Collection Sets to clone : " → LOC "$$$/Piwigo/ImportService/CollectionSetsClone=Collection Sets to clone :" .. " "
+
+  [Ligne 792] Pattern: title -- ➡️
+  CHERCHER : "Collections to clone : "
+  BASE     : "Collections to clone :"
+  CLÉ      : $$$/Piwigo/ImportService/CollectionsClone
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Collections to clone : " → LOC "$$$/Piwigo/ImportService/CollectionsClone=Collections to clone :" .. " "
+
+  [Ligne 800] Pattern: title -- ➡️
+  CHERCHER : "Smart Collections to clone : "
+  BASE     : "Smart Collections to clone :"
+  CLÉ      : $$$/Piwigo/ImportService/SmartCollectionsClone
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Smart Collections to clone : " → LOC "$$$/Piwigo/ImportService/SmartCollectionsClone=Smart Collections to clone :" .. " "
+
+  [Ligne 809] Pattern: title -- ➡️
+  CHERCHER : "Images to clone : "
+  BASE     : "Images to clone :"
+  CLÉ      : $$$/Piwigo/ImportService/ImagesClone
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Images to clone : " → LOC "$$$/Piwigo/ImportService/ImagesClone=Images to clone :" .. " "
+
+  [Ligne 839] Pattern: title
+  CHERCHER : "Confirm details of Publish Service to be cloned"
+  BASE     : "Confirm details of Publish Service to be cloned"
+  CLÉ      : $$$/Piwigo/ImportService/ConfirmDetailsPublishService
+  REMPLACER: "Confirm details of Publish Service to be cloned" → LOC "$$$/Piwigo/ImportService/ConfirmDetailsPublishService=Confirm details of Publish Service to be cloned"
+
+  [Ligne 841] Pattern: actionVerb
+  CHERCHER : "Clone"
+  BASE     : "Clone"
+  CLÉ      : $$$/Piwigo/ImportService/Clone2
+  REMPLACER: "Clone" → LOC "$$$/Piwigo/ImportService/Clone2=Clone"
+
+  [Ligne 842] Pattern: cancelVerb
+  CHERCHER : "Cancel"
+  BASE     : "Cancel"
+  CLÉ      : $$$/Piwigo/CollToSet/Cancel
+  REMPLACER: "Cancel" → LOC "$$$/Piwigo/CollToSet/Cancel=Cancel"
+
+  [Ligne 850] Pattern: title
+  CHERCHER : "Details of Publish Service to be cloned"
+  BASE     : "Details of Publish Service to be cloned"
+  CLÉ      : $$$/Piwigo/ImportService/DetailsPublishService
+  REMPLACER: "Details of Publish Service to be cloned" → LOC "$$$/Piwigo/ImportService/DetailsPublishService=Details of Publish Service to be cloned"
+
+  [Ligne 852] Pattern: actionVerb
+  CHERCHER : "Cancel Clone"
+  BASE     : "Cancel Clone"
+  CLÉ      : $$$/Piwigo/ImportService/CancelClone
+  REMPLACER: "Cancel Clone" → LOC "$$$/Piwigo/ImportService/CancelClone=Cancel Clone"
+
+  [Ligne 853] Pattern: cancelVerb
+  CHERCHER : "< exclude >"
+  BASE     : "< exclude >"
+  CLÉ      : $$$/Piwigo/ImportService/Exclude
+  REMPLACER: "< exclude >" → LOC "$$$/Piwigo/ImportService/Exclude=< exclude >"
+
+  [Ligne 873] Pattern: LrDialogs.message
+  CHERCHER : "Error"
+  BASE     : "Error"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Error
+  REMPLACER: "Error" → LOC "$$$/Piwigo/ExtraOptions/Error=Error"
+
+  [Ligne 873] Pattern: LrDialogs.message
+  CHERCHER : "Cannot clone into this service as it already contains Published Collections or Sets."
+  BASE     : "Cannot clone into this service as it already contains Published Collections or Sets."
+  CLÉ      : $$$/Piwigo/ImportService/CannotCloneIntoService
+  REMPLACER: "Cannot clone into this service as it already contains Published Collections or Sets." → LOC "$$$/Piwigo/ImportService/CannotCloneIntoService=Cannot clone into this service as it already contains Published Collections or Sets."
+
+  [Ligne 884] Pattern: LrDialogs.message
+  CHERCHER : "No publish services found."
+  BASE     : "No publish services found."
+  CLÉ      : $$$/Piwigo/ImportService/NoPublishServicesFound
+  REMPLACER: "No publish services found." → LOC "$$$/Piwigo/ImportService/NoPublishServicesFound=No publish services found."
+
+  [Ligne 926] Pattern: title 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : title = "    Clone selected Publish Service to " .. thisService:getName() .. " Publish Service",
+
+  MEMBRE 1 : "    Clone selected Publish Service to " -- ⬅️➡️🔗
+    BASE   : "Clone selected Publish Service to"
+    CLÉ    : $$$/Piwigo/ImportService/CloneSelectedPublishService
+    ESPACES: 4 début, 1 fin
+
+  MEMBRE 2 : " Publish Service" -- ⬅️🔗
+    BASE   : "Publish Service"
+    CLÉ    : $$$/Piwigo/ImportService/PublishService
+    ESPACES: 1 début, 0 fin
+
+  [Ligne 945] Pattern: title
+  CHERCHER : "Select Publish Service to clone:"
+  BASE     : "Select Publish Service to clone:"
+  CLÉ      : $$$/Piwigo/ImportService/SelectPublishServiceClone
+  REMPLACER: "Select Publish Service to clone:" → LOC "$$$/Piwigo/ImportService/SelectPublishServiceClone=Select Publish Service to clone:"
+
+  [Ligne 951] Pattern: value
+  CHERCHER : "selectedService"
+  BASE     : "selectedService"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Selectedservice
+  REMPLACER: "selectedService" → LOC "$$$/Piwigo/ExtraOptions/Selectedservice=selectedService"
+
+  [Ligne 960] Pattern: title -- ⬅️
+  CHERCHER : "        Please ensure selected service is up to date - i.e. with no outstanding photographs to be published"
+  BASE     : "Please ensure selected service is up to date - i.e. with no outstanding photographs to be published"
+  CLÉ      : $$$/Piwigo/ImportService/PleaseEnsureSelectedService
+  ESPACES  : 8 début, 0 fin
+  REMPLACER: "        Please ensure selected service is up to date - i.e. with no outstanding photographs to be published" → "        " .. LOC "$$$/Piwigo/ImportService/PleaseEnsureSelectedService=Please ensure selected service is up to date - i.e. with no outstanding photographs to be published"
+
+  [Ligne 968] Pattern: title
+  CHERCHER : "Piwigo Publisher - Clone Existing Publish Service"
+  BASE     : "Piwigo Publisher - Clone Existing Publish Service"
+  CLÉ      : $$$/Piwigo/ImportService/PiwigoPublisherCloneExisting
+  REMPLACER: "Piwigo Publisher - Clone Existing Publish Service" → LOC "$$$/Piwigo/ImportService/PiwigoPublisherCloneExisting=Piwigo Publisher - Clone Existing Publish Service"
+
+  [Ligne 970] Pattern: actionVerb
+  CHERCHER : "Next"
+  BASE     : "Next"
+  CLÉ      : $$$/Piwigo/ImportService/Next
+  REMPLACER: "Next" → LOC "$$$/Piwigo/ImportService/Next=Next"
+
+  [Ligne 971] Pattern: cancelVerb
+  CHERCHER : "Cancel"
+  BASE     : "Cancel"
+  CLÉ      : $$$/Piwigo/CollToSet/Cancel
+  REMPLACER: "Cancel" → LOC "$$$/Piwigo/CollToSet/Cancel=Cancel"
+
+  [Ligne 980] Pattern: LrDialogs.message
+  CHERCHER : "Error"
+  BASE     : "Error"
+  CLÉ      : $$$/Piwigo/ExtraOptions/Error
+  REMPLACER: "Error" → LOC "$$$/Piwigo/ExtraOptions/Error=Error"
+
+  [Ligne 980] Pattern: LrDialogs.message
+  CHERCHER : "Could not find publish service"
+  BASE     : "Could not find publish service"
+  CLÉ      : $$$/Piwigo/ExtraOptions/CouldFindPublishService
+  REMPLACER: "Could not find publish service" → LOC "$$$/Piwigo/ExtraOptions/CouldFindPublishService=Could not find publish service"
+
+
+--------------------------------------------------------------------------------
+Fichier: PWSendMetadata.lua
+Chaînes: 8 (8 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 32] Pattern: LrDialogs.message
+  CHERCHER : "Please select photos to resend metadata"
+  BASE     : "Please select photos to resend metadata"
+  CLÉ      : $$$/Piwigo/SendMetadata/PleaseSelectPhotosResend
+  REMPLACER: "Please select photos to resend metadata" → LOC "$$$/Piwigo/SendMetadata/PleaseSelectPhotosResend=Please select photos to resend metadata"
+
+  [Ligne 60] Pattern: LrDialogs.message
+  CHERCHER : "Please select photos in a Piwigo Publisher service"
+  BASE     : "Please select photos in a Piwigo Publisher service"
+  CLÉ      : $$$/Piwigo/SendMetadata/PleaseSelectPhotosPiwigo
+  REMPLACER: "Please select photos in a Piwigo Publisher service" → LOC "$$$/Piwigo/SendMetadata/PleaseSelectPhotosPiwigo=Please select photos in a Piwigo Publisher service"
+
+  [Ligne 64] Pattern: LrDialogs.message
+  CHERCHER : "SendMetadata - Can't find publish settings for this publish collection"
+  BASE     : "SendMetadata - Can't find publish settings for this publish collection"
+  CLÉ      : $$$/Piwigo/SendMetadata/SendmetadataTFindPublish
+  REMPLACER: "SendMetadata - Can't find publish settings for this publish collection" → LOC "$$$/Piwigo/SendMetadata/SendmetadataTFindPublish=SendMetadata - Can't find publish settings for this publish collection"
+
+  [Ligne 68] Pattern: LrDialogs.confirm
+  CHERCHER : "Send Metadata to Piwigo"
+  BASE     : "Send Metadata to Piwigo"
+  CLÉ      : $$$/Piwigo/SendMetadata/SendMetadataPiwigo
+  REMPLACER: "Send Metadata to Piwigo" → LOC "$$$/Piwigo/SendMetadata/SendMetadataPiwigo=Send Metadata to Piwigo"
+
+  [Ligne 76] Pattern: title -- 🔚
+  CHERCHER : "Update Metadata..."
+  BASE     : "Update Metadata"
+  CLÉ      : $$$/Piwigo/SendMetadata/UpdateMetadata
+  SUFFIXE  : "..."
+  REMPLACER: "Update Metadata..." → LOC "$$$/Piwigo/SendMetadata/UpdateMetadata=Update Metadata" .. "..."
+
+  [Ligne 77] Pattern: caption -- 🔚
+  CHERCHER : "Starting..."
+  BASE     : "Starting"
+  CLÉ      : $$$/Piwigo/API/Starting
+  SUFFIXE  : "..."
+  REMPLACER: "Starting..." → LOC "$$$/Piwigo/API/Starting=Starting" .. "..."
+
+  [Ligne 98] Pattern: LrDialogs.message
+  CHERCHER : "SendMetadata - Can't find Piwigo photo ID for this photo - has it been published?"
+  BASE     : "SendMetadata - Can't find Piwigo photo ID for this photo - has it been published?"
+  CLÉ      : $$$/Piwigo/SendMetadata/SendmetadataTFindPiwigoQuestion
+  REMPLACER: "SendMetadata - Can't find Piwigo photo ID for this photo - has it been published?" → LOC "$$$/Piwigo/SendMetadata/SendmetadataTFindPiwigoQuestion=SendMetadata - Can't find Piwigo photo ID for this photo - has it been published?"
+
+  [Ligne 112] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Unable to set metadata for uploaded photo - "
+  BASE     : "Unable to set metadata for uploaded photo"
+  CLÉ      : $$$/Piwigo/PublishTask/UnableSetMetadataUploaded
+  SUFFIXE  : " -"
+  REMPLACER: "Unable to set metadata for uploaded photo - " → LOC "$$$/Piwigo/PublishTask/UnableSetMetadataUploaded=Unable to set metadata for uploaded photo" .. " -"
+
+
+--------------------------------------------------------------------------------
+Fichier: PWSetAlbumCover.lua
+Chaînes: 12 (11 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 34] Pattern: LrDialogs.message
+  CHERCHER : "Please select a photo to set as album cover"
+  BASE     : "Please select a photo to set as album cover"
+  CLÉ      : $$$/Piwigo/API/PleaseSelectPhotoSet
+  REMPLACER: "Please select a photo to set as album cover" → LOC "$$$/Piwigo/API/PleaseSelectPhotoSet=Please select a photo to set as album cover"
+
+  [Ligne 38] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Please select a single photo to set as album cover (" .. #selPhotos .. " currentl
+
+  MEMBRE 1 : "Please select a single photo to set as album cover (" -- 🔗
+    BASE   : "Please select a single photo to set as album cover ("
+    CLÉ    : $$$/Piwigo/SetAlbumCover/PleaseSelectSinglePhoto
+
+  MEMBRE 2 : " currently selected)" -- ⬅️🔗
+    BASE   : "currently selected)"
+    CLÉ    : $$$/Piwigo/SetAlbumCover/CurrentlySelected
+    ESPACES: 1 début, 0 fin
+
+  [Ligne 69] Pattern: LrDialogs.message
+  CHERCHER : "Please select a photo in a Piwigo Publisher service"
+  BASE     : "Please select a photo in a Piwigo Publisher service"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/PleaseSelectPhoto
+  REMPLACER: "Please select a photo in a Piwigo Publisher service" → LOC "$$$/Piwigo/SetAlbumCover/PleaseSelectPhoto=Please select a photo in a Piwigo Publisher service"
+
+  [Ligne 73] Pattern: LrDialogs.message
+  CHERCHER : "SetAlbumCover - Can't find publish settings for this publish collection"
+  BASE     : "SetAlbumCover - Can't find publish settings for this publish collection"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPublish
+  REMPLACER: "SetAlbumCover - Can't find publish settings for this publish collection" → LOC "$$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPublish=SetAlbumCover - Can't find publish settings for this publish collection"
+
+  [Ligne 77] Pattern: LrDialogs.message
+  CHERCHER : "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+  BASE     : "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPiwigo
+  REMPLACER: "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection" → LOC "$$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPiwigo=SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+
+  [Ligne 82] Pattern: LrDialogs.message
+  CHERCHER : "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+  BASE     : "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPiwigo
+  REMPLACER: "SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection" → LOC "$$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPiwigo=SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+
+  [Ligne 98] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo - has it been published?"
+  BASE     : "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo - has it been published?"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/PiwigoapiSetalbumcoverTFindQuestion
+  REMPLACER: "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo - has it been published?" → LOC "$$$/Piwigo/SetAlbumCover/PiwigoapiSetalbumcoverTFindQuestion=PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo - has it been published?"
+
+  [Ligne 102] Pattern: LrDialogs.confirm
+  CHERCHER : "Set Piwigo Album Cover"
+  BASE     : "Set Piwigo Album Cover"
+  CLÉ      : $$$/Piwigo/API/SetPiwigoAlbumCover
+  REMPLACER: "Set Piwigo Album Cover" → LOC "$$$/Piwigo/API/SetPiwigoAlbumCover=Set Piwigo Album Cover"
+
+  [Ligne 118] Pattern: LrDialogs.message
+  CHERCHER : "SetAlbumCover - cannot connect to piwigo"
+  BASE     : "SetAlbumCover - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/SetAlbumCover/SetalbumcoverCannotConnectPiwigo
+  REMPLACER: "SetAlbumCover - cannot connect to piwigo" → LOC "$$$/Piwigo/SetAlbumCover/SetalbumcoverCannotConnectPiwigo=SetAlbumCover - cannot connect to piwigo"
+
+  [Ligne 125] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "User needs webmaster role on piwigo gallery at "
+  BASE     : "User needs webmaster role on piwigo gallery at"
+  CLÉ      : $$$/Piwigo/API/UserNeedsWebmasterRole
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "User needs webmaster role on piwigo gallery at " → LOC "$$$/Piwigo/API/UserNeedsWebmasterRole=User needs webmaster role on piwigo gallery at" .. " "
+
+  [Ligne 139] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Unable to set cover photo - "
+  BASE     : "Unable to set cover photo"
+  CLÉ      : $$$/Piwigo/API/UnableSetCoverPhoto
+  SUFFIXE  : " -"
+  REMPLACER: "Unable to set cover photo - " → LOC "$$$/Piwigo/API/UnableSetCoverPhoto=Unable to set cover photo" .. " -"
+
+
+--------------------------------------------------------------------------------
+Fichier: PiwigoAPI.lua
+Chaînes: 69 (46 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 145] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot log in to Piwigo - "
+  BASE     : "Cannot log in to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotLogPiwigo
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot log in to Piwigo - " → LOC "$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo" .. " -"
+
+  [Ligne 156] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot log in to Piwigo - "
+  BASE     : "Cannot log in to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotLogPiwigo
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot log in to Piwigo - " → LOC "$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo" .. " -"
+
+  [Ligne 215] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot get user status from Piwigo - " .. (getResponse.errorMessage or "Unknown e
+
+  MEMBRE 1 : "Cannot get user status from Piwigo - " -- 🔚🔗
+    BASE   : "Cannot get user status from Piwigo"
+    CLÉ    : $$$/Piwigo/API/CannotGetUserStatus
+    SUFFIXE: " -"
+
+  MEMBRE 2 : "Unknown error" -- 🔗
+    BASE   : "Unknown error"
+    CLÉ    : $$$/Piwigo/API/UnknownError
+
+  [Ligne 231] Pattern: LrDialogs.message
+  CHERCHER : "Log in to Piwigo successful but user does not have Webmaster status"
+  BASE     : "Log in to Piwigo successful but user does not have Webmaster status"
+  CLÉ      : $$$/Piwigo/API/LogPiwigoSuccessfulBut
+  REMPLACER: "Log in to Piwigo successful but user does not have Webmaster status" → LOC "$$$/Piwigo/API/LogPiwigoSuccessfulBut=Log in to Piwigo successful but user does not have Webmaster status"
+
+  [Ligne 235] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot log in to Piwigo - "
+  BASE     : "Cannot log in to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotLogPiwigo
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot log in to Piwigo - " → LOC "$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo" .. " -"
+
+  [Ligne 235] Pattern: LrDialogs.message
+  CHERCHER : "Unknown error"
+  BASE     : "Unknown error"
+  CLÉ      : $$$/Piwigo/API/UnknownError
+  REMPLACER: "Unknown error" → LOC "$$$/Piwigo/API/UnknownError=Unknown error"
+
+  [Ligne 1045] Pattern: LrDialogs.message
+  CHERCHER : "Check Piwigo Structure"
+  BASE     : "Check Piwigo Structure"
+  CLÉ      : $$$/Piwigo/API/CheckPiwigoStructure
+  REMPLACER: "Check Piwigo Structure" → LOC "$$$/Piwigo/API/CheckPiwigoStructure=Check Piwigo Structure"
+
+  [Ligne 1305] Pattern: LrDialogs.message
+  CHERCHER : "Cannot log in to Piwigo"
+  BASE     : "Cannot log in to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotLogPiwigo
+  REMPLACER: "Cannot log in to Piwigo" → LOC "$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo"
+
+  [Ligne 1305] Pattern: LrDialogs.message
+  CHERCHER : "Invalid or unreadable server response"
+  BASE     : "Invalid or unreadable server response"
+  CLÉ      : $$$/Piwigo/API/InvalidUnreadableServerResponse
+  REMPLACER: "Invalid or unreadable server response" → LOC "$$$/Piwigo/API/InvalidUnreadableServerResponse=Invalid or unreadable server response"
+
+  [Ligne 1333] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot log in to Piwigo", tostring(rtnBody.err or "Unknown error") ..
+
+  MEMBRE 1 : "Cannot log in to Piwigo" -- 🔗
+    BASE   : "Cannot log in to Piwigo"
+    CLÉ    : $$$/Piwigo/API/CannotLogPiwigo
+
+  MEMBRE 2 : "Unknown error" -- 🔗
+    BASE   : "Unknown error"
+    CLÉ    : $$$/Piwigo/API/UnknownError
+
+  [Ligne 1352] Pattern: LrDialogs.message
+  CHERCHER : "Cannot log in to Piwigo"
+  BASE     : "Cannot log in to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotLogPiwigo
+  REMPLACER: "Cannot log in to Piwigo" → LOC "$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo"
+
+  [Ligne 1368] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.pwConnect - cannot get taglist from Piwigo"
+  BASE     : "PiwigoAPI.pwConnect - cannot get taglist from Piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiPwconnectCannotGet
+  REMPLACER: "PiwigoAPI.pwConnect - cannot get taglist from Piwigo" → LOC "$$$/Piwigo/API/PiwigoapiPwconnectCannotGet=PiwigoAPI.pwConnect - cannot get taglist from Piwigo"
+
+  [Ligne 1416] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot get user status from Piwigo - " .. (getResponse.errorMessage or "Unknown e
+
+  MEMBRE 1 : "Cannot get user status from Piwigo - " -- 🔚🔗
+    BASE   : "Cannot get user status from Piwigo"
+    CLÉ    : $$$/Piwigo/API/CannotGetUserStatus
+    SUFFIXE: " -"
+
+  MEMBRE 2 : "Unknown error" -- 🔗
+    BASE   : "Unknown error"
+    CLÉ    : $$$/Piwigo/API/UnknownError
+
+  [Ligne 1423] Pattern: message -- 🔚
+  CHERCHER : "Cannot get host information from  Piwigo - "
+  BASE     : "Cannot get host information from  Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotGetHostInformation
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot get host information from  Piwigo - " → LOC "$$$/Piwigo/API/CannotGetHostInformation=Cannot get host information from  Piwigo" .. " -"
+
+  [Ligne 1454] Pattern: LrDialogs.message
+  CHERCHER : "Cannot get comments information from  Piwigo - Unknown error"
+  BASE     : "Cannot get comments information from  Piwigo - Unknown error"
+  CLÉ      : $$$/Piwigo/API/CannotGetCommentsInformation
+  REMPLACER: "Cannot get comments information from  Piwigo - Unknown error" → LOC "$$$/Piwigo/API/CannotGetCommentsInformation=Cannot get comments information from  Piwigo - Unknown error"
+
+  [Ligne 1464] Pattern: message
+  CHERCHER : "Comments are disabled"
+  BASE     : "Comments are disabled"
+  CLÉ      : $$$/Piwigo/API/CommentsDisabled
+  REMPLACER: "Comments are disabled" → LOC "$$$/Piwigo/API/CommentsDisabled=Comments are disabled"
+
+  [Ligne 1471] Pattern: message -- 🔚
+  CHERCHER : "Cannot get comments information from  Piwigo - "
+  BASE     : "Cannot get comments information from  Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotGetCommentsInformation2
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot get comments information from  Piwigo - " → LOC "$$$/Piwigo/API/CannotGetCommentsInformation2=Cannot get comments information from  Piwigo" .. " -"
+
+  [Ligne 1533] Pattern: title -- 🔚
+  CHERCHER : "Import album structure..."
+  BASE     : "Import album structure"
+  CLÉ      : $$$/Piwigo/API/ImportAlbumStructure
+  SUFFIXE  : "..."
+  REMPLACER: "Import album structure..." → LOC "$$$/Piwigo/API/ImportAlbumStructure=Import album structure" .. "..."
+
+  [Ligne 1534] Pattern: caption -- 🔚
+  CHERCHER : "Starting..."
+  BASE     : "Starting"
+  CLÉ      : $$$/Piwigo/API/Starting
+  SUFFIXE  : "..."
+  REMPLACER: "Starting..." → LOC "$$$/Piwigo/API/Starting=Starting" .. "..."
+
+  [Ligne 1551] Pattern: LrDialogs.message
+  CHERCHER : "Import Piwigo Albums"
+  BASE     : "Import Piwigo Albums"
+  CLÉ      : $$$/Piwigo/API/ImportPiwigoAlbums
+  REMPLACER: "Import Piwigo Albums" → LOC "$$$/Piwigo/API/ImportPiwigoAlbums=Import Piwigo Albums"
+
+  [Ligne 1565] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo - "
+  BASE     : "PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiPwcategoriesgetthisCannotConnect
+  SUFFIXE  : " -"
+  REMPLACER: "PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo - " → LOC "$$$/Piwigo/API/PiwigoapiPwcategoriesgetthisCannotConnect=PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo" .. " -"
+
+  [Ligne 1572] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "PiwigoAPI.pwCategoriesGetThis - user needs webmaster role "
+  BASE     : "PiwigoAPI.pwCategoriesGetThis - user needs webmaster role"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiPwcategoriesgetthisUserNeeds
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "PiwigoAPI.pwCategoriesGetThis - user needs webmaster role " → LOC "$$$/Piwigo/API/PiwigoapiPwcategoriesgetthisUserNeeds=PiwigoAPI.pwCategoriesGetThis - user needs webmaster role" .. " "
+
+  [Ligne 1631] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot get categories from Piwigo - "
+  BASE     : "Cannot get categories from Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotGetCategoriesFrom
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot get categories from Piwigo - " → LOC "$$$/Piwigo/API/CannotGetCategoriesFrom=Cannot get categories from Piwigo" .. " -"
+
+  [Ligne 1631] Pattern: LrDialogs.message
+  CHERCHER : "Unknown error"
+  BASE     : "Unknown error"
+  CLÉ      : $$$/Piwigo/API/UnknownError
+  REMPLACER: "Unknown error" → LOC "$$$/Piwigo/API/UnknownError=Unknown error"
+
+  [Ligne 1638] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot get categories from Piwigo - "
+  BASE     : "Cannot get categories from Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotGetCategoriesFrom
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot get categories from Piwigo - " → LOC "$$$/Piwigo/API/CannotGetCategoriesFrom=Cannot get categories from Piwigo" .. " -"
+
+  [Ligne 1638] Pattern: LrDialogs.message
+  CHERCHER : "Unknown error"
+  BASE     : "Unknown error"
+  CLÉ      : $$$/Piwigo/API/UnknownError
+  REMPLACER: "Unknown error" → LOC "$$$/Piwigo/API/UnknownError=Unknown error"
+
+  [Ligne 1790] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot add new category to Piwigo - "
+  BASE     : "Cannot add new category to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotAddNewCategory
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot add new category to Piwigo - " → LOC "$$$/Piwigo/API/CannotAddNewCategory=Cannot add new category to Piwigo" .. " -"
+
+  [Ligne 1799] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Cannot add new category to Piwigo - "
+  BASE     : "Cannot add new category to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CannotAddNewCategory
+  SUFFIXE  : " -"
+  REMPLACER: "Cannot add new category to Piwigo - " → LOC "$$$/Piwigo/API/CannotAddNewCategory=Cannot add new category to Piwigo" .. " -"
+
+  [Ligne 2196] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "Cannot upload "
+  BASE     : "Cannot upload"
+  CLÉ      : $$$/Piwigo/API/CannotUpload
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Cannot upload " → LOC "$$$/Piwigo/API/CannotUpload=Cannot upload" .. " "
+
+  [Ligne 2229] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "Cannot upload "
+  BASE     : "Cannot upload"
+  CLÉ      : $$$/Piwigo/API/CannotUpload
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Cannot upload " → LOC "$$$/Piwigo/API/CannotUpload=Cannot upload" .. " "
+
+  [Ligne 2293] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot upload - " .. metaData.fileName .. " to Piwigo - " .. status, statusDes)
+
+  MEMBRE 1 : "Cannot upload - " -- 🔚🔗
+    BASE   : "Cannot upload"
+    CLÉ    : $$$/Piwigo/API/CannotUpload
+    SUFFIXE: " -"
+
+  MEMBRE 2 : " to Piwigo - " -- ⬅️🔚🔗
+    BASE   : "to Piwigo"
+    CLÉ    : $$$/Piwigo/API/Piwigo
+    ESPACES: 1 début, 0 fin
+    SUFFIXE: " -"
+
+  [Ligne 2508] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.pwCheckComments - cannot connect to piwigo"
+  BASE     : "PiwigoAPI.pwCheckComments - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiPwcheckcommentsCannotConnect
+  REMPLACER: "PiwigoAPI.pwCheckComments - cannot connect to piwigo" → LOC "$$$/Piwigo/API/PiwigoapiPwcheckcommentsCannotConnect=PiwigoAPI.pwCheckComments - cannot connect to piwigo"
+
+  [Ligne 2515] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "PiwigoAPI.pwCheckComments - user needs webmaster role "
+  BASE     : "PiwigoAPI.pwCheckComments - user needs webmaster role"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiPwcheckcommentsUserNeeds
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "PiwigoAPI.pwCheckComments - user needs webmaster role " → LOC "$$$/Piwigo/API/PiwigoapiPwcheckcommentsUserNeeds=PiwigoAPI.pwCheckComments - user needs webmaster role" .. " "
+
+  [Ligne 2541] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.getComments - cannot connect to piwigo"
+  BASE     : "PiwigoAPI.getComments - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiGetcommentsCannotConnect
+  REMPLACER: "PiwigoAPI.getComments - cannot connect to piwigo" → LOC "$$$/Piwigo/API/PiwigoapiGetcommentsCannotConnect=PiwigoAPI.getComments - cannot connect to piwigo"
+
+  [Ligne 2548] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "PiwigoAPI.getComments - user needs webmaster role "
+  BASE     : "PiwigoAPI.getComments - user needs webmaster role"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiGetcommentsUserNeeds
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "PiwigoAPI.getComments - user needs webmaster role " → LOC "$$$/Piwigo/API/PiwigoapiGetcommentsUserNeeds=PiwigoAPI.getComments - user needs webmaster role" .. " "
+
+  [Ligne 2575] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.addComment - cannot connect to piwigo"
+  BASE     : "PiwigoAPI.addComment - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiAddcommentCannotConnect
+  REMPLACER: "PiwigoAPI.addComment - cannot connect to piwigo" → LOC "$$$/Piwigo/API/PiwigoapiAddcommentCannotConnect=PiwigoAPI.addComment - cannot connect to piwigo"
+
+  [Ligne 2590] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "Unable to add comment - are comments enabled on "
+  BASE     : "Unable to add comment - are comments enabled on"
+  CLÉ      : $$$/Piwigo/API/UnableAddCommentComments
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Unable to add comment - are comments enabled on " → LOC "$$$/Piwigo/API/UnableAddCommentComments=Unable to add comment - are comments enabled on" .. " "
+
+  [Ligne 2635] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Unable to add comment - "
+  BASE     : "Unable to add comment"
+  CLÉ      : $$$/Piwigo/API/UnableAddComment
+  SUFFIXE  : " -"
+  REMPLACER: "Unable to add comment - " → LOC "$$$/Piwigo/API/UnableAddComment=Unable to add comment" .. " -"
+
+  [Ligne 2638] Pattern: LrDialogs.message
+  CHERCHER : "Comment added to Piwigo"
+  BASE     : "Comment added to Piwigo"
+  CLÉ      : $$$/Piwigo/API/CommentAddedPiwigo
+  REMPLACER: "Comment added to Piwigo" → LOC "$$$/Piwigo/API/CommentAddedPiwigo=Comment added to Piwigo"
+
+  [Ligne 2670] Pattern: LrDialogs.message
+  CHERCHER : "Create Special Collections"
+  BASE     : "Create Special Collections"
+  CLÉ      : $$$/Piwigo/API/CreateSpecialCollections
+  REMPLACER: "Create Special Collections" → LOC "$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections"
+
+  [Ligne 2670] Pattern: LrDialogs.message
+  CHERCHER : "No collection sets found so no special collections created"
+  BASE     : "No collection sets found so no special collections created"
+  CLÉ      : $$$/Piwigo/API/NoCollectionSetsFound
+  REMPLACER: "No collection sets found so no special collections created" → LOC "$$$/Piwigo/API/NoCollectionSetsFound=No collection sets found so no special collections created"
+
+  [Ligne 2674] Pattern: title -- 🔚
+  CHERCHER : "Create Special Collections..."
+  BASE     : "Create Special Collections"
+  CLÉ      : $$$/Piwigo/API/CreateSpecialCollections
+  SUFFIXE  : "..."
+  REMPLACER: "Create Special Collections..." → LOC "$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections" .. "..."
+
+  [Ligne 2675] Pattern: caption -- 🔚
+  CHERCHER : "Starting..."
+  BASE     : "Starting"
+  CLÉ      : $$$/Piwigo/API/Starting
+  SUFFIXE  : "..."
+  REMPLACER: "Starting..." → LOC "$$$/Piwigo/API/Starting=Starting" .. "..."
+
+  [Ligne 2690] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "Failed to create special collection for "
+  BASE     : "Failed to create special collection for"
+  CLÉ      : $$$/Piwigo/API/FailedCreateSpecialCollection
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Failed to create special collection for " → LOC "$$$/Piwigo/API/FailedCreateSpecialCollection=Failed to create special collection for" .. " "
+
+  [Ligne 2695] Pattern: LrDialogs.message
+  CHERCHER : "Create Special Collections"
+  BASE     : "Create Special Collections"
+  CLÉ      : $$$/Piwigo/API/CreateSpecialCollections
+  REMPLACER: "Create Special Collections" → LOC "$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections"
+
+  [Ligne 2695] Pattern: LrDialogs.message
+  CHERCHER : "%s collection sets processed"
+  BASE     : "%s collection sets processed"
+  CLÉ      : $$$/Piwigo/API/SCollectionSetsProcessed
+  REMPLACER: "%s collection sets processed" → LOC "$$$/Piwigo/API/SCollectionSetsProcessed=%s collection sets processed"
+
+  [Ligne 2710] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.setAlbumCover - Can't find PublishSettings for this publish collection"
+  BASE     : "PiwigoAPI.setAlbumCover - Can't find PublishSettings for this publish collection"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiSetalbumcoverTFind
+  REMPLACER: "PiwigoAPI.setAlbumCover - Can't find PublishSettings for this publish collection" → LOC "$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind=PiwigoAPI.setAlbumCover - Can't find PublishSettings for this publish collection"
+
+  [Ligne 2717] Pattern: LrDialogs.message
+  CHERCHER : "Please select a photo to set as album cover"
+  BASE     : "Please select a photo to set as album cover"
+  CLÉ      : $$$/Piwigo/API/PleaseSelectPhotoSet
+  REMPLACER: "Please select a photo to set as album cover" → LOC "$$$/Piwigo/API/PleaseSelectPhotoSet=Please select a photo to set as album cover"
+
+  [Ligne 2748] Pattern: LrDialogs.message
+  CHERCHER : "Please select a photo in the selected publish service ("
+  BASE     : "Please select a photo in the selected publish service ("
+  CLÉ      : $$$/Piwigo/API/PleaseSelectPhoto
+  REMPLACER: "Please select a photo in the selected publish service (" → LOC "$$$/Piwigo/API/PleaseSelectPhoto=Please select a photo in the selected publish service ("
+
+  [Ligne 2753] Pattern: LrDialogs.message
+  CHERCHER : "Please select a photo in the selected publish service ("
+  BASE     : "Please select a photo in the selected publish service ("
+  CLÉ      : $$$/Piwigo/API/PleaseSelectPhoto
+  REMPLACER: "Please select a photo in the selected publish service (" → LOC "$$$/Piwigo/API/PleaseSelectPhoto=Please select a photo in the selected publish service ("
+
+  [Ligne 2769] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.setAlbumCover - Can't find this photo in collection set or collections"
+  BASE     : "PiwigoAPI.setAlbumCover - Can't find this photo in collection set or collections"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiSetalbumcoverTFind2
+  REMPLACER: "PiwigoAPI.setAlbumCover - Can't find this photo in collection set or collections" → LOC "$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind2=PiwigoAPI.setAlbumCover - Can't find this photo in collection set or collections"
+
+  [Ligne 2775] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo"
+  BASE     : "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiSetalbumcoverTFind3
+  REMPLACER: "PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo" → LOC "$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind3=PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo"
+
+  [Ligne 2781] Pattern: LrDialogs.confirm
+  CHERCHER : "Set Piwigo Album Cover"
+  BASE     : "Set Piwigo Album Cover"
+  CLÉ      : $$$/Piwigo/API/SetPiwigoAlbumCover
+  REMPLACER: "Set Piwigo Album Cover" → LOC "$$$/Piwigo/API/SetPiwigoAlbumCover=Set Piwigo Album Cover"
+
+  [Ligne 2798] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.setAlbumCover - cannot connect to piwigo"
+  BASE     : "PiwigoAPI.setAlbumCover - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiSetalbumcoverCannotConnect
+  REMPLACER: "PiwigoAPI.setAlbumCover - cannot connect to piwigo" → LOC "$$$/Piwigo/API/PiwigoapiSetalbumcoverCannotConnect=PiwigoAPI.setAlbumCover - cannot connect to piwigo"
+
+  [Ligne 2805] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "User needs webmaster role on piwigo gallery at "
+  BASE     : "User needs webmaster role on piwigo gallery at"
+  CLÉ      : $$$/Piwigo/API/UserNeedsWebmasterRole
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "User needs webmaster role on piwigo gallery at " → LOC "$$$/Piwigo/API/UserNeedsWebmasterRole=User needs webmaster role on piwigo gallery at" .. " "
+
+  [Ligne 2824] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Unable to set cover photo - "
+  BASE     : "Unable to set cover photo"
+  CLÉ      : $$$/Piwigo/API/UnableSetCoverPhoto
+  SUFFIXE  : " -"
+  REMPLACER: "Unable to set cover photo - " → LOC "$$$/Piwigo/API/UnableSetCoverPhoto=Unable to set cover photo" .. " -"
+
+  [Ligne 2841] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI.getTagList - cannot connect to piwigo"
+  BASE     : "PiwigoAPI.getTagList - cannot connect to piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiGettaglistCannotConnect
+  REMPLACER: "PiwigoAPI.getTagList - cannot connect to piwigo" → LOC "$$$/Piwigo/API/PiwigoapiGettaglistCannotConnect=PiwigoAPI.getTagList - cannot connect to piwigo"
+
+  [Ligne 2865] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "PiwigoAPI.getTagList - cannot get tag list from Piwigo - "
+  BASE     : "PiwigoAPI.getTagList - cannot get tag list from Piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiGettaglistCannotGet
+  SUFFIXE  : " -"
+  REMPLACER: "PiwigoAPI.getTagList - cannot get tag list from Piwigo - " → LOC "$$$/Piwigo/API/PiwigoapiGettaglistCannotGet=PiwigoAPI.getTagList - cannot get tag list from Piwigo" .. " -"
+
+  [Ligne 2873] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "PiwigoAPI.getTagList - cannot get tag list from Piwigo - "
+  BASE     : "PiwigoAPI.getTagList - cannot get tag list from Piwigo"
+  CLÉ      : $$$/Piwigo/API/PiwigoapiGettaglistCannotGet
+  SUFFIXE  : " -"
+  REMPLACER: "PiwigoAPI.getTagList - cannot get tag list from Piwigo - " → LOC "$$$/Piwigo/API/PiwigoapiGettaglistCannotGet=PiwigoAPI.getTagList - cannot get tag list from Piwigo" .. " -"
+
+  [Ligne 2914] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot add tag " .. tagString .. " to Piwigo - ",
+
+  MEMBRE 1 : "Cannot add tag " -- ➡️🔗
+    BASE   : "Cannot add tag"
+    CLÉ    : $$$/Piwigo/API/CannotAddTag
+    ESPACES: 0 début, 1 fin
+
+  MEMBRE 2 : " to Piwigo - " -- ⬅️🔚🔗
+    BASE   : "to Piwigo"
+    CLÉ    : $$$/Piwigo/API/Piwigo
+    ESPACES: 1 début, 0 fin
+    SUFFIXE: " -"
+
+  [Ligne 2921] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Cannot add tag " .. tagString .. " to Piwigo - ",
+
+  MEMBRE 1 : "Cannot add tag " -- ➡️🔗
+    BASE   : "Cannot add tag"
+    CLÉ    : $$$/Piwigo/API/CannotAddTag
+    ESPACES: 0 début, 1 fin
+
+  MEMBRE 2 : " to Piwigo - " -- ⬅️🔚🔗
+    BASE   : "to Piwigo"
+    CLÉ    : $$$/Piwigo/API/Piwigo
+    ESPACES: 1 début, 0 fin
+    SUFFIXE: " -"
+
+  [Ligne 3028] Pattern: value 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : value = 'multipart/form-data;boundary="' .. boundary .. '"'
+
+  MEMBRE 1 : "' .. boundary .. '" -- 🔗
+    BASE   : "' .. boundary .. '"
+    CLÉ    : $$$/Piwigo/API/Boundary
+
+  MEMBRE 2 : "multipart/form-data;boundary="" -- 🔗
+    BASE   : "multipart/form-data;boundary=""
+    CLÉ    : $$$/Piwigo/API/MultipartFormDataBoundary
+
+
+--------------------------------------------------------------------------------
+Fichier: PluginInfoDialogSections.lua
+Chaînes: 12 (12 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 79] Pattern: title
+  CHERCHER : "Plugin Updates"
+  BASE     : "Plugin Updates"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/PluginUpdates
+  REMPLACER: "Plugin Updates" → LOC "$$$/Piwigo/PluginInfoDialogSections/PluginUpdates=Plugin Updates"
+
+  [Ligne 83] Pattern: title -- ➡️
+  CHERCHER : "Current version: "
+  BASE     : "Current version:"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/CurrentVersion
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Current version: " → LOC "$$$/Piwigo/PluginInfoDialogSections/CurrentVersion=Current version:" .. " "
+
+  [Ligne 89] Pattern: title
+  CHERCHER : "updateStatus"
+  BASE     : "updateStatus"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/Updatestatus
+  REMPLACER: "updateStatus" → LOC "$$$/Piwigo/PluginInfoDialogSections/Updatestatus=updateStatus"
+
+  [Ligne 95] Pattern: title
+  CHERCHER : "Check for Updates"
+  BASE     : "Check for Updates"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/CheckUpdates
+  REMPLACER: "Check for Updates" → LOC "$$$/Piwigo/PluginInfoDialogSections/CheckUpdates=Check for Updates"
+
+  [Ligne 101] Pattern: title
+  CHERCHER : "Visit GitHub Repository"
+  BASE     : "Visit GitHub Repository"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/VisitGithubRepository
+  REMPLACER: "Visit GitHub Repository" → LOC "$$$/Piwigo/PluginInfoDialogSections/VisitGithubRepository=Visit GitHub Repository"
+
+  [Ligne 116] Pattern: title
+  CHERCHER : "Piwigo Publisher Plugin Logging"
+  BASE     : "Piwigo Publisher Plugin Logging"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/PiwigoPublisherPluginLogging
+  REMPLACER: "Piwigo Publisher Plugin Logging" → LOC "$$$/Piwigo/PluginInfoDialogSections/PiwigoPublisherPluginLogging=Piwigo Publisher Plugin Logging"
+
+  [Ligne 120] Pattern: value
+  CHERCHER : "debugEnabled"
+  BASE     : "debugEnabled"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/Debugenabled
+  REMPLACER: "debugEnabled" → LOC "$$$/Piwigo/PluginInfoDialogSections/Debugenabled=debugEnabled"
+
+  [Ligne 123] Pattern: title
+  CHERCHER : "Enable debug logging"
+  BASE     : "Enable debug logging"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/EnableDebugLogging
+  REMPLACER: "Enable debug logging" → LOC "$$$/Piwigo/PluginInfoDialogSections/EnableDebugLogging=Enable debug logging"
+
+  [Ligne 130] Pattern: value
+  CHERCHER : "debugToFile"
+  BASE     : "debugToFile"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/Debugtofile
+  REMPLACER: "debugToFile" → LOC "$$$/Piwigo/PluginInfoDialogSections/Debugtofile=debugToFile"
+
+  [Ligne 134] Pattern: title
+  CHERCHER : "Log to file instead of console"
+  BASE     : "Log to file instead of console"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/LogFileInsteadConsole
+  REMPLACER: "Log to file instead of console" → LOC "$$$/Piwigo/PluginInfoDialogSections/LogFileInsteadConsole=Log to file instead of console"
+
+  [Ligne 139] Pattern: title
+  CHERCHER : "Show logfile"
+  BASE     : "Show logfile"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/ShowLogfile
+  REMPLACER: "Show logfile" → LOC "$$$/Piwigo/PluginInfoDialogSections/ShowLogfile=Show logfile"
+
+  [Ligne 156] Pattern: title
+  CHERCHER : "Reset Plugin Preferences…"
+  BASE     : "Reset Plugin Preferences…"
+  CLÉ      : $$$/Piwigo/PluginInfoDialogSections/ResetPluginPreferences
+  REMPLACER: "Reset Plugin Preferences…" → LOC "$$$/Piwigo/PluginInfoDialogSections/ResetPluginPreferences=Reset Plugin Preferences…"
+
+
+--------------------------------------------------------------------------------
+Fichier: PublishDialogSections.lua
+Chaînes: 55 (52 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 62] Pattern: title
+  CHERCHER : "Piwigo Host Settings"
+  BASE     : "Piwigo Host Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoHostSettings
+  REMPLACER: "Piwigo Host Settings" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoHostSettings=Piwigo Host Settings"
+
+  [Ligne 78] Pattern: title
+  CHERCHER : "Piwigo Host:"
+  BASE     : "Piwigo Host:"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoHost
+  REMPLACER: "Piwigo Host:" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoHost=Piwigo Host:"
+
+  [Ligne 92] Pattern: LrDialogs.message -- ➡️
+  CHERCHER : "Entered URL was autocorrected to "
+  BASE     : "Entered URL was autocorrected to"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/EnteredUrlAutocorrected
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Entered URL was autocorrected to " → LOC "$$$/Piwigo/PublishDialogSections/EnteredUrlAutocorrected=Entered URL was autocorrected to" .. " "
+
+  [Ligne 99] Pattern: title
+  CHERCHER : "Check Connection"
+  BASE     : "Check Connection"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckConnection
+  REMPLACER: "Check Connection" → LOC "$$$/Piwigo/PublishDialogSections/CheckConnection=Check Connection"
+
+  [Ligne 105] Pattern: LrDialogs.message
+  CHERCHER : "Connection NOT successful"
+  BASE     : "Connection NOT successful"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/ConnectionSuccessful
+  REMPLACER: "Connection NOT successful" → LOC "$$$/Piwigo/PublishDialogSections/ConnectionSuccessful=Connection NOT successful"
+
+  [Ligne 121] Pattern: title
+  CHERCHER : "User Name:"
+  BASE     : "User Name:"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/UserName
+  REMPLACER: "User Name:" → LOC "$$$/Piwigo/PublishDialogSections/UserName=User Name:"
+
+  [Ligne 128] Pattern: value
+  CHERCHER : "userName"
+  BASE     : "userName"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Username
+  REMPLACER: "userName" → LOC "$$$/Piwigo/PublishDialogSections/Username=userName"
+
+  [Ligne 143] Pattern: title
+  CHERCHER : "Password:"
+  BASE     : "Password:"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Password
+  REMPLACER: "Password:" → LOC "$$$/Piwigo/PublishDialogSections/Password=Password:"
+
+  [Ligne 150] Pattern: value
+  CHERCHER : "userPW"
+  BASE     : "userPW"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Userpw
+  REMPLACER: "userPW" → LOC "$$$/Piwigo/PublishDialogSections/Userpw=userPW"
+
+  [Ligne 160] Pattern: title
+  CHERCHER : "ConStatus"
+  BASE     : "ConStatus"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Constatus
+  REMPLACER: "ConStatus" → LOC "$$$/Piwigo/PublishDialogSections/Constatus=ConStatus"
+
+  [Ligne 175] Pattern: title
+  CHERCHER : "Piwigo Publish Service Configuration and Settings"
+  BASE     : "Piwigo Publish Service Configuration and Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoPublishServiceConfiguration
+  REMPLACER: "Piwigo Publish Service Configuration and Settings" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoPublishServiceConfiguration=Piwigo Publish Service Configuration and Settings"
+
+  [Ligne 178] Pattern: title
+  CHERCHER : "Publish Service Set Up"
+  BASE     : "Publish Service Set Up"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PublishServiceSetUp
+  REMPLACER: "Publish Service Set Up" → LOC "$$$/Piwigo/PublishDialogSections/PublishServiceSetUp=Publish Service Set Up"
+
+  [Ligne 184] Pattern: title
+  CHERCHER : "Import Albums"
+  BASE     : "Import Albums"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/ImportAlbums
+  REMPLACER: "Import Albums" → LOC "$$$/Piwigo/PublishDialogSections/ImportAlbums=Import Albums"
+
+  [Ligne 188] Pattern: tooltip
+  CHERCHER : "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+  BASE     : "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/ClickFetchCurrentAlbum
+  REMPLACER: "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included" → LOC "$$$/Piwigo/PublishDialogSections/ClickFetchCurrentAlbum=Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+
+  [Ligne 190] Pattern: LrDialogs.confirm
+  CHERCHER : "Import Piwigo Albums"
+  BASE     : "Import Piwigo Albums"
+  CLÉ      : $$$/Piwigo/API/ImportPiwigoAlbums
+  REMPLACER: "Import Piwigo Albums" → LOC "$$$/Piwigo/API/ImportPiwigoAlbums=Import Piwigo Albums"
+
+  [Ligne 201] Pattern: title
+  CHERCHER : "Import existing albums from Piwigo"
+  BASE     : "Import existing albums from Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/ImportExistingAlbumsFrom
+  REMPLACER: "Import existing albums from Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/ImportExistingAlbumsFrom=Import existing albums from Piwigo"
+
+  [Ligne 206] Pattern: tooltip
+  CHERCHER : "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+  BASE     : "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/ClickFetchCurrentAlbum
+  REMPLACER: "Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included" → LOC "$$$/Piwigo/PublishDialogSections/ClickFetchCurrentAlbum=Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+
+  [Ligne 215] Pattern: title
+  CHERCHER : "Check and Link Piwigo Structure"
+  BASE     : "Check and Link Piwigo Structure"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure
+  REMPLACER: "Check and Link Piwigo Structure" → LOC "$$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure=Check and Link Piwigo Structure"
+
+  [Ligne 220] Pattern: tooltip
+  CHERCHER : "Check Piwigo album structure against local collection / set structure"
+  BASE     : "Check Piwigo album structure against local collection / set structure"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckPiwigoAlbumStructure
+  REMPLACER: "Check Piwigo album structure against local collection / set structure" → LOC "$$$/Piwigo/PublishDialogSections/CheckPiwigoAlbumStructure=Check Piwigo album structure against local collection / set structure"
+
+  [Ligne 222] Pattern: LrDialogs.confirm
+  CHERCHER : "Check / link Piwigo Structure"
+  BASE     : "Check / link Piwigo Structure"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure2
+  REMPLACER: "Check / link Piwigo Structure" → LOC "$$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure2=Check / link Piwigo Structure"
+
+  [Ligne 233] Pattern: title
+  CHERCHER : "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+  BASE     : "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoStructureCheckedAgainst
+  REMPLACER: "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoStructureCheckedAgainst=Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+
+  [Ligne 238] Pattern: tooltip
+  CHERCHER : "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+  BASE     : "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoStructureCheckedAgainst
+  REMPLACER: "Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoStructureCheckedAgainst=Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+
+  [Ligne 245] Pattern: title
+  CHERCHER : "Clone Existing Publish Service"
+  BASE     : "Clone Existing Publish Service"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CloneExistingPublishService
+  REMPLACER: "Clone Existing Publish Service" → LOC "$$$/Piwigo/PublishDialogSections/CloneExistingPublishService=Clone Existing Publish Service"
+
+  [Ligne 250] Pattern: tooltip
+  CHERCHER : "Clone existing publish service (collections/sets and links to Piwigo)"
+  BASE     : "Clone existing publish service (collections/sets and links to Piwigo)"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CloneExistingPublishService2
+  REMPLACER: "Clone existing publish service (collections/sets and links to Piwigo)" → LOC "$$$/Piwigo/PublishDialogSections/CloneExistingPublishService2=Clone existing publish service (collections/sets and links to Piwigo)"
+
+  [Ligne 258] Pattern: title
+  CHERCHER : "Collection/Set structure and images of selected Publish Service will be cloned to this one."
+  BASE     : "Collection/Set structure and images of selected Publish Service will be cloned to this one."
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CollectionSetStructureImages
+  REMPLACER: "Collection/Set structure and images of selected Publish Service will be cloned to this one." → LOC "$$$/Piwigo/PublishDialogSections/CollectionSetStructureImages=Collection/Set structure and images of selected Publish Service will be cloned to this one."
+
+  [Ligne 263] Pattern: tooltip
+  CHERCHER : "Selected Collection/Set structure and images of selected Publish Service will be cloned to this one."
+  BASE     : "Selected Collection/Set structure and images of selected Publish Service will be cloned to this one."
+  CLÉ      : $$$/Piwigo/PublishDialogSections/SelectedCollectionSetStructure
+  REMPLACER: "Selected Collection/Set structure and images of selected Publish Service will be cloned to this one." → LOC "$$$/Piwigo/PublishDialogSections/SelectedCollectionSetStructure=Selected Collection/Set structure and images of selected Publish Service will be cloned to this one."
+
+  [Ligne 271] Pattern: title
+  CHERCHER : "Create Special Collections"
+  BASE     : "Create Special Collections"
+  CLÉ      : $$$/Piwigo/API/CreateSpecialCollections
+  REMPLACER: "Create Special Collections" → LOC "$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections"
+
+  [Ligne 276] Pattern: tooltip
+  CHERCHER : "Create special publish collections for publish collection sets, allowing images to be published to Piwigo albums with sub-albums"
+  BASE     : "Create special publish collections for publish collection sets, allowing images to be published to Piwigo albums with sub-albums"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections
+  REMPLACER: "Create special publish collections for publish collection sets, allowing images to be published to Piwigo albums with sub-albums" → LOC "$$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections=Create special publish collections for publish collection sets, allowing images to be published to Piwigo albums with sub-albums"
+
+  [Ligne 278] Pattern: LrDialogs.confirm
+  CHERCHER : "Create Special Collections"
+  BASE     : "Create Special Collections"
+  CLÉ      : $$$/Piwigo/API/CreateSpecialCollections
+  REMPLACER: "Create Special Collections" → LOC "$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections"
+
+  [Ligne 289] Pattern: title
+  CHERCHER : "Create special publish collections to allow images to be published to albums with sub-albums on Piwigo"
+  BASE     : "Create special publish collections to allow images to be published to albums with sub-albums on Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections2
+  REMPLACER: "Create special publish collections to allow images to be published to albums with sub-albums on Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections2=Create special publish collections to allow images to be published to albums with sub-albums on Piwigo"
+
+  [Ligne 294] Pattern: tooltip
+  CHERCHER : "Create special collections to allow images to be published to Piwigo albums with sub-albums - which is not natively supported on LrC"
+  BASE     : "Create special collections to allow images to be published to Piwigo albums with sub-albums - which is not natively supported on LrC"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CreateSpecialCollectionsAllow
+  REMPLACER: "Create special collections to allow images to be published to Piwigo albums with sub-albums - which is not natively supported on LrC" → LOC "$$$/Piwigo/PublishDialogSections/CreateSpecialCollectionsAllow=Create special collections to allow images to be published to Piwigo albums with sub-albums - which is not natively supported on LrC"
+
+  [Ligne 302] Pattern: title
+  CHERCHER : "Metadata Settings"
+  BASE     : "Metadata Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/MetadataSettings
+  REMPLACER: "Metadata Settings" → LOC "$$$/Piwigo/PublishDialogSections/MetadataSettings=Metadata Settings"
+
+  [Ligne 310] Pattern: title -- ➡️
+  CHERCHER : "Title: "
+  BASE     : "Title:"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Title
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Title: " → LOC "$$$/Piwigo/PublishDialogSections/Title=Title:" .. " "
+
+  [Ligne 316] Pattern: value
+  CHERCHER : "mdTitle"
+  BASE     : "mdTitle"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Mdtitle
+  REMPLACER: "mdTitle" → LOC "$$$/Piwigo/PublishDialogSections/Mdtitle=mdTitle"
+
+  [Ligne 326] Pattern: title -- ➡️
+  CHERCHER : "Description: "
+  BASE     : "Description:"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Description
+  ESPACES  : 0 début, 1 fin
+  REMPLACER: "Description: " → LOC "$$$/Piwigo/PublishDialogSections/Description=Description:" .. " "
+
+  [Ligne 332] Pattern: value
+  CHERCHER : "mdDescription"
+  BASE     : "mdDescription"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Mddescription
+  REMPLACER: "mdDescription" → LOC "$$$/Piwigo/PublishDialogSections/Mddescription=mdDescription"
+
+  [Ligne 344] Pattern: title
+  CHERCHER : "Keyword Settings"
+  BASE     : "Keyword Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/KeywordSettings
+  REMPLACER: "Keyword Settings" → LOC "$$$/Piwigo/PublishDialogSections/KeywordSettings=Keyword Settings"
+
+  [Ligne 357] Pattern: title
+  CHERCHER : "Include Full Keyword Hierarchy"
+  BASE     : "Include Full Keyword Hierarchy"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/IncludeFullKeywordHierarchy
+  REMPLACER: "Include Full Keyword Hierarchy" → LOC "$$$/Piwigo/PublishDialogSections/IncludeFullKeywordHierarchy=Include Full Keyword Hierarchy"
+
+  [Ligne 358] Pattern: tooltip
+  CHERCHER : "If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+  BASE     : "If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckedAllKeywords
+  REMPLACER: "If checked, all keywords in a keyword hierarchy will be sent to Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/CheckedAllKeywords=If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+
+  [Ligne 359] Pattern: value
+  CHERCHER : "KwFullHierarchy"
+  BASE     : "KwFullHierarchy"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Kwfullhierarchy
+  REMPLACER: "KwFullHierarchy" → LOC "$$$/Piwigo/PublishDialogSections/Kwfullhierarchy=KwFullHierarchy"
+
+  [Ligne 374] Pattern: title
+  CHERCHER : "Include Keyword Synonyms"
+  BASE     : "Include Keyword Synonyms"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/IncludeKeywordSynonyms
+  REMPLACER: "Include Keyword Synonyms" → LOC "$$$/Piwigo/PublishDialogSections/IncludeKeywordSynonyms=Include Keyword Synonyms"
+
+  [Ligne 375] Pattern: tooltip
+  CHERCHER : "If checked, keyword synonyms will be sent to Piwigo"
+  BASE     : "If checked, keyword synonyms will be sent to Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckedKeywordSynonyms
+  REMPLACER: "If checked, keyword synonyms will be sent to Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/CheckedKeywordSynonyms=If checked, keyword synonyms will be sent to Piwigo"
+
+  [Ligne 376] Pattern: value
+  CHERCHER : "KwSynonyms"
+  BASE     : "KwSynonyms"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Kwsynonyms
+  REMPLACER: "KwSynonyms" → LOC "$$$/Piwigo/PublishDialogSections/Kwsynonyms=KwSynonyms"
+
+  [Ligne 382] Pattern: title
+  CHERCHER : "Other Settings"
+  BASE     : "Other Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/OtherSettings
+  REMPLACER: "Other Settings" → LOC "$$$/Piwigo/PublishDialogSections/OtherSettings=Other Settings"
+
+  [Ligne 398] Pattern: title
+  CHERCHER : "Synchronise Album Descriptions"
+  BASE     : "Synchronise Album Descriptions"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/SynchroniseAlbumDescriptions
+  REMPLACER: "Synchronise Album Descriptions" → LOC "$$$/Piwigo/PublishDialogSections/SynchroniseAlbumDescriptions=Synchronise Album Descriptions"
+
+  [Ligne 400] Pattern: tooltip
+  CHERCHER : "If checked, Album descriptions will be maintainable in Lightroom and sent to Piwigo"
+  BASE     : "If checked, Album descriptions will be maintainable in Lightroom and sent to Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckedAlbumDescriptions
+  REMPLACER: "If checked, Album descriptions will be maintainable in Lightroom and sent to Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/CheckedAlbumDescriptions=If checked, Album descriptions will be maintainable in Lightroom and sent to Piwigo"
+
+  [Ligne 401] Pattern: value
+  CHERCHER : "syncAlbumDescriptions"
+  BASE     : "syncAlbumDescriptions"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Syncalbumdescriptions
+  REMPLACER: "syncAlbumDescriptions" → LOC "$$$/Piwigo/PublishDialogSections/Syncalbumdescriptions=syncAlbumDescriptions"
+
+  [Ligne 414] Pattern: title
+  CHERCHER : "Synchronise comments as part of a Publish Process"
+  BASE     : "Synchronise comments as part of a Publish Process"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/SynchroniseCommentsPart
+  REMPLACER: "Synchronise comments as part of a Publish Process" → LOC "$$$/Piwigo/PublishDialogSections/SynchroniseCommentsPart=Synchronise comments as part of a Publish Process"
+
+  [Ligne 416] Pattern: tooltip
+  CHERCHER : "When checked, comments will be synchronised for all photos in a collection during a publish operation"
+  BASE     : "When checked, comments will be synchronised for all photos in a collection during a publish operation"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/WhenCheckedCommentsSynchronised
+  REMPLACER: "When checked, comments will be synchronised for all photos in a collection during a publish operation" → LOC "$$$/Piwigo/PublishDialogSections/WhenCheckedCommentsSynchronised=When checked, comments will be synchronised for all photos in a collection during a publish operation"
+
+  [Ligne 417] Pattern: value
+  CHERCHER : "syncCommentsPublish"
+  BASE     : "syncCommentsPublish"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Synccommentspublish
+  REMPLACER: "syncCommentsPublish" → LOC "$$$/Piwigo/PublishDialogSections/Synccommentspublish=syncCommentsPublish"
+
+  [Ligne 428] Pattern: title
+  CHERCHER : "Only include Published Photos"
+  BASE     : "Only include Published Photos"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/OnlyIncludePublishedPhotos
+  REMPLACER: "Only include Published Photos" → LOC "$$$/Piwigo/PublishDialogSections/OnlyIncludePublishedPhotos=Only include Published Photos"
+
+  [Ligne 431] Pattern: tooltip
+  CHERCHER : "When checked, only photos being published will have comments synchronised"
+  BASE     : "When checked, only photos being published will have comments synchronised"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/WhenCheckedOnlyPhotos
+  REMPLACER: "When checked, only photos being published will have comments synchronised" → LOC "$$$/Piwigo/PublishDialogSections/WhenCheckedOnlyPhotos=When checked, only photos being published will have comments synchronised"
+
+  [Ligne 432] Pattern: value
+  CHERCHER : "syncCommentsPubOnly"
+  BASE     : "syncCommentsPubOnly"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Synccommentspubonly
+  REMPLACER: "syncCommentsPubOnly" → LOC "$$$/Piwigo/PublishDialogSections/Synccommentspubonly=syncCommentsPubOnly"
+
+  [Ligne 460] Pattern: title
+  CHERCHER : "Piwigo Service View for Collection Settings"
+  BASE     : "Piwigo Service View for Collection Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/PiwigoServiceViewCollection
+  REMPLACER: "Piwigo Service View for Collection Settings" → LOC "$$$/Piwigo/PublishDialogSections/PiwigoServiceViewCollection=Piwigo Service View for Collection Settings"
+
+  [Ligne 464] Pattern: title
+  CHERCHER : "For entire Piwigo Publish Service"
+  BASE     : "For entire Piwigo Publish Service"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/EntirePiwigoPublishService
+  REMPLACER: "For entire Piwigo Publish Service" → LOC "$$$/Piwigo/PublishDialogSections/EntirePiwigoPublishService=For entire Piwigo Publish Service"
+
+
+--------------------------------------------------------------------------------
+Fichier: PublishTask.lua
+Chaînes: 82 (47 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 74] Pattern: title 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : title = "Publishing " .. nPhotos .. " photos to " .. propertyTable.host
+
+  MEMBRE 1 : "Publishing " -- ➡️🔗
+    BASE   : "Publishing"
+    CLÉ    : $$$/Piwigo/PublishTask/Publishing
+    ESPACES: 0 début, 1 fin
+
+  MEMBRE 2 : " photos to " -- ⬅️➡️🔗
+    BASE   : "photos to"
+    CLÉ    : $$$/Piwigo/PublishTask/Photos
+    ESPACES: 1 début, 1 fin
+
+  [Ligne 127] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("*** Missing Piwigo album ***", albumName .. ", Piwigo Cat ID " .. albumId .. " cr
+
+  MEMBRE 1 : "*** Missing Piwigo album ***" -- 🔗
+    BASE   : "*** Missing Piwigo album ***"
+    CLÉ    : $$$/Piwigo/PublishTask/MissingPiwigoAlbum
+
+  MEMBRE 2 : ", Piwigo Cat ID " -- ➡️🔗
+    BASE   : ", Piwigo Cat ID"
+    CLÉ    : $$$/Piwigo/PublishTask/PiwigoCatId
+    ESPACES: 0 début, 1 fin
+
+  [Ligne 279] Pattern: LrDialogs.message
+  CHERCHER : "PiwigoAPI:updateMetadata - cannot get taglist from Piwigo"
+  BASE     : "PiwigoAPI:updateMetadata - cannot get taglist from Piwigo"
+  CLÉ      : $$$/Piwigo/PublishTask/PiwigoapiUpdatemetadataCannotGet
+  REMPLACER: "PiwigoAPI:updateMetadata - cannot get taglist from Piwigo" → LOC "$$$/Piwigo/PublishTask/PiwigoapiUpdatemetadataCannotGet=PiwigoAPI:updateMetadata - cannot get taglist from Piwigo"
+
+  [Ligne 283] Pattern: LrDialogs.message -- 🔚
+  CHERCHER : "Unable to set metadata for uploaded photo - "
+  BASE     : "Unable to set metadata for uploaded photo"
+  CLÉ      : $$$/Piwigo/PublishTask/UnableSetMetadataUploaded
+  SUFFIXE  : " -"
+  REMPLACER: "Unable to set metadata for uploaded photo - " → LOC "$$$/Piwigo/PublishTask/UnableSetMetadataUploaded=Unable to set metadata for uploaded photo" .. " -"
+
+  [Ligne 797] Pattern: title
+  CHERCHER : "Long Edge"
+  BASE     : "Long Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/LongEdge
+  REMPLACER: "Long Edge" → LOC "$$$/Piwigo/PublishTask/LongEdge=Long Edge"
+
+  [Ligne 797] Pattern: title
+  CHERCHER : "Long Edge"
+  BASE     : "Long Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/LongEdge
+  REMPLACER: "Long Edge" → LOC "$$$/Piwigo/PublishTask/LongEdge=Long Edge"
+
+  [Ligne 798] Pattern: title
+  CHERCHER : "Short Edge"
+  BASE     : "Short Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/ShortEdge
+  REMPLACER: "Short Edge" → LOC "$$$/Piwigo/PublishTask/ShortEdge=Short Edge"
+
+  [Ligne 798] Pattern: title
+  CHERCHER : "Short Edge"
+  BASE     : "Short Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/ShortEdge
+  REMPLACER: "Short Edge" → LOC "$$$/Piwigo/PublishTask/ShortEdge=Short Edge"
+
+  [Ligne 799] Pattern: title
+  CHERCHER : "Dimensions"
+  BASE     : "Dimensions"
+  CLÉ      : $$$/Piwigo/PublishTask/Dimensions
+  REMPLACER: "Dimensions" → LOC "$$$/Piwigo/PublishTask/Dimensions=Dimensions"
+
+  [Ligne 799] Pattern: title
+  CHERCHER : "Dimensions"
+  BASE     : "Dimensions"
+  CLÉ      : $$$/Piwigo/PublishTask/Dimensions
+  REMPLACER: "Dimensions" → LOC "$$$/Piwigo/PublishTask/Dimensions=Dimensions"
+
+  [Ligne 800] Pattern: title
+  CHERCHER : "Megapixels"
+  BASE     : "Megapixels"
+  CLÉ      : $$$/Piwigo/PublishTask/Megapixels
+  REMPLACER: "Megapixels" → LOC "$$$/Piwigo/PublishTask/Megapixels=Megapixels"
+
+  [Ligne 800] Pattern: title
+  CHERCHER : "MegaPixels"
+  BASE     : "MegaPixels"
+  CLÉ      : $$$/Piwigo/PublishTask/Megapixels2
+  REMPLACER: "MegaPixels" → LOC "$$$/Piwigo/PublishTask/Megapixels2=MegaPixels"
+
+  [Ligne 801] Pattern: title
+  CHERCHER : "Percent"
+  BASE     : "Percent"
+  CLÉ      : $$$/Piwigo/PublishTask/Percent
+  REMPLACER: "Percent" → LOC "$$$/Piwigo/PublishTask/Percent=Percent"
+
+  [Ligne 801] Pattern: title
+  CHERCHER : "Percent"
+  BASE     : "Percent"
+  CLÉ      : $$$/Piwigo/PublishTask/Percent
+  REMPLACER: "Percent" → LOC "$$$/Piwigo/PublishTask/Percent=Percent"
+
+  [Ligne 804] Pattern: title
+  CHERCHER : "All Metadata"
+  BASE     : "All Metadata"
+  CLÉ      : $$$/Piwigo/PublishTask/AllMetadata
+  REMPLACER: "All Metadata" → LOC "$$$/Piwigo/PublishTask/AllMetadata=All Metadata"
+
+  [Ligne 804] Pattern: title
+  CHERCHER : "All Metadata"
+  BASE     : "All Metadata"
+  CLÉ      : $$$/Piwigo/PublishTask/AllMetadata
+  REMPLACER: "All Metadata" → LOC "$$$/Piwigo/PublishTask/AllMetadata=All Metadata"
+
+  [Ligne 805] Pattern: title
+  CHERCHER : "Copyright only"
+  BASE     : "Copyright only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightOnly
+  REMPLACER: "Copyright only" → LOC "$$$/Piwigo/PublishTask/CopyrightOnly=Copyright only"
+
+  [Ligne 805] Pattern: title
+  CHERCHER : "Copyright Only"
+  BASE     : "Copyright Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightOnly2
+  REMPLACER: "Copyright Only" → LOC "$$$/Piwigo/PublishTask/CopyrightOnly2=Copyright Only"
+
+  [Ligne 806] Pattern: title
+  CHERCHER : "Copyright & Contact Info Only"
+  BASE     : "Copyright & Contact Info Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightContactInfoOnly
+  REMPLACER: "Copyright & Contact Info Only" → LOC "$$$/Piwigo/PublishTask/CopyrightContactInfoOnly=Copyright & Contact Info Only"
+
+  [Ligne 806] Pattern: title
+  CHERCHER : "Copyright & Contact Info Only"
+  BASE     : "Copyright & Contact Info Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightContactInfoOnly
+  REMPLACER: "Copyright & Contact Info Only" → LOC "$$$/Piwigo/PublishTask/CopyrightContactInfoOnly=Copyright & Contact Info Only"
+
+  [Ligne 807] Pattern: title
+  CHERCHER : "All Except Camera Raw Info"
+  BASE     : "All Except Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraRaw
+  REMPLACER: "All Except Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraRaw=All Except Camera Raw Info"
+
+  [Ligne 807] Pattern: title
+  CHERCHER : "All Except Camera Raw Info"
+  BASE     : "All Except Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraRaw
+  REMPLACER: "All Except Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraRaw=All Except Camera Raw Info"
+
+  [Ligne 808] Pattern: title
+  CHERCHER : "All Except Camera & Camera Raw Info"
+  BASE     : "All Except Camera & Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraCamera
+  REMPLACER: "All Except Camera & Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraCamera=All Except Camera & Camera Raw Info"
+
+  [Ligne 808] Pattern: title
+  CHERCHER : "All Except Camera & Camera Raw Info"
+  BASE     : "All Except Camera & Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraCamera
+  REMPLACER: "All Except Camera & Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraCamera=All Except Camera & Camera Raw Info"
+
+  [Ligne 812] Pattern: title
+  CHERCHER : "Piwigo Album Settings"
+  BASE     : "Piwigo Album Settings"
+  CLÉ      : $$$/Piwigo/PublishTask/PiwigoAlbumSettings
+  REMPLACER: "Piwigo Album Settings" → LOC "$$$/Piwigo/PublishTask/PiwigoAlbumSettings=Piwigo Album Settings"
+
+  [Ligne 823] Pattern: title
+  CHERCHER : "Album Description:"
+  BASE     : "Album Description:"
+  CLÉ      : $$$/Piwigo/PublishTask/AlbumDescription
+  REMPLACER: "Album Description:" → LOC "$$$/Piwigo/PublishTask/AlbumDescription=Album Description:"
+
+  [Ligne 823] Pattern: title
+  CHERCHER : "<system>"
+  BASE     : "<system>"
+  CLÉ      : $$$/Piwigo/PublishTask/System
+  REMPLACER: "<system>" → LOC "$$$/Piwigo/PublishTask/System=<system>"
+
+  [Ligne 830] Pattern: value
+  CHERCHER : "albumDescription"
+  BASE     : "albumDescription"
+  CLÉ      : $$$/Piwigo/PublishTask/Albumdescription
+  REMPLACER: "albumDescription" → LOC "$$$/Piwigo/PublishTask/Albumdescription=albumDescription"
+
+  [Ligne 840] Pattern: title
+  CHERCHER : "Album is Private"
+  BASE     : "Album is Private"
+  CLÉ      : $$$/Piwigo/PublishTask/AlbumPrivate
+  REMPLACER: "Album is Private" → LOC "$$$/Piwigo/PublishTask/AlbumPrivate=Album is Private"
+
+  [Ligne 841] Pattern: tooltip
+  CHERCHER : "If checked, this album will be private on Piwigo"
+  BASE     : "If checked, this album will be private on Piwigo"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedAlbum
+  REMPLACER: "If checked, this album will be private on Piwigo" → LOC "$$$/Piwigo/PublishTask/CheckedAlbum=If checked, this album will be private on Piwigo"
+
+  [Ligne 842] Pattern: value
+  CHERCHER : "albumPrivate"
+  BASE     : "albumPrivate"
+  CLÉ      : $$$/Piwigo/PublishTask/Albumprivate
+  REMPLACER: "albumPrivate" → LOC "$$$/Piwigo/PublishTask/Albumprivate=albumPrivate"
+
+  [Ligne 850] Pattern: title
+  CHERCHER : "Custom Publish Settings (Overrides defaults set in Publish Settings)"
+  BASE     : "Custom Publish Settings (Overrides defaults set in Publish Settings)"
+  CLÉ      : $$$/Piwigo/PublishTask/CustomPublishSettingsOverrides
+  REMPLACER: "Custom Publish Settings (Overrides defaults set in Publish Settings)" → LOC "$$$/Piwigo/PublishTask/CustomPublishSettingsOverrides=Custom Publish Settings (Overrides defaults set in Publish Settings)"
+
+  [Ligne 861] Pattern: title
+  CHERCHER : "Use custom settings for this album"
+  BASE     : "Use custom settings for this album"
+  CLÉ      : $$$/Piwigo/PublishTask/UseCustomSettingsAlbum
+  REMPLACER: "Use custom settings for this album" → LOC "$$$/Piwigo/PublishTask/UseCustomSettingsAlbum=Use custom settings for this album"
+
+  [Ligne 862] Pattern: tooltip
+  CHERCHER : "If checked, these settings will replace the defaults set in Publish Settings"
+  BASE     : "If checked, these settings will replace the defaults set in Publish Settings"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedTheseSettingsReplace
+  REMPLACER: "If checked, these settings will replace the defaults set in Publish Settings" → LOC "$$$/Piwigo/PublishTask/CheckedTheseSettingsReplace=If checked, these settings will replace the defaults set in Publish Settings"
+
+  [Ligne 863] Pattern: value
+  CHERCHER : "enableCustom"
+  BASE     : "enableCustom"
+  CLÉ      : $$$/Piwigo/PublishTask/Enablecustom
+  REMPLACER: "enableCustom" → LOC "$$$/Piwigo/PublishTask/Enablecustom=enableCustom"
+
+  [Ligne 868] Pattern: title
+  CHERCHER : "Export Settings"
+  BASE     : "Export Settings"
+  CLÉ      : $$$/Piwigo/PublishTask/ExportSettings
+  REMPLACER: "Export Settings" → LOC "$$$/Piwigo/PublishTask/ExportSettings=Export Settings"
+
+  [Ligne 877] Pattern: title
+  CHERCHER : "Resize Image"
+  BASE     : "Resize Image"
+  CLÉ      : $$$/Piwigo/PublishTask/ResizeImage
+  REMPLACER: "Resize Image" → LOC "$$$/Piwigo/PublishTask/ResizeImage=Resize Image"
+
+  [Ligne 878] Pattern: tooltip
+  CHERCHER : "If checked, published image will be resized per these settings"
+  BASE     : "If checked, published image will be resized per these settings"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedPublishedImage
+  REMPLACER: "If checked, published image will be resized per these settings" → LOC "$$$/Piwigo/PublishTask/CheckedPublishedImage=If checked, published image will be resized per these settings"
+
+  [Ligne 879] Pattern: value
+  CHERCHER : "reSize"
+  BASE     : "reSize"
+  CLÉ      : $$$/Piwigo/PublishTask/Resize
+  REMPLACER: "reSize" → LOC "$$$/Piwigo/PublishTask/Resize=reSize"
+
+  [Ligne 882] Pattern: title
+  CHERCHER : "Use :"
+  BASE     : "Use :"
+  CLÉ      : $$$/Piwigo/PublishTask/Use
+  REMPLACER: "Use :" → LOC "$$$/Piwigo/PublishTask/Use=Use :"
+
+  [Ligne 888] Pattern: value
+  CHERCHER : "reSizeParam"
+  BASE     : "reSizeParam"
+  CLÉ      : $$$/Piwigo/PublishTask/Resizeparam
+  REMPLACER: "reSizeParam" → LOC "$$$/Piwigo/PublishTask/Resizeparam=reSizeParam"
+
+  [Ligne 893] Pattern: title
+  CHERCHER : "Allow Enlarge Image"
+  BASE     : "Allow Enlarge Image"
+  CLÉ      : $$$/Piwigo/PublishTask/AllowEnlargeImage
+  REMPLACER: "Allow Enlarge Image" → LOC "$$$/Piwigo/PublishTask/AllowEnlargeImage=Allow Enlarge Image"
+
+  [Ligne 894] Pattern: tooltip
+  CHERCHER : "If checked, published image will be enlarged if necessary"
+  BASE     : "If checked, published image will be enlarged if necessary"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedPublishedImage2
+  REMPLACER: "If checked, published image will be enlarged if necessary" → LOC "$$$/Piwigo/PublishTask/CheckedPublishedImage2=If checked, published image will be enlarged if necessary"
+
+  [Ligne 895] Pattern: value
+  CHERCHER : "reSizeEnlarge"
+  BASE     : "reSizeEnlarge"
+  CLÉ      : $$$/Piwigo/PublishTask/Resizeenlarge
+  REMPLACER: "reSizeEnlarge" → LOC "$$$/Piwigo/PublishTask/Resizeenlarge=reSizeEnlarge"
+
+  [Ligne 905] Pattern: title
+  CHERCHER : "Metadata Settings"
+  BASE     : "Metadata Settings"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/MetadataSettings
+  REMPLACER: "Metadata Settings" → LOC "$$$/Piwigo/PublishDialogSections/MetadataSettings=Metadata Settings"
+
+  [Ligne 911] Pattern: title
+  CHERCHER : "Include Full Keyword Hierarchy"
+  BASE     : "Include Full Keyword Hierarchy"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/IncludeFullKeywordHierarchy
+  REMPLACER: "Include Full Keyword Hierarchy" → LOC "$$$/Piwigo/PublishDialogSections/IncludeFullKeywordHierarchy=Include Full Keyword Hierarchy"
+
+  [Ligne 912] Pattern: tooltip
+  CHERCHER : "If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+  BASE     : "If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/CheckedAllKeywords
+  REMPLACER: "If checked, all keywords in a keyword hierarchy will be sent to Piwigo" → LOC "$$$/Piwigo/PublishDialogSections/CheckedAllKeywords=If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+
+  [Ligne 913] Pattern: value
+  CHERCHER : "KwFullHierarchy"
+  BASE     : "KwFullHierarchy"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Kwfullhierarchy
+  REMPLACER: "KwFullHierarchy" → LOC "$$$/Piwigo/PublishDialogSections/Kwfullhierarchy=KwFullHierarchy"
+
+  [Ligne 915] Pattern: title
+  CHERCHER : "Include Keywords Synonyms"
+  BASE     : "Include Keywords Synonyms"
+  CLÉ      : $$$/Piwigo/PublishTask/IncludeKeywordsSynonyms
+  REMPLACER: "Include Keywords Synonyms" → LOC "$$$/Piwigo/PublishTask/IncludeKeywordsSynonyms=Include Keywords Synonyms"
+
+  [Ligne 916] Pattern: tooltip
+  CHERCHER : "If checked, keywords synonyms will be sent to Piwigo"
+  BASE     : "If checked, keywords synonyms will be sent to Piwigo"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedKeywordsSynonyms
+  REMPLACER: "If checked, keywords synonyms will be sent to Piwigo" → LOC "$$$/Piwigo/PublishTask/CheckedKeywordsSynonyms=If checked, keywords synonyms will be sent to Piwigo"
+
+  [Ligne 917] Pattern: value
+  CHERCHER : "KwSynonyms"
+  BASE     : "KwSynonyms"
+  CLÉ      : $$$/Piwigo/PublishDialogSections/Kwsynonyms
+  REMPLACER: "KwSynonyms" → LOC "$$$/Piwigo/PublishDialogSections/Kwsynonyms=KwSynonyms"
+
+  [Ligne 1089] Pattern: title
+  CHERCHER : "Long Edge"
+  BASE     : "Long Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/LongEdge
+  REMPLACER: "Long Edge" → LOC "$$$/Piwigo/PublishTask/LongEdge=Long Edge"
+
+  [Ligne 1089] Pattern: title
+  CHERCHER : "Long Edge"
+  BASE     : "Long Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/LongEdge
+  REMPLACER: "Long Edge" → LOC "$$$/Piwigo/PublishTask/LongEdge=Long Edge"
+
+  [Ligne 1090] Pattern: title
+  CHERCHER : "Short Edge"
+  BASE     : "Short Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/ShortEdge
+  REMPLACER: "Short Edge" → LOC "$$$/Piwigo/PublishTask/ShortEdge=Short Edge"
+
+  [Ligne 1090] Pattern: title
+  CHERCHER : "Short Edge"
+  BASE     : "Short Edge"
+  CLÉ      : $$$/Piwigo/PublishTask/ShortEdge
+  REMPLACER: "Short Edge" → LOC "$$$/Piwigo/PublishTask/ShortEdge=Short Edge"
+
+  [Ligne 1091] Pattern: title
+  CHERCHER : "Dimensions"
+  BASE     : "Dimensions"
+  CLÉ      : $$$/Piwigo/PublishTask/Dimensions
+  REMPLACER: "Dimensions" → LOC "$$$/Piwigo/PublishTask/Dimensions=Dimensions"
+
+  [Ligne 1091] Pattern: title
+  CHERCHER : "Dimensions"
+  BASE     : "Dimensions"
+  CLÉ      : $$$/Piwigo/PublishTask/Dimensions
+  REMPLACER: "Dimensions" → LOC "$$$/Piwigo/PublishTask/Dimensions=Dimensions"
+
+  [Ligne 1092] Pattern: title
+  CHERCHER : "Megapixels"
+  BASE     : "Megapixels"
+  CLÉ      : $$$/Piwigo/PublishTask/Megapixels
+  REMPLACER: "Megapixels" → LOC "$$$/Piwigo/PublishTask/Megapixels=Megapixels"
+
+  [Ligne 1092] Pattern: title
+  CHERCHER : "MegaPixels"
+  BASE     : "MegaPixels"
+  CLÉ      : $$$/Piwigo/PublishTask/Megapixels2
+  REMPLACER: "MegaPixels" → LOC "$$$/Piwigo/PublishTask/Megapixels2=MegaPixels"
+
+  [Ligne 1093] Pattern: title
+  CHERCHER : "Percent"
+  BASE     : "Percent"
+  CLÉ      : $$$/Piwigo/PublishTask/Percent
+  REMPLACER: "Percent" → LOC "$$$/Piwigo/PublishTask/Percent=Percent"
+
+  [Ligne 1093] Pattern: title
+  CHERCHER : "Percent"
+  BASE     : "Percent"
+  CLÉ      : $$$/Piwigo/PublishTask/Percent
+  REMPLACER: "Percent" → LOC "$$$/Piwigo/PublishTask/Percent=Percent"
+
+  [Ligne 1096] Pattern: title
+  CHERCHER : "All Metadata"
+  BASE     : "All Metadata"
+  CLÉ      : $$$/Piwigo/PublishTask/AllMetadata
+  REMPLACER: "All Metadata" → LOC "$$$/Piwigo/PublishTask/AllMetadata=All Metadata"
+
+  [Ligne 1096] Pattern: title
+  CHERCHER : "All Metadata"
+  BASE     : "All Metadata"
+  CLÉ      : $$$/Piwigo/PublishTask/AllMetadata
+  REMPLACER: "All Metadata" → LOC "$$$/Piwigo/PublishTask/AllMetadata=All Metadata"
+
+  [Ligne 1097] Pattern: title
+  CHERCHER : "Copyright only"
+  BASE     : "Copyright only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightOnly
+  REMPLACER: "Copyright only" → LOC "$$$/Piwigo/PublishTask/CopyrightOnly=Copyright only"
+
+  [Ligne 1097] Pattern: title
+  CHERCHER : "Copyright Only"
+  BASE     : "Copyright Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightOnly2
+  REMPLACER: "Copyright Only" → LOC "$$$/Piwigo/PublishTask/CopyrightOnly2=Copyright Only"
+
+  [Ligne 1098] Pattern: title
+  CHERCHER : "Copyright & Contact Info Only"
+  BASE     : "Copyright & Contact Info Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightContactInfoOnly
+  REMPLACER: "Copyright & Contact Info Only" → LOC "$$$/Piwigo/PublishTask/CopyrightContactInfoOnly=Copyright & Contact Info Only"
+
+  [Ligne 1098] Pattern: title
+  CHERCHER : "Copyright & Contact Info Only"
+  BASE     : "Copyright & Contact Info Only"
+  CLÉ      : $$$/Piwigo/PublishTask/CopyrightContactInfoOnly
+  REMPLACER: "Copyright & Contact Info Only" → LOC "$$$/Piwigo/PublishTask/CopyrightContactInfoOnly=Copyright & Contact Info Only"
+
+  [Ligne 1099] Pattern: title
+  CHERCHER : "All Except Camera Raw Info"
+  BASE     : "All Except Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraRaw
+  REMPLACER: "All Except Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraRaw=All Except Camera Raw Info"
+
+  [Ligne 1099] Pattern: title
+  CHERCHER : "All Except Camera Raw Info"
+  BASE     : "All Except Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraRaw
+  REMPLACER: "All Except Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraRaw=All Except Camera Raw Info"
+
+  [Ligne 1100] Pattern: title
+  CHERCHER : "All Except Camera & Camera Raw Info"
+  BASE     : "All Except Camera & Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraCamera
+  REMPLACER: "All Except Camera & Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraCamera=All Except Camera & Camera Raw Info"
+
+  [Ligne 1100] Pattern: title
+  CHERCHER : "All Except Camera & Camera Raw Info"
+  BASE     : "All Except Camera & Camera Raw Info"
+  CLÉ      : $$$/Piwigo/PublishTask/AllExceptCameraCamera
+  REMPLACER: "All Except Camera & Camera Raw Info" → LOC "$$$/Piwigo/PublishTask/AllExceptCameraCamera=All Except Camera & Camera Raw Info"
+
+  [Ligne 1104] Pattern: title
+  CHERCHER : "Piwigo Album Settings"
+  BASE     : "Piwigo Album Settings"
+  CLÉ      : $$$/Piwigo/PublishTask/PiwigoAlbumSettings
+  REMPLACER: "Piwigo Album Settings" → LOC "$$$/Piwigo/PublishTask/PiwigoAlbumSettings=Piwigo Album Settings"
+
+  [Ligne 1115] Pattern: title
+  CHERCHER : "Album Description:"
+  BASE     : "Album Description:"
+  CLÉ      : $$$/Piwigo/PublishTask/AlbumDescription
+  REMPLACER: "Album Description:" → LOC "$$$/Piwigo/PublishTask/AlbumDescription=Album Description:"
+
+  [Ligne 1115] Pattern: title
+  CHERCHER : "<system>"
+  BASE     : "<system>"
+  CLÉ      : $$$/Piwigo/PublishTask/System
+  REMPLACER: "<system>" → LOC "$$$/Piwigo/PublishTask/System=<system>"
+
+  [Ligne 1121] Pattern: value
+  CHERCHER : "albumDescription"
+  BASE     : "albumDescription"
+  CLÉ      : $$$/Piwigo/PublishTask/Albumdescription
+  REMPLACER: "albumDescription" → LOC "$$$/Piwigo/PublishTask/Albumdescription=albumDescription"
+
+  [Ligne 1131] Pattern: title
+  CHERCHER : "Album is Private"
+  BASE     : "Album is Private"
+  CLÉ      : $$$/Piwigo/PublishTask/AlbumPrivate
+  REMPLACER: "Album is Private" → LOC "$$$/Piwigo/PublishTask/AlbumPrivate=Album is Private"
+
+  [Ligne 1132] Pattern: tooltip
+  CHERCHER : "If checked, this album will be private on Piwigo"
+  BASE     : "If checked, this album will be private on Piwigo"
+  CLÉ      : $$$/Piwigo/PublishTask/CheckedAlbum
+  REMPLACER: "If checked, this album will be private on Piwigo" → LOC "$$$/Piwigo/PublishTask/CheckedAlbum=If checked, this album will be private on Piwigo"
+
+  [Ligne 1133] Pattern: value
+  CHERCHER : "albumPrivate"
+  BASE     : "albumPrivate"
+  CLÉ      : $$$/Piwigo/PublishTask/Albumprivate
+  REMPLACER: "albumPrivate" → LOC "$$$/Piwigo/PublishTask/Albumprivate=albumPrivate"
+
+  [Ligne 1442] Pattern: LrDialogs.message
+  CHERCHER : "Delete Album"
+  BASE     : "Delete Album"
+  CLÉ      : $$$/Piwigo/PublishTask/DeleteAlbum
+  REMPLACER: "Delete Album" → LOC "$$$/Piwigo/PublishTask/DeleteAlbum=Delete Album"
+
+  [Ligne 1442] Pattern: LrDialogs.message
+  CHERCHER : "This collection has no associated Piwigo album to delete."
+  BASE     : "This collection has no associated Piwigo album to delete."
+  CLÉ      : $$$/Piwigo/PublishTask/CollectionNoAssociatedPiwigo
+  REMPLACER: "This collection has no associated Piwigo album to delete." → LOC "$$$/Piwigo/PublishTask/CollectionNoAssociatedPiwigo=This collection has no associated Piwigo album to delete."
+
+
+--------------------------------------------------------------------------------
+Fichier: Tagset.lua
+Chaînes: 3 (3 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 25] Pattern: existing_loc
+  CHERCHER : "Piwigo Publisher Metadata"
+  BASE     : "Piwigo Publisher Metadata"
+  CLÉ      : $$$/FionaBoston/Title
+  REMPLACER: 
+
+  [Ligne 35] Pattern: label
+  CHERCHER : "Most Recent Upload"
+  BASE     : "Most Recent Upload"
+  CLÉ      : $$$/Piwigo/Tagset/MostRecentUpload
+  REMPLACER: "Most Recent Upload" → LOC "$$$/Piwigo/Tagset/MostRecentUpload=Most Recent Upload"
+
+  [Ligne 35] Pattern: label
+  CHERCHER : "com.adobe.label"
+  BASE     : "com.adobe.label"
+  CLÉ      : $$$/Piwigo/Tagset/ComAdobeLabel
+  REMPLACER: "com.adobe.label" → LOC "$$$/Piwigo/Tagset/ComAdobeLabel=com.adobe.label"
+
+
+--------------------------------------------------------------------------------
+Fichier: UIHelpers.lua
+Chaînes: 2 (2 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 45] Pattern: title
+  CHERCHER : "Piwigo Publisher Plugin"
+  BASE     : "Piwigo Publisher Plugin"
+  CLÉ      : $$$/Piwigo/UIHelpers/PiwigoPublisherPlugin
+  REMPLACER: "Piwigo Publisher Plugin" → LOC "$$$/Piwigo/UIHelpers/PiwigoPublisherPlugin=Piwigo Publisher Plugin"
+
+  [Ligne 54] Pattern: title
+  CHERCHER : "Plugin Version"
+  BASE     : "Plugin Version"
+  CLÉ      : $$$/Piwigo/UIHelpers/PluginVersion
+  REMPLACER: "Plugin Version" → LOC "$$$/Piwigo/UIHelpers/PluginVersion=Plugin Version"
+
+
+--------------------------------------------------------------------------------
+Fichier: UpdateChecker.lua
+Chaînes: 3 (3 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 136] Pattern: value
+  CHERCHER : "Accept"
+  BASE     : "Accept"
+  CLÉ      : $$$/Piwigo/UpdateChecker/Accept
+  REMPLACER: "Accept" → LOC "$$$/Piwigo/UpdateChecker/Accept=Accept"
+
+  [Ligne 137] Pattern: value
+  CHERCHER : "User-Agent"
+  BASE     : "User-Agent"
+  CLÉ      : $$$/Piwigo/UpdateChecker/UserAgent
+  REMPLACER: "User-Agent" → LOC "$$$/Piwigo/UpdateChecker/UserAgent=User-Agent"
+
+  [Ligne 137] Pattern: value
+  CHERCHER : "PiwigoPublish-Lightroom-Plugin"
+  BASE     : "PiwigoPublish-Lightroom-Plugin"
+  CLÉ      : $$$/Piwigo/UpdateChecker/PiwigopublishLightroomPlugin
+  REMPLACER: "PiwigoPublish-Lightroom-Plugin" → LOC "$$$/Piwigo/UpdateChecker/PiwigopublishLightroomPlugin=PiwigoPublish-Lightroom-Plugin"
+
+
+--------------------------------------------------------------------------------
+Fichier: utils.lua
+Chaînes: 2 (2 clés uniques)
+--------------------------------------------------------------------------------
+
+  [Ligne 1204] Pattern: LrDialogs.message 🔗 CHAÎNE CONCATÉNÉE (2 membres)
+  LIGNE    : LrDialogs.message("Piwigo Publisher is busy. Please try " .. displayFunction .. " later.")
+
+  MEMBRE 1 : "Piwigo Publisher is busy. Please try " -- ➡️🔗
+    BASE   : "Piwigo Publisher is busy. Please try"
+    CLÉ    : $$$/Piwigo/utils/PiwigoPublisherBusyPlease
+    ESPACES: 0 début, 1 fin
+
+  MEMBRE 2 : " later." -- ⬅️🔗
+    BASE   : "later."
+    CLÉ    : $$$/Piwigo/utils/Later
+    ESPACES: 1 début, 0 fin
+
+================================================================================
+CHAÎNES AVEC ESPACES OU SUFFIXES
+================================================================================
+
+Ces chaînes nécessitent une réinjection des espaces/suffixes.
+
+  1.  $$$/Piwigo/API/Boundary
+     Original: "' .. boundary .. '"
+     Base: "' .. boundary .. '"
+     Fichier: PiwigoAPI.lua:3028
+
+  2. 🔚 $$$/Piwigo/API/CannotAddNewCategory
+     Original: "Cannot add new category to Piwigo - "
+     Base: "Cannot add new category to Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1799
+
+  3. ➡️ $$$/Piwigo/API/CannotAddTag
+     Original: "Cannot add tag "
+     Base: "Cannot add tag"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:2921
+
+  4. 🔚 $$$/Piwigo/API/CannotGetCategoriesFrom
+     Original: "Cannot get categories from Piwigo - "
+     Base: "Cannot get categories from Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1638
+
+  5. 🔚 $$$/Piwigo/API/CannotGetCommentsInformation2
+     Original: "Cannot get comments information from  Piwigo - "
+     Base: "Cannot get comments information from  Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1471
+
+  6. 🔚 $$$/Piwigo/API/CannotGetHostInformation
+     Original: "Cannot get host information from  Piwigo - "
+     Base: "Cannot get host information from  Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1423
+
+  7. 🔚 $$$/Piwigo/API/CannotGetUserStatus
+     Original: "Cannot get user status from Piwigo - "
+     Base: "Cannot get user status from Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1416
+
+  8.  $$$/Piwigo/API/CannotLogPiwigo
+     Original: "Cannot log in to Piwigo"
+     Base: "Cannot log in to Piwigo"
+     Fichier: PiwigoAPI.lua:1333
+
+  9. 🔚 $$$/Piwigo/API/CannotUpload
+     Original: "Cannot upload - "
+     Base: "Cannot upload"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:2293
+
+  10. 🔚 $$$/Piwigo/API/CreateSpecialCollections
+     Original: "Create Special Collections..."
+     Base: "Create Special Collections"
+     Suffixe: "..."
+     Fichier: PiwigoAPI.lua:2674
+
+  11. ➡️ $$$/Piwigo/API/FailedCreateSpecialCollection
+     Original: "Failed to create special collection for "
+     Base: "Failed to create special collection for"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:2690
+
+  12. 🔚 $$$/Piwigo/API/ImportAlbumStructure
+     Original: "Import album structure..."
+     Base: "Import album structure"
+     Suffixe: "..."
+     Fichier: PiwigoAPI.lua:1533
+
+  13.  $$$/Piwigo/API/MultipartFormDataBoundary
+     Original: "multipart/form-data;boundary=""
+     Base: "multipart/form-data;boundary=""
+     Fichier: PiwigoAPI.lua:3028
+
+  14. ⬅️🔚 $$$/Piwigo/API/Piwigo
+     Original: " to Piwigo - "
+     Base: "to Piwigo"
+     Espaces: 1 début + 0 fin
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:2921
+
+  15. ➡️ $$$/Piwigo/API/PiwigoapiGetcommentsUserNeeds
+     Original: "PiwigoAPI.getComments - user needs webmaster role "
+     Base: "PiwigoAPI.getComments - user needs webmaster role"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:2548
+
+  16. 🔚 $$$/Piwigo/API/PiwigoapiGettaglistCannotGet
+     Original: "PiwigoAPI.getTagList - cannot get tag list from Piwigo - "
+     Base: "PiwigoAPI.getTagList - cannot get tag list from Piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:2873
+
+  17. 🔚 $$$/Piwigo/API/PiwigoapiPwcategoriesgetthisCannotConnect
+     Original: "PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo - "
+     Base: "PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:1565
+
+  18. ➡️ $$$/Piwigo/API/PiwigoapiPwcategoriesgetthisUserNeeds
+     Original: "PiwigoAPI.pwCategoriesGetThis - user needs webmaster role "
+     Base: "PiwigoAPI.pwCategoriesGetThis - user needs webmaster role"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:1572
+
+  19. ➡️ $$$/Piwigo/API/PiwigoapiPwcheckcommentsUserNeeds
+     Original: "PiwigoAPI.pwCheckComments - user needs webmaster role "
+     Base: "PiwigoAPI.pwCheckComments - user needs webmaster role"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:2515
+
+  20. 🔚 $$$/Piwigo/API/Starting
+     Original: "Starting..."
+     Base: "Starting"
+     Suffixe: "..."
+     Fichier: PWSendMetadata.lua:77
+
+  21. 🔚 $$$/Piwigo/API/UnableAddComment
+     Original: "Unable to add comment - "
+     Base: "Unable to add comment"
+     Suffixe: " -"
+     Fichier: PiwigoAPI.lua:2635
+
+  22. ➡️ $$$/Piwigo/API/UnableAddCommentComments
+     Original: "Unable to add comment - are comments enabled on "
+     Base: "Unable to add comment - are comments enabled on"
+     Espaces: 0 début + 1 fin
+     Fichier: PiwigoAPI.lua:2590
+
+  23. 🔚 $$$/Piwigo/API/UnableSetCoverPhoto
+     Original: "Unable to set cover photo - "
+     Base: "Unable to set cover photo"
+     Suffixe: " -"
+     Fichier: PWSetAlbumCover.lua:139
+
+  24.  $$$/Piwigo/API/UnknownError
+     Original: "Unknown error"
+     Base: "Unknown error"
+     Fichier: PiwigoAPI.lua:1416
+
+  25. ➡️ $$$/Piwigo/API/UserNeedsWebmasterRole
+     Original: "User needs webmaster role on piwigo gallery at "
+     Base: "User needs webmaster role on piwigo gallery at"
+     Espaces: 0 début + 1 fin
+     Fichier: PWSetAlbumCover.lua:125
+
+  26.  $$$/Piwigo/CollToSet/Cancel
+     Original: "Cancel"
+     Base: "Cancel"
+     Fichier: PWCollToSet.lua:85
+
+  27. ➡️ $$$/Piwigo/CollToSet/ColltosetTCreateNew
+     Original: "CollToSet - Can't create new collection set "
+     Base: "CollToSet - Can't create new collection set"
+     Espaces: 0 début + 1 fin
+     Fichier: PWCollToSet.lua:98
+
+  28. ➡️ $$$/Piwigo/CollToSet/Convert
+     Original: "Convert "
+     Base: "Convert"
+     Espaces: 0 début + 1 fin
+     Fichier: PWCollToSet.lua:85
+
+  29.  $$$/Piwigo/CollToSet/CovertPublishCollectionSet
+     Original: "Covert Publish Collection to Set"
+     Base: "Covert Publish Collection to Set"
+     Fichier: PWCollToSet.lua:85
+
+  30. ⬅️ $$$/Piwigo/CollToSet/PublishCollectionSetQuestion
+     Original: " to a Publish Collection Set?"
+     Base: "to a Publish Collection Set?"
+     Espaces: 1 début + 0 fin
+     Fichier: PWCollToSet.lua:85
+
+  31. ➡️ $$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo
+     Original: "Sets selected image as Piwigo album cover "
+     Base: "Sets selected image as Piwigo album cover"
+     Espaces: 0 début + 1 fin
+     Fichier: PWExtraOptions.lua:100
+
+  32. ➡️ $$$/Piwigo/ImportService/Clone
+     Original: "Clone : "
+     Base: "Clone :"
+     Espaces: 0 début + 1 fin
+     Fichier: PWImportService.lua:724
+
+  33. ⬅️➡️ $$$/Piwigo/ImportService/CloneSelectedPublishService
+     Original: "    Clone selected Publish Service to "
+     Base: "Clone selected Publish Service to"
+     Espaces: 4 début + 1 fin
+     Fichier: PWImportService.lua:926
+
+  34. 🔚 $$$/Piwigo/ImportService/CloningCollections
+     Original: "Cloning Collections..."
+     Base: "Cloning Collections"
+     Suffixe: "..."
+     Fichier: PWImportService.lua:509
+
+  35. 🔚 $$$/Piwigo/ImportService/CloningImages
+     Original: "Cloning Images..."
+     Base: "Cloning Images"
+     Suffixe: "..."
+     Fichier: PWImportService.lua:522
+
+  36. ➡️ $$$/Piwigo/ImportService/CollectionSetsClone
+     Original: "Collection Sets to clone : "
+     Base: "Collection Sets to clone :"
+     Espaces: 0 début + 1 fin
+     Fichier: PWImportService.lua:783
+
+  37. ➡️ $$$/Piwigo/ImportService/CollectionsClone
+     Original: "Collections to clone : "
+     Base: "Collections to clone :"
+     Espaces: 0 début + 1 fin
+     Fichier: PWImportService.lua:792
+
+  38. ➡️ $$$/Piwigo/ImportService/ImagesClone
+     Original: "Images to clone : "
+     Base: "Images to clone :"
+     Espaces: 0 début + 1 fin
+     Fichier: PWImportService.lua:809
+
+  39. ⬅️ $$$/Piwigo/ImportService/PleaseEnsureSelectedService
+     Original: "        Please ensure selected service is up to date - i.e. with no outstanding photographs to be published"
+     Base: "Please ensure selected service is up to date - i.e. with no outstanding photographs to be published"
+     Espaces: 8 début + 0 fin
+     Fichier: PWImportService.lua:960
+
+  40. ⬅️ $$$/Piwigo/ImportService/PublishService
+     Original: " Publish Service"
+     Base: "Publish Service"
+     Espaces: 1 début + 0 fin
+     Fichier: PWImportService.lua:926
+
+  41. ➡️ $$$/Piwigo/ImportService/SmartCollectionsClone
+     Original: "Smart Collections to clone : "
+     Base: "Smart Collections to clone :"
+     Espaces: 0 début + 1 fin
+     Fichier: PWImportService.lua:800
+
+  42. ⬅️➡️ $$$/Piwigo/ImportService/To
+     Original: "      to : "
+     Base: "to :"
+     Espaces: 6 début + 1 fin
+     Fichier: PWImportService.lua:743
+
+  43. ➡️ $$$/Piwigo/PluginInfoDialogSections/CurrentVersion
+     Original: "Current version: "
+     Base: "Current version:"
+     Espaces: 0 début + 1 fin
+     Fichier: PluginInfoDialogSections.lua:83
+
+  44. ➡️ $$$/Piwigo/PublishDialogSections/Description
+     Original: "Description: "
+     Base: "Description:"
+     Espaces: 0 début + 1 fin
+     Fichier: PublishDialogSections.lua:326
+
+  45. ➡️ $$$/Piwigo/PublishDialogSections/EnteredUrlAutocorrected
+     Original: "Entered URL was autocorrected to "
+     Base: "Entered URL was autocorrected to"
+     Espaces: 0 début + 1 fin
+     Fichier: PublishDialogSections.lua:92
+
+  46. ➡️ $$$/Piwigo/PublishDialogSections/Title
+     Original: "Title: "
+     Base: "Title:"
+     Espaces: 0 début + 1 fin
+     Fichier: PublishDialogSections.lua:310
+
+  47.  $$$/Piwigo/PublishTask/MissingPiwigoAlbum
+     Original: "*** Missing Piwigo album ***"
+     Base: "*** Missing Piwigo album ***"
+     Fichier: PublishTask.lua:127
+
+  48. ⬅️➡️ $$$/Piwigo/PublishTask/Photos
+     Original: " photos to "
+     Base: "photos to"
+     Espaces: 1 début + 1 fin
+     Fichier: PublishTask.lua:74
+
+  49. ➡️ $$$/Piwigo/PublishTask/PiwigoCatId
+     Original: ", Piwigo Cat ID "
+     Base: ", Piwigo Cat ID"
+     Espaces: 0 début + 1 fin
+     Fichier: PublishTask.lua:127
+
+  50. ➡️ $$$/Piwigo/PublishTask/Publishing
+     Original: "Publishing "
+     Base: "Publishing"
+     Espaces: 0 début + 1 fin
+     Fichier: PublishTask.lua:74
+
+  51. 🔚 $$$/Piwigo/PublishTask/UnableSetMetadataUploaded
+     Original: "Unable to set metadata for uploaded photo - "
+     Base: "Unable to set metadata for uploaded photo"
+     Suffixe: " -"
+     Fichier: PWSendMetadata.lua:112
+
+  52. 🔚 $$$/Piwigo/SendMetadata/UpdateMetadata
+     Original: "Update Metadata..."
+     Base: "Update Metadata"
+     Suffixe: "..."
+     Fichier: PWSendMetadata.lua:76
+
+  53. ⬅️ $$$/Piwigo/SetAlbumCover/CurrentlySelected
+     Original: " currently selected)"
+     Base: "currently selected)"
+     Espaces: 1 début + 0 fin
+     Fichier: PWSetAlbumCover.lua:38
+
+  54.  $$$/Piwigo/SetAlbumCover/PleaseSelectSinglePhoto
+     Original: "Please select a single photo to set as album cover ("
+     Base: "Please select a single photo to set as album cover ("
+     Fichier: PWSetAlbumCover.lua:38
+
+  55. ⬅️ $$$/Piwigo/utils/Later
+     Original: " later."
+     Base: "later."
+     Espaces: 1 début + 0 fin
+     Fichier: utils.lua:1204
+
+  56. ➡️ $$$/Piwigo/utils/PiwigoPublisherBusyPlease
+     Original: "Piwigo Publisher is busy. Please try "
+     Base: "Piwigo Publisher is busy. Please try"
+     Espaces: 0 début + 1 fin
+     Fichier: utils.lua:1204
+
+================================================================================
+LISTE DES CLÉS POUR PluginStrings.txt
+================================================================================
+
+-- 233 clés uniques
+
+"$$$/FionaBoston/Title=Piwigo Publisher Metadata"
+"$$$/Piwigo/API/Boundary=' .. boundary .. '" -- 🔗
+"$$$/Piwigo/API/CannotAddNewCategory=Cannot add new category to Piwigo" -- 🔚
+"$$$/Piwigo/API/CannotAddTag=Cannot add tag" -- ➡️🔗
+"$$$/Piwigo/API/CannotGetCategoriesFrom=Cannot get categories from Piwigo" -- 🔚
+"$$$/Piwigo/API/CannotGetCommentsInformation=Cannot get comments information from  Piwigo - Unknown error"
+"$$$/Piwigo/API/CannotGetCommentsInformation2=Cannot get comments information from  Piwigo" -- 🔚
+"$$$/Piwigo/API/CannotGetHostInformation=Cannot get host information from  Piwigo" -- 🔚
+"$$$/Piwigo/API/CannotGetUserStatus=Cannot get user status from Piwigo" -- 🔚🔗
+"$$$/Piwigo/API/CannotLogPiwigo=Cannot log in to Piwigo" -- 🔚
+"$$$/Piwigo/API/CannotUpload=Cannot upload" -- ➡️
+"$$$/Piwigo/API/CheckPiwigoStructure=Check Piwigo Structure"
+"$$$/Piwigo/API/CommentAddedPiwigo=Comment added to Piwigo"
+"$$$/Piwigo/API/CommentsDisabled=Comments are disabled"
+"$$$/Piwigo/API/CreateSpecialCollections=Create Special Collections"
+"$$$/Piwigo/API/FailedCreateSpecialCollection=Failed to create special collection for" -- ➡️
+"$$$/Piwigo/API/ImportAlbumStructure=Import album structure" -- 🔚
+"$$$/Piwigo/API/ImportPiwigoAlbums=Import Piwigo Albums"
+"$$$/Piwigo/API/InvalidUnreadableServerResponse=Invalid or unreadable server response"
+"$$$/Piwigo/API/LogPiwigoSuccessfulBut=Log in to Piwigo successful but user does not have Webmaster status"
+"$$$/Piwigo/API/MultipartFormDataBoundary=multipart/form-data;boundary="" -- 🔗
+"$$$/Piwigo/API/NoCollectionSetsFound=No collection sets found so no special collections created"
+"$$$/Piwigo/API/Piwigo=to Piwigo" -- ⬅️🔚🔗
+"$$$/Piwigo/API/PiwigoapiAddcommentCannotConnect=PiwigoAPI.addComment - cannot connect to piwigo"
+"$$$/Piwigo/API/PiwigoapiGetcommentsCannotConnect=PiwigoAPI.getComments - cannot connect to piwigo"
+"$$$/Piwigo/API/PiwigoapiGetcommentsUserNeeds=PiwigoAPI.getComments - user needs webmaster role" -- ➡️
+"$$$/Piwigo/API/PiwigoapiGettaglistCannotConnect=PiwigoAPI.getTagList - cannot connect to piwigo"
+"$$$/Piwigo/API/PiwigoapiGettaglistCannotGet=PiwigoAPI.getTagList - cannot get tag list from Piwigo" -- 🔚
+"$$$/Piwigo/API/PiwigoapiPwcategoriesgetthisCannotConnect=PiwigoAPI.pwCategoriesGetThis - cannot connect to piwigo" -- 🔚
+"$$$/Piwigo/API/PiwigoapiPwcategoriesgetthisUserNeeds=PiwigoAPI.pwCategoriesGetThis - user needs webmaster role" -- ➡️
+"$$$/Piwigo/API/PiwigoapiPwcheckcommentsCannotConnect=PiwigoAPI.pwCheckComments - cannot connect to piwigo"
+"$$$/Piwigo/API/PiwigoapiPwcheckcommentsUserNeeds=PiwigoAPI.pwCheckComments - user needs webmaster role" -- ➡️
+"$$$/Piwigo/API/PiwigoapiPwconnectCannotGet=PiwigoAPI.pwConnect - cannot get taglist from Piwigo"
+"$$$/Piwigo/API/PiwigoapiSetalbumcoverCannotConnect=PiwigoAPI.setAlbumCover - cannot connect to piwigo"
+"$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind=PiwigoAPI.setAlbumCover - Can't find PublishSettings for this publish collection"
+"$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind2=PiwigoAPI.setAlbumCover - Can't find this photo in collection set or collections"
+"$$$/Piwigo/API/PiwigoapiSetalbumcoverTFind3=PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo"
+"$$$/Piwigo/API/PleaseSelectPhoto=Please select a photo in the selected publish service ("
+"$$$/Piwigo/API/PleaseSelectPhotoSet=Please select a photo to set as album cover"
+"$$$/Piwigo/API/SCollectionSetsProcessed=%s collection sets processed"
+"$$$/Piwigo/API/SetPiwigoAlbumCover=Set Piwigo Album Cover"
+"$$$/Piwigo/API/Starting=Starting" -- 🔚
+"$$$/Piwigo/API/UnableAddComment=Unable to add comment" -- 🔚
+"$$$/Piwigo/API/UnableAddCommentComments=Unable to add comment - are comments enabled on" -- ➡️
+"$$$/Piwigo/API/UnableSetCoverPhoto=Unable to set cover photo" -- 🔚
+"$$$/Piwigo/API/UnknownError=Unknown error" -- 🔗
+"$$$/Piwigo/API/UserNeedsWebmasterRole=User needs webmaster role on piwigo gallery at" -- ➡️
+"$$$/Piwigo/CollToSet/Cancel=Cancel" -- 🔗
+"$$$/Piwigo/CollToSet/ColltosetTAccessCollection=CollToSet - Can't access collection object for this publish collection - check selection"
+"$$$/Piwigo/CollToSet/ColltosetTCreateNew=CollToSet - Can't create new collection set" -- ➡️
+"$$$/Piwigo/CollToSet/ColltosetTFindPublish=CollToSet - Can't find publish settings for this publish collection"
+"$$$/Piwigo/CollToSet/ColltosetYouSelectedPublished=CollToSet - You have selected a Published Collection Set - please select a Published Collection"
+"$$$/Piwigo/CollToSet/Convert=Convert" -- ➡️🔗
+"$$$/Piwigo/CollToSet/CovertPublishCollectionSet=Covert Publish Collection to Set" -- 🔗
+"$$$/Piwigo/CollToSet/PleaseSelectCollectionWithin=Please select a Collection within a Piwigo Publisher service"
+"$$$/Piwigo/CollToSet/PublishCollectionSetQuestion=to a Publish Collection Set?" -- ⬅️🔗
+"$$$/Piwigo/CollToSet/SpecialCollectionsCannotConverted=Special Collections cannot be converted to Collection Sets"
+"$$$/Piwigo/CustomMetadata/AlbumName=Album Name"
+"$$$/Piwigo/CustomMetadata/AlbumUrl=Album URL"
+"$$$/Piwigo/CustomMetadata/PhotoUrl=Photo URL"
+"$$$/Piwigo/CustomMetadata/PiwigoHost=Piwigo Host"
+"$$$/Piwigo/CustomMetadata/Pwcommentsync=pwCommentSync"
+"$$$/Piwigo/CustomMetadata/UploadDate=Upload Date"
+"$$$/Piwigo/CustomMetadata/UploadTime=Upload Time"
+"$$$/Piwigo/ExtraOptions/AppliesSelectedImages=Applies to selected images"
+"$$$/Piwigo/ExtraOptions/Close=Close"
+"$$$/Piwigo/ExtraOptions/CouldFindPublishService=Could not find publish service"
+"$$$/Piwigo/ExtraOptions/Error=Error"
+"$$$/Piwigo/ExtraOptions/NoPiwigoPublishServices=No Piwigo publish services found."
+"$$$/Piwigo/ExtraOptions/PiwigoExtraOptions=Piwigo Extra Options"
+"$$$/Piwigo/ExtraOptions/SelectPublishService=Select publish service:"
+"$$$/Piwigo/ExtraOptions/Selectedservice=selectedService"
+"$$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo=Sets selected image as Piwigo album cover" -- ➡️
+"$$$/Piwigo/ExtraOptions/SetsSelectedImagePiwigo2=Sets selected image as Piwigo album cover for this collection"
+"$$$/Piwigo/ImportService/CancelClone=Cancel Clone"
+"$$$/Piwigo/ImportService/CannotCloneIntoService=Cannot clone into this service as it already contains Published Collections or Sets."
+"$$$/Piwigo/ImportService/Clone=Clone :" -- ➡️
+"$$$/Piwigo/ImportService/Clone2=Clone"
+"$$$/Piwigo/ImportService/CloneCompleted=Clone completed"
+"$$$/Piwigo/ImportService/CloneSelectedPublishService=Clone selected Publish Service to" -- ⬅️➡️🔗
+"$$$/Piwigo/ImportService/CloningCollections=Cloning Collections" -- 🔚
+"$$$/Piwigo/ImportService/CloningImages=Cloning Images" -- 🔚
+"$$$/Piwigo/ImportService/CollectionSetsClone=Collection Sets to clone :" -- ➡️
+"$$$/Piwigo/ImportService/CollectionsClone=Collections to clone :" -- ➡️
+"$$$/Piwigo/ImportService/ConfirmDetailsPublishService=Confirm details of Publish Service to be cloned"
+"$$$/Piwigo/ImportService/DetailsPublishService=Details of Publish Service to be cloned"
+"$$$/Piwigo/ImportService/Exclude=< exclude >"
+"$$$/Piwigo/ImportService/ImagesClone=Images to clone :" -- ➡️
+"$$$/Piwigo/ImportService/Next=Next"
+"$$$/Piwigo/ImportService/NoPublishServicesFound=No publish services found."
+"$$$/Piwigo/ImportService/PiwigoPublisherCloneExisting=Piwigo Publisher - Clone Existing Publish Service"
+"$$$/Piwigo/ImportService/PleaseEnsureSelectedService=Please ensure selected service is up to date - i.e. with no outstanding photographs to be published" -- ⬅️
+"$$$/Piwigo/ImportService/PublishService=Publish Service" -- ⬅️🔗
+"$$$/Piwigo/ImportService/PublishServiceCloneComplete=Publish Service Clone Complete."
+"$$$/Piwigo/ImportService/PublishServiceCloneOmplete=Publish Service Clone omplete."
+"$$$/Piwigo/ImportService/SelectPublishServiceClone=Select Publish Service to clone:"
+"$$$/Piwigo/ImportService/SmartCollectionsClone=Smart Collections to clone :" -- ➡️
+"$$$/Piwigo/ImportService/To=to :" -- ⬅️➡️
+"$$$/Piwigo/Info/ConvertSelectedPublishedCollection=Convert selected Published Collection to Published Collection Set"
+"$$$/Piwigo/Info/Mycustomstatus=myCustomStatus"
+"$$$/Piwigo/Info/PiwigoPublisher=Piwigo Publisher"
+"$$$/Piwigo/Info/PiwigoPublisherExtraOptions=Piwigo Publisher Extra Options"
+"$$$/Piwigo/Info/SendMetadataPiwigoSelected=Send Metadata to Piwigo for Selected Photos"
+"$$$/Piwigo/Info/SetPiwigoAlbumCover=Set Piwigo Album Cover from Selected Photo"
+"$$$/Piwigo/Info/Status=Status"
+"$$$/Piwigo/Info/Synctoken=syncToken"
+"$$$/Piwigo/Info/Token=Token"
+"$$$/Piwigo/PluginInfoDialogSections/CheckUpdates=Check for Updates"
+"$$$/Piwigo/PluginInfoDialogSections/CurrentVersion=Current version:" -- ➡️
+"$$$/Piwigo/PluginInfoDialogSections/Debugenabled=debugEnabled"
+"$$$/Piwigo/PluginInfoDialogSections/Debugtofile=debugToFile"
+"$$$/Piwigo/PluginInfoDialogSections/EnableDebugLogging=Enable debug logging"
+"$$$/Piwigo/PluginInfoDialogSections/LogFileInsteadConsole=Log to file instead of console"
+"$$$/Piwigo/PluginInfoDialogSections/PiwigoPublisherPluginLogging=Piwigo Publisher Plugin Logging"
+"$$$/Piwigo/PluginInfoDialogSections/PluginUpdates=Plugin Updates"
+"$$$/Piwigo/PluginInfoDialogSections/ResetPluginPreferences=Reset Plugin Preferences…"
+"$$$/Piwigo/PluginInfoDialogSections/ShowLogfile=Show logfile"
+"$$$/Piwigo/PluginInfoDialogSections/Updatestatus=updateStatus"
+"$$$/Piwigo/PluginInfoDialogSections/VisitGithubRepository=Visit GitHub Repository"
+"$$$/Piwigo/PublishDialogSections/CheckConnection=Check Connection"
+"$$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure=Check and Link Piwigo Structure"
+"$$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure2=Check / link Piwigo Structure"
+"$$$/Piwigo/PublishDialogSections/CheckPiwigoAlbumStructure=Check Piwigo album structure against local collection / set structure"
+"$$$/Piwigo/PublishDialogSections/CheckedAlbumDescriptions=If checked, Album descriptions will be maintainable in Lightroom and sent to Piwigo"
+"$$$/Piwigo/PublishDialogSections/CheckedAllKeywords=If checked, all keywords in a keyword hierarchy will be sent to Piwigo"
+"$$$/Piwigo/PublishDialogSections/CheckedKeywordSynonyms=If checked, keyword synonyms will be sent to Piwigo"
+"$$$/Piwigo/PublishDialogSections/ClickFetchCurrentAlbum=Click to fetch the current album structure from the Piwigo Host above. Only albums the user has permission to see will be included"
+"$$$/Piwigo/PublishDialogSections/CloneExistingPublishService=Clone Existing Publish Service"
+"$$$/Piwigo/PublishDialogSections/CloneExistingPublishService2=Clone existing publish service (collections/sets and links to Piwigo)"
+"$$$/Piwigo/PublishDialogSections/CollectionSetStructureImages=Collection/Set structure and images of selected Publish Service will be cloned to this one."
+"$$$/Piwigo/PublishDialogSections/ConnectionSuccessful=Connection NOT successful"
+"$$$/Piwigo/PublishDialogSections/Constatus=ConStatus"
+"$$$/Piwigo/PublishDialogSections/CreateSpecialCollectionsAllow=Create special collections to allow images to be published to Piwigo albums with sub-albums - which is not natively supported on LrC"
+"$$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections=Create special publish collections for publish collection sets, allowing images to be published to Piwigo albums with sub-albums"
+"$$$/Piwigo/PublishDialogSections/CreateSpecialPublishCollections2=Create special publish collections to allow images to be published to albums with sub-albums on Piwigo"
+"$$$/Piwigo/PublishDialogSections/Description=Description:" -- ➡️
+"$$$/Piwigo/PublishDialogSections/EnteredUrlAutocorrected=Entered URL was autocorrected to" -- ➡️
+"$$$/Piwigo/PublishDialogSections/EntirePiwigoPublishService=For entire Piwigo Publish Service"
+"$$$/Piwigo/PublishDialogSections/ImportAlbums=Import Albums"
+"$$$/Piwigo/PublishDialogSections/ImportExistingAlbumsFrom=Import existing albums from Piwigo"
+"$$$/Piwigo/PublishDialogSections/IncludeFullKeywordHierarchy=Include Full Keyword Hierarchy"
+"$$$/Piwigo/PublishDialogSections/IncludeKeywordSynonyms=Include Keyword Synonyms"
+"$$$/Piwigo/PublishDialogSections/KeywordSettings=Keyword Settings"
+"$$$/Piwigo/PublishDialogSections/Kwfullhierarchy=KwFullHierarchy"
+"$$$/Piwigo/PublishDialogSections/Kwsynonyms=KwSynonyms"
+"$$$/Piwigo/PublishDialogSections/Mddescription=mdDescription"
+"$$$/Piwigo/PublishDialogSections/Mdtitle=mdTitle"
+"$$$/Piwigo/PublishDialogSections/MetadataSettings=Metadata Settings"
+"$$$/Piwigo/PublishDialogSections/OnlyIncludePublishedPhotos=Only include Published Photos"
+"$$$/Piwigo/PublishDialogSections/OtherSettings=Other Settings"
+"$$$/Piwigo/PublishDialogSections/Password=Password:"
+"$$$/Piwigo/PublishDialogSections/PiwigoHost=Piwigo Host:"
+"$$$/Piwigo/PublishDialogSections/PiwigoHostSettings=Piwigo Host Settings"
+"$$$/Piwigo/PublishDialogSections/PiwigoPublishServiceConfiguration=Piwigo Publish Service Configuration and Settings"
+"$$$/Piwigo/PublishDialogSections/PiwigoServiceViewCollection=Piwigo Service View for Collection Settings"
+"$$$/Piwigo/PublishDialogSections/PiwigoStructureCheckedAgainst=Piwigo structure will be checked against local collection / set structure. Missing Piwigo albums will be created and links checked / updated"
+"$$$/Piwigo/PublishDialogSections/PublishServiceSetUp=Publish Service Set Up"
+"$$$/Piwigo/PublishDialogSections/SelectedCollectionSetStructure=Selected Collection/Set structure and images of selected Publish Service will be cloned to this one."
+"$$$/Piwigo/PublishDialogSections/Syncalbumdescriptions=syncAlbumDescriptions"
+"$$$/Piwigo/PublishDialogSections/Synccommentspublish=syncCommentsPublish"
+"$$$/Piwigo/PublishDialogSections/Synccommentspubonly=syncCommentsPubOnly"
+"$$$/Piwigo/PublishDialogSections/SynchroniseAlbumDescriptions=Synchronise Album Descriptions"
+"$$$/Piwigo/PublishDialogSections/SynchroniseCommentsPart=Synchronise comments as part of a Publish Process"
+"$$$/Piwigo/PublishDialogSections/Title=Title:" -- ➡️
+"$$$/Piwigo/PublishDialogSections/UserName=User Name:"
+"$$$/Piwigo/PublishDialogSections/Username=userName"
+"$$$/Piwigo/PublishDialogSections/Userpw=userPW"
+"$$$/Piwigo/PublishDialogSections/WhenCheckedCommentsSynchronised=When checked, comments will be synchronised for all photos in a collection during a publish operation"
+"$$$/Piwigo/PublishDialogSections/WhenCheckedOnlyPhotos=When checked, only photos being published will have comments synchronised"
+"$$$/Piwigo/PublishTask/AlbumDescription=Album Description:"
+"$$$/Piwigo/PublishTask/AlbumPrivate=Album is Private"
+"$$$/Piwigo/PublishTask/Albumdescription=albumDescription"
+"$$$/Piwigo/PublishTask/Albumprivate=albumPrivate"
+"$$$/Piwigo/PublishTask/AllExceptCameraCamera=All Except Camera & Camera Raw Info"
+"$$$/Piwigo/PublishTask/AllExceptCameraRaw=All Except Camera Raw Info"
+"$$$/Piwigo/PublishTask/AllMetadata=All Metadata"
+"$$$/Piwigo/PublishTask/AllowEnlargeImage=Allow Enlarge Image"
+"$$$/Piwigo/PublishTask/CheckedAlbum=If checked, this album will be private on Piwigo"
+"$$$/Piwigo/PublishTask/CheckedKeywordsSynonyms=If checked, keywords synonyms will be sent to Piwigo"
+"$$$/Piwigo/PublishTask/CheckedPublishedImage=If checked, published image will be resized per these settings"
+"$$$/Piwigo/PublishTask/CheckedPublishedImage2=If checked, published image will be enlarged if necessary"
+"$$$/Piwigo/PublishTask/CheckedTheseSettingsReplace=If checked, these settings will replace the defaults set in Publish Settings"
+"$$$/Piwigo/PublishTask/CollectionNoAssociatedPiwigo=This collection has no associated Piwigo album to delete."
+"$$$/Piwigo/PublishTask/CopyrightContactInfoOnly=Copyright & Contact Info Only"
+"$$$/Piwigo/PublishTask/CopyrightOnly=Copyright only"
+"$$$/Piwigo/PublishTask/CopyrightOnly2=Copyright Only"
+"$$$/Piwigo/PublishTask/CustomPublishSettingsOverrides=Custom Publish Settings (Overrides defaults set in Publish Settings)"
+"$$$/Piwigo/PublishTask/DeleteAlbum=Delete Album"
+"$$$/Piwigo/PublishTask/Dimensions=Dimensions"
+"$$$/Piwigo/PublishTask/Enablecustom=enableCustom"
+"$$$/Piwigo/PublishTask/ExportSettings=Export Settings"
+"$$$/Piwigo/PublishTask/IncludeKeywordsSynonyms=Include Keywords Synonyms"
+"$$$/Piwigo/PublishTask/LongEdge=Long Edge"
+"$$$/Piwigo/PublishTask/Megapixels=Megapixels"
+"$$$/Piwigo/PublishTask/Megapixels2=MegaPixels"
+"$$$/Piwigo/PublishTask/MissingPiwigoAlbum=*** Missing Piwigo album ***" -- 🔗
+"$$$/Piwigo/PublishTask/Percent=Percent"
+"$$$/Piwigo/PublishTask/Photos=photos to" -- ⬅️➡️🔗
+"$$$/Piwigo/PublishTask/PiwigoAlbumSettings=Piwigo Album Settings"
+"$$$/Piwigo/PublishTask/PiwigoCatId=, Piwigo Cat ID" -- ➡️🔗
+"$$$/Piwigo/PublishTask/PiwigoapiUpdatemetadataCannotGet=PiwigoAPI:updateMetadata - cannot get taglist from Piwigo"
+"$$$/Piwigo/PublishTask/Publishing=Publishing" -- ➡️🔗
+"$$$/Piwigo/PublishTask/Resize=reSize"
+"$$$/Piwigo/PublishTask/ResizeImage=Resize Image"
+"$$$/Piwigo/PublishTask/Resizeenlarge=reSizeEnlarge"
+"$$$/Piwigo/PublishTask/Resizeparam=reSizeParam"
+"$$$/Piwigo/PublishTask/ShortEdge=Short Edge"
+"$$$/Piwigo/PublishTask/System=<system>"
+"$$$/Piwigo/PublishTask/UnableSetMetadataUploaded=Unable to set metadata for uploaded photo" -- 🔚
+"$$$/Piwigo/PublishTask/Use=Use :"
+"$$$/Piwigo/PublishTask/UseCustomSettingsAlbum=Use custom settings for this album"
+"$$$/Piwigo/SendMetadata/PleaseSelectPhotosPiwigo=Please select photos in a Piwigo Publisher service"
+"$$$/Piwigo/SendMetadata/PleaseSelectPhotosResend=Please select photos to resend metadata"
+"$$$/Piwigo/SendMetadata/SendMetadataPiwigo=Send Metadata to Piwigo"
+"$$$/Piwigo/SendMetadata/SendmetadataTFindPiwigoQuestion=SendMetadata - Can't find Piwigo photo ID for this photo - has it been published?"
+"$$$/Piwigo/SendMetadata/SendmetadataTFindPublish=SendMetadata - Can't find publish settings for this publish collection"
+"$$$/Piwigo/SendMetadata/UpdateMetadata=Update Metadata" -- 🔚
+"$$$/Piwigo/SetAlbumCover/CurrentlySelected=currently selected)" -- ⬅️🔗
+"$$$/Piwigo/SetAlbumCover/PiwigoapiSetalbumcoverTFindQuestion=PiwigoAPI.setAlbumCover - Can't find Piwigo photo ID for this photo - has it been published?"
+"$$$/Piwigo/SetAlbumCover/PleaseSelectPhoto=Please select a photo in a Piwigo Publisher service"
+"$$$/Piwigo/SetAlbumCover/PleaseSelectSinglePhoto=Please select a single photo to set as album cover (" -- 🔗
+"$$$/Piwigo/SetAlbumCover/SetalbumcoverCannotConnectPiwigo=SetAlbumCover - cannot connect to piwigo"
+"$$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPiwigo=SetAlbumCover - Can't find Piwigo album ID for remoteId for this publish collection"
+"$$$/Piwigo/SetAlbumCover/SetalbumcoverTFindPublish=SetAlbumCover - Can't find publish settings for this publish collection"
+"$$$/Piwigo/Tagset/ComAdobeLabel=com.adobe.label"
+"$$$/Piwigo/Tagset/MostRecentUpload=Most Recent Upload"
+"$$$/Piwigo/UIHelpers/PiwigoPublisherPlugin=Piwigo Publisher Plugin"
+"$$$/Piwigo/UIHelpers/PluginVersion=Plugin Version"
+"$$$/Piwigo/UpdateChecker/Accept=Accept"
+"$$$/Piwigo/UpdateChecker/PiwigopublishLightroomPlugin=PiwigoPublish-Lightroom-Plugin"
+"$$$/Piwigo/UpdateChecker/UserAgent=User-Agent"
+"$$$/Piwigo/utils/Later=later." -- ⬅️🔗
+"$$$/Piwigo/utils/PiwigoPublisherBusyPlease=Piwigo Publisher is busy. Please try" -- ➡️🔗

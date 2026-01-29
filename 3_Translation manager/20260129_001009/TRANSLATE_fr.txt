@@ -1,0 +1,84 @@
+# ======================================================================
+# FICHIER DE TRADUCTION - FR
+# Généré: 2026-01-29 00:14:09
+# Source: D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\i18n\3_Translation manager\20260129_001009
+# ======================================================================
+#
+# INSTRUCTIONS:
+# 1. Pour chaque entrée, écrivez la traduction après le symbole →
+# 2. Laissez vide pour garder la valeur EN par défaut
+# 3. Les lignes commençant par # sont ignorées
+#
+# ======================================================================
+
+# ----------------------------------------------------------------------
+# NOUVELLES CLÉS (12)
+# ----------------------------------------------------------------------
+
+[KEY] $$$/Piwigo/CustomMetadata/AlbumName
+[EN]  Album Name
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/AlbumUrl
+[EN]  Album URL
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/PhotoUrl
+[EN]  Photo URL
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/PiwigoHost
+[EN]  Piwigo Host
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/Pwcommentsync
+[EN]  pwCommentSync
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/UploadDate
+[EN]  Upload Date
+[FR] → 
+
+[KEY] $$$/Piwigo/CustomMetadata/UploadTime
+[EN]  Upload Time
+[FR] → 
+
+[KEY] $$$/Piwigo/Info/Status
+[EN]  Status
+[FR] → 
+
+[KEY] $$$/Piwigo/Info/Token
+[EN]  Token
+[FR] → 
+
+[KEY] $$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure2
+[EN]  Check / link Piwigo Structure
+[FR] → 
+
+[KEY] $$$/Piwigo/PublishDialogSections/CloneExistingPublishService2
+[EN]  Clone existing publish service (collections/sets and links to Piwigo)
+[FR] → 
+
+[KEY] $$$/Piwigo/PublishDialogSections/ImportAlbums
+[EN]  Import Albums
+[FR] → 
+
+# ----------------------------------------------------------------------
+# CLÉS MODIFIÉES (2) - Le texte EN a changé
+# ----------------------------------------------------------------------
+
+[KEY] $$$/Piwigo/PublishDialogSections/CheckLinkPiwigoStructure
+[EN AVANT]  Check / link Piwigo Structure
+[EN APRÈS]  Check and Link Piwigo Structure
+[FR ACTUEL] Vérifier / lier la structure Piwigo
+[FR] → 
+
+[KEY] $$$/Piwigo/PublishDialogSections/CloneExistingPublishService
+[EN AVANT]  Clone existing publish service (collections/sets and links to Piwigo)
+[EN APRÈS]  Clone Existing Publish Service
+[FR ACTUEL] Cloner le service de publication existant (collections/ensembles et liens vers Piwigo)
+[FR] → 
+
+# ======================================================================
+# TOTAL: 12 nouvelles + 2 modifiées
+# ======================================================================
