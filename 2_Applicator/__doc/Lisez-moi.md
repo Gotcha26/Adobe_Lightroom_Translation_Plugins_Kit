@@ -238,11 +238,11 @@ Si vous devez restaurer manuellement :
 
 ```bash
 # Restaurer un fichier
-cp monPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups/MyDialog.lua.bak \
+cp monPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups/MyDialog.lua.bak \
    monPlugin.lrplugin/MyDialog.lua
 
 # Restaurer tous les fichiers
-cp monPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups/*.bak \
+cp monPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups/*.bak \
    monPlugin.lrplugin/
 ```
 
@@ -432,7 +432,7 @@ Avant d'appliquer réellement les modifications, testez en dry-run :
 python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
 
 # 2. Consulter le rapport
-cat ./plugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/application_report.txt
+cat ./plugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/application_report.txt
 
 # 3. Si OK, appliquer réellement
 python Applicator_main.py --plugin-path ./plugin.lrplugin
@@ -534,7 +534,7 @@ Si les backups sont corrompus :
 1. Vérifiez l'intégrité :
 ```bash
 diff ./plugin.lrplugin/MyFile.lua \
-     ./plugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyFile.lua.bak
+     ./plugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/MyFile.lua.bak
 ```
 
 2. Si nécessaire, restaurez depuis Git :
@@ -550,7 +550,7 @@ Non, la deuxième application échouerait car les chaînes sont déjà dans des 
 
 ### Les backups sont-ils automatiquement supprimés ?
 
-Non, ils restent dans `__i18n_tmp__/Applicator/` jusqu'à ce que vous les supprimiez manuellement ou utilisiez l'outil `Delete_temp_dir.py`.
+Non, ils restent dans `__i18n_tmp__/2_Applicator/` jusqu'à ce que vous les supprimiez manuellement ou utilisiez l'outil `Delete_temp_dir.py`.
 
 ### Puis-je annuler une application sans les backups ?
 

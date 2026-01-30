@@ -357,9 +357,9 @@ python TranslationManager.py extract \
 
 # Inject only French
 python TranslationManager.py inject \
-  --translate ./plugin.lrplugin/__i18n_tmp__/TranslationManager/<timestamp>/TRANSLATE_fr.txt \
+  --translate ./plugin.lrplugin/__i18n_tmp__/3_TranslationManager/<timestamp>/TRANSLATE_fr.txt \
   --target ./plugin.lrplugin/TranslatedStrings_fr.txt \
-  --update ./plugin.lrplugin/__i18n_tmp__/TranslationManager/<timestamp>/
+  --update ./plugin.lrplugin/__i18n_tmp__/3_TranslationManager/<timestamp>/
 ```
 
 ### Legacy Mode (without --plugin-path)
@@ -618,7 +618,7 @@ python TranslationManager.py compare \
   --plugin-path ./plugin.lrplugin
 
 # 2. Consult CHANGELOG.txt to know what to translate
-cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/CHANGELOG.txt
+cat ./plugin/__i18n_tmp__/3_TranslationManager/<timestamp>/CHANGELOG.txt
 
 # 3. Manually edit TranslatedStrings_fr.txt, TranslatedStrings_de.txt, etc.
 # (add new keys, update modified ones)
@@ -633,7 +633,7 @@ python TranslationManager.py sync \
 
 ### Error: "No TranslationManager folder found"
 
-**Cause:** No `__i18n_tmp__/TranslationManager/` folder with `UPDATE_en.json`.
+**Cause:** No `__i18n_tmp__/3_TranslationManager/` folder with `UPDATE_en.json`.
 
 **Solution:**
 ```bash
@@ -657,7 +657,7 @@ python TranslationManager.py compare \
 ls ./plugin.lrplugin/TranslatedStrings_*.txt
 
 # Check UPDATE_en.json
-cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/UPDATE_en.json
+cat ./plugin/__i18n_tmp__/3_TranslationManager/<timestamp>/UPDATE_en.json
 ```
 
 ### INJECT Adds Nothing
@@ -670,10 +670,10 @@ cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/UPDATE_en.json
 **Solutions:**
 ```bash
 # Check TRANSLATE_fr.txt
-cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/TRANSLATE_fr.txt
+cat ./plugin/__i18n_tmp__/3_TranslationManager/<timestamp>/TRANSLATE_fr.txt
 
 # Check UPDATE_en.json
-cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/UPDATE_en.json
+cat ./plugin/__i18n_tmp__/3_TranslationManager/<timestamp>/UPDATE_en.json
 ```
 
 ### SYNC Removes Translations
@@ -784,7 +784,7 @@ python TranslationManager.py extract \
 echo ""
 echo "=== Step 3: Translation ==="
 echo "Please translate TRANSLATE_xx.txt files in:"
-echo "$PLUGIN_PATH/__i18n_tmp__/TranslationManager/<timestamp>/"
+echo "$PLUGIN_PATH/__i18n_tmp__/3_TranslationManager/<timestamp>/"
 read -p "Press Enter when translations are ready..."
 
 echo ""

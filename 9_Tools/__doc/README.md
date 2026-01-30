@@ -37,12 +37,12 @@ This tool deletes the `__i18n_tmp__` temporary folder (or the configured name) f
 Lightroom Plugin
     │
     └── __i18n_tmp__/
-        ├── Extractor/
+        ├── 1_Extractor/
         │   ├── 20260120_100000/    (5 files, 120 KB)
         │   └── 20260129_143022/    (5 files, 135 KB)
-        ├── Applicator/
+        ├── 2_Applicator/
         │   └── 20260129_143530/    (15 backups, 2.3 MB)
-        └── TranslationManager/
+        └── 3_TranslationManager/
             └── 20260129_144000/    (8 files, 45 KB)
 
         TOTAL: 33 files, 2.6 MB
@@ -234,7 +234,7 @@ Simulation mode (dry-run)? [Y/n]: n
 SEARCHING FOR .bak FILES
 ============================================================
 Plugin: ./myPlugin.lrplugin
-Source: ./myPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups
+Source: ./myPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups
 
 Files found: 12
 
@@ -366,7 +366,7 @@ Deleting .bak files:
 
 1. List available sessions:
 ```bash
-ls myPlugin.lrplugin/__i18n_tmp__/Applicator/
+ls myPlugin.lrplugin/__i18n_tmp__/2_Applicator/
 ```
 
 2. Note the timestamp of the desired session
@@ -395,7 +395,7 @@ To restore only certain files:
 
 1. Manually copy the desired `.bak` files:
 ```bash
-cp myPlugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyDialog.lua.bak \
+cp myPlugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/MyDialog.lua.bak \
    myPlugin.lrplugin/MyDialog.lua
 ```
 
@@ -430,7 +430,7 @@ Yes, Applicator automatically creates `.bak` backups of all modified files (unle
 
 ### Can I restore after deleting __i18n_tmp__?
 
-No, the backups are in `__i18n_tmp__/Applicator/`. If you delete them, you can no longer restore them with this tool. Use Git or your own backups.
+No, the backups are in `__i18n_tmp__/2_Applicator/`. If you delete them, you can no longer restore them with this tool. Use Git or your own backups.
 
 ### Do the tools work on Linux/Mac?
 
@@ -459,7 +459,7 @@ Yes, simply copy the `.bak` files:
 
 ```bash
 # __i18n_tmp__ structure
-cp myPlugin/__i18n_tmp__/Applicator/<timestamp>/backups/*.bak myPlugin/
+cp myPlugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/*.bak myPlugin/
 
 # Then rename to remove .bak
 for f in myPlugin/*.lua.bak; do mv "$f" "${f%.bak}"; done
@@ -495,7 +495,7 @@ Nothing to restore.
 
 **Solutions:**
 1. Check that the plugin path is correct
-2. Check for the presence of `__i18n_tmp__/Applicator/`
+2. Check for the presence of `__i18n_tmp__/2_Applicator/`
 3. Use Git to restore: `git checkout HEAD -- *.lua`
 
 ### Restore_backup.py - Files partially restored

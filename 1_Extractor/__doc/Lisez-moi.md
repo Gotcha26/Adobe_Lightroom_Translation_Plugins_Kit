@@ -254,7 +254,7 @@ python Extractor_main.py --plugin-path ./plugin.lrplugin [OPTIONS]
 | Option | Description | Défaut | Exemple |
 |--------|-------------|--------|---------|
 | `--plugin-path` | Chemin du plugin (OBLIGATOIRE) | - | `./monPlugin.lrplugin` |
-| `--output-dir` | Répertoire de sortie personnalisé | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
+| `--output-dir` | Répertoire de sortie personnalisé | `<plugin>/__i18n_tmp__/1_Extractor/` | `./output` |
 | `--prefix` | Préfixe des clés LOC | `$$$/Piwigo` | `$$$/MonApp` |
 | `--lang` | Code langue de base | `en` | `fr`, `de`, `es` |
 | `--exclude` | Fichiers à exclure (répétable) | - | `--exclude test.lua --exclude debug.lua` |

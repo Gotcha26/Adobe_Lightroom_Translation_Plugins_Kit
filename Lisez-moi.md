@@ -70,7 +70,7 @@ Il prend les chaînes extraites et remplace automatiquement le texte en dur dans
 **Ce qu'il fait :**
 - Lit le fichier `replacements.json` généré par Extractor
 - Remplace `"Submit"` par `LOC "$$$/MonPlugin/Submit=Submit"`
-- Crée des backups automatiques de vos fichiers (dans `__i18n_tmp__/Applicator/backups/`)
+- Crée des backups automatiques de vos fichiers (dans `__i18n_tmp__/2_Applicator/backups/`)
 - Préserve les espaces, les concaténations et la mise en forme
 - Génère un rapport détaillé des modifications
 
@@ -163,7 +163,7 @@ monPlugin.lrplugin/
 ├── TranslatedStrings_en.txt
 ├── TranslatedStrings_fr.txt
 └── __i18n_tmp__/                    ← Dossier temporaire
-    ├── Extractor/
+    ├── 1_Extractor/
     │   ├── 20260129_143022/         ← Timestamp de l'exécution
     │   │   ├── TranslatedStrings_en.txt
     │   │   ├── spacing_metadata.json
@@ -171,18 +171,18 @@ monPlugin.lrplugin/
     │   │   └── extraction_report.txt
     │   └── 20260129_151500/         ← Autre exécution
     │       └── ...
-    ├── Applicator/
+    ├── 2_Applicator/
     │   └── 20260129_143530/
     │       ├── application_report.txt
     │       └── backups/
     │           └── *.bak
-    ├── TranslationManager/
+    ├── 3_TranslationManager/
     │   └── 20260129_144000/
     │       ├── UPDATE_en.json
     │       ├── CHANGELOG.txt
     │       ├── TRANSLATE_fr.txt
     │       └── ...
-    └── Tools/
+    └── 9_Tools/
         └── 20260129_145000/
             └── restore_log.txt
 ```

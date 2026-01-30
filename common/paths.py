@@ -77,6 +77,46 @@ def get_i18n_kit_path(plugin_path: str) -> str:
     return os.path.join(plugin_path, get_i18n_dir())
 
 
+def _extract_tool_prefix(tool_name: str) -> str:
+    """
+    Extrait le préfixe numérique du nom de l'outil en inspectant le stack.
+
+    Cette fonction remonte la stack pour trouver le script appelant et
+    extraire son préfixe numérique (ex: "1_" pour 1_Extractor).
+
+    Args:
+        tool_name: Nom de l'outil (Extractor, Applicator, etc.)
+
+    Returns:
+        Nom de l'outil avec préfixe si trouvé (ex: "1_Extractor"), sinon nom original
+    """
+    import inspect
+    import re
+
+    # Parcourir la stack pour trouver le script appelant
+    for frame_info in inspect.stack():
+        frame_filename = frame_info.filename
+
+        # Chercher un dossier avec préfixe numérique dans le chemin
+        # Pattern: /X_ToolName/ où X est 1 ou plusieurs chiffres
+        match = re.search(r'[\\/](\d+)_([^\\/]+)[\\/]', frame_filename)
+
+        if match:
+            prefix = match.group(1)  # Le numéro (ex: "1", "2", "3", "9")
+            folder_name = match.group(2)  # Le nom du dossier sans préfixe
+
+            # Vérifier si le nom du dossier correspond au tool_name
+            # (en ignorant la casse et les underscores vs espaces)
+            normalized_folder = folder_name.lower().replace('_', '').replace('-', '')
+            normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
+
+            if normalized_folder.startswith(normalized_tool) or normalized_tool.startswith(normalized_folder):
+                return f"{prefix}_{tool_name}"
+
+    # Si aucun préfixe trouvé, retourner le nom original
+    return tool_name
+
+
 def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) -> str:
     """
     Retourne le chemin de sortie pour un outil avec timestamp.
@@ -84,23 +124,29 @@ def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) 
     Crée un nouveau dossier horodaté à chaque exécution pour
     conserver l'historique des opérations.
 
+    Le nom du dossier outil inclut automatiquement le préfixe numérique
+    du dossier d'installation (ex: 1_Extractor, 2_Applicator, etc.).
+
     Args:
         plugin_path: Chemin vers le plugin Lightroom (.lrplugin)
         tool_name: Nom de l'outil (Extractor, Applicator, TranslationManager, Tools)
         create: Si True, crée le dossier. Si False, retourne juste le chemin.
 
     Returns:
-        Chemin complet: <plugin>/__i18n_kit__/<tool_name>/<YYYYMMDD_HHMMSS>/
+        Chemin complet: <plugin>/__i18n_kit__/<prefix_tool_name>/<YYYYMMDD_HHMMSS>/
 
     Example:
         >>> get_tool_output_path("/path/to/plugin.lrplugin", "Extractor")
-        '/path/to/plugin.lrplugin/__i18n_kit__/Extractor/20260129_143022'
+        '/path/to/plugin.lrplugin/__i18n_kit__/1_Extractor/20260129_143022'
     """
     timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 
+    # Ajouter le préfixe numérique au nom de l'outil
+    prefixed_tool_name = _extract_tool_prefix(tool_name)
+
     path = os.path.join(
         get_i18n_kit_path(plugin_path),
-        tool_name,
+        prefixed_tool_name,
         timestamp
     )
 
@@ -117,6 +163,9 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
     Recherche parmi les dossiers horodatés (format YYYYMMDD_HHMMSS)
     et retourne le plus récent par tri lexicographique.
 
+    Supporte les dossiers avec et sans préfixe numérique
+    (ex: "Extractor" ou "1_Extractor").
+
     Args:
         plugin_path: Chemin vers le plugin Lightroom
         tool_name: Nom de l'outil (Extractor, Applicator, etc.)
@@ -126,9 +175,15 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
 
     Example:
         >>> find_latest_tool_output("/path/to/plugin.lrplugin", "Extractor")
-        '/path/to/plugin.lrplugin/__i18n_kit__/Extractor/20260129_143022'
+        '/path/to/plugin.lrplugin/__i18n_kit__/1_Extractor/20260129_143022'
     """
-    tool_dir = os.path.join(get_i18n_kit_path(plugin_path), tool_name)
+    # Essayer d'abord avec le préfixe
+    prefixed_tool_name = _extract_tool_prefix(tool_name)
+    tool_dir = os.path.join(get_i18n_kit_path(plugin_path), prefixed_tool_name)
+
+    # Si le dossier avec préfixe n'existe pas, essayer sans préfixe (rétrocompatibilité)
+    if not os.path.exists(tool_dir):
+        tool_dir = os.path.join(get_i18n_kit_path(plugin_path), tool_name)
 
     if not os.path.exists(tool_dir):
         return None

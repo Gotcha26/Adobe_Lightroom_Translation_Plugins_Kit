@@ -254,7 +254,7 @@ python Extractor_main.py --plugin-path ./plugin.lrplugin [OPTIONS]
 | Option | Description | Default | Example |
 |--------|-------------|---------|---------|
 | `--plugin-path` | Plugin path (REQUIRED) | - | `./myPlugin.lrplugin` |
-| `--output-dir` | Custom output directory | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
+| `--output-dir` | Custom output directory | `<plugin>/__i18n_tmp__/1_Extractor/` | `./output` |
 | `--prefix` | LOC keys prefix | `$$$/Piwigo` | `$$$/MyApp` |
 | `--lang` | Base language code | `en` | `fr`, `de`, `es` |
 | `--exclude` | Files to exclude (repeatable) | - | `--exclude test.lua --exclude debug.lua` |

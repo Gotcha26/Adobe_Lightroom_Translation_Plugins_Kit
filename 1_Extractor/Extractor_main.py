@@ -23,7 +23,7 @@ Options (CLI):
     --min-length N        Longueur minimale des chaînes (défaut: 3)
     --no-ignore-log       NE PAS ignorer les lignes de log
 
-Les fichiers sont générés dans: <plugin>/__i18n_kit__/Extractor/<timestamp>/
+Les fichiers sont générés dans: <plugin>/__i18n_kit__/1_Extractor/<timestamp>/
 
 Auteur : Claude (Anthropic) pour Julien Moreau
 Date : 2026-01-27
@@ -55,7 +55,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         sys.exit(1)
 
     # Déterminer le répertoire de sortie
-    # Nouvelle structure: <plugin>/__i18n_kit__/Extractor/<timestamp>/
+    # Nouvelle structure: <plugin>/__i18n_kit__/1_Extractor/<timestamp>/
     if output_dir:
         # Override manuel (rétrocompatibilité)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -165,7 +165,7 @@ Exemples:
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
         parser.add_argument('--output-dir', default=None,
-                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_kit__/Extractor/)')
+                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_kit__/1_Extractor/)')
         parser.add_argument('--prefix', default='$$$/Piwigo',
                             help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
         parser.add_argument('--lang', default='en',

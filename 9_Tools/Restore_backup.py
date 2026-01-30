@@ -5,7 +5,7 @@ Restore_backup.py
 Script pour restaurer les fichiers .lua à partir de leurs sauvegardes .bak
 générées par Applicator.
 
-Les backups sont stockés dans: <plugin>/__i18n_kit__/Applicator/<timestamp>/backups/
+Les backups sont stockés dans: <plugin>/__i18n_kit__/2_Applicator/<timestamp>/backups/
 
 Usage:
     python Restore_backup.py                    # Menu interactif
@@ -32,6 +32,9 @@ def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
     """
     Trouve toutes les sessions Applicator avec des backups.
 
+    Recherche dans les dossiers "Applicator" ou "X_Applicator"
+    pour supporter les deux formats (avec et sans préfixe).
+
     Args:
         plugin_path: Chemin du plugin
 
@@ -39,24 +42,37 @@ def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
         Liste de tuples (timestamp, chemin_backup_dir) triés du plus récent au plus ancien
     """
     sessions = []
-
     i18n_kit_path = get_i18n_kit_path(plugin_path)
-    applicator_dir = os.path.join(i18n_kit_path, "Applicator")
 
-    if not os.path.isdir(applicator_dir):
+    # Chercher tous les dossiers qui contiennent "Applicator" (avec ou sans préfixe)
+    if not os.path.isdir(i18n_kit_path):
         return sessions
 
-    for item in os.listdir(applicator_dir):
-        item_path = os.path.join(applicator_dir, item)
-        backup_path = os.path.join(item_path, "backups")
+    applicator_dirs = []
+    for name in os.listdir(i18n_kit_path):
+        if "applicator" in name.lower():
+            applicator_dirs.append(os.path.join(i18n_kit_path, name))
 
-        # Vérifier format timestamp (15 caractères: YYYYMMDD_HHMMSS)
-        if (os.path.isdir(item_path) and len(item) == 15 and item[8] == '_'
-                and os.path.isdir(backup_path)):
-            # Vérifier qu'il y a des fichiers .bak
-            bak_files = [f for f in os.listdir(backup_path) if f.endswith('.bak')]
-            if bak_files:
-                sessions.append((item, backup_path))
+    # Si aucun dossier Applicator trouvé, retourner vide
+    if not applicator_dirs:
+        return sessions
+
+    # Parcourir tous les dossiers Applicator trouvés
+    for applicator_dir in applicator_dirs:
+        if not os.path.isdir(applicator_dir):
+            continue
+
+        for item in os.listdir(applicator_dir):
+            item_path = os.path.join(applicator_dir, item)
+            backup_path = os.path.join(item_path, "backups")
+
+            # Vérifier format timestamp (15 caractères: YYYYMMDD_HHMMSS)
+            if (os.path.isdir(item_path) and len(item) == 15 and item[8] == '_'
+                    and os.path.isdir(backup_path)):
+                # Vérifier qu'il y a des fichiers .bak
+                bak_files = [f for f in os.listdir(backup_path) if f.endswith('.bak')]
+                if bak_files:
+                    sessions.append((item, backup_path))
 
     # Trier du plus récent au plus ancien
     sessions.sort(key=lambda x: x[0], reverse=True)

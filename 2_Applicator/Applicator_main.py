@@ -18,14 +18,14 @@ Options CLI:
     --dry-run              Mode simulation (affiche sans modifier)
     --no-backup            Ne pas creer de fichiers de sauvegarde .bak (defaut: backup active)
 
-Sorties générées dans: <plugin>/__i18n_kit__/Applicator/<timestamp>/
+Sorties générées dans: <plugin>/__i18n_kit__/2_Applicator/<timestamp>/
   - application_report.txt (rapport détaillé)
   - backups/ (sauvegardes .bak des fichiers modifiés)
 
 Le script :
 1. Détecte automatiquement la dernière extraction (__i18n_kit__/Extractor/)
 2. Lit le fichier replacements.json genere par Extractor
-3. Cree des sauvegardes dans __i18n_kit__/Applicator/<timestamp>/backups/
+3. Cree des sauvegardes dans __i18n_kit__/2_Applicator/<timestamp>/backups/
 4. Remplace les chaines hardcodees par des appels LOC avec valeur par defaut
 5. Genere un rapport detaille des changements
 

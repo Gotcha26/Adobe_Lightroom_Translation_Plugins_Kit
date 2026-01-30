@@ -238,11 +238,11 @@ If you need to restore manually:
 
 ```bash
 # Restore a file
-cp myPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups/MyDialog.lua.bak \
+cp myPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups/MyDialog.lua.bak \
    myPlugin.lrplugin/MyDialog.lua
 
 # Restore all files
-cp myPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups/*.bak \
+cp myPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups/*.bak \
    myPlugin.lrplugin/
 ```
 
@@ -432,7 +432,7 @@ Before actually applying modifications, test in dry-run:
 python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
 
 # 2. Consult the report
-cat ./plugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/application_report.txt
+cat ./plugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/application_report.txt
 
 # 3. If OK, actually apply
 python Applicator_main.py --plugin-path ./plugin.lrplugin
@@ -534,7 +534,7 @@ If backups are corrupted:
 1. Verify integrity:
 ```bash
 diff ./plugin.lrplugin/MyFile.lua \
-     ./plugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyFile.lua.bak
+     ./plugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/MyFile.lua.bak
 ```
 
 2. If necessary, restore from Git:
@@ -550,7 +550,7 @@ No, the second application would fail because strings are already in LOC. Applic
 
 ### Are backups automatically deleted?
 
-No, they remain in `__i18n_tmp__/Applicator/` until you manually delete them or use the `Delete_temp_dir.py` tool.
+No, they remain in `__i18n_tmp__/2_Applicator/` until you manually delete them or use the `Delete_temp_dir.py` tool.
 
 ### Can I undo an application without backups?
 

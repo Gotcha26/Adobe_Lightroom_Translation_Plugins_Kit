@@ -37,12 +37,12 @@ Cet outil supprime le dossier temporaire `__i18n_tmp__` (ou le nom configuré) d
 Plugin Lightroom
     │
     └── __i18n_tmp__/
-        ├── Extractor/
+        ├── 1_Extractor/
         │   ├── 20260120_100000/    (5 fichiers, 120 Ko)
         │   └── 20260129_143022/    (5 fichiers, 135 Ko)
-        ├── Applicator/
+        ├── 2_Applicator/
         │   └── 20260129_143530/    (15 backups, 2.3 Mo)
-        └── TranslationManager/
+        └── 3_TranslationManager/
             └── 20260129_144000/    (8 fichiers, 45 Ko)
 
         TOTAL: 33 fichiers, 2.6 Mo
@@ -234,7 +234,7 @@ Mode simulation (dry-run) ? [O/n]: n
 RECHERCHE DES FICHIERS .bak
 ============================================================
 Plugin: ./monPlugin.lrplugin
-Source: ./monPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups
+Source: ./monPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260129_143530/backups
 
 Fichiers trouves: 12
 
@@ -366,7 +366,7 @@ Suppression des .bak:
 
 1. Listez les sessions disponibles :
 ```bash
-ls monPlugin.lrplugin/__i18n_tmp__/Applicator/
+ls monPlugin.lrplugin/__i18n_tmp__/2_Applicator/
 ```
 
 2. Notez le timestamp de la session souhaitée
@@ -395,7 +395,7 @@ Pour ne restaurer que certains fichiers :
 
 1. Copiez manuellement les `.bak` souhaités :
 ```bash
-cp monPlugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyDialog.lua.bak \
+cp monPlugin.lrplugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/MyDialog.lua.bak \
    monPlugin.lrplugin/MyDialog.lua
 ```
 
@@ -430,7 +430,7 @@ Oui, Applicator crée automatiquement des backups `.bak` de tous les fichiers mo
 
 ### Puis-je restaurer après avoir supprimé __i18n_tmp__ ?
 
-Non, les backups sont dans `__i18n_tmp__/Applicator/`. Si vous les supprimez, vous ne pourrez plus les restaurer avec cet outil. Utilisez Git ou vos propres sauvegardes.
+Non, les backups sont dans `__i18n_tmp__/2_Applicator/`. Si vous les supprimez, vous ne pourrez plus les restaurer avec cet outil. Utilisez Git ou vos propres sauvegardes.
 
 ### Les outils fonctionnent-ils sur Linux/Mac ?
 
@@ -459,7 +459,7 @@ Oui, copiez simplement les `.bak` :
 
 ```bash
 # Structure __i18n_tmp__
-cp monPlugin/__i18n_tmp__/Applicator/<timestamp>/backups/*.bak monPlugin/
+cp monPlugin/__i18n_tmp__/2_Applicator/<timestamp>/backups/*.bak monPlugin/
 
 # Puis renommez pour retirer .bak
 for f in monPlugin/*.lua.bak; do mv "$f" "${f%.bak}"; done
@@ -495,7 +495,7 @@ Rien a restaurer.
 
 **Solutions :**
 1. Vérifiez que le chemin du plugin est correct
-2. Vérifiez la présence de `__i18n_tmp__/Applicator/`
+2. Vérifiez la présence de `__i18n_tmp__/2_Applicator/`
 3. Utilisez Git pour restaurer : `git checkout HEAD -- *.lua`
 
 ### Restore_backup.py - Fichiers partiellement restaurés

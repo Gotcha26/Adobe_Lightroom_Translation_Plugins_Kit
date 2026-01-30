@@ -53,7 +53,7 @@ Mode CLI (legacy):
     python TranslationManager.py inject --translate-dir ./20260128_143000 --locales ./Locales
     python TranslationManager.py sync --update ./20260128_143000 --locales ./Locales
 
-Sorties generees dans: <plugin>/__i18n_tmp__/TranslationManager/<timestamp>/
+Sorties generees dans: <plugin>/__i18n_tmp__/3_TranslationManager/<timestamp>/
 
 Auteur: Claude (Anthropic) pour Julien Moreau
 Date: 2026-01-30
@@ -239,7 +239,7 @@ Exemples:
     compare_parser = subparsers.add_parser('compare', help='Compare deux versions EN')
     compare_parser.add_argument('--old', required=True, help='Ancien fichier EN')
     compare_parser.add_argument('--new', required=True, help='Nouveau fichier EN')
-    compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/TranslationManager/)')
+    compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/3_TranslationManager/)')
     compare_parser.add_argument('--output', help='Override repertoire de sortie')
     
     # extract
