@@ -64,6 +64,14 @@ def extract_all_string_literals(line: str) -> List[Tuple[str, int, int]]:
     pattern_double = re.compile(r'"([^"]*)"')
     for match in pattern_double.finditer(line):
         text = match.group(1)
+
+        # Filtrer les fausses captures qui contiennent du code Lua
+        # Exemple: 'boundary="' .. boundary .. '"' capture '"' .. boundary .. '"'
+        # Si la chaîne contient '..' c'est l'opérateur de concaténation Lua
+        if '..' in text:
+            # C'est probablement du code Lua capturé par erreur, pas une vraie chaîne
+            continue
+
         results.append((text, match.start(), match.end()))
 
     return results

@@ -125,6 +125,8 @@ IGNORE_EXACT: Set[str] = {
     'Yes', 'No', 'Abort', 'Retry', 'Ignore', 'Continue', 'Stop', 'Close',
     # Types de messages LrDialogs.message (3ème argument)
     'info', 'warning', 'critical', 'error',
+    # Identifiants techniques dans concaténations
+    'boundary',
 }
 
 TECHNICAL_PATTERNS: List[re.Pattern] = [
@@ -135,6 +137,7 @@ TECHNICAL_PATTERNS: List[re.Pattern] = [
     re.compile(r'^image/'),               # MIME types image/*
     re.compile(r'^pwg\.'),                # API Piwigo
     re.compile(r'^[a-z_]+$'),             # snake_case pur (identifiants)
+    re.compile(r'^[a-z]{3,15}$'),         # Mots courts minuscules = variables (boundary, length, etc.)
     re.compile(r'^[A-Z][a-z]+(-[A-Z][a-z]+)+$'),  # Headers HTTP (Content-Type, User-Agent)
     re.compile(r'^Lr[A-Z]'),              # SDK Lightroom
     re.compile(r'^DEBUG'),                # Messages debug
@@ -151,6 +154,8 @@ TECHNICAL_CONTEXT_PATTERNS: List[re.Pattern] = [
     re.compile(r'headers?\s*=\s*\{'),          # headers = { ... }
     re.compile(r'http\.request'),              # Requêtes HTTP
     re.compile(r'LrHttp\.'),                   # SDK Lightroom HTTP
+    re.compile(r'multipart/form-data'),        # Multipart requests (boundary, etc.)
+    re.compile(r'\bboundary\b'),               # Contexte avec boundary
 ]
 
 # Stop words pour génération de clé
