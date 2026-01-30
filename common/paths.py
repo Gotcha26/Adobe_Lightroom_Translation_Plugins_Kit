@@ -23,29 +23,58 @@ from datetime import datetime
 from typing import Optional
 
 
-# Nom du dossier racine pour tous les outils i18n
-I18N_KIT_DIR = "__i18n_kit__"
+# Nom du dossier racine par défaut pour tous les outils i18n
+DEFAULT_I18N_DIR = "__i18n_tmp__"
+
+# Variable globale pour le nom du dossier (configurable)
+_i18n_dir = DEFAULT_I18N_DIR
+
+# Alias pour compatibilité avec le code existant
+I18N_KIT_DIR = DEFAULT_I18N_DIR
 
 # Format du timestamp : YYYYMMDD_HHMMSS (15 caractères)
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 TIMESTAMP_LENGTH = 15
 
 
+def set_i18n_dir(name: str) -> None:
+    """
+    Définit le nom du dossier temporaire i18n.
+
+    Args:
+        name: Nom du dossier (ex: "__i18n_tmp__", "__i18n_kit__")
+    """
+    global _i18n_dir, I18N_KIT_DIR
+    if name and name.strip():
+        _i18n_dir = name.strip()
+        I18N_KIT_DIR = _i18n_dir  # Maintenir compatibilité
+
+
+def get_i18n_dir() -> str:
+    """
+    Retourne le nom du dossier temporaire i18n configuré.
+
+    Returns:
+        Nom du dossier (ex: "__i18n_tmp__")
+    """
+    return _i18n_dir
+
+
 def get_i18n_kit_path(plugin_path: str) -> str:
     """
-    Retourne le chemin du dossier __i18n_kit__ dans le plugin.
+    Retourne le chemin du dossier temporaire i18n dans le plugin.
 
     Args:
         plugin_path: Chemin absolu vers le plugin Lightroom (.lrplugin)
 
     Returns:
-        Chemin complet: <plugin_path>/__i18n_kit__
+        Chemin complet: <plugin_path>/<i18n_dir>
 
     Example:
         >>> get_i18n_kit_path("/path/to/plugin.lrplugin")
-        '/path/to/plugin.lrplugin/__i18n_kit__'
+        '/path/to/plugin.lrplugin/__i18n_tmp__'
     """
-    return os.path.join(plugin_path, I18N_KIT_DIR)
+    return os.path.join(plugin_path, get_i18n_dir())
 
 
 def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) -> str:
@@ -120,13 +149,56 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
     return os.path.join(tool_dir, dirs[0])
 
 
+def is_valid_plugin_path(path: str) -> bool:
+    """
+    Vérifie si le chemin est un plugin Lightroom valide.
+
+    Args:
+        path: Chemin à vérifier
+
+    Returns:
+        True si le chemin se termine par .lrplugin et existe, False sinon
+    """
+    if not path:
+        return False
+    normalized = os.path.normpath(path)
+    return os.path.isdir(normalized) and normalized.lower().endswith('.lrplugin')
+
+
+def validate_plugin_path(path: str) -> tuple:
+    """
+    Valide un chemin de plugin et retourne des informations détaillées.
+
+    Args:
+        path: Chemin à valider
+
+    Returns:
+        Tuple (is_valid, normalized_path, warning_message)
+        - is_valid: True si valide
+        - normalized_path: Chemin normalisé
+        - warning_message: Message d'avertissement ou None
+    """
+    if not path:
+        return False, None, "Chemin vide"
+
+    normalized = os.path.normpath(path)
+
+    if not os.path.isdir(normalized):
+        return False, normalized, f"Répertoire introuvable: {normalized}"
+
+    if not normalized.lower().endswith('.lrplugin'):
+        return True, normalized, "Ce dossier ne se termine pas par .lrplugin"
+
+    return True, normalized, None
+
+
 def normalize_path(path: str) -> str:
     """
     Normalise un chemin pour compatibilité Windows/Linux.
 
     - Convertit en chemin absolu
-    - Normalise les separateurs (/ ou \\ selon l'OS)
-    - Resout les .. et .
+    - Normalise les séparateurs (/ ou \\ selon l'OS)
+    - Résout les .. et .
 
     Args:
         path: Chemin à normaliser (relatif ou absolu)

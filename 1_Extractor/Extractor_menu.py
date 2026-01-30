@@ -3,286 +3,338 @@
 Extractor_menu.py
 
 Interface menu interactive pour Extractor.
-Permet de configurer tous les paramètres via un menu, compatible Windows/Linux.
+Approche "Ready to go" : affiche la configuration complète d'entrée
+et permet de lancer directement ou d'éditer des options spécifiques.
 """
 
 import os
 import sys
 from typing import Tuple, List, Optional
 
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.paths import validate_plugin_path, get_i18n_dir
+from common.colors import Colors
+
+# Instance couleurs
+c = Colors()
+
 
 class InteractiveMenu:
     """Menu interactif pour configurer l'extraction."""
-    
-    def __init__(self):
-        self.plugin_path = ""
+
+    def __init__(self, default_plugin_path: str = ""):
+        """
+        Initialise le menu avec des valeurs par défaut.
+
+        Args:
+            default_plugin_path: Chemin du plugin pré-configuré (depuis LocalisationToolKit)
+        """
+        self.plugin_path = default_plugin_path
         self.output_dir = ""
         self.prefix = "$$$/Piwigo"
         self.lang = "en"
         self.exclude_files: List[str] = []
         self.min_length = 3
         self.ignore_log = True
-    
+
+        # Valider le chemin par défaut s'il est fourni
+        if default_plugin_path:
+            is_valid, normalized, _ = validate_plugin_path(default_plugin_path)
+            if is_valid:
+                self.plugin_path = normalized
+
     def clear_screen(self):
         """Efface l'écran (compatible Windows et Linux)."""
         os.system('cls' if os.name == 'nt' else 'clear')
-    
+
     def print_header(self):
         """Affiche l'en-tête du menu."""
-        print("\n" + "=" * 80)
-        print("  EXTRACTOR - Configuration Interactive".center(80))
-        print("=" * 80 + "\n")
-    
-    def print_current_config(self):
-        """Affiche la configuration actuelle."""
-        print("Configuration actuelle:")
-        print(f"  1. Chemin du plugin      : {self.plugin_path if self.plugin_path else '(non défini)'}")
-        default_output = "<plugin>/__i18n_kit__/Extractor/<timestamp>/" if self.plugin_path else "(automatique)"
-        print(f"  2. Répertoire de sortie  : {self.output_dir if self.output_dir else default_output}")
-        print(f"  3. Préfixe LOC           : {self.prefix}")
-        print(f"  4. Code langue           : {self.lang}")
-        print(f"  5. Fichiers à exclure    : {', '.join(self.exclude_files) if self.exclude_files else '(aucun)'}")
-        print(f"  6. Longueur min chaînes  : {self.min_length}")
-        print(f"  7. Ignorer logs          : {'✓ Oui' if self.ignore_log else '✗ Non'}")
         print()
-    
+        print(c.box_header("EXTRACTOR - Extraction des chaînes localisables"))
+        print()
+
+    def is_ready(self) -> bool:
+        """Vérifie si la configuration est prête pour lancer l'extraction."""
+        return bool(self.plugin_path and os.path.isdir(self.plugin_path))
+
+    def print_config(self):
+        """Affiche la configuration actuelle."""
+        print(c.title("Configuration:"))
+        print()
+
+        # Plugin path avec indicateur de validité
+        if self.plugin_path:
+            if os.path.isdir(self.plugin_path):
+                status = f"{c.OK}OK{c.RESET}"
+            else:
+                status = f"{c.ERROR}INTROUVABLE{c.RESET}"
+            print(c.config_line("1. Plugin", f"{self.plugin_path} [{status}]"))
+        else:
+            print(c.config_line("1. Plugin", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
+
+        # Répertoire de sortie
+        if self.output_dir:
+            print(c.config_line("2. Sortie", self.output_dir))
+        else:
+            default_output = f"<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/"
+            print(c.config_line("2. Sortie", f"{default_output} {c.DIM}(auto){c.RESET}"))
+
+        # Autres options
+        print(c.config_line("3. Préfixe LOC", self.prefix))
+        print(c.config_line("4. Langue", self.lang))
+
+        exclude_display = ', '.join(self.exclude_files) if self.exclude_files else "(aucun)"
+        print(c.config_line("5. Exclusions", exclude_display))
+
+        print(c.config_line("6. Long. min chaînes", str(self.min_length)))
+
+        ignore_display = f"{c.OK}Oui{c.RESET}" if self.ignore_log else f"{c.WARNING}Non{c.RESET}"
+        print(c.config_line("7. Ignorer logs", ignore_display))
+
+        print()
+
+    def print_menu(self):
+        """Affiche les options du menu."""
+        print(c.separator("─"))
+
+        if self.is_ready():
+            print(c.menu_option("ENTRÉE", f"{c.GREEN}Lancer l'extraction{c.RESET}"))
+        else:
+            print(f"  {c.DIM}ENTRÉE  Lancer l'extraction (configurer le plugin d'abord){c.RESET}")
+
+        print(c.menu_option("1-7", "Modifier une option"))
+        print(c.menu_option("0", "Quitter"))
+        print()
+
     def input_plugin_path(self) -> bool:
         """Demande le chemin du plugin."""
-        print("1️⃣  Chemin du plugin Lightroom")
-        print("-" * 80)
-        print("Exemples Windows:")
-        print("  C:\\Users\\User\\Documents\\Lightroom\\piwigoPublish.lrplugin")
-        print("  .\\piwigoPublish.lrplugin")
-        print("\nExemples Linux/Mac:")
-        print("  /home/user/piwigoPublish.lrplugin")
-        print("  ./piwigoPublish.lrplugin")
         print()
-        
-        path = input("Chemin du plugin (obligatoire): ").strip()
-        
-        if not path:
-            print("❌ Chemin obligatoire!")
+        print(c.title("1. Chemin du plugin Lightroom"))
+        print(c.separator())
+        print("Exemples:")
+        print(f"  {c.VALUE}C:\\Users\\User\\Lightroom\\plugin.lrplugin{c.RESET}")
+        print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
+        print()
+
+        if self.plugin_path:
+            print(f"Actuel: {c.VALUE}{self.plugin_path}{c.RESET}")
+            path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder): ")).strip()
+            if not path:
+                print(c.success("Chemin inchangé"))
+                return True
+        else:
+            path = input(c.prompt("Chemin du plugin: ")).strip()
+            if not path:
+                print(c.error("Chemin requis!"))
+                return False
+
+        is_valid, normalized_path, warning = validate_plugin_path(path)
+
+        if not is_valid:
+            print(c.error(warning))
             return False
-        
-        # Normaliser le chemin pour Windows et Linux
-        normalized_path = os.path.normpath(path)
-        
-        if not os.path.isdir(normalized_path):
-            print(f"❌ Répertoire introuvable: {normalized_path}")
-            return False
-        
+
+        if warning:
+            print(c.warning(warning))
+            print("            Les plugins Lightroom doivent se terminer par .lrplugin")
+            confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+            if confirm not in ['o', 'oui', 'y', 'yes']:
+                print(c.error("Configuration annulée"))
+                return False
+
         self.plugin_path = normalized_path
-        print(f"✓ Plugin trouvé: {normalized_path}\n")
+        print(c.success(f"Plugin: {normalized_path}"))
         return True
-    
+
     def input_output_dir(self):
         """Demande le répertoire de sortie (override optionnel)."""
-        print("2️⃣  Répertoire de sortie (override)")
-        print("-" * 80)
-        print("Par DEFAUT: Les fichiers seront créés dans:")
-        print("  <plugin>/__i18n_kit__/Extractor/<timestamp>/")
-        print("")
-        print("Pour OVERRIDE (usage avancé), spécifiez un chemin:")
-        print("  C:\\Users\\User\\Desktop\\Extraction")
-        print("  /home/user/extraction")
-        print("\n(Appuyer sur ENTRÉE pour utiliser le dossier __i18n_kit__ du plugin)\n")
+        print()
+        print(c.title("2. Répertoire de sortie"))
+        print(c.separator())
+        print(f"Par défaut: {c.VALUE}<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/{c.RESET}")
+        print()
+        print("Pour forcer un autre emplacement, entrez un chemin.")
+        print(f"Sinon, appuyez sur {c.YELLOW}ENTRÉE{c.RESET} pour utiliser le défaut.")
+        print()
 
-        path = input("Override répertoire de sortie (optionnel): ").strip()
+        if self.output_dir:
+            print(f"Override actuel: {c.VALUE}{self.output_dir}{c.RESET}")
+
+        path = input(c.prompt("Répertoire (ENTRÉE pour défaut): ")).strip()
 
         if path:
             normalized_path = os.path.normpath(path)
             os.makedirs(normalized_path, exist_ok=True)
             self.output_dir = normalized_path
-            print(f"✓ Override: {normalized_path}\n")
+            print(c.success(f"Override: {normalized_path}"))
         else:
             self.output_dir = ""
-            print("✓ Utilisera: <plugin>/__i18n_kit__/Extractor/<timestamp>/\n")
-    
+            print(c.success(f"Utilisera: <plugin>/{get_i18n_dir()}/Extractor/<timestamp>/"))
+
     def input_prefix(self):
         """Demande le préfixe LOC."""
-        print("3️⃣  Préfixe des clés LOC")
-        print("-" * 80)
-        print("Exemples:")
-        print("  $$$/Piwigo (défaut)")
-        print("  $$$/MyApp")
-        print("  $$$/Plugin/MyPlugin")
         print()
-        
-        prefix = input(f"Préfixe LOC [{self.prefix}]: ").strip()
-        
+        print(c.title("3. Préfixe des clés LOC"))
+        print(c.separator())
+        print(f"Exemples: {c.VALUE}$$$/Piwigo{c.RESET}, {c.VALUE}$$$/MyApp{c.RESET}")
+        print()
+
+        prefix = input(c.prompt(f"Préfixe [{self.prefix}]: ")).strip()
+
         if prefix:
             self.prefix = prefix
-            print(f"✓ Préfixe: {self.prefix}\n")
+            print(c.success(f"Préfixe: {self.prefix}"))
         else:
-            print(f"✓ Préfixe (défaut): {self.prefix}\n")
-    
+            print(c.success(f"Préfixe inchangé: {self.prefix}"))
+
     def input_lang(self):
         """Demande le code langue."""
-        print("4️⃣  Code langue")
-        print("-" * 80)
-        print("Exemples:")
-        print("  en (anglais) - défaut")
-        print("  fr (français)")
-        print("  de (allemand)")
-        print("  es (espagnol)")
         print()
-        
-        lang = input(f"Code langue [{self.lang}]: ").strip().lower()
-        
+        print(c.title("4. Code langue"))
+        print(c.separator())
+        print(f"Exemples: {c.VALUE}en{c.RESET} (anglais), {c.VALUE}fr{c.RESET} (français), {c.VALUE}de{c.RESET} (allemand)")
+        print()
+
+        lang = input(c.prompt(f"Langue [{self.lang}]: ")).strip().lower()
+
         if lang and len(lang) == 2:
             self.lang = lang
-            print(f"✓ Langue: {self.lang}\n")
+            print(c.success(f"Langue: {self.lang}"))
         elif lang:
-            print("⚠️  Code langue invalide (2 caractères), valeur par défaut utilisée\n")
+            print(c.warning("Code invalide (2 caractères requis), valeur inchangée"))
         else:
-            print(f"✓ Langue (défaut): {self.lang}\n")
-    
+            print(c.success(f"Langue inchangée: {self.lang}"))
+
     def input_exclude_files(self):
         """Demande les fichiers à exclure."""
-        print("5️⃣  Fichiers à exclure de l'analyse")
-        print("-" * 80)
-        print("Exemples:")
-        print("  JSON.lua")
-        print("  test.lua, debug.lua")
-        print("  (Appuyer sur ENTRÉE pour ignorer cette option)")
         print()
-        
-        files = input("Fichiers à exclure (séparés par virgule): ").strip()
-        
+        print(c.title("5. Fichiers à exclure"))
+        print(c.separator())
+        print(f"Exemples: {c.VALUE}JSON.lua, test.lua{c.RESET}")
+        print()
+
+        if self.exclude_files:
+            print(f"Actuels: {c.VALUE}{', '.join(self.exclude_files)}{c.RESET}")
+
+        files = input(c.prompt("Fichiers à exclure (virgule pour séparer): ")).strip()
+
         if files:
-            self.exclude_files = [f.strip() for f in files.split(',')]
-            print(f"✓ Fichiers à exclure: {', '.join(self.exclude_files)}\n")
+            self.exclude_files = [f.strip() for f in files.split(',') if f.strip()]
+            print(c.success(f"Exclusions: {', '.join(self.exclude_files)}"))
         else:
             self.exclude_files = []
-            print("✓ Aucun fichier exclu\n")
-    
+            print(c.success("Aucun fichier exclu"))
+
     def input_min_length(self):
         """Demande la longueur minimale des chaînes."""
-        print("6️⃣  Longueur minimale des chaînes")
-        print("-" * 80)
+        print()
+        print(c.title("6. Longueur minimale des chaînes"))
+        print(c.separator())
         print("Les chaînes plus courtes seront ignorées.")
-        print("Valeurs typiques: 2-4")
         print()
-        
-        while True:
-            length = input(f"Longueur minimale [{self.min_length}]: ").strip()
-            
-            if not length:
-                print(f"✓ Longueur minimale (défaut): {self.min_length}\n")
-                break
-            
-            try:
-                length_int = int(length)
-                if length_int >= 1:
-                    self.min_length = length_int
-                    print(f"✓ Longueur minimale: {self.min_length}\n")
-                    break
-                else:
-                    print("❌ Doit être >= 1\n")
-            except ValueError:
-                print("❌ Valeur invalide, entrez un nombre\n")
-    
-    def input_ignore_log(self):
-        """Demande si les logs doivent être ignorées."""
-        print("7️⃣  Ignorer les lignes de log")
-        print("-" * 80)
-        print("Par défaut, les lignes contenant log(), warn(), etc. sont ignorées.")
-        print()
-        
-        while True:
-            response = input("Ignorer les logs? [O/n]: ").strip().lower()
-            
-            if response in ['o', 'y', '', 'oui', 'yes']:
-                self.ignore_log = True
-                print("✓ Les logs seront ignorés\n")
-                break
-            elif response in ['n', 'non', 'no']:
-                self.ignore_log = False
-                print("✓ Les logs NE seront PAS ignorés\n")
-                break
+
+        length = input(c.prompt(f"Longueur minimale [{self.min_length}]: ")).strip()
+
+        if not length:
+            print(c.success(f"Longueur inchangée: {self.min_length}"))
+            return
+
+        try:
+            length_int = int(length)
+            if length_int >= 1:
+                self.min_length = length_int
+                print(c.success(f"Longueur minimale: {self.min_length}"))
             else:
-                print("❌ Entrez 'o' (oui) ou 'n' (non)\n")
-    
+                print(c.error("Doit être >= 1"))
+        except ValueError:
+            print(c.error("Valeur invalide"))
+
+    def input_ignore_log(self):
+        """Demande si les logs doivent être ignorés."""
+        print()
+        print(c.title("7. Ignorer les lignes de log"))
+        print(c.separator())
+        print("Ignore les lignes contenant log(), warn(), etc.")
+        print()
+
+        current = "O" if self.ignore_log else "N"
+        response = input(c.prompt(f"Ignorer les logs? [{current}]: ")).strip().lower()
+
+        if response in ['o', 'y', 'oui', 'yes']:
+            self.ignore_log = True
+            print(c.success("Logs ignorés"))
+        elif response in ['n', 'non', 'no']:
+            self.ignore_log = False
+            print(c.success("Logs inclus"))
+        else:
+            print(c.success(f"Option inchangée: {'Oui' if self.ignore_log else 'Non'}"))
+
     def run(self) -> bool:
-        """Lance le menu interactif."""
-        self.clear_screen()
-        self.print_header()
-        
-        print("Configurer les paramètres d'extraction.\n")
-        
+        """
+        Lance le menu interactif avec l'approche "Ready to go".
+
+        Returns:
+            True si l'extraction doit être lancée, False si annulé
+        """
         while True:
-            # Boucle sur les éléments obligatoires
-            while not self.input_plugin_path():
-                pass
-            
-            # Options optionnelles
-            self.input_output_dir()
-            
-            self.input_prefix()
-            self.input_lang()
-            self.input_exclude_files()
-            self.input_min_length()
-            self.input_ignore_log()
-            
-            # Afficher le résumé
             self.clear_screen()
             self.print_header()
-            print("Résumé de la configuration:\n")
-            self.print_current_config()
-            
-            # Confirmation
-            print("Options:")
-            print("  1. Démarrer l'extraction")
-            print("  2. Modifier les paramètres")
-            print("  3. Quitter")
-            print()
-            
-            choice = input("Votre choix (1-3): ").strip()
-            
-            if choice == '1':
-                return True
-            elif choice == '2':
-                self.clear_screen()
-                self.print_header()
-                print("Modification de la configuration\n")
-                print("Sélectionnez le paramètre à modifier:\n")
-                self.print_current_config()
-                
-                while True:
-                    param = input("Paramètre à modifier (1-7) ou 0 pour revenir: ").strip()
-                    
-                    if param == '0':
-                        break
-                    elif param == '1':
-                        while not self.input_plugin_path():
-                            pass
-                    elif param == '2':
-                        self.input_output_dir()
-                    elif param == '3':
-                        self.input_prefix()
-                    elif param == '4':
-                        self.input_lang()
-                    elif param == '5':
-                        self.input_exclude_files()
-                    elif param == '6':
-                        self.input_min_length()
-                    elif param == '7':
-                        self.input_ignore_log()
-                    else:
-                        print("❌ Choix invalide\n")
-                        continue
-                    
-                    self.clear_screen()
-                    self.print_header()
-                    print("Modification de la configuration\n")
-                    print("Sélectionnez le paramètre à modifier:\n")
-                    self.print_current_config()
-            elif choice == '3':
-                print("\n👋 Au revoir!")
+            self.print_config()
+            self.print_menu()
+
+            choice = input(c.prompt("Votre choix: ")).strip()
+
+            if choice == '0':
+                print()
+                print("Au revoir!")
                 return False
+
+            elif choice == '' and self.is_ready():
+                # Lancer directement
+                print()
+                print(c.success("Lancement de l'extraction..."))
+                return True
+
+            elif choice == '1':
+                self.input_plugin_path()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '2':
+                self.input_output_dir()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '3':
+                self.input_prefix()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '4':
+                self.input_lang()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '5':
+                self.input_exclude_files()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '6':
+                self.input_min_length()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '7':
+                self.input_ignore_log()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
+            elif choice == '':
+                # ENTRÉE mais pas prêt
+                print()
+                print(c.error("Configurez d'abord le chemin du plugin (option 1)"))
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
             else:
-                print("❌ Choix invalide (1-3)\n")
-    
+                print()
+                print(c.error("Choix invalide"))
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+
     def to_args(self) -> Tuple[str, str, str, str, List[str], int, bool]:
         """Retourne les arguments sous forme de tuple."""
         return (
@@ -296,17 +348,20 @@ class InteractiveMenu:
         )
 
 
-def show_interactive_menu() -> Optional[Tuple[str, str, str, str, List[str], int, bool]]:
+def show_interactive_menu(default_plugin_path: str = "") -> Optional[Tuple[str, str, str, str, List[str], int, bool]]:
     """
     Affiche le menu interactif et retourne les paramètres.
-    
+
+    Args:
+        default_plugin_path: Chemin du plugin pré-configuré (optionnel)
+
     Returns:
         Tuple avec (plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log)
         ou None si l'utilisateur a annulé
     """
-    menu = InteractiveMenu()
-    
+    menu = InteractiveMenu(default_plugin_path)
+
     if menu.run():
         return menu.to_args()
-    
+
     return None

@@ -119,19 +119,24 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
 
 
 def main():
-    """Point d'entrée principal."""
-    
-    # Vérifier si des arguments ont été fournis
-    if len(sys.argv) == 1:
-        # Aucun argument -> menu interactif
-        result = show_interactive_menu()
-        
+    """Point d'entree principal."""
+
+    # Verifier si mode interactif (aucun argument ou seulement --default-plugin)
+    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
+        # Recuperer le chemin par defaut si fourni
+        default_plugin = ""
+        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
+            default_plugin = sys.argv[2]
+
+        # Menu interactif avec plugin pre-configure
+        result = show_interactive_menu(default_plugin)
+
         if result is None:
-            print("\n❌ Extraction annulée")
+            print("\nExtraction annulee")
             sys.exit(1)
-        
+
         plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log = result
-        
+
         run_extraction(
             plugin_path=plugin_path,
             output_dir=output_dir,
