@@ -12,7 +12,7 @@ import shutil
 from datetime import datetime
 from typing import Dict, Optional
 
-from TM_common import parse_translation_file, resolve_path
+from TM_common import parse_translation_file, resolve_path, c
 
 
 # =============================================================================
@@ -203,58 +203,60 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
 def menu_compare():
     """Menu interactif pour COMPARE."""
     from TM_common import clear_screen, print_header
-    
+
     clear_screen()
     print_header()
-    print("\n  COMPARE: Comparer deux versions EN")
-    print("  " + "-" * 66)
-    
-    print("\n  Fichier ANCIEN (TranslatedStrings_en.txt ou répertoire):")
-    old_path = input("  > ").strip()
+    print(f"\n{c.INFO}COMPARE{c.RESET}: Comparer deux versions EN")
+    print(c.separator())
+
+    print(f"\n{c.KEY}Fichier ANCIEN{c.RESET} (TranslatedStrings_en.txt ou répertoire):")
+    old_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not old_path:
-        input("\n  ❌ Chemin requis.\n  Appuyez sur Entrée...")
+        print(c.error("Chemin requis."))
+        input("\nAppuyez sur Entrée...")
         return None
-    
-    print("\n  Fichier NOUVEAU (TranslatedStrings_en.txt ou répertoire):")
-    new_path = input("  > ").strip()
+
+    print(f"\n{c.KEY}Fichier NOUVEAU{c.RESET} (TranslatedStrings_en.txt ou répertoire):")
+    new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not new_path:
-        input("\n  ❌ Chemin requis.\n  Appuyez sur Entrée...")
+        print(c.error("Chemin requis."))
+        input("\nAppuyez sur Entrée...")
         return None
-    
+
     try:
-        print("\n  Comparaison en cours...")
+        print(f"\n{c.INFO}[INFO]{c.RESET} Comparaison en cours...")
         output_dir = run_compare(old_path, new_path)
-        
+
         # Charger le résultat pour affichage
         with open(os.path.join(output_dir, 'UPDATE_en.json'), 'r', encoding='utf-8') as f:
             result = json.load(f)
-        
+
         summary = result['summary']
-        print("\n  " + "=" * 66)
-        print("  RÉSUMÉ")
-        print("  " + "=" * 66)
-        print(f"  Clés ajoutées    : {summary['added']:4d}  [NEW]")
-        print(f"  Clés modifiées   : {summary['changed']:4d}  [CHANGED]")
-        print(f"  Clés supprimées  : {summary['deleted']:4d}  [DELETED]")
-        print(f"  Clés inchangées  : {summary['unchanged']:4d}")
+        print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
+        print(f"{c.TITLE}  RÉSUMÉ{c.RESET}")
+        print(f"{c.HEADER}{'=' * 66}{c.RESET}")
+        print(f"  {c.KEY}Clés ajoutées   {c.RESET}: {c.GREEN}{summary['added']:4d}{c.RESET}  {c.DIM}[NEW]{c.RESET}")
+        print(f"  {c.KEY}Clés modifiées  {c.RESET}: {c.YELLOW}{summary['changed']:4d}{c.RESET}  {c.DIM}[CHANGED]{c.RESET}")
+        print(f"  {c.KEY}Clés supprimées {c.RESET}: {c.RED}{summary['deleted']:4d}{c.RESET}  {c.DIM}[DELETED]{c.RESET}")
+        print(f"  {c.KEY}Clés inchangées {c.RESET}: {c.DIM}{summary['unchanged']:4d}{c.RESET}")
         print()
-        print(f"  ✓ Fichiers générés dans: {output_dir}")
-        print(f"    • UPDATE_en.json")
-        print(f"    • CHANGELOG.txt")
-        print(f"    • TranslatedStrings_en.txt")
-        
+        print(c.success(f"Fichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+        print(f"    {c.DIM}• UPDATE_en.json{c.RESET}")
+        print(f"    {c.DIM}• CHANGELOG.txt{c.RESET}")
+        print(f"    {c.DIM}• TranslatedStrings_en.txt{c.RESET}")
+
         if summary['added'] or summary['changed'] or summary['deleted']:
             print()
-            print("  PROCHAINE ÉTAPE:")
-            print("  • EXTRACT pour générer les fichiers de traduction")
-            print("  • ou SYNC directement pour utiliser EN par défaut")
-        
+            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
+            print(f"  {c.DIM}• EXTRACT pour générer les fichiers de traduction{c.RESET}")
+            print(f"  {c.DIM}• ou SYNC directement pour utiliser EN par défaut{c.RESET}")
+
         return output_dir
-        
+
     except FileNotFoundError as e:
-        print(f"\n  ❌ Fichier non trouvé: {e}")
+        print(c.error(f"Fichier non trouvé: {e}"))
     except Exception as e:
-        print(f"\n  ❌ Erreur: {e}")
-    
-    input("\n  Appuyez sur Entrée pour continuer...")
+        print(c.error(f"Erreur: {e}"))
+
+    input("\nAppuyez sur Entrée pour continuer...")
     return None

@@ -14,8 +14,8 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from TM_common import (
-    parse_translation_file, write_translation_file, 
-    load_update_json, find_languages
+    parse_translation_file, write_translation_file,
+    load_update_json, find_languages, c
 )
 
 
@@ -218,100 +218,105 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
 def menu_inject():
     """Menu interactif pour INJECT."""
     from TM_common import clear_screen, print_header
-    
+
     clear_screen()
     print_header()
-    print("\n  INJECT: Réinjecter les traductions")
-    print("  " + "-" * 66)
-    print("\n  Note: Les clés non traduites (→ vide) recevront la valeur EN")
-    
-    print("\n  Mode:")
-    print("  1. Injecter un fichier TRANSLATE_xx.txt spécifique")
-    print("  2. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier")
-    mode = input("\n  Choix (1-2): ").strip()
-    
+    print(f"\n{c.INFO}INJECT{c.RESET}: Réinjecter les traductions")
+    print(c.separator())
+    print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Les clés non traduites (→ vide) recevront la valeur EN")
+
+    print(f"\n{c.KEY}Mode{c.RESET}:")
+    print(f"  {c.YELLOW}1{c.RESET}. Injecter un fichier TRANSLATE_xx.txt spécifique")
+    print(f"  {c.YELLOW}2{c.RESET}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier")
+    mode = input(f"\n{c.PROMPT}  Choix (1-2): {c.RESET}").strip()
+
     if mode == '1':
-        print("\n  Fichier TRANSLATE_xx.txt:")
-        translate_file = input("  > ").strip()
+        print(f"\n{c.KEY}Fichier TRANSLATE_xx.txt{c.RESET}:")
+        translate_file = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not translate_file or not os.path.isfile(translate_file):
-            input("\n  ❌ Fichier invalide.\n  Appuyez sur Entrée...")
+            print(c.error("Fichier invalide."))
+            input("\nAppuyez sur Entrée...")
             return None
-        
-        print("\n  Fichier cible TranslatedStrings_xx.txt:")
-        target_file = input("  > ").strip()
+
+        print(f"\n{c.KEY}Fichier cible TranslatedStrings_xx.txt{c.RESET}:")
+        target_file = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not target_file:
-            input("\n  ❌ Chemin requis.\n  Appuyez sur Entrée...")
+            print(c.error("Chemin requis."))
+            input("\nAppuyez sur Entrée...")
             return None
-        
-        print("\n  Dossier UPDATE (contenant UPDATE_en.json):")
-        print("  (Entrée = même dossier que TRANSLATE)")
-        update_dir = input("  > ").strip() or None
-        
+
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
+        update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
+
         try:
-            print("\n  Injection en cours...")
+            print(f"\n{c.INFO}[INFO]{c.RESET} Injection en cours...")
             stats = run_inject(translate_file, target_file, update_dir)
-            
-            print("\n  " + "=" * 66)
-            print("  RÉSULTAT")
-            print("  " + "=" * 66)
-            print(f"  Traductions injectées   : {stats['injected']}")
-            print(f"  Valeurs EN par défaut   : {stats['from_en']}")
-            print(f"  Entrées ignorées        : {stats['skipped']}")
-            print(f"  Total clés dans fichier : {stats['total']}")
+
+            print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
+            print(f"{c.TITLE}  RÉSULTAT{c.RESET}")
+            print(f"{c.HEADER}{'=' * 66}{c.RESET}")
+            print(f"  {c.KEY}Traductions injectées  {c.RESET}: {c.GREEN}{stats['injected']}{c.RESET}")
+            print(f"  {c.KEY}Valeurs EN par défaut  {c.RESET}: {c.CYAN}{stats['from_en']}{c.RESET}")
+            print(f"  {c.KEY}Entrées ignorées       {c.RESET}: {c.DIM}{stats['skipped']}{c.RESET}")
+            print(f"  {c.KEY}Total clés dans fichier{c.RESET}: {c.WHITE}{stats['total']}{c.RESET}")
             print()
-            print(f"  ✓ Fichier mis à jour: {target_file}")
-            print("  (Backup .bak créé)")
-            
+            print(c.success(f"Fichier mis à jour: {c.VALUE}{target_file}{c.RESET}"))
+            print(f"{c.DIM}  (Backup .bak créé){c.RESET}")
+
             return stats
-            
+
         except Exception as e:
-            print(f"\n  ❌ Erreur: {e}")
-    
+            print(c.error(f"Erreur: {e}"))
+
     elif mode == '2':
-        print("\n  Dossier contenant les fichiers TRANSLATE_*.txt:")
-        translate_dir = input("  > ").strip()
+        print(f"\n{c.KEY}Dossier contenant les fichiers TRANSLATE_*.txt{c.RESET}:")
+        translate_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not translate_dir or not os.path.isdir(translate_dir):
-            input("\n  ❌ Répertoire invalide.\n  Appuyez sur Entrée...")
+            print(c.error("Répertoire invalide."))
+            input("\nAppuyez sur Entrée...")
             return None
-        
-        print("\n  Répertoire des fichiers de langue (Locales):")
-        locales_dir = input("  > ").strip()
+
+        print(f"\n{c.KEY}Répertoire des fichiers de langue{c.RESET} (Locales):")
+        locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not locales_dir or not os.path.isdir(locales_dir):
-            input("\n  ❌ Répertoire invalide.\n  Appuyez sur Entrée...")
+            print(c.error("Répertoire invalide."))
+            input("\nAppuyez sur Entrée...")
             return None
-        
-        print("\n  Dossier UPDATE (contenant UPDATE_en.json):")
-        print("  (Entrée = même dossier que TRANSLATE)")
-        update_dir = input("  > ").strip() or None
-        
+
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
+        update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
+
         try:
-            print("\n  Injection en cours...")
+            print(f"\n{c.INFO}[INFO]{c.RESET} Injection en cours...")
             results = run_inject_from_dir(translate_dir, locales_dir, update_dir)
-            
+
             if results:
-                print("\n  " + "=" * 66)
-                print("  RÉSULTAT")
-                print("  " + "=" * 66)
+                print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
+                print(f"{c.TITLE}  RÉSULTAT{c.RESET}")
+                print(f"{c.HEADER}{'=' * 66}{c.RESET}")
                 for lang, stats in sorted(results.items()):
                     if 'error' in stats:
-                        print(f"  [{lang.upper()}] ❌ {stats['error']}")
+                        print(f"  {c.RED}[{lang.upper()}]{c.RESET} {c.ERROR}[ERREUR]{c.RESET} {stats['error']}")
                     else:
                         translated = stats['injected']
                         from_en = stats['from_en']
-                        print(f"  [{lang.upper()}] ✓ {translated} traduites + {from_en} EN par défaut")
+                        print(f"  {c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET} {c.GREEN}{translated}{c.RESET} traduites + {c.CYAN}{from_en}{c.RESET} EN par défaut")
                 print()
-                print("  ✓ Fichiers mis à jour (backups .bak créés)")
-                
+                print(c.success("Fichiers mis à jour (backups .bak créés)"))
+
                 return results
             else:
-                print("\n  ⚠️  Aucun fichier TRANSLATE_*.txt trouvé")
-            
+                print(c.warning("Aucun fichier TRANSLATE_*.txt trouvé"))
+
         except Exception as e:
-            print(f"\n  ❌ Erreur: {e}")
-    
+            print(c.error(f"Erreur: {e}"))
+
     else:
-        input("\n  ❌ Choix invalide.\n  Appuyez sur Entrée...")
+        print(c.error("Choix invalide."))
+        input("\nAppuyez sur Entrée...")
         return None
-    
-    input("\n  Appuyez sur Entrée pour continuer...")
+
+    input("\nAppuyez sur Entrée pour continuer...")
     return None

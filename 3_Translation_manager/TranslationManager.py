@@ -41,7 +41,7 @@ USAGE
 Mode interactif:
     python TranslationManager.py
 
-Mode CLI (avec --plugin-path pour structure __i18n_kit__):
+Mode CLI (avec --plugin-path pour structure __i18n_tmp__):
     python TranslationManager.py compare --old ancien.txt --new nouveau.txt --plugin-path ./plugin.lrplugin
     python TranslationManager.py extract --plugin-path ./plugin.lrplugin --locales ./Locales
     python TranslationManager.py inject --plugin-path ./plugin.lrplugin --locales ./Locales
@@ -53,11 +53,11 @@ Mode CLI (legacy):
     python TranslationManager.py inject --translate-dir ./20260128_143000 --locales ./Locales
     python TranslationManager.py sync --update ./20260128_143000 --locales ./Locales
 
-Sorties generees dans: <plugin>/__i18n_kit__/TranslationManager/<timestamp>/
+Sorties generees dans: <plugin>/__i18n_tmp__/TranslationManager/<timestamp>/
 
 Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-01-29
-Version: 5.0 - Structure __i18n_kit__ avec auto-detection
+Date: 2026-01-30
+Version: 6.0 - Ajout des couleurs + Structure __i18n_tmp__
 """
 
 import os
@@ -69,12 +69,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common.paths import get_tool_output_path, find_latest_tool_output
+from common.colors import Colors
 
 from TM_common import clear_screen, print_header
 from TM_compare import run_compare, menu_compare
 from TM_extract import run_extract, run_extract_all, menu_extract
 from TM_inject import run_inject, run_inject_from_dir, menu_inject
 from TM_sync import run_sync, generate_sync_report, menu_sync
+
+# Instance couleurs
+c = Colors()
 
 
 # =============================================================================
@@ -86,36 +90,36 @@ def main_menu():
     while True:
         clear_screen()
         print_header()
-        
-        print("\n  Options:")
-        print("  " + "-" * 66)
-        print("  1. COMPARE")
-        print("     Compare ancien EN vs nouveau EN")
-        print("     → Génère UPDATE_en.json + CHANGELOG.txt")
+
+        print(f"\n{c.TITLE}  Options:{c.RESET}")
+        print(c.separator())
+        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}COMPARE{c.RESET}")
+        print(f"     {c.DIM}Compare ancien EN vs nouveau EN{c.RESET}")
+        print(f"     {c.DIM}→ Génère UPDATE_en.json + CHANGELOG.txt{c.RESET}")
         print()
-        print("  2. EXTRACT (optionnel)")
-        print("     Génère mini fichiers TRANSLATE_xx.txt pour traduction")
+        print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}EXTRACT{c.RESET} {c.DIM}(optionnel){c.RESET}")
+        print(f"     {c.DIM}Génère mini fichiers TRANSLATE_xx.txt pour traduction{c.RESET}")
         print()
-        print("  3. INJECT (optionnel)")
-        print("     Réinjecte les traductions (EN par défaut si vide)")
+        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}INJECT{c.RESET} {c.DIM}(optionnel){c.RESET}")
+        print(f"     {c.DIM}Réinjecte les traductions (EN par défaut si vide){c.RESET}")
         print()
-        print("  4. SYNC")
-        print("     Met à jour les langues avec EN")
-        print("     → Ajoute [NEW], marque [NEEDS_REVIEW], supprime obsolètes")
+        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}SYNC{c.RESET}")
+        print(f"     {c.DIM}Met à jour les langues avec EN{c.RESET}")
+        print(f"     {c.DIM}→ Ajoute [NEW], marque [NEEDS_REVIEW], supprime obsolètes{c.RESET}")
         print()
-        print("  5. Aide")
+        print(f"  {c.YELLOW}5{c.RESET}. {c.CYAN}Aide{c.RESET}")
         print()
-        print("  0. Quitter")
-        print("  " + "-" * 66)
-        
-        choice = input("\n  Votre choix (0-5): ").strip()
-        
+        print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Quitter{c.RESET}")
+        print(c.separator())
+
+        choice = input(f"\n{c.PROMPT}  Votre choix (0-5): {c.RESET}").strip()
+
         if choice == '1':
             menu_compare()
-            input("\n  Appuyez sur Entrée pour continuer...")
+            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '2':
             menu_extract()
-            input("\n  Appuyez sur Entrée pour continuer...")
+            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
             menu_inject()
         elif choice == '4':
@@ -123,12 +127,13 @@ def main_menu():
         elif choice == '5':
             clear_screen()
             print(__doc__)
-            input("\nAppuyez sur Entrée pour revenir au menu...")
+            input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
         elif choice == '0':
-            print("\n  👋 Au revoir!")
+            print(f"\n{c.SUCCESS}  Au revoir!{c.RESET}")
             break
         else:
-            input("\n  ❌ Choix invalide. Appuyez sur Entrée...")
+            print(c.error("Choix invalide."))
+            input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
 
 
 # =============================================================================
@@ -150,7 +155,7 @@ Exemples:
   # Mode interactif
   python TranslationManager.py
 
-  # Avec --plugin-path (structure __i18n_kit__):
+  # Avec --plugin-path (structure __i18n_tmp__):
   python TranslationManager.py compare --old ./old/en.txt --new ./new/en.txt --plugin-path ./plugin.lrplugin
   python TranslationManager.py extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
   python TranslationManager.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
@@ -168,13 +173,13 @@ Exemples:
     compare_parser = subparsers.add_parser('compare', help='Compare deux versions EN')
     compare_parser.add_argument('--old', required=True, help='Ancien fichier EN')
     compare_parser.add_argument('--new', required=True, help='Nouveau fichier EN')
-    compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_kit__/TranslationManager/)')
+    compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/TranslationManager/)')
     compare_parser.add_argument('--output', help='Override repertoire de sortie')
     
     # extract
     extract_parser = subparsers.add_parser('extract', help='Genere fichiers TRANSLATE_*.txt')
     extract_parser.add_argument('--update', help='Dossier UPDATE (ou auto-detection si --plugin-path)')
-    extract_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_kit__/)')
+    extract_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
     extract_parser.add_argument('--locales', help='Repertoire des traductions existantes')
     extract_parser.add_argument('--lang', help='Langue specifique (defaut: toutes)')
     extract_parser.add_argument('--output', help='Override repertoire de sortie')
@@ -184,14 +189,14 @@ Exemples:
     inject_parser.add_argument('--translate', help='Fichier TRANSLATE_xx.txt')
     inject_parser.add_argument('--target', help='Fichier TranslatedStrings_xx.txt cible')
     inject_parser.add_argument('--translate-dir', help='Dossier contenant TRANSLATE_*.txt')
-    inject_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_kit__/)')
+    inject_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
     inject_parser.add_argument('--locales', help='Dossier des fichiers de langue')
     inject_parser.add_argument('--update', help='Dossier UPDATE (pour valeurs EN)')
     
     # sync
     sync_parser = subparsers.add_parser('sync', help='Synchronise les langues')
     sync_parser.add_argument('--ref', help='Fichier EN de reference')
-    sync_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_kit__/)')
+    sync_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
     sync_parser.add_argument('--locales', help='Repertoire des fichiers de langues')
     sync_parser.add_argument('--update', help='Dossier UPDATE (avec UPDATE_en.json)')
     
@@ -199,7 +204,7 @@ Exemples:
     
     if args.command == 'compare':
         try:
-            print("Comparaison...")
+            print(f"{c.INFO}[INFO]{c.RESET} Comparaison...")
             # Determiner le repertoire de sortie
             if args.output:
                 output_dir = args.output
@@ -208,54 +213,54 @@ Exemples:
             else:
                 output_dir = None  # run_compare creera un dossier timestampe local
             output_dir = run_compare(args.old, args.new, output_dir)
-            
+
             import json
             with open(os.path.join(output_dir, 'UPDATE_en.json'), 'r', encoding='utf-8') as f:
                 result = json.load(f)
-            
+
             summary = result['summary']
-            print(f"\n{'=' * 60}")
-            print("RÉSUMÉ")
-            print(f"{'=' * 60}")
-            print(f"Clés ajoutées    : {summary['added']}")
-            print(f"Clés modifiées   : {summary['changed']}")
-            print(f"Clés supprimées  : {summary['deleted']}")
-            print(f"Clés inchangées  : {summary['unchanged']}")
-            print(f"\n✓ Fichiers générés dans: {output_dir}")
-            
+            print(f"\n{c.HEADER}{'=' * 60}{c.RESET}")
+            print(f"{c.TITLE}RÉSUMÉ{c.RESET}")
+            print(f"{c.HEADER}{'=' * 60}{c.RESET}")
+            print(f"{c.KEY}Clés ajoutées   {c.RESET}: {c.GREEN}{summary['added']}{c.RESET}")
+            print(f"{c.KEY}Clés modifiées  {c.RESET}: {c.YELLOW}{summary['changed']}{c.RESET}")
+            print(f"{c.KEY}Clés supprimées {c.RESET}: {c.RED}{summary['deleted']}{c.RESET}")
+            print(f"{c.KEY}Clés inchangées {c.RESET}: {c.DIM}{summary['unchanged']}{c.RESET}")
+            print(c.success(f"Fichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+
         except Exception as e:
-            print(f"❌ Erreur: {e}")
+            print(c.error(f"Erreur: {e}"))
             sys.exit(1)
     
     elif args.command == 'extract':
         try:
-            print("Extraction...")
+            print(f"{c.INFO}[INFO]{c.RESET} Extraction...")
             # Determiner le dossier UPDATE
             update_dir = args.update
             if not update_dir and hasattr(args, 'plugin_path') and args.plugin_path:
                 update_dir = find_latest_tool_output(args.plugin_path, "TranslationManager")
                 if not update_dir:
-                    print("ERREUR: Aucun dossier TranslationManager trouve dans __i18n_kit__/")
-                    print("        Lancez d'abord la commande 'compare'.")
+                    print(c.error("Aucun dossier TranslationManager trouvé dans __i18n_tmp__/"))
+                    print(f"{c.DIM}        Lancez d'abord la commande 'compare'.{c.RESET}")
                     sys.exit(1)
-                print(f"* Auto-detection: {update_dir}")
+                print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
 
             if not update_dir:
-                print("ERREUR: --update ou --plugin-path requis")
+                print(c.error("--update ou --plugin-path requis"))
                 sys.exit(1)
 
             output_dir = args.output
             if args.lang:
                 output_file = run_extract(update_dir, args.lang, args.locales, output_dir)
-                print(f"[OK] Genere: {output_file}")
+                print(c.success(f"Généré: {c.VALUE}{output_file}{c.RESET}"))
             else:
                 generated = run_extract_all(update_dir, args.locales, output_dir)
-                print(f"\n[OK] {len(generated)} fichier(s) genere(s):")
+                print(f"\n{c.OK}[OK]{c.RESET} {c.WHITE}{len(generated)}{c.RESET} fichier(s) généré(s):")
                 for f in generated:
-                    print(f"  - {os.path.basename(f)}")
+                    print(f"  {c.DIM}-{c.RESET} {c.VALUE}{os.path.basename(f)}{c.RESET}")
 
         except Exception as e:
-            print(f"ERREUR: {e}")
+            print(c.error(f"Erreur: {e}"))
             sys.exit(1)
     
     elif args.command == 'inject':
@@ -267,26 +272,26 @@ Exemples:
                 translate_dir = find_latest_tool_output(args.plugin_path, "TranslationManager")
                 update_dir = update_dir or translate_dir
                 if translate_dir:
-                    print(f"* Auto-detection: {translate_dir}")
+                    print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{translate_dir}{c.RESET}")
 
             if args.translate and args.target:
-                print("Injection...")
+                print(f"{c.INFO}[INFO]{c.RESET} Injection...")
                 stats = run_inject(args.translate, args.target, update_dir)
-                print(f"[OK] {stats['injected']} traduites + {stats['from_en']} EN par defaut")
+                print(c.success(f"{c.GREEN}{stats['injected']}{c.RESET} traduites + {c.CYAN}{stats['from_en']}{c.RESET} EN par défaut"))
             elif translate_dir and args.locales:
-                print("Injection...")
+                print(f"{c.INFO}[INFO]{c.RESET} Injection...")
                 results = run_inject_from_dir(translate_dir, args.locales, update_dir)
                 for lang, stats in sorted(results.items()):
                     if 'error' in stats:
-                        print(f"[{lang.upper()}] ERREUR: {stats['error']}")
+                        print(f"{c.CYAN}[{lang.upper()}]{c.RESET} {c.ERROR}[ERREUR]{c.RESET}: {stats['error']}")
                     else:
-                        print(f"[{lang.upper()}] OK: {stats['injected']} traduites + {stats['from_en']} EN")
+                        print(f"{c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET}: {c.GREEN}{stats['injected']}{c.RESET} traduites + {c.CYAN}{stats['from_en']}{c.RESET} EN")
             else:
-                print("ERREUR: Specifiez --translate + --target OU --translate-dir + --locales OU --plugin-path + --locales")
+                print(c.error("Spécifiez --translate + --target OU --translate-dir + --locales OU --plugin-path + --locales"))
                 sys.exit(1)
 
         except Exception as e:
-            print(f"ERREUR: {e}")
+            print(c.error(f"Erreur: {e}"))
             sys.exit(1)
     
     elif args.command == 'sync':
@@ -296,23 +301,23 @@ Exemples:
             if hasattr(args, 'plugin_path') and args.plugin_path and not update_dir:
                 update_dir = find_latest_tool_output(args.plugin_path, "TranslationManager")
                 if update_dir:
-                    print(f"* Auto-detection: {update_dir}")
+                    print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
 
             if not args.ref and not update_dir:
-                print("ERREUR: --ref, --update ou --plugin-path requis")
+                print(c.error("--ref, --update ou --plugin-path requis"))
                 sys.exit(1)
 
-            print("Synchronisation...")
+            print(f"{c.INFO}[INFO]{c.RESET} Synchronisation...")
             results = run_sync(args.ref, args.locales, update_dir)
 
             if not results:
-                print("ATTENTION: Aucune langue etrangere trouvee.")
+                print(c.warning("Aucune langue étrangère trouvée."))
             else:
                 print()
                 print(generate_sync_report(results))
 
         except Exception as e:
-            print(f"ERREUR: {e}")
+            print(c.error(f"Erreur: {e}"))
             sys.exit(1)
     
     else:

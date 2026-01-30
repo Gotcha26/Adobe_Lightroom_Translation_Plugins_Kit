@@ -12,8 +12,8 @@ from datetime import datetime
 from typing import Dict, List, Set, Optional
 
 from TM_common import (
-    parse_translation_file, write_translation_file, 
-    resolve_path, load_update_json, find_languages
+    parse_translation_file, write_translation_file,
+    resolve_path, load_update_json, find_languages, c
 )
 
 
@@ -166,53 +166,53 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
 
 
 def generate_sync_report(results: Dict[str, Dict]) -> str:
-    """Génère un rapport de synchronisation."""
+    """Génère un rapport de synchronisation avec couleurs."""
     lines = []
-    lines.append("=" * 70)
-    lines.append("RAPPORT DE SYNCHRONISATION")
-    lines.append("=" * 70)
+    lines.append(f"{c.HEADER}{'=' * 70}{c.RESET}")
+    lines.append(f"{c.TITLE}RAPPORT DE SYNCHRONISATION{c.RESET}")
+    lines.append(f"{c.HEADER}{'=' * 70}{c.RESET}")
     lines.append("")
-    
+
     total_added = 0
     total_review = 0
     total_removed = 0
-    
+
     for lang, data in sorted(results.items()):
         total_added += data['added']
         total_review += data['needs_review']
         total_removed += data['removed']
-        
-        lines.append(f"[{lang.upper()}]")
-        lines.append(f"  Clés conservées   : {data['kept']}")
-        lines.append(f"  Clés ajoutées     : {data['added']}  [NEW] à traduire")
-        lines.append(f"  Clés à réviser    : {data['needs_review']}  [NEEDS_REVIEW]")
-        lines.append(f"  Clés supprimées   : {data['removed']}")
-        lines.append(f"  Total             : {data['total']}")
-        
+
+        lines.append(f"{c.CYAN}[{lang.upper()}]{c.RESET}")
+        lines.append(f"  {c.KEY}Clés conservées  {c.RESET}: {c.WHITE}{data['kept']}{c.RESET}")
+        lines.append(f"  {c.KEY}Clés ajoutées    {c.RESET}: {c.GREEN}{data['added']}{c.RESET}  {c.DIM}[NEW] à traduire{c.RESET}")
+        lines.append(f"  {c.KEY}Clés à réviser   {c.RESET}: {c.YELLOW}{data['needs_review']}{c.RESET}  {c.DIM}[NEEDS_REVIEW]{c.RESET}")
+        lines.append(f"  {c.KEY}Clés supprimées  {c.RESET}: {c.RED}{data['removed']}{c.RESET}")
+        lines.append(f"  {c.KEY}Total            {c.RESET}: {c.WHITE}{data['total']}{c.RESET}")
+
         if data['added_keys']:
-            lines.append(f"  Nouvelles clés:")
+            lines.append(f"  {c.DIM}Nouvelles clés:{c.RESET}")
             for key in data['added_keys'][:5]:
-                lines.append(f"    + {key}")
+                lines.append(f"    {c.GREEN}+{c.RESET} {c.DIM}{key}{c.RESET}")
             if len(data['added_keys']) > 5:
-                lines.append(f"    ... et {len(data['added_keys']) - 5} autres")
-        
+                lines.append(f"    {c.DIM}... et {len(data['added_keys']) - 5} autres{c.RESET}")
+
         if data['review_keys']:
-            lines.append(f"  Clés à réviser:")
+            lines.append(f"  {c.DIM}Clés à réviser:{c.RESET}")
             for key in data['review_keys'][:5]:
-                lines.append(f"    ? {key}")
+                lines.append(f"    {c.YELLOW}?{c.RESET} {c.DIM}{key}{c.RESET}")
             if len(data['review_keys']) > 5:
-                lines.append(f"    ... et {len(data['review_keys']) - 5} autres")
-        
+                lines.append(f"    {c.DIM}... et {len(data['review_keys']) - 5} autres{c.RESET}")
+
         lines.append("")
-    
-    lines.append("-" * 70)
-    lines.append("TOTAL")
-    lines.append("-" * 70)
-    lines.append(f"  Langues traitées  : {len(results)}")
-    lines.append(f"  Clés ajoutées     : {total_added}")
-    lines.append(f"  Clés à réviser    : {total_review}")
-    lines.append(f"  Clés supprimées   : {total_removed}")
-    
+
+    lines.append(f"{c.separator()}")
+    lines.append(f"{c.TITLE}TOTAL{c.RESET}")
+    lines.append(f"{c.separator()}")
+    lines.append(f"  {c.KEY}Langues traitées {c.RESET}: {c.WHITE}{len(results)}{c.RESET}")
+    lines.append(f"  {c.KEY}Clés ajoutées    {c.RESET}: {c.GREEN}{total_added}{c.RESET}")
+    lines.append(f"  {c.KEY}Clés à réviser   {c.RESET}: {c.YELLOW}{total_review}{c.RESET}")
+    lines.append(f"  {c.KEY}Clés supprimées  {c.RESET}: {c.RED}{total_removed}{c.RESET}")
+
     return "\n".join(lines)
 
 
@@ -223,59 +223,61 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
 def menu_sync():
     """Menu interactif pour SYNC."""
     from TM_common import clear_screen, print_header
-    
+
     clear_screen()
     print_header()
-    print("\n  SYNC: Synchroniser les langues étrangères")
-    print("  " + "-" * 66)
-    
-    print("\n  Avez-vous un dossier UPDATE (généré par COMPARE) ?")
-    print("  (Permet de marquer les clés [NEEDS_REVIEW])")
-    has_update = input("  [O/n]: ").strip().lower()
-    
+    print(f"\n{c.INFO}SYNC{c.RESET}: Synchroniser les langues étrangères")
+    print(c.separator())
+
+    print(f"\n{c.KEY}Avez-vous un dossier UPDATE{c.RESET} (généré par COMPARE) ?")
+    print(f"{c.DIM}  (Permet de marquer les clés [NEEDS_REVIEW]){c.RESET}")
+    has_update = input(f"{c.PROMPT}  [O/n]: {c.RESET}").strip().lower()
+
     update_dir = None
     ref_path = None
     locales_dir = None
-    
+
     if has_update in ['o', 'y', '', 'oui', 'yes']:
-        print("\n  Dossier UPDATE (contenant UPDATE_en.json):")
-        update_dir = input("  > ").strip()
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not update_dir or not os.path.isdir(update_dir):
-            input(f"\n  ❌ Répertoire invalide.\n  Appuyez sur Entrée...")
+            print(c.error("Répertoire invalide."))
+            input("\nAppuyez sur Entrée...")
             return None
     else:
-        print("\n  Fichier EN de référence (ou répertoire):")
-        ref_path = input("  > ").strip()
+        print(f"\n{c.KEY}Fichier EN de référence{c.RESET} (ou répertoire):")
+        ref_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not ref_path:
-            input("\n  ❌ Chemin requis.\n  Appuyez sur Entrée...")
+            print(c.error("Chemin requis."))
+            input("\nAppuyez sur Entrée...")
             return None
-    
-    print("\n  Répertoire des fichiers de langues (Locales):")
-    print("  (Entrée = même répertoire que la référence)")
-    locales_dir = input("  > ").strip() or None
-    
+
+    print(f"\n{c.KEY}Répertoire des fichiers de langues{c.RESET} (Locales):")
+    print(f"{c.DIM}  (Entrée = même répertoire que la référence){c.RESET}")
+    locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
+
     try:
-        print("\n  Synchronisation en cours...")
+        print(f"\n{c.INFO}[INFO]{c.RESET} Synchronisation en cours...")
         results = run_sync(ref_path, locales_dir, update_dir)
-        
+
         if not results:
-            print("\n  ⚠️  Aucune langue étrangère trouvée.")
+            print(c.warning("Aucune langue étrangère trouvée."))
         else:
             print()
             print(generate_sync_report(results))
             print()
-            print("  ✓ Fichiers mis à jour (backups .bak créés)")
+            print(c.success("Fichiers mis à jour (backups .bak créés)"))
             print()
-            print("  PROCHAINE ÉTAPE:")
-            print("  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers")
-            print("  pour compléter les traductions.")
-        
+            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
+            print(f"{c.DIM}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{c.RESET}")
+            print(f"{c.DIM}  pour compléter les traductions.{c.RESET}")
+
         return results
-        
+
     except FileNotFoundError as e:
-        print(f"\n  ❌ Fichier non trouvé: {e}")
+        print(c.error(f"Fichier non trouvé: {e}"))
     except Exception as e:
-        print(f"\n  ❌ Erreur: {e}")
-    
-    input("\n  Appuyez sur Entrée pour continuer...")
+        print(c.error(f"Erreur: {e}"))
+
+    input("\nAppuyez sur Entrée pour continuer...")
     return None

@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from TM_common import parse_translation_file, load_update_json, find_languages
+from TM_common import parse_translation_file, load_update_json, find_languages, c
 
 
 # =============================================================================
@@ -150,36 +150,38 @@ def run_extract_all(update_dir: str, locales_dir: str = None,
 def menu_extract():
     """Menu interactif pour EXTRACT."""
     from TM_common import clear_screen, print_header, load_update_json
-    
+
     clear_screen()
     print_header()
-    print("\n  EXTRACT: Générer fichiers de traduction")
-    print("  " + "-" * 66)
-    
-    print("\n  Dossier UPDATE (contenant UPDATE_en.json):")
-    update_dir = input("  > ").strip()
+    print(f"\n{c.INFO}EXTRACT{c.RESET}: Générer fichiers de traduction")
+    print(c.separator())
+
+    print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+    update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not update_dir or not os.path.isdir(update_dir):
-        input("\n  ❌ Répertoire invalide.\n  Appuyez sur Entrée...")
+        print(c.error("Répertoire invalide."))
+        input("\nAppuyez sur Entrée...")
         return None
-    
+
     # Vérifier UPDATE_en.json
     if not load_update_json(update_dir):
-        input("\n  ❌ UPDATE_en.json non trouvé.\n  Appuyez sur Entrée...")
+        print(c.error("UPDATE_en.json non trouvé."))
+        input("\nAppuyez sur Entrée...")
         return None
-    
-    print("\n  Répertoire des traductions existantes (Locales):")
-    print("  (Pour récupérer les traductions actuelles des clés modifiées)")
-    print("  (Entrée pour ignorer)")
-    locales_dir = input("  > ").strip() or None
-    
-    print("\n  Langue(s) à générer:")
-    print("  • Entrée = toutes les langues trouvées dans Locales")
-    print("  • Ou spécifier: fr, de, es...")
-    lang_input = input("  > ").strip().lower()
-    
+
+    print(f"\n{c.KEY}Répertoire des traductions existantes{c.RESET} (Locales):")
+    print(f"{c.DIM}  (Pour récupérer les traductions actuelles des clés modifiées){c.RESET}")
+    print(f"{c.DIM}  (Entrée pour ignorer){c.RESET}")
+    locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
+
+    print(f"\n{c.KEY}Langue(s) à générer{c.RESET}:")
+    print(f"{c.DIM}  • Entrée = toutes les langues trouvées dans Locales{c.RESET}")
+    print(f"{c.DIM}  • Ou spécifier: fr, de, es...{c.RESET}")
+    lang_input = input(f"{c.PROMPT}  > {c.RESET}").strip().lower()
+
     try:
-        print("\n  Génération en cours...")
-        
+        print(f"\n{c.INFO}[INFO]{c.RESET} Génération en cours...")
+
         if lang_input:
             languages = [l.strip() for l in lang_input.split(',')]
             generated = []
@@ -188,25 +190,25 @@ def menu_extract():
                 generated.append(output_file)
         else:
             generated = run_extract_all(update_dir, locales_dir)
-        
+
         if generated:
-            print("\n  " + "=" * 66)
-            print("  FICHIERS GÉNÉRÉS")
-            print("  " + "=" * 66)
+            print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
+            print(f"{c.TITLE}  FICHIERS GÉNÉRÉS{c.RESET}")
+            print(f"{c.HEADER}{'=' * 66}{c.RESET}")
             for f in generated:
-                print(f"  ✓ {os.path.basename(f)}")
+                print(f"  {c.OK}[OK]{c.RESET} {c.VALUE}{os.path.basename(f)}{c.RESET}")
             print()
-            print("  PROCHAINE ÉTAPE:")
-            print("  1. Éditez les fichiers et remplissez après chaque →")
-            print("  2. Lancez INJECT pour réinjecter les traductions")
-            print("  3. Lancez SYNC pour finaliser")
-            
+            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
+            print(f"  {c.DIM}1. Éditez les fichiers et remplissez après chaque →{c.RESET}")
+            print(f"  {c.DIM}2. Lancez INJECT pour réinjecter les traductions{c.RESET}")
+            print(f"  {c.DIM}3. Lancez SYNC pour finaliser{c.RESET}")
+
             return generated
         else:
-            print("\n  ⚠️  Aucun fichier généré")
-        
+            print(c.warning("Aucun fichier généré"))
+
     except Exception as e:
-        print(f"\n  ❌ Erreur: {e}")
-    
-    input("\n  Appuyez sur Entrée pour continuer...")
+        print(c.error(f"Erreur: {e}"))
+
+    input("\nAppuyez sur Entrée pour continuer...")
     return None

@@ -7,11 +7,19 @@ Contient les fonctions de parsing, écriture et utilitaires.
 """
 
 import os
+import sys
 import re
 import json
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.colors import Colors
+
+# Instance couleurs
+c = Colors()
 
 
 # =============================================================================
@@ -193,9 +201,12 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def print_header(version: str = "5.0"):
-    """Affiche l'entete du menu."""
-    print("\n" + "=" * 70)
-    print(f"  TRANSLATION MANAGER v{version}".center(70))
-    print("  Gestionnaire de traductions multilingues".center(70))
-    print("=" * 70)
+def print_header(version: str = "6.0"):
+    """Affiche l'entete du menu avec couleurs."""
+    print()
+    print(c.HEADER + "=" * 70 + c.RESET)
+    title = f"  TRANSLATION MANAGER v{version}".center(70)
+    subtitle = "  Gestionnaire de traductions multilingues".center(70)
+    print(c.TITLE + title + c.RESET)
+    print(c.DIM + subtitle + c.RESET)
+    print(c.HEADER + "=" * 70 + c.RESET)
