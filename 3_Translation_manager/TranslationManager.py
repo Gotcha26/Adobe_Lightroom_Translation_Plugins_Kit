@@ -110,8 +110,6 @@ def main_menu(default_plugin_path: str = ""):
         is_valid, normalized, error = validate_plugin_path(plugin_path)
         if is_valid:
             plugin_path = normalized
-            print(f"\n{c.OK}[OK]{c.RESET} Plugin validé: {c.VALUE}{plugin_path}{c.RESET}")
-            input(f"{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
         else:
             print(c.warning(f"Chemin invalide: {error}"))
             print(f"{c.DIM}Vous pouvez continuer sans plugin (répertoires locaux){c.RESET}")

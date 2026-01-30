@@ -279,7 +279,22 @@ class ToolLauncher:
     def run_translation_manager(self, interactive: bool = True) -> bool:
         """Lance le gestionnaire de traductions."""
         script = self._get_tool_path("translation_manager", "TranslationManager.py")
-        return self._run_script(script)
+
+        if interactive:
+            # Passer le plugin_path en tant que valeur par défaut
+            plugin_path = self.config.get("plugin_path", "")
+            if plugin_path and os.path.isdir(plugin_path):
+                return self._run_script(script, ["--default-plugin", plugin_path])
+            return self._run_script(script)
+        else:
+            # Mode CLI avec config
+            plugin_path = self.config.get("plugin_path")
+            if not plugin_path:
+                print("[ERREUR] Plugin non configuré.")
+                return False
+
+            args = ["--plugin-path", plugin_path]
+            return self._run_script(script, args)
 
     def run_restore_backup(self) -> bool:
         """Lance la restauration des backups."""
