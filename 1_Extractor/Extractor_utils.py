@@ -191,7 +191,9 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
     if not words:
         return ""
 
-    key_words = [w for w in words[:6] if w.lower() not in STOP_WORDS]
+    # Filtrer les stop words SAUF si le mot est en MAJUSCULES (emphase intentionnelle)
+    # Exemple: "Connection NOT successful" → garde "NOT" car il est en majuscules
+    key_words = [w for w in words[:6] if w.isupper() or w.lower() not in STOP_WORDS]
     if not key_words:
         key_words = words[:4]
 
