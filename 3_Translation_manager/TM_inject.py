@@ -215,9 +215,14 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
 # MENU INTERACTIF
 # =============================================================================
 
-def menu_inject():
-    """Menu interactif pour INJECT."""
+def menu_inject(plugin_path: str = ""):
+    """Menu interactif pour INJECT.
+
+    Args:
+        plugin_path: Chemin du plugin (optionnel) pour auto-détection
+    """
     from TM_common import clear_screen, print_header
+    from common.paths import find_latest_tool_output
 
     clear_screen()
     print_header()

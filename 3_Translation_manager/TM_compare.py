@@ -200,9 +200,14 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
 # MENU INTERACTIF
 # =============================================================================
 
-def menu_compare():
-    """Menu interactif pour COMPARE."""
+def menu_compare(plugin_path: str = ""):
+    """Menu interactif pour COMPARE.
+
+    Args:
+        plugin_path: Chemin du plugin (optionnel) pour utiliser __i18n_tmp__
+    """
     from TM_common import clear_screen, print_header
+    from common.paths import get_tool_output_path
 
     clear_screen()
     print_header()
@@ -225,7 +230,14 @@ def menu_compare():
 
     try:
         print(f"\n{c.INFO}[INFO]{c.RESET} Comparaison en cours...")
-        output_dir = run_compare(old_path, new_path)
+
+        # Déterminer le répertoire de sortie
+        if plugin_path:
+            output_dir = get_tool_output_path(plugin_path, "TranslationManager", create=True)
+        else:
+            output_dir = None  # run_compare créera un dossier local
+
+        output_dir = run_compare(old_path, new_path, output_dir)
 
         # Charger le résultat pour affichage
         with open(os.path.join(output_dir, 'UPDATE_en.json'), 'r', encoding='utf-8') as f:

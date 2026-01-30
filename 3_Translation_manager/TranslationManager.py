@@ -85,11 +85,48 @@ c = Colors()
 # MENU INTERACTIF
 # =============================================================================
 
-def main_menu():
-    """Menu principal interactif."""
+def main_menu(default_plugin_path: str = ""):
+    """Menu principal interactif.
+
+    Args:
+        default_plugin_path: Chemin du plugin pré-configuré (optionnel)
+    """
+    # Demander le chemin du plugin si non fourni
+    plugin_path = default_plugin_path
+
+    if not plugin_path:
+        clear_screen()
+        print_header()
+        print(f"\n{c.INFO}Configuration initiale{c.RESET}")
+        print(c.separator())
+        print(f"\n{c.KEY}Chemin du plugin{c.RESET} (.lrplugin):")
+        print(f"{c.DIM}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){c.RESET}")
+        print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
+        plugin_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
+
+    # Valider le chemin du plugin si fourni
+    if plugin_path:
+        from common.paths import validate_plugin_path
+        is_valid, normalized, error = validate_plugin_path(plugin_path)
+        if is_valid:
+            plugin_path = normalized
+            print(f"\n{c.OK}[OK]{c.RESET} Plugin validé: {c.VALUE}{plugin_path}{c.RESET}")
+            input(f"{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
+        else:
+            print(c.warning(f"Chemin invalide: {error}"))
+            print(f"{c.DIM}Vous pouvez continuer sans plugin (répertoires locaux){c.RESET}")
+            plugin_path = ""
+            input(f"{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
+
     while True:
         clear_screen()
         print_header()
+
+        # Afficher le plugin configuré
+        if plugin_path:
+            print(f"\n{c.INFO}[INFO]{c.RESET} Plugin: {c.VALUE}{os.path.basename(plugin_path)}{c.RESET}")
+        else:
+            print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Aucun plugin configuré - utilise répertoires locaux")
 
         print(f"\n{c.TITLE}  Options:{c.RESET}")
         print(c.separator())
@@ -109,25 +146,50 @@ def main_menu():
         print()
         print(f"  {c.YELLOW}5{c.RESET}. {c.CYAN}Aide{c.RESET}")
         print()
+        print(f"  {c.YELLOW}9{c.RESET}. {c.CYAN}Changer le plugin{c.RESET}")
+        print()
         print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Quitter{c.RESET}")
         print(c.separator())
 
-        choice = input(f"\n{c.PROMPT}  Votre choix (0-5): {c.RESET}").strip()
+        choice = input(f"\n{c.PROMPT}  Votre choix (0-5, 9): {c.RESET}").strip()
 
         if choice == '1':
-            menu_compare()
+            menu_compare(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '2':
-            menu_extract()
+            menu_extract(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
-            menu_inject()
+            menu_inject(plugin_path)
         elif choice == '4':
-            menu_sync()
+            menu_sync(plugin_path)
         elif choice == '5':
             clear_screen()
             print(__doc__)
             input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
+        elif choice == '9':
+            # Changer le plugin
+            clear_screen()
+            print_header()
+            print(f"\n{c.INFO}Changement de plugin{c.RESET}")
+            print(c.separator())
+            print(f"\n{c.KEY}Nouveau chemin du plugin{c.RESET} (.lrplugin):")
+            print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
+            new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
+
+            if new_path:
+                from common.paths import validate_plugin_path
+                is_valid, normalized, error = validate_plugin_path(new_path)
+                if is_valid:
+                    plugin_path = normalized
+                    print(c.success(f"Plugin changé: {c.VALUE}{plugin_path}{c.RESET}"))
+                else:
+                    print(c.error(f"Chemin invalide: {error}"))
+            else:
+                plugin_path = ""
+                print(c.success("Plugin désactivé - utilise répertoires locaux"))
+
+            input(f"\n{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '0':
             print(f"\n{c.SUCCESS}  Au revoir!{c.RESET}")
             break
@@ -142,9 +204,15 @@ def main_menu():
 
 def main():
     """Point d'entrée principal."""
-    
-    if len(sys.argv) == 1:
-        main_menu()
+
+    # Vérifier si mode interactif (aucun argument ou seulement --default-plugin)
+    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
+        # Récupérer le chemin par défaut si fourni
+        default_plugin = ""
+        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
+            default_plugin = sys.argv[2]
+
+        main_menu(default_plugin)
         return
     
     parser = argparse.ArgumentParser(

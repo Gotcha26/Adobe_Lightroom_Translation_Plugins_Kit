@@ -220,9 +220,14 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
 # MENU INTERACTIF
 # =============================================================================
 
-def menu_sync():
-    """Menu interactif pour SYNC."""
+def menu_sync(plugin_path: str = ""):
+    """Menu interactif pour SYNC.
+
+    Args:
+        plugin_path: Chemin du plugin (optionnel) pour auto-détection
+    """
     from TM_common import clear_screen, print_header
+    from common.paths import find_latest_tool_output
 
     clear_screen()
     print_header()
@@ -238,12 +243,21 @@ def menu_sync():
     locales_dir = None
 
     if has_update in ['o', 'y', '', 'oui', 'yes']:
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
-        update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
-        if not update_dir or not os.path.isdir(update_dir):
-            print(c.error("Répertoire invalide."))
-            input("\nAppuyez sur Entrée...")
-            return None
+        # Auto-détection si plugin_path fourni
+        if plugin_path:
+            update_dir = find_latest_tool_output(plugin_path, "TranslationManager")
+            if update_dir:
+                print(f"\n{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
+            else:
+                print(c.warning("Aucun dossier TranslationManager trouvé"))
+
+        if not update_dir:
+            print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+            update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
+            if not update_dir or not os.path.isdir(update_dir):
+                print(c.error("Répertoire invalide."))
+                input("\nAppuyez sur Entrée...")
+                return None
     else:
         print(f"\n{c.KEY}Fichier EN de référence{c.RESET} (ou répertoire):")
         ref_path = input(f"{c.PROMPT}  > {c.RESET}").strip()

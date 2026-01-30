@@ -147,21 +147,37 @@ def run_extract_all(update_dir: str, locales_dir: str = None,
 # MENU INTERACTIF
 # =============================================================================
 
-def menu_extract():
-    """Menu interactif pour EXTRACT."""
+def menu_extract(plugin_path: str = ""):
+    """Menu interactif pour EXTRACT.
+
+    Args:
+        plugin_path: Chemin du plugin (optionnel) pour auto-détection
+    """
     from TM_common import clear_screen, print_header, load_update_json
+    from common.paths import find_latest_tool_output
 
     clear_screen()
     print_header()
     print(f"\n{c.INFO}EXTRACT{c.RESET}: Générer fichiers de traduction")
     print(c.separator())
 
-    print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
-    update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
-    if not update_dir or not os.path.isdir(update_dir):
-        print(c.error("Répertoire invalide."))
-        input("\nAppuyez sur Entrée...")
-        return None
+    # Auto-détection ou demande manuelle du dossier UPDATE
+    update_dir = None
+    if plugin_path:
+        update_dir = find_latest_tool_output(plugin_path, "TranslationManager")
+        if update_dir:
+            print(f"\n{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
+        else:
+            print(c.warning("Aucun dossier TranslationManager trouvé"))
+            print(f"{c.DIM}  Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement{c.RESET}")
+
+    if not update_dir:
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
+        if not update_dir or not os.path.isdir(update_dir):
+            print(c.error("Répertoire invalide."))
+            input("\nAppuyez sur Entrée...")
+            return None
 
     # Vérifier UPDATE_en.json
     if not load_update_json(update_dir):
