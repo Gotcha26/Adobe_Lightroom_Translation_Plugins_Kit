@@ -13,6 +13,33 @@ from collections import defaultdict
 
 from Extractor_models import ExtractedString, ExtractionStats
 
+# =============================================================================
+# TRANSLATION WARNING NOTE
+# This note is added to all TranslatedStrings_xx.txt files to guide translators
+# =============================================================================
+TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------------------------------------
+-- IMPORTANT NOTES FOR TRANSLATORS:
+-- -----------------------------------------------------------------------------
+-- 1. DO NOT translate the following patterns (keep them exactly as-is):
+--    - %s, %d, %f, %i, %u, %x, %X, %o, %c, %e, %E, %g, %G (format specifiers)
+--    - %1, %2, %3... (numbered placeholders)
+--    - \\n (newline character)
+--    - \\t (tab character)
+--    - \\" (escaped quote)
+--    - \\\\ (escaped backslash)
+--    - ... (ellipsis used as placeholder)
+--    - Technical terms in UPPERCASE (API, URL, HTTP, JSON, etc.)
+--
+-- 2. PRESERVE spaces around text exactly as they appear:
+--    - Leading spaces (before text) are used for layout/alignment
+--    - Trailing spaces (after text) are used for concatenation
+--    - Example: "  Hello  " must keep both leading and trailing spaces
+--
+-- 3. Keep the same punctuation style (colons, periods, etc.)
+-- -----------------------------------------------------------------------------
+
+"""
+
 
 class OutputGenerator:
     """Gère la génération de tous les fichiers de sortie."""
@@ -43,7 +70,10 @@ class OutputGenerator:
             f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"-- Total keys: {len(unique_keys)}\n")
             f.write(f"-- =============================================================================\n\n")
-            
+
+            # Add translation warning note for translators
+            f.write(TRANSLATION_WARNING_NOTE)
+
             for category in sorted(by_category.keys()):
                 entries = by_category[category]
                 f.write(f"-- {category}\n")
