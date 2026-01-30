@@ -30,6 +30,9 @@ class MultiLineContext:
     Détecte quand un appel de fonction ou une assignation s'étale sur plusieurs lignes
     et accumule le contenu jusqu'à ce que les parenthèses soient équilibrées ou que
     la chaîne concaténée soit complète.
+
+    Stocke chaque ligne avec son numéro pour pouvoir retrouver la ligne exacte
+    d'une chaîne extraite.
     """
 
     def __init__(self):
@@ -37,8 +40,8 @@ class MultiLineContext:
         self.pattern_name = ""
         self.start_line = 0
         self.paren_depth = 0
-        self.accumulated_lines = []
-        self.is_concatenation = False  # Pour les cas "string" .. \n "suite"
+        self.lines_with_numbers = []  # Liste de tuples (line_num, line_content)
+        self.is_concatenation = False
 
     def start(self, pattern_name: str, line_num: int, line: str):
         """Démarre un nouveau contexte multi-ligne."""
@@ -46,13 +49,16 @@ class MultiLineContext:
         self.pattern_name = pattern_name
         self.start_line = line_num
         self.paren_depth = line.count('(') - line.count(')')
-        self.accumulated_lines = [line]
-        # Détecter si c'est une concaténation qui continue
+        self.lines_with_numbers = [(line_num, line)]
         self.is_concatenation = line.rstrip().endswith('..')
 
-    def add_line(self, line: str) -> bool:
+    def add_line(self, line_num: int, line: str) -> bool:
         """
         Ajoute une ligne au contexte.
+
+        Args:
+            line_num: Numéro de la ligne
+            line: Contenu de la ligne
 
         Returns:
             True si le contexte est maintenant complet
@@ -60,16 +66,12 @@ class MultiLineContext:
         if not self.active:
             return False
 
-        self.accumulated_lines.append(line)
+        self.lines_with_numbers.append((line_num, line))
         self.paren_depth += line.count('(') - line.count(')')
 
-        # Vérifier si la ligne continue avec une concaténation
         line_stripped = line.rstrip()
         self.is_concatenation = line_stripped.endswith('..')
 
-        # Le contexte est complet si:
-        # 1. Les parenthèses sont équilibrées (ou négatives = fermées)
-        # 2. ET la ligne ne se termine pas par une concaténation ".."
         if self.paren_depth <= 0 and not self.is_concatenation:
             return True
 
@@ -81,12 +83,37 @@ class MultiLineContext:
         self.pattern_name = ""
         self.start_line = 0
         self.paren_depth = 0
-        self.accumulated_lines = []
+        self.lines_with_numbers = []
         self.is_concatenation = False
 
     def get_combined_content(self) -> str:
         """Retourne le contenu combiné de toutes les lignes."""
-        return ' '.join(line.strip() for line in self.accumulated_lines)
+        return ' '.join(line.strip() for _, line in self.lines_with_numbers)
+
+    def find_line_for_string(self, search_text: str) -> int:
+        """
+        Trouve le numéro de ligne réel où se trouve une chaîne.
+
+        Args:
+            search_text: La chaîne à rechercher
+
+        Returns:
+            Le numéro de ligne où la chaîne a été trouvée, ou start_line par défaut
+        """
+        # Chercher la chaîne exacte (avec guillemets) dans chaque ligne
+        search_quoted = f'"{search_text}"'
+
+        for line_num, line_content in self.lines_with_numbers:
+            if search_quoted in line_content:
+                return line_num
+
+        # Si pas trouvé avec guillemets doubles, essayer sans (cas des concaténations)
+        for line_num, line_content in self.lines_with_numbers:
+            if search_text in line_content:
+                return line_num
+
+        # Par défaut, retourner la première ligne
+        return self.start_line
 
 
 class LocalizableStringExtractor:
@@ -180,18 +207,14 @@ class LocalizableStringExtractor:
 
             # Gestion du contexte multi-ligne en cours
             if self.multi_line_ctx.active:
-                is_complete = self.multi_line_ctx.add_line(line)
+                is_complete = self.multi_line_ctx.add_line(line_num, line)
                 if is_complete:
                     # Traiter le bloc complet
-                    combined = self.multi_line_ctx.get_combined_content()
-                    start_line = self.multi_line_ctx.start_line
-                    pattern = self.multi_line_ctx.pattern_name
-                    self.multi_line_ctx.reset()
-
-                    # Extraire les chaînes du bloc combiné
+                    # Extraire les chaînes du bloc combiné avec le contexte pour retrouver les lignes
                     extracted_from_block = self._extract_from_combined_block(
-                        combined, rel_path, file_name, start_line, pattern
+                        self.multi_line_ctx, rel_path, file_name
                     )
+                    self.multi_line_ctx.reset()
                     if extracted_from_block:
                         file_has_strings = True
                 continue
@@ -232,29 +255,32 @@ class LocalizableStringExtractor:
 
         # Gérer le cas où le fichier se termine avec un contexte multi-ligne non fermé
         if self.multi_line_ctx.active:
-            combined = self.multi_line_ctx.get_combined_content()
-            start_line = self.multi_line_ctx.start_line
-            pattern = self.multi_line_ctx.pattern_name
-            self.multi_line_ctx.reset()
-
             extracted_from_block = self._extract_from_combined_block(
-                combined, rel_path, file_name, start_line, pattern
+                self.multi_line_ctx, rel_path, file_name
             )
+            self.multi_line_ctx.reset()
             if extracted_from_block:
                 file_has_strings = True
 
         if file_has_strings:
             self.stats.files_with_strings += 1
 
-    def _extract_from_combined_block(self, combined: str, rel_path: str,
-                                      file_name: str, start_line: int,
-                                      pattern_name: str) -> bool:
+    def _extract_from_combined_block(self, ctx: MultiLineContext, rel_path: str,
+                                      file_name: str) -> bool:
         """
         Extrait les chaînes d'un bloc combiné multi-ligne.
+
+        Args:
+            ctx: Le contexte multi-ligne contenant les lignes avec leurs numéros
+            rel_path: Chemin relatif du fichier
+            file_name: Nom du fichier
 
         Returns:
             True si des chaînes ont été extraites
         """
+        combined = ctx.get_combined_content()
+        pattern_name = ctx.pattern_name
+
         # Utiliser _find_non_localized_strings pour ne pas re-localiser
         non_localized = self._find_non_localized_strings(combined)
 
@@ -271,9 +297,19 @@ class LocalizableStringExtractor:
                 self.stats.technical_ignored += 1
                 continue
 
+            # Trouver le numéro de ligne réel pour cette chaîne
+            actual_line_num = ctx.find_line_for_string(original_text)
+
+            # Trouver le contenu de la ligne réelle pour line_content
+            actual_line_content = combined  # Par défaut
+            for ln, lc in ctx.lines_with_numbers:
+                if ln == actual_line_num:
+                    actual_line_content = lc.strip()
+                    break
+
             entry = self._create_entry(
-                original_text, combined, rel_path, file_name,
-                start_line, pattern_name, is_concat=False
+                original_text, actual_line_content, rel_path, file_name,
+                actual_line_num, pattern_name, is_concat=False
             )
 
             if entry:
