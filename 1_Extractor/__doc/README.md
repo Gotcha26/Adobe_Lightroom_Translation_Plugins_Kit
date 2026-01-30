@@ -1,30 +1,30 @@
-# Extractor - Documentation technique
+# Extractor - Technical Documentation
 
-**Version 5.1 | Janvier 2026**
+**Version 5.1 | January 2026**
 
-## Vue d'ensemble
+## Overview
 
-Extractor est le premier outil de la chaîne de localisation. Son rôle est d'analyser les fichiers Lua d'un plugin Lightroom et d'extraire automatiquement toutes les chaînes de texte qui devraient être localisées.
+Extractor is the first tool in the localization chain. Its role is to analyze the Lua files of a Lightroom plugin and automatically extract all text strings that should be localized.
 
-## Architecture du projet
+## Project Architecture
 
 ```
 1_Extractor/
-├── Extractor_main.py         ← Point d'entrée, orchestration
-├── Extractor_config.py       ← Patterns regex et constantes
-├── Extractor_models.py       ← Classes de données (StringMember, ExtractedString, etc.)
-├── Extractor_utils.py        ← Fonctions utilitaires (espaces, clés, filtres)
-├── Extractor_engine.py       ← Moteur d'extraction principal
-├── Extractor_output.py       ← Génération des fichiers de sortie
-├── Extractor_report.py       ← Génération des rapports
-├── Extractor_menu.py         ← Interface interactive
+├── Extractor_main.py         ← Entry point, orchestration
+├── Extractor_config.py       ← Regex patterns and constants
+├── Extractor_models.py       ← Data classes (StringMember, ExtractedString, etc.)
+├── Extractor_utils.py        ← Utility functions (spaces, keys, filters)
+├── Extractor_engine.py       ← Main extraction engine
+├── Extractor_output.py       ← Output file generation
+├── Extractor_report.py       ← Report generation
+├── Extractor_menu.py         ← Interactive interface
 └── __doc/
-    └── README.md             ← Ce fichier
+    └── README.md             ← This file
 ```
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Extractor_main.py                        │
-│                    (orchestrateur)                          │
+│                    (orchestrator)                           │
 └──────────────────────────┬──────────────────────────────────┘
                            │
         ┌──────────────────┼──────────────────┐
@@ -35,67 +35,67 @@ Extractor est le premier outil de la chaîne de localisation. Son rôle est d'an
 │(engine.py)       │ │(output.py)   │ │(report.py)       │
 └────────┬─────────┘ └──────┬───────┘ └──────┬───────────┘
          │                  │                │
-         ├─ Utilise:        ├─ Utilise:      └─ Utilise:
+         ├─ Uses:           ├─ Uses:         └─ Uses:
          │  • config.py     │  • models.py      • models.py
          │  • models.py     │  • utils.py       • output.py
          │  • utils.py      │
          │
 ```
 
-L'architecture est modulaire pour faciliter la maintenance et l'évolution. Chaque module a une responsabilité claire.
+The architecture is modular to facilitate maintenance and evolution. Each module has a clear responsibility.
 
-## Fonctionnement détaillé
+## Detailed Operation
 
-### Phase 1 : Analyse des fichiers
+### Phase 1: File Analysis
 
 ```
-Plugin Lightroom (.lrplugin)
+Lightroom Plugin (.lrplugin)
     │
-    ├── Scan récursif des fichiers .lua
+    ├── Recursive scan of .lua files
     │   │
-    │   ├── Lecture ligne par ligne
+    │   ├── Line-by-line reading
     │   │
-    │   └── Détection des patterns
+    │   └── Pattern detection
     │       │
-    │       ├── Chaînes UI (title = "Submit")
-    │       ├── Concaténations (a .. "text" .. b)
-    │       └── Contextes UI (bind_to_object, f:static_text, etc.)
+    │       ├── UI strings (title = "Submit")
+    │       ├── Concatenations (a .. "text" .. b)
+    │       └── UI contexts (bind_to_object, f:static_text, etc.)
     │
-    └── Filtrage intelligent
+    └── Smart filtering
         │
-        ├── Ignorer les clés LOC existantes
-        ├── Ignorer les logs (logInfo, logError)
-        ├── Ignorer les valeurs techniques
-        └── Ignorer les chaînes trop courtes
+        ├── Ignore existing LOC keys
+        ├── Ignore logs (logInfo, logError)
+        ├── Ignore technical values
+        └── Ignore strings too short
 ```
 
-### Phase 2 : Extraction et métadonnées
+### Phase 2: Extraction and Metadata
 
-Pour chaque chaîne détectée :
+For each detected string:
 
 ```
 "  Hello World  :  "
     │
-    ├── Texte de base : "Hello World"
-    ├── Espaces avant : 2
-    ├── Espaces après : 2
-    ├── Suffixe : " : "
+    ├── Base text: "Hello World"
+    ├── Leading spaces: 2
+    ├── Trailing spaces: 2
+    ├── Suffix: " : "
     │
-    └── Génération clé LOC
+    └── LOC key generation
         │
-        ├── Normalisation (alphanumériques + underscores)
+        ├── Normalization (alphanumerics + underscores)
         ├── Camel case (HelloWorld)
-        ├── Ajout contexte fichier (MyDialog_HelloWorld)
-        └── Unicité (HelloWorld_2 si collision)
+        ├── Add file context (MyDialog_HelloWorld)
+        └── Uniqueness (HelloWorld_2 if collision)
 ```
 
-Toutes ces métadonnées sont conservées pour que l'Applicator puisse reconstruire exactement la chaîne originale.
+All this metadata is preserved so that the Applicator can reconstruct exactly the original string.
 
-### Phase 3 : Génération des fichiers
+### Phase 3: File Generation
 
 #### TranslatedStrings_en.txt
 
-Format SDK Lightroom, utilisable directement dans le plugin :
+Lightroom SDK format, directly usable in the plugin:
 
 ```
 -- =============================================================================
@@ -130,16 +130,16 @@ Format SDK Lightroom, utilisable directement dans le plugin :
 "$$$/Piwigo/Dialog_PleaseWait=Please wait..."
 ```
 
-Chaque ligne contient :
-- La clé LOC complète avec le préfixe
-- Le symbole `=`
-- La valeur par défaut en anglais (ou autre langue de base)
+Each line contains:
+- The complete LOC key with prefix
+- The `=` symbol
+- The default value in English (or other base language)
 
-L'en-tête inclut des notes importantes pour les traducteurs concernant les motifs à ne pas traduire et la préservation des espaces.
+The header includes important notes for translators regarding patterns not to translate and space preservation.
 
 #### spacing_metadata.json
 
-Métadonnées pour reconstituer les espaces et suffixes :
+Metadata to reconstruct spaces and suffixes:
 
 ```json
 {
@@ -158,7 +158,7 @@ Métadonnées pour reconstituer les espaces et suffixes :
 
 #### replacements.json
 
-Instructions précises pour l'Applicator :
+Precise instructions for Applicator:
 
 ```json
 {
@@ -188,92 +188,92 @@ Instructions précises pour l'Applicator :
 
 #### extraction_report.txt
 
-Rapport détaillé avec statistiques :
+Detailed report with statistics:
 
 ```
 ================================================================================
-RAPPORT D'EXTRACTION - Plugin PiwigoPublish
+EXTRACTION REPORT - PiwigoPublish Plugin
 ================================================================================
 
-STATISTIQUES GLOBALES
+GLOBAL STATISTICS
 --------------------------------------------------------------------------------
-Fichiers analysés        : 12
-Fichiers avec extractions: 8
-Lignes UI détectées      : 156
-Chaînes uniques          : 124
-Chaînes ignorées         : 32
-Clés LOC existantes      : 18
+Files analyzed           : 12
+Files with extractions   : 8
+UI lines detected        : 156
+Unique strings           : 124
+Ignored strings          : 32
+Existing LOC keys        : 18
 
-DÉTAIL PAR FICHIER
+DETAIL BY FILE
 --------------------------------------------------------------------------------
 
 MyDialog.lua
-  Lignes UI : 42
-  Chaînes   : 35
-  Clés LOC  : 7 (déjà localisé)
+  UI lines : 42
+  Strings  : 35
+  LOC keys : 7 (already localized)
 
   $$$/Piwigo/Submit          → "Submit"
   $$$/Piwigo/Cancel          → "Cancel"
   ...
 ```
 
-## Options de configuration
+## Configuration Options
 
-### Mode interactif
+### Interactive Mode
 
-Lancez simplement `Extractor_main.py` pour accéder au menu interactif :
+Simply launch `Extractor_main.py` to access the interactive menu:
 
 ```
 ==================================================
         EXTRACTOR - Configuration
 ==================================================
 
-Options actuelles:
-  Plugin path    : ./monPlugin.lrplugin
-  Préfixe LOC    : $$$/MonPlugin
-  Langue         : en
-  Longueur min   : 3
-  Ignorer logs   : Oui
+Current options:
+  Plugin path    : ./myPlugin.lrplugin
+  LOC prefix     : $$$/MyPlugin
+  Language       : en
+  Min length     : 3
+  Ignore logs    : Yes
 
-[1] Modifier le chemin du plugin
-[2] Modifier le préfixe LOC
-[3] Modifier la langue
-[4] Options avancées
-[5] Lancer l'extraction
-[0] Quitter
+[1] Modify plugin path
+[2] Modify LOC prefix
+[3] Modify language
+[4] Advanced options
+[5] Launch extraction
+[0] Exit
 ```
 
-### Mode CLI
+### CLI Mode
 
 ```bash
 python Extractor_main.py --plugin-path ./plugin.lrplugin [OPTIONS]
 ```
 
-**Options disponibles :**
+**Available options:**
 
-| Option | Description | Défaut | Exemple |
-|--------|-------------|--------|---------|
-| `--plugin-path` | Chemin du plugin (OBLIGATOIRE) | - | `./monPlugin.lrplugin` |
-| `--output-dir` | Répertoire de sortie personnalisé | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
-| `--prefix` | Préfixe des clés LOC | `$$$/Piwigo` | `$$$/MonApp` |
-| `--lang` | Code langue de base | `en` | `fr`, `de`, `es` |
-| `--exclude` | Fichiers à exclure (répétable) | - | `--exclude test.lua --exclude debug.lua` |
-| `--min-length` | Longueur minimale des chaînes | `3` | `5` |
-| `--no-ignore-log` | Ne pas ignorer les logs | false | - |
+| Option | Description | Default | Example |
+|--------|-------------|---------|---------|
+| `--plugin-path` | Plugin path (REQUIRED) | - | `./myPlugin.lrplugin` |
+| `--output-dir` | Custom output directory | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
+| `--prefix` | LOC keys prefix | `$$$/Piwigo` | `$$$/MyApp` |
+| `--lang` | Base language code | `en` | `fr`, `de`, `es` |
+| `--exclude` | Files to exclude (repeatable) | - | `--exclude test.lua --exclude debug.lua` |
+| `--min-length` | Minimum string length | `3` | `5` |
+| `--no-ignore-log` | Don't ignore logs | false | - |
 
-### Exemples d'utilisation
+### Usage Examples
 
-**Extraction standard :**
+**Standard extraction:**
 ```bash
 python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
 ```
 
-**Extraction avec préfixe personnalisé :**
+**Extraction with custom prefix:**
 ```bash
 python Extractor_main.py --plugin-path ./myPlugin.lrplugin --prefix $$$/MyApp
 ```
 
-**Extraction avec exclusions :**
+**Extraction with exclusions:**
 ```bash
 python Extractor_main.py \
   --plugin-path ./plugin.lrplugin \
@@ -282,82 +282,82 @@ python Extractor_main.py \
   --min-length 5
 ```
 
-**Extraction en français comme langue de base :**
+**Extraction with French as base language:**
 ```bash
 python Extractor_main.py \
   --plugin-path ./plugin.lrplugin \
   --lang fr \
-  --prefix $$$/MonApp
+  --prefix $$$/MyApp
 ```
 
-## Patterns d'extraction
+## Extraction Patterns
 
-Extractor détecte automatiquement plusieurs contextes UI dans le code Lua.
+Extractor automatically detects several UI contexts in Lua code.
 
-### Contextes UI reconnus
+### Recognized UI Contexts
 
 ```lua
--- 1. Titres et labels de widgets
+-- 1. Widget titles and labels
 f:static_text {
-    title = "Hello World",      -- ✓ Extrait
+    title = "Hello World",      -- ✓ Extracted
 }
 
--- 2. bind_to_object (composants liés)
+-- 2. bind_to_object (bound components)
 f:edit_field {
     bind_to_object = propertyTable,
     value = LrBinding.keyToProp("apiKey"),
-    title = "API Key:",         -- ✓ Extrait
+    title = "API Key:",         -- ✓ Extracted
 }
 
--- 3. Items de menu
+-- 3. Menu items
 f:popup_menu {
     items = {
-        { title = "Option 1", value = "opt1" },  -- ✓ Extrait "Option 1"
-        { title = "Option 2", value = "opt2" },  -- ✓ Extrait "Option 2"
+        { title = "Option 1", value = "opt1" },  -- ✓ Extracts "Option 1"
+        { title = "Option 2", value = "opt2" },  -- ✓ Extracts "Option 2"
     }
 }
 
--- 4. Concaténations de chaînes
-local message = "Upload " .. count .. " photos"  -- ✓ Extrait "Upload " et " photos"
+-- 4. String concatenations
+local message = "Upload " .. count .. " photos"  -- ✓ Extracts "Upload " and " photos"
 
--- 5. Retours de fonction
+-- 5. Function returns
 function getTitle()
-    return "My Title"           -- ✓ Extrait
+    return "My Title"           -- ✓ Extracted
 end
 
--- 6. Chaînes dans tableaux
+-- 6. Strings in arrays
 local messages = {
-    "First message",            -- ✓ Extrait
-    "Second message",           -- ✓ Extrait
+    "First message",            -- ✓ Extracted
+    "Second message",           -- ✓ Extracted
 }
 ```
 
-### Patterns ignorés
+### Ignored Patterns
 
 ```lua
--- Logs (si --no-ignore-log non spécifié)
-logInfo("Debug message")        -- ✗ Ignoré
-log:trace("Trace info")         -- ✗ Ignoré
+-- Logs (if --no-ignore-log not specified)
+logInfo("Debug message")        -- ✗ Ignored
+log:trace("Trace info")         -- ✗ Ignored
 
--- Valeurs techniques
-color = "red"                   -- ✗ Ignoré (valeur technique)
-format = "jpg"                  -- ✗ Ignoré (format)
+-- Technical values
+color = "red"                   -- ✗ Ignored (technical value)
+format = "jpg"                  -- ✗ Ignored (format)
 
--- Clés LOC existantes
-title = LOC "$$$/App/Title=Title"  -- ✗ Ignoré (déjà localisé)
+-- Existing LOC keys
+title = LOC "$$$/App/Title=Title"  -- ✗ Ignored (already localized)
 
--- Chaînes trop courtes (< min_length)
-x = "OK"                        -- ✗ Ignoré si min_length > 2
+-- Strings too short (< min_length)
+x = "OK"                        -- ✗ Ignored if min_length > 2
 ```
 
-## Gestion des espaces et suffixes
+## Space and Suffix Management
 
-Extractor préserve intelligemment les espaces et suffixes pour garantir un rendu identique après application.
+Extractor intelligently preserves spaces and suffixes to ensure identical rendering after application.
 
-### Espaces
+### Spaces
 
 ```lua
--- Avant
+-- Before
 title = "  Hello World  "
 
 -- Extraction
@@ -367,14 +367,14 @@ title = "  Hello World  "
   "trailing_spaces": 2
 }
 
--- Après Applicator
+-- After Applicator
 title = "  " .. LOC "$$$/App/HelloWorld=Hello World" .. "  "
 ```
 
 ### Suffixes
 
 ```lua
--- Avant
+-- Before
 label = "Username:"
 
 -- Extraction
@@ -383,17 +383,17 @@ label = "Username:"
   "suffix": ":"
 }
 
--- Après Applicator
+-- After Applicator
 label = LOC "$$$/App/Username=Username" .. ":"
 ```
 
-### Concaténations complexes
+### Complex Concatenations
 
 ```lua
--- Avant
+-- Before
 message = "  Processing " .. count .. " files...  "
 
--- Extraction (2 membres)
+-- Extraction (2 members)
 [
   {
     "base_text": "Processing ",
@@ -406,109 +406,109 @@ message = "  Processing " .. count .. " files...  "
   }
 ]
 
--- Après Applicator
+-- After Applicator
 message = "  " .. LOC "$$$/App/Processing=Processing " .. count .. LOC "$$$/App/Files=files" .. "..." .. "  "
 ```
 
-## Génération des clés LOC
+## LOC Key Generation
 
-Les clés LOC sont générées selon un algorithme strict pour garantir leur unicité et leur lisibilité.
+LOC keys are generated using a strict algorithm to ensure their uniqueness and readability.
 
-### Étapes de génération
+### Generation Steps
 
 ```
-Texte original : "Please wait..."
+Original text: "Please wait..."
     │
-    ├── 1. Nettoyage (alphanumériques + espaces)
+    ├── 1. Cleanup (alphanumerics + spaces)
     │   └── "Please wait"
     │
     ├── 2. Camel case
     │   └── "PleaseWait"
     │
-    ├── 3. Contexte fichier (nom sans extension)
+    ├── 3. File context (name without extension)
     │   └── "MyDialog_PleaseWait"
     │
-    ├── 4. Vérification unicité
-    │   └── Si existe : "MyDialog_PleaseWait_2"
+    ├── 4. Uniqueness check
+    │   └── If exists: "MyDialog_PleaseWait_2"
     │
-    └── 5. Préfixe
+    └── 5. Prefix
         └── "$$$/Piwigo/MyDialog_PleaseWait"
 ```
 
-### Exemples de génération
+### Generation Examples
 
-| Texte original | Fichier | Clé générée |
-|----------------|---------|-------------|
+| Original text | File | Generated key |
+|---------------|------|---------------|
 | `"Submit"` | `Dialog.lua` | `$$$/Piwigo/Dialog_Submit` |
 | `"Please wait..."` | `Upload.lua` | `$$$/Piwigo/Upload_PleaseWait` |
 | `"API Key:"` | `Settings.lua` | `$$$/Piwigo/Settings_APIKey` |
 | `"Photo(s)"` | `Main.lua` | `$$$/Piwigo/Main_Photos` |
 
-### Gestion des collisions
+### Collision Handling
 
-Si une clé existe déjà, un suffixe numérique est ajouté :
+If a key already exists, a numeric suffix is added:
 
 ```
-$$$/Piwigo/Submit       → Première occurrence
-$$$/Piwigo/Submit_2     → Deuxième occurrence
-$$$/Piwigo/Submit_3     → Troisième occurrence
+$$$/Piwigo/Submit       → First occurrence
+$$$/Piwigo/Submit_2     → Second occurrence
+$$$/Piwigo/Submit_3     → Third occurrence
 ```
 
-## Statistiques et rapports
+## Statistics and Reports
 
-Le rapport d'extraction fournit des informations détaillées sur le processus.
+The extraction report provides detailed information about the process.
 
-### Métriques globales
+### Global Metrics
 
-- **Fichiers analysés** : Nombre total de fichiers `.lua` scannés
-- **Fichiers avec extractions** : Fichiers contenant au moins une chaîne à extraire
-- **Lignes UI détectées** : Nombre de lignes contenant des patterns UI
-- **Chaînes uniques** : Nombre de clés LOC générées
-- **Chaînes ignorées** : Chaînes filtrées (logs, techniques, trop courtes)
-- **Clés LOC existantes** : Clés déjà localisées dans le code
+- **Files analyzed**: Total number of `.lua` files scanned
+- **Files with extractions**: Files containing at least one string to extract
+- **UI lines detected**: Number of lines containing UI patterns
+- **Unique strings**: Number of LOC keys generated
+- **Ignored strings**: Filtered strings (logs, technical, too short)
+- **Existing LOC keys**: Keys already localized in the code
 
-### Détails par fichier
+### Details by File
 
-Pour chaque fichier :
-- Liste des clés LOC générées
-- Valeur par défaut de chaque clé
-- Métadonnées (espaces, suffixes)
-- Contexte d'extraction
+For each file:
+- List of generated LOC keys
+- Default value of each key
+- Metadata (spaces, suffixes)
+- Extraction context
 
-## Cas d'usage avancés
+## Advanced Use Cases
 
-### Extraction multilingue de base
+### Multilingual Base Extraction
 
-Si votre plugin est initialement en français et que vous voulez l'angliciser :
+If your plugin is initially in French and you want to anglicize it:
 
 ```bash
 python Extractor_main.py \
-  --plugin-path ./monPlugin.lrplugin \
+  --plugin-path ./myPlugin.lrplugin \
   --lang fr \
-  --prefix $$$/MonApp
+  --prefix $$$/MyApp
 ```
 
-Cela génère `TranslatedStrings_fr.txt` au lieu de `TranslatedStrings_en.txt`. Vous pouvez ensuite créer `TranslatedStrings_en.txt` en dupliquant et traduisant.
+This generates `TranslatedStrings_fr.txt` instead of `TranslatedStrings_en.txt`. You can then create `TranslatedStrings_en.txt` by duplicating and translating.
 
-### Réexécution sur un projet partiellement localisé
+### Re-execution on a Partially Localized Project
 
-Extractor détecte automatiquement les clés LOC existantes et ne les réextrait pas. Vous pouvez donc relancer l'extraction après avoir ajouté du nouveau code.
+Extractor automatically detects existing LOC keys and doesn't re-extract them. You can therefore re-run the extraction after adding new code.
 
 ```bash
-# Première extraction
+# First extraction
 python Extractor_main.py --plugin-path ./plugin.lrplugin
 
-# ... développement, nouvelles fonctionnalités ...
+# ... development, new features ...
 
-# Nouvelle extraction (ne touche pas aux clés existantes)
+# New extraction (doesn't touch existing keys)
 python Extractor_main.py --plugin-path ./plugin.lrplugin
 ```
 
-Les clés déjà localisées sont listées dans le rapport mais ne sont pas ajoutées au fichier de sortie.
+Already localized keys are listed in the report but are not added to the output file.
 
-### Extraction ciblée avec exclusions
+### Targeted Extraction with Exclusions
 
-Pour extraire uniquement certains fichiers :
+To extract only certain files:
 
 ```bash
 python Extractor_main.py \
@@ -518,9 +518,9 @@ python Extractor_main.py \
   --exclude vendor/external.lua
 ```
 
-### Personnalisation du préfixe par plugin
+### Custom Prefix per Plugin
 
-Chaque plugin devrait avoir son propre préfixe pour éviter les conflits :
+Each plugin should have its own prefix to avoid conflicts:
 
 ```bash
 # Plugin 1
@@ -530,135 +530,135 @@ python Extractor_main.py --plugin-path ./pluginA.lrplugin --prefix $$$/PluginA
 python Extractor_main.py --plugin-path ./pluginB.lrplugin --prefix $$$/PluginB
 ```
 
-## Dépannage
+## Troubleshooting
 
-### Aucune chaîne extraite
+### No Strings Extracted
 
-**Causes possibles :**
-- Le paramètre `--min-length` est trop élevé
-- Les chaînes sont déjà localisées
-- Les patterns ne correspondent pas à votre code
-- Le chemin du plugin est incorrect
+**Possible causes:**
+- The `--min-length` parameter is too high
+- Strings are already localized
+- Patterns don't match your code
+- Plugin path is incorrect
 
-**Solutions :**
+**Solutions:**
 ```bash
-# Réduire la longueur minimale
+# Reduce minimum length
 python Extractor_main.py --plugin-path ./plugin.lrplugin --min-length 1
 
-# Vérifier le chemin
+# Check path
 ls ./plugin.lrplugin/*.lua
 
-# Consulter le rapport pour comprendre ce qui a été ignoré
+# Consult report to understand what was ignored
 ```
 
-### Trop de chaînes extraites (logs inclus)
+### Too Many Strings Extracted (logs included)
 
-Si les messages de logs sont extraits par erreur :
+If log messages are extracted by mistake:
 
 ```bash
-# S'assurer que l'option par défaut est active
+# Make sure default option is active
 python Extractor_main.py --plugin-path ./plugin.lrplugin
 ```
 
-Les logs sont ignorés par défaut. Si vous avez utilisé `--no-ignore-log`, retirez cette option.
+Logs are ignored by default. If you used `--no-ignore-log`, remove this option.
 
-### Clés LOC générées illisibles
+### Unreadable Generated LOC Keys
 
-Si les clés générées sont trop longues ou complexes :
+If generated keys are too long or complex:
 
-1. Raccourcissez les textes originaux dans le code
-2. Ou éditez manuellement le fichier `TranslatedStrings_xx.txt` après extraction
-3. **Important** : Si vous changez les clés, mettez à jour aussi `replacements.json` pour Applicator
+1. Shorten original texts in the code
+2. Or manually edit the `TranslatedStrings_xx.txt` file after extraction
+3. **Important**: If you change keys, also update `replacements.json` for Applicator
 
-### Encodage incorrect (caractères spéciaux)
+### Incorrect Encoding (special characters)
 
-Tous les fichiers sont lus et écrits en UTF-8. Si vous voyez des caractères mal encodés :
+All files are read and written in UTF-8. If you see incorrectly encoded characters:
 
 ```bash
-# Vérifier l'encodage de vos fichiers .lua
+# Check encoding of your .lua files
 file --mime-encoding *.lua
 
-# Convertir si nécessaire (exemple Linux/Mac)
-iconv -f ISO-8859-1 -t UTF-8 fichier.lua > fichier_utf8.lua
+# Convert if necessary (Linux/Mac example)
+iconv -f ISO-8859-1 -t UTF-8 file.lua > file_utf8.lua
 ```
 
-## FAQ technique
+## Technical FAQ
 
-### Puis-je modifier les patterns de détection ?
+### Can I modify detection patterns?
 
-Oui, éditez le fichier [Extractor_config.py:1](1_Extractor/Extractor_config.py#L1). Les patterns sont définis dans les constantes `UI_CONTEXT_PATTERNS`, `UI_KEYWORDS`, etc.
+Yes, edit the [Extractor_config.py:1](1_Extractor/Extractor_config.py#L1) file. Patterns are defined in the constants `UI_CONTEXT_PATTERNS`, `UI_KEYWORDS`, etc.
 
-### Les métadonnées sont-elles vraiment nécessaires ?
+### Is metadata really necessary?
 
-Oui, elles garantissent que l'Applicator reconstruit exactement les chaînes originales avec espaces et suffixes. Sans elles, le rendu serait différent.
+Yes, it ensures that Applicator reconstructs exactly the original strings with spaces and suffixes. Without it, the rendering would be different.
 
-### Comment ajouter un nouveau type de widget à détecter ?
+### How to add a new widget type to detect?
 
-Ajoutez le pattern dans [Extractor_config.py:1](1_Extractor/Extractor_config.py#L1) :
+Add the pattern in [Extractor_config.py:1](1_Extractor/Extractor_config.py#L1):
 
 ```python
 UI_KEYWORDS = [
     "title", "label", "value", "placeholder",
-    "mon_nouveau_widget",  # Ajoutez ici
+    "my_new_widget",  # Add here
 ]
 ```
 
-### Puis-je utiliser Extractor sur d'autres types de projets ?
+### Can I use Extractor on other types of projects?
 
-Extractor est spécifique au format Lua et au SDK Lightroom. Pour d'autres langages ou frameworks, il faudrait adapter les patterns dans `Extractor_config.py` et potentiellement le moteur dans `Extractor_engine.py`.
+Extractor is specific to Lua format and Lightroom SDK. For other languages or frameworks, you would need to adapt patterns in `Extractor_config.py` and potentially the engine in `Extractor_engine.py`.
 
-### Les fichiers générés peuvent-ils être versionnés (Git) ?
+### Can generated files be versioned (Git)?
 
-- **TranslatedStrings_xx.txt** : Oui, à la racine du plugin
-- **__i18n_tmp__/** : Non, ajoutez-le au `.gitignore` (fichiers temporaires)
+- **TranslatedStrings_xx.txt**: Yes, at plugin root
+- **__i18n_tmp__/**: No, add it to `.gitignore` (temporary files)
 
-## Performances
+## Performance
 
-### Temps d'exécution typiques
+### Typical Execution Times
 
-- Petit plugin (5-10 fichiers, < 1000 lignes) : < 1 seconde
-- Plugin moyen (20-30 fichiers, ~5000 lignes) : 2-3 secondes
-- Gros plugin (50+ fichiers, > 10000 lignes) : 5-10 secondes
+- Small plugin (5-10 files, < 1000 lines): < 1 second
+- Medium plugin (20-30 files, ~5000 lines): 2-3 seconds
+- Large plugin (50+ files, > 10000 lines): 5-10 seconds
 
-### Optimisations possibles
+### Possible Optimizations
 
-Extractor est déjà optimisé, mais si vous travaillez sur de très gros projets :
+Extractor is already optimized, but if you work on very large projects:
 
-1. Utilisez `--exclude` pour ignorer les fichiers volumineux non pertinents
-2. Augmentez `--min-length` pour filtrer plus de chaînes
-3. Lancez l'extraction hors heures de développement actif
+1. Use `--exclude` to ignore large irrelevant files
+2. Increase `--min-length` to filter more strings
+3. Run extraction outside active development hours
 
-## Intégration dans un workflow automatisé
+## Integration in Automated Workflow
 
-Extractor peut être intégré dans un script de build ou un pipeline CI/CD.
+Extractor can be integrated into a build script or CI/CD pipeline.
 
-### Exemple de script bash
+### Bash Script Example
 
 ```bash
 #!/bin/bash
 # extract_and_check.sh
 
-PLUGIN_PATH="./monPlugin.lrplugin"
+PLUGIN_PATH="./myPlugin.lrplugin"
 OUTPUT_DIR="./extraction_output"
 
-# Lancer l'extraction
+# Launch extraction
 python 1_Extractor/Extractor_main.py \
   --plugin-path "$PLUGIN_PATH" \
   --output-dir "$OUTPUT_DIR" \
-  --prefix '$$$/MonApp'
+  --prefix '$$$/MyApp'
 
-# Vérifier le succès
+# Check success
 if [ $? -eq 0 ]; then
-  echo "✓ Extraction réussie"
-  # Copier le fichier de langue à la racine du plugin
+  echo "✓ Extraction successful"
+  # Copy language file to plugin root
   cp "$OUTPUT_DIR/TranslatedStrings_en.txt" "$PLUGIN_PATH/"
 else
-  echo "✗ Échec de l'extraction"
+  echo "✗ Extraction failed"
   exit 1
 fi
 ```
 
-### Exemple de script Python
+### Python Script Example
 
 ```python
 #!/usr/bin/env python3
@@ -666,7 +666,7 @@ import subprocess
 import sys
 
 def run_extraction(plugin_path, prefix="$$$/MyApp"):
-    """Lance Extractor via subprocess."""
+    """Launch Extractor via subprocess."""
     cmd = [
         sys.executable,
         "1_Extractor/Extractor_main.py",
@@ -677,38 +677,38 @@ def run_extraction(plugin_path, prefix="$$$/MyApp"):
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode == 0:
-        print("✓ Extraction réussie")
+        print("✓ Extraction successful")
         print(result.stdout)
         return True
     else:
-        print("✗ Échec")
+        print("✗ Failed")
         print(result.stderr)
         return False
 
 if __name__ == "__main__":
-    success = run_extraction("./monPlugin.lrplugin")
+    success = run_extraction("./myPlugin.lrplugin")
     sys.exit(0 if success else 1)
 ```
 
-## Ressources complémentaires
+## Additional Resources
 
-- **SDK Lightroom** : [Adobe Developer Console](https://developer.adobe.com/console)
-- **Format LOC** : `LOC "$$$/Key=Default"` (valeur par défaut obligatoire)
-- **Expressions régulières Python** : [Documentation re](https://docs.python.org/3/library/re.html)
-- **JSON Python** : [Documentation json](https://docs.python.org/3/library/json.html)
+- **Lightroom SDK**: [Adobe Developer Console](https://developer.adobe.com/console)
+- **LOC Format**: `LOC "$$$/Key=Default"` (default value mandatory)
+- **Python Regular Expressions**: [re documentation](https://docs.python.org/3/library/re.html)
+- **Python JSON**: [json documentation](https://docs.python.org/3/library/json.html)
 
 ## Contributions
 
-Ce projet est ouvert aux contributions. Si vous souhaitez :
-- Ajouter de nouveaux patterns de détection
-- Améliorer la génération des clés
-- Optimiser les performances
-- Corriger des bugs
+This project is open to contributions. If you want to:
+- Add new detection patterns
+- Improve key generation
+- Optimize performance
+- Fix bugs
 
-N'hésitez pas à proposer vos modifications !
+Don't hesitate to propose your changes!
 
 ---
 
-**Développé par Julien MOREAU avec l'aide de Claude (Anthropic)**
+**Developed by Julien MOREAU with the help of Claude (Anthropic)**
 
-Pour toute question ou problème, consultez le README principal ou ouvrez une issue sur le dépôt GitHub.
+For any questions or issues, consult the main README or open an issue on the GitHub repository.

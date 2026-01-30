@@ -1,37 +1,37 @@
-# TranslationManager - Documentation technique
+# TranslationManager - Technical Documentation
 
-**Version 5.0 | Janvier 2026**
+**Version 5.0 | January 2026**
 
-## Vue d'ensemble
+## Overview
 
-TranslationManager est le troisième outil de la chaîne de localisation. Son rôle est de gérer l'évolution des traductions au fil du temps : comparer différentes versions, isoler les nouvelles clés à traduire, injecter les traductions et synchroniser tous les fichiers de langue.
+TranslationManager is the third tool in the localization chain. Its role is to manage the evolution of translations over time: compare different versions, isolate new keys to translate, inject translations, and synchronize all language files.
 
-## Architecture du projet
+## Project Architecture
 
 ```
 3_Translation_manager/
-├── TranslationManager.py     ← Point d'entrée (menu + CLI)
-├── TM_common.py             ← Fonctions communes (parser, utils, UI)
-├── TM_compare.py            ← Commande COMPARE (diff entre 2 versions EN)
-├── TM_extract.py            ← Commande EXTRACT (génère TRANSLATE_xx.txt)
-├── TM_inject.py             ← Commande INJECT (réinjecte les traductions)
-├── TM_sync.py               ← Commande SYNC (synchronise les langues)
+├── TranslationManager.py     ← Entry point (menu + CLI)
+├── TM_common.py             ← Common functions (parser, utils, UI)
+├── TM_compare.py            ← COMPARE command (diff between 2 EN versions)
+├── TM_extract.py            ← EXTRACT command (generates TRANSLATE_xx.txt)
+├── TM_inject.py             ← INJECT command (reinjects translations)
+├── TM_sync.py               ← SYNC command (synchronizes languages)
 └── __doc/
-    └── README.md            ← Ce fichier
+    └── README.md            ← This file
 ```
 
-L'architecture est modulaire avec une commande par module. Chaque commande peut être utilisée indépendamment ou via le menu interactif.
+The architecture is modular with one command per module. Each command can be used independently or via the interactive menu.
 
-## Les 4 commandes
+## The 4 Commands
 
-TranslationManager propose 4 commandes principales qui forment un workflow complet.
+TranslationManager offers 4 main commands that form a complete workflow.
 
-### 1. COMPARE - Détection des changements
+### 1. COMPARE - Change Detection
 
-Compare deux versions du fichier anglais (`TranslatedStrings_en.txt`) et génère un fichier de mise à jour.
+Compares two versions of the English file (`TranslatedStrings_en.txt`) and generates an update file.
 
 ```
-Ancien EN          Nouveau EN
+Old EN          New EN
 (v1.0)             (v1.1)
     │                  │
     └─────────┬────────┘
@@ -39,177 +39,177 @@ Ancien EN          Nouveau EN
          COMPARE
               │
               ├── UPDATE_en.json
-              │   ├── added: [...]      ← Nouvelles clés
-              │   ├── changed: [...]    ← Clés modifiées
-              │   ├── deleted: [...]    ← Clés supprimées
-              │   └── unchanged: [...]  ← Clés identiques
+              │   ├── added: [...]      ← New keys
+              │   ├── changed: [...]    ← Modified keys
+              │   ├── deleted: [...]    ← Deleted keys
+              │   └── unchanged: [...]  ← Identical keys
               │
               └── CHANGELOG.txt
-                  ├── Résumé statistique
-                  ├── Détail des ajouts
-                  ├── Détail des modifications
-                  └── Détail des suppressions
+                  ├── Statistical summary
+                  ├── Details of additions
+                  ├── Details of modifications
+                  └── Details of deletions
 ```
 
-**Fichiers générés :**
+**Generated files:**
 
-- **UPDATE_en.json** : Fichier structuré avec toutes les différences
-- **CHANGELOG.txt** : Rapport lisible pour humains
+- **UPDATE_en.json**: Structured file with all differences
+- **CHANGELOG.txt**: Human-readable report
 
-### 2. EXTRACT - Isolation des nouvelles clés
+### 2. EXTRACT - Isolate New Keys
 
-Génère de petits fichiers contenant uniquement les clés à traduire (nouvelles ou modifiées).
+Generates small files containing only the keys to translate (new or modified).
 
 ```
 UPDATE_en.json
     │
-    ├── added: 15 clés
-    ├── changed: 5 clés
+    ├── added: 15 keys
+    ├── changed: 5 keys
     │
     └────────┬──────────────────────────────────┐
              ▼                                  ▼
      TRANSLATE_fr.txt                  TRANSLATE_de.txt
-     ├── [NEW] Clé1=                   ├── [NEW] Clé1=
-     ├── [NEW] Clé2=                   ├── [NEW] Clé2=
-     ├── [NEEDS_REVIEW] Clé3=...       ├── [NEEDS_REVIEW] Clé3=...
+     ├── [NEW] Key1=                   ├── [NEW] Key1=
+     ├── [NEW] Key2=                   ├── [NEW] Key2=
+     ├── [NEEDS_REVIEW] Key3=...       ├── [NEEDS_REVIEW] Key3=...
      └── ...                           └── ...
 ```
 
-**Avantages :**
-- Fichiers légers (quelques Ko vs plusieurs Mo)
-- Faciles à envoyer à des traducteurs
-- Focus uniquement sur le nouveau contenu
+**Advantages:**
+- Lightweight files (a few KB vs several MB)
+- Easy to send to translators
+- Focus only on new content
 
-### 3. INJECT - Fusion des traductions
+### 3. INJECT - Merge Translations
 
-Réinjecte les traductions depuis les fichiers `TRANSLATE_xx.txt` dans les fichiers complets `TranslatedStrings_xx.txt`.
+Reinjects translations from `TRANSLATE_xx.txt` files into the complete `TranslatedStrings_xx.txt` files.
 
 ```
 TRANSLATE_fr.txt              TranslatedStrings_fr.txt
-(nouvelles traductions)       (fichier complet)
+(new translations)            (complete file)
     │                              │
-    ├── Clé1=Bonjour               ├── Clé0=Ancien texte
-    ├── Clé2=Monde                 ├── ...
-    └── Clé3=(vide)                └── ...
+    ├── Key1=Bonjour               ├── Key0=Old text
+    ├── Key2=Monde                 ├── ...
+    └── Key3=(empty)               └── ...
           │                              │
           └──────────┬───────────────────┘
                      ▼
                   INJECT
                      │
-                     ├── Clé traduite → utilise la traduction
-                     ├── Clé vide → utilise la valeur EN par défaut
-                     └── Clé absente → reste inchangée
+                     ├── Translated key → uses translation
+                     ├── Empty key → uses default EN value
+                     └── Missing key → remains unchanged
                      │
                      ▼
-          TranslatedStrings_fr.txt (mis à jour)
-          ├── Clé0=Ancien texte
-          ├── Clé1=Bonjour          ← Ajoutée
-          ├── Clé2=Monde            ← Ajoutée
-          ├── Clé3=Default EN       ← Fallback EN
+          TranslatedStrings_fr.txt (updated)
+          ├── Key0=Old text
+          ├── Key1=Bonjour          ← Added
+          ├── Key2=Monde            ← Added
+          ├── Key3=Default EN       ← EN fallback
           └── ...
 ```
 
-**Mécanisme de fallback :**
-Si une clé est vide dans `TRANSLATE_xx.txt`, INJECT utilise la valeur anglaise par défaut depuis `UPDATE_en.json`. Cela garantit qu'aucun texte n'est perdu.
+**Fallback mechanism:**
+If a key is empty in `TRANSLATE_xx.txt`, INJECT uses the default English value from `UPDATE_en.json`. This ensures no text is lost.
 
-### 4. SYNC - Synchronisation finale
+### 4. SYNC - Final Synchronization
 
-Synchronise tous les fichiers de langue avec la version anglaise de référence.
+Synchronizes all language files with the reference English version.
 
 ```
 UPDATE_en.json              TranslatedStrings_fr.txt
 TranslatedStrings_en.txt    TranslatedStrings_de.txt
-(référence)                 (langues étrangères)
+(reference)                 (foreign languages)
     │                            │
     └──────────┬─────────────────┘
                ▼
              SYNC
                │
-               ├── Ajoute [NEW] pour nouvelles clés
-               ├── Marque [NEEDS_REVIEW] pour clés modifiées
-               ├── Supprime les clés obsolètes
-               └── Préserve les traductions existantes
+               ├── Adds [NEW] for new keys
+               ├── Marks [NEEDS_REVIEW] for modified keys
+               ├── Removes obsolete keys
+               └── Preserves existing translations
                │
                ▼
-    TranslatedStrings_fr.txt (synchronisé)
+    TranslatedStrings_fr.txt (synchronized)
     ├── "$$$/App/NewKey=[NEW]"
     ├── "$$$/App/Changed=[NEEDS_REVIEW] Old Translation"
-    ├── "$$$/App/Existing=Traduction existante"
-    └── (clé obsolète supprimée)
+    ├── "$$$/App/Existing=Existing translation"
+    └── (obsolete key removed)
 ```
 
-**Marqueurs ajoutés :**
-- `[NEW]` : Nouvelle clé, pas encore traduite
-- `[NEEDS_REVIEW]` : Valeur anglaise modifiée, revoir la traduction
+**Markers added:**
+- `[NEW]`: New key, not yet translated
+- `[NEEDS_REVIEW]`: English value modified, review translation
 
-## Workflow complet
+## Complete Workflow
 
-Voici le workflow typique lors d'une mise à jour du plugin :
+Here is the typical workflow when updating a plugin:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 1 : Développement                                 │
-│ - Ajout de nouvelles fonctionnalités au plugin         │
-│ - Modification de textes existants                     │
+│ Step 1: Development                                     │
+│ - Add new features to the plugin                       │
+│ - Modify existing text                                 │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 2 : Extraction (Extractor)                       │
-│ - Lance Extractor sur le code modifié                  │
-│ - Génère nouveau TranslatedStrings_en.txt              │
+│ Step 2: Extraction (Extractor)                         │
+│ - Run Extractor on modified code                       │
+│ - Generate new TranslatedStrings_en.txt                │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 3 : Comparaison (TranslationManager COMPARE)     │
-│ - Compare ancien vs nouveau EN                         │
-│ - Génère UPDATE_en.json + CHANGELOG.txt               │
-│ - Résultat : 10 nouvelles clés, 3 modifiées, 2 supprimées │
+│ Step 3: Comparison (TranslationManager COMPARE)        │
+│ - Compare old vs new EN                                │
+│ - Generate UPDATE_en.json + CHANGELOG.txt              │
+│ - Result: 10 new keys, 3 modified, 2 deleted           │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 4 : Extraction ciblée (EXTRACT)                  │
-│ - Génère TRANSLATE_fr.txt (13 clés à traduire)        │
-│ - Génère TRANSLATE_de.txt (13 clés à traduire)        │
+│ Step 4: Targeted Extraction (EXTRACT)                  │
+│ - Generate TRANSLATE_fr.txt (13 keys to translate)     │
+│ - Generate TRANSLATE_de.txt (13 keys to translate)     │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 5 : Traduction                                    │
-│ - Envoi des fichiers TRANSLATE_xx.txt aux traducteurs │
-│ - Ou traduction manuelle                               │
+│ Step 5: Translation                                     │
+│ - Send TRANSLATE_xx.txt files to translators           │
+│ - Or manual translation                                │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 6 : Injection (INJECT)                           │
-│ - Réinjecte les traductions dans les fichiers complets│
-│ - Fallback EN pour clés non traduites                 │
+│ Step 6: Injection (INJECT)                             │
+│ - Reinject translations into complete files            │
+│ - EN fallback for untranslated keys                    │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 7 : Synchronisation (SYNC)                       │
-│ - Ajoute [NEW] et [NEEDS_REVIEW]                      │
-│ - Supprime les clés obsolètes                         │
-│ - Finalise tous les fichiers de langue                │
+│ Step 7: Synchronization (SYNC)                         │
+│ - Add [NEW] and [NEEDS_REVIEW]                         │
+│ - Remove obsolete keys                                 │
+│ - Finalize all language files                          │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Étape 8 : Test                                          │
-│ - Redémarrer Lightroom                                 │
-│ - Vérifier les traductions dans l'interface           │
+│ Step 8: Testing                                         │
+│ - Restart Lightroom                                    │
+│ - Verify translations in the interface                 │
 └─────────────────────────────────────────────────────────┘
 ```
 
-## Options de configuration
+## Configuration Options
 
-### Mode interactif
+### Interactive Mode
 
-Lancez `TranslationManager.py` pour accéder au menu :
+Launch `TranslationManager.py` to access the menu:
 
 ```
 ==================================================
@@ -218,181 +218,181 @@ Lancez `TranslationManager.py` pour accéder au menu :
 
 Options:
   1. COMPARE
-     Compare ancien EN vs nouveau EN
-     → Génère UPDATE_en.json + CHANGELOG.txt
+     Compare old EN vs new EN
+     → Generates UPDATE_en.json + CHANGELOG.txt
 
-  2. EXTRACT (optionnel)
-     Génère mini fichiers TRANSLATE_xx.txt pour traduction
+  2. EXTRACT (optional)
+     Generate mini TRANSLATE_xx.txt files for translation
 
-  3. INJECT (optionnel)
-     Réinjecte les traductions (EN par défaut si vide)
+  3. INJECT (optional)
+     Reinject translations (EN default if empty)
 
   4. SYNC
-     Met à jour les langues avec EN
-     → Ajoute [NEW], marque [NEEDS_REVIEW], supprime obsolètes
+     Update languages with EN
+     → Add [NEW], mark [NEEDS_REVIEW], remove obsolete
 
-  5. Aide
+  5. Help
 
-  0. Quitter
+  0. Quit
 ```
 
-### Mode CLI
+### CLI Mode
 
-Chaque commande peut être lancée indépendamment :
+Each command can be launched independently:
 
-**COMPARE :**
+**COMPARE:**
 ```bash
 python TranslationManager.py compare \
-  --old ancien_en.txt \
-  --new nouveau_en.txt \
+  --old old_en.txt \
+  --new new_en.txt \
   --plugin-path ./plugin.lrplugin
 ```
 
-**EXTRACT :**
+**EXTRACT:**
 ```bash
 python TranslationManager.py extract \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-**INJECT :**
+**INJECT:**
 ```bash
 python TranslationManager.py inject \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-**SYNC :**
+**SYNC:**
 ```bash
 python TranslationManager.py sync \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-### Options détaillées
+### Detailed Options
 
-#### Commande COMPARE
+#### COMPARE Command
 
-| Option | Description | Requis | Exemple |
+| Option | Description | Required | Example |
 |--------|-------------|--------|---------|
-| `--old` | Ancien fichier EN | Oui | `./v1/TranslatedStrings_en.txt` |
-| `--new` | Nouveau fichier EN | Oui | `./v2/TranslatedStrings_en.txt` |
-| `--plugin-path` | Chemin plugin (sortie dans `__i18n_tmp__/`) | Non | `./plugin.lrplugin` |
-| `--output` | Répertoire de sortie personnalisé | Non | `./output` |
+| `--old` | Old EN file | Yes | `./v1/TranslatedStrings_en.txt` |
+| `--new` | New EN file | Yes | `./v2/TranslatedStrings_en.txt` |
+| `--plugin-path` | Plugin path (output in `__i18n_tmp__/`) | No | `./plugin.lrplugin` |
+| `--output` | Custom output directory | No | `./output` |
 
-#### Commande EXTRACT
+#### EXTRACT Command
 
-| Option | Description | Requis | Exemple |
+| Option | Description | Required | Example |
 |--------|-------------|--------|---------|
-| `--update` | Dossier UPDATE (ou auto-détection si `--plugin-path`) | Non* | `./20260129_143000` |
-| `--plugin-path` | Chemin plugin (auto-détection dans `__i18n_tmp__/`) | Non* | `./plugin.lrplugin` |
-| `--locales` | Répertoire des traductions existantes | Non | `./plugin.lrplugin` |
-| `--lang` | Langue spécifique à extraire | Non | `fr`, `de`, `es` |
-| `--output` | Répertoire de sortie personnalisé | Non | `./output` |
+| `--update` | UPDATE folder (or auto-detection if `--plugin-path`) | No* | `./20260129_143000` |
+| `--plugin-path` | Plugin path (auto-detection in `__i18n_tmp__/`) | No* | `./plugin.lrplugin` |
+| `--locales` | Directory of existing translations | No | `./plugin.lrplugin` |
+| `--lang` | Specific language to extract | No | `fr`, `de`, `es` |
+| `--output` | Custom output directory | No | `./output` |
 
-\* Au moins une de ces options est requise
+\* At least one of these options is required
 
-#### Commande INJECT
+#### INJECT Command
 
-| Option | Description | Requis | Exemple |
+| Option | Description | Required | Example |
 |--------|-------------|--------|---------|
-| `--translate` | Fichier TRANSLATE_xx.txt individuel | Non* | `./TRANSLATE_fr.txt` |
-| `--target` | Fichier TranslatedStrings_xx.txt cible | Non* | `./TranslatedStrings_fr.txt` |
-| `--translate-dir` | Dossier contenant plusieurs TRANSLATE_*.txt | Non* | `./translations/` |
-| `--plugin-path` | Chemin plugin (auto-détection) | Non* | `./plugin.lrplugin` |
-| `--locales` | Dossier des fichiers de langue | Non* | `./plugin.lrplugin` |
-| `--update` | Dossier UPDATE (valeurs EN de fallback) | Non | `./20260129_143000` |
+| `--translate` | Individual TRANSLATE_xx.txt file | No* | `./TRANSLATE_fr.txt` |
+| `--target` | Target TranslatedStrings_xx.txt file | No* | `./TranslatedStrings_fr.txt` |
+| `--translate-dir` | Folder containing multiple TRANSLATE_*.txt | No* | `./translations/` |
+| `--plugin-path` | Plugin path (auto-detection) | No* | `./plugin.lrplugin` |
+| `--locales` | Language files folder | No* | `./plugin.lrplugin` |
+| `--update` | UPDATE folder (EN fallback values) | No | `./20260129_143000` |
 
-\* Spécifiez soit (`--translate` + `--target`) OU (`--translate-dir` + `--locales`) OU (`--plugin-path` + `--locales`)
+\* Specify either (`--translate` + `--target`) OR (`--translate-dir` + `--locales`) OR (`--plugin-path` + `--locales`)
 
-#### Commande SYNC
+#### SYNC Command
 
-| Option | Description | Requis | Exemple |
+| Option | Description | Required | Example |
 |--------|-------------|--------|---------|
-| `--ref` | Fichier EN de référence | Non* | `./TranslatedStrings_en.txt` |
-| `--plugin-path` | Chemin plugin (auto-détection) | Non* | `./plugin.lrplugin` |
-| `--locales` | Répertoire des fichiers de langues | Oui | `./plugin.lrplugin` |
-| `--update` | Dossier UPDATE (avec UPDATE_en.json) | Non | `./20260129_143000` |
+| `--ref` | Reference EN file | No* | `./TranslatedStrings_en.txt` |
+| `--plugin-path` | Plugin path (auto-detection) | No* | `./plugin.lrplugin` |
+| `--locales` | Language files directory | Yes | `./plugin.lrplugin` |
+| `--update` | UPDATE folder (with UPDATE_en.json) | No | `./20260129_143000` |
 
-\* Au moins une de ces options est requise
+\* At least one of these options is required
 
-## Exemples d'utilisation
+## Usage Examples
 
-### Workflow complet avec --plugin-path
+### Complete Workflow with --plugin-path
 
 ```bash
-# 1. Comparer deux versions
+# 1. Compare two versions
 python TranslationManager.py compare \
   --old ./backup/TranslatedStrings_en.txt \
   --new ./plugin.lrplugin/__i18n_tmp__/Extractor/20260129_143022/TranslatedStrings_en.txt \
   --plugin-path ./plugin.lrplugin
 
-# 2. Extraire les clés à traduire (auto-détection de UPDATE_en.json)
+# 2. Extract keys to translate (auto-detection of UPDATE_en.json)
 python TranslationManager.py extract \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 
-# 3. Traduire manuellement les fichiers TRANSLATE_xx.txt
-# (édition dans votre éditeur préféré)
+# 3. Manually translate the TRANSLATE_xx.txt files
+# (edit in your favorite editor)
 
-# 4. Injecter les traductions (auto-détection)
+# 4. Inject translations (auto-detection)
 python TranslationManager.py inject \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 
-# 5. Synchroniser tous les fichiers de langue
+# 5. Synchronize all language files
 python TranslationManager.py sync \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-### Extraction et injection pour une seule langue
+### Extraction and Injection for a Single Language
 
 ```bash
-# Extraire uniquement pour le français
+# Extract only for French
 python TranslationManager.py extract \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin \
   --lang fr
 
-# Injecter uniquement le français
+# Inject only French
 python TranslationManager.py inject \
   --translate ./plugin.lrplugin/__i18n_tmp__/TranslationManager/<timestamp>/TRANSLATE_fr.txt \
   --target ./plugin.lrplugin/TranslatedStrings_fr.txt \
   --update ./plugin.lrplugin/__i18n_tmp__/TranslationManager/<timestamp>/
 ```
 
-### Mode legacy (sans --plugin-path)
+### Legacy Mode (without --plugin-path)
 
 ```bash
-# Comparer avec sortie manuelle
+# Compare with manual output
 python TranslationManager.py compare \
   --old ./v1/en.txt \
   --new ./v2/en.txt \
   --output ./comparison_output/
 
-# Extraire depuis un dossier UPDATE spécifique
+# Extract from a specific UPDATE folder
 python TranslationManager.py extract \
   --update ./comparison_output/20260129_143000/ \
   --locales ./plugin.lrplugin/
 
-# Injecter depuis un dossier TRANSLATE spécifique
+# Inject from a specific TRANSLATE folder
 python TranslationManager.py inject \
   --translate-dir ./comparison_output/20260129_143000/ \
   --locales ./plugin.lrplugin/ \
   --update ./comparison_output/20260129_143000/
 
-# Synchroniser
+# Synchronize
 python TranslationManager.py sync \
   --update ./comparison_output/20260129_143000/ \
   --locales ./plugin.lrplugin/
 ```
 
-## Structure des fichiers générés
+## Generated File Structure
 
 ### UPDATE_en.json
 
-Fichier JSON structuré contenant toutes les différences :
+Structured JSON file containing all differences:
 
 ```json
 {
@@ -435,28 +435,28 @@ Fichier JSON structuré contenant toutes les différences :
 
 ### CHANGELOG.txt
 
-Rapport lisible pour humains :
+Human-readable report:
 
 ```
 ================================================================================
-CHANGELOG - Comparaison des traductions
+CHANGELOG - Translation Comparison
 ================================================================================
 
-Fichier ancien : ./v1/TranslatedStrings_en.txt (120 clés)
-Fichier nouveau : ./v2/TranslatedStrings_en.txt (133 clés)
-Date : 2026-01-29 14:30:00
+Old file: ./v1/TranslatedStrings_en.txt (120 keys)
+New file: ./v2/TranslatedStrings_en.txt (133 keys)
+Date: 2026-01-29 14:30:00
 
 ================================================================================
-RÉSUMÉ
+SUMMARY
 ================================================================================
 
-Clés ajoutées    : 15
-Clés modifiées   : 5
-Clés supprimées  : 2
-Clés inchangées  : 113
+Added keys      : 15
+Modified keys   : 5
+Deleted keys    : 2
+Unchanged keys  : 113
 
 ================================================================================
-CLÉS AJOUTÉES (15)
+ADDED KEYS (15)
 ================================================================================
 
 "$$$/Piwigo/NewFeature_Title"
@@ -468,17 +468,17 @@ CLÉS AJOUTÉES (15)
 ...
 
 ================================================================================
-CLÉS MODIFIÉES (5)
+MODIFIED KEYS (5)
 ================================================================================
 
 "$$$/Piwigo/Upload_Status"
-  ANCIEN : "Uploading..."
-  NOUVEAU : "Upload in progress..."
+  OLD: "Uploading..."
+  NEW: "Upload in progress..."
 
 ...
 
 ================================================================================
-CLÉS SUPPRIMÉES (2)
+DELETED KEYS (2)
 ================================================================================
 
 "$$$/Piwigo/OldFeature_Title"
@@ -489,24 +489,24 @@ CLÉS SUPPRIMÉES (2)
 
 ### TRANSLATE_xx.txt
 
-Fichiers légers pour traduction :
+Lightweight files for translation:
 
 ```
-# Fichier de traduction pour : fr
-# Généré le : 2026-01-29 14:35:00
+# Translation file for: fr
+# Generated on: 2026-01-29 14:35:00
 #
-# Instructions :
-# - Traduisez les valeurs après le signe =
-# - [NEW] = Nouvelle clé
-# - [NEEDS_REVIEW] = Valeur anglaise modifiée, revoir la traduction
-# - Laissez vide pour utiliser la valeur anglaise par défaut
+# Instructions:
+# - Translate values after the = sign
+# - [NEW] = New key
+# - [NEEDS_REVIEW] = English value modified, review translation
+# - Leave empty to use default English value
 
 "$$$/Piwigo/NewFeature_Title=[NEW]"
 "$$$/Piwigo/NewFeature_Description=[NEW]"
 "$$$/Piwigo/Upload_Status=[NEEDS_REVIEW] Téléchargement..."
 ```
 
-Après traduction :
+After translation:
 
 ```
 "$$$/Piwigo/NewFeature_Title=Nouvelle fonctionnalité"
@@ -514,45 +514,45 @@ Après traduction :
 "$$$/Piwigo/Upload_Status=Téléchargement en cours..."
 ```
 
-## Gestion des marqueurs
+## Marker Management
 
-### Marqueur [NEW]
+### [NEW] Marker
 
-Indique une clé complètement nouvelle, absente de la version précédente.
+Indicates a completely new key, absent from the previous version.
 
 ```
-# Avant traduction
+# Before translation
 "$$$/App/NewKey=[NEW]"
 
-# Après traduction
-"$$$/App/NewKey=Ma traduction"
+# After translation
+"$$$/App/NewKey=My translation"
 
-# Non traduit (fallback EN via INJECT)
+# Untranslated (EN fallback via INJECT)
 "$$$/App/NewKey=Default English Value"
 ```
 
-### Marqueur [NEEDS_REVIEW]
+### [NEEDS_REVIEW] Marker
 
-Indique que la valeur anglaise a changé et que la traduction doit être revue.
+Indicates that the English value has changed and the translation should be reviewed.
 
 ```
-# Valeur EN ancienne : "Uploading..."
-# Valeur EN nouvelle : "Upload in progress..."
+# Old EN value: "Uploading..."
+# New EN value: "Upload in progress..."
 
-# Dans TRANSLATE_fr.txt
+# In TRANSLATE_fr.txt
 "$$$/App/Upload=[NEEDS_REVIEW] Téléchargement..."
 
-# Après révision
+# After review
 "$$$/App/Upload=Téléchargement en cours..."
 ```
 
-Le marqueur `[NEEDS_REVIEW]` est suivi de l'ancienne traduction pour faciliter la mise à jour.
+The `[NEEDS_REVIEW]` marker is followed by the old translation to facilitate updating.
 
-## Cas d'usage avancés
+## Advanced Use Cases
 
-### Comparaison de deux extractions Extractor
+### Comparing Two Extractor Extractions
 
-Comparez deux exécutions d'Extractor pour voir ce qui a changé dans le code :
+Compare two Extractor runs to see what changed in the code:
 
 ```bash
 python TranslationManager.py compare \
@@ -561,12 +561,12 @@ python TranslationManager.py compare \
   --plugin-path ./plugin.lrplugin
 ```
 
-### Extraction sélective par langue
+### Selective Extraction by Language
 
-Si vous ne gérez que quelques langues :
+If you only manage a few languages:
 
 ```bash
-# Extraire uniquement français et allemand
+# Extract only French and German
 python TranslationManager.py extract \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin \
@@ -578,183 +578,183 @@ python TranslationManager.py extract \
   --lang de
 ```
 
-### Injection sans traduction (fallback EN)
+### Injection Without Translation (EN Fallback)
 
-Si vous voulez ajouter les nouvelles clés avec valeurs anglaises par défaut :
+If you want to add new keys with default English values:
 
 ```bash
-# Ne traduisez pas les fichiers TRANSLATE_xx.txt, laissez-les vides
-# Puis injectez : les valeurs EN seront utilisées
+# Don't translate TRANSLATE_xx.txt files, leave them empty
+# Then inject: EN values will be used
 
 python TranslationManager.py inject \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-Cela ajoute les nouvelles clés en anglais, ce qui est mieux que des textes manquants.
+This adds new keys in English, which is better than missing text.
 
-### Synchronisation après édition manuelle
+### Synchronization After Manual Editing
 
-Si vous avez édité directement `TranslatedStrings_xx.txt` :
+If you directly edited `TranslatedStrings_xx.txt`:
 
 ```bash
-# Synchroniser pour ajouter les marqueurs [NEW] et [NEEDS_REVIEW]
+# Synchronize to add [NEW] and [NEEDS_REVIEW] markers
 python TranslationManager.py sync \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-SYNC détectera les clés manquantes et les ajoutera avec `[NEW]`.
+SYNC will detect missing keys and add them with `[NEW]`.
 
-### Workflow sans EXTRACT/INJECT (édition directe)
+### Workflow Without EXTRACT/INJECT (Direct Editing)
 
-Si vous préférez éditer directement les fichiers complets :
+If you prefer to directly edit complete files:
 
 ```bash
-# 1. Comparer
+# 1. Compare
 python TranslationManager.py compare \
-  --old ancien_en.txt \
-  --new nouveau_en.txt \
+  --old old_en.txt \
+  --new new_en.txt \
   --plugin-path ./plugin.lrplugin
 
-# 2. Consulter CHANGELOG.txt pour savoir quoi traduire
+# 2. Consult CHANGELOG.txt to know what to translate
 cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/CHANGELOG.txt
 
-# 3. Éditer manuellement TranslatedStrings_fr.txt, TranslatedStrings_de.txt, etc.
-# (ajoutez les nouvelles clés, mettez à jour les modifiées)
+# 3. Manually edit TranslatedStrings_fr.txt, TranslatedStrings_de.txt, etc.
+# (add new keys, update modified ones)
 
-# 4. Synchroniser pour nettoyer et finaliser
+# 4. Synchronize to clean up and finalize
 python TranslationManager.py sync \
   --plugin-path ./plugin.lrplugin \
   --locales ./plugin.lrplugin
 ```
 
-## Dépannage
+## Troubleshooting
 
-### Erreur : "Aucun dossier TranslationManager trouvé"
+### Error: "No TranslationManager folder found"
 
-**Cause :** Pas de dossier `__i18n_tmp__/TranslationManager/` avec `UPDATE_en.json`.
+**Cause:** No `__i18n_tmp__/TranslationManager/` folder with `UPDATE_en.json`.
 
-**Solution :**
+**Solution:**
 ```bash
-# Lancer d'abord COMPARE
+# First run COMPARE
 python TranslationManager.py compare \
-  --old ancien.txt \
-  --new nouveau.txt \
+  --old old.txt \
+  --new new.txt \
   --plugin-path ./plugin.lrplugin
 ```
 
-### EXTRACT ne génère aucun fichier
+### EXTRACT Generates No Files
 
-**Causes possibles :**
-1. Aucune langue étrangère détectée dans `--locales`
-2. Aucune différence dans `UPDATE_en.json` (rien à traduire)
-3. Le dossier `--locales` ne contient pas de `TranslatedStrings_xx.txt`
+**Possible causes:**
+1. No foreign languages detected in `--locales`
+2. No differences in `UPDATE_en.json` (nothing to translate)
+3. The `--locales` folder doesn't contain `TranslatedStrings_xx.txt`
 
-**Solutions :**
+**Solutions:**
 ```bash
-# Vérifier les fichiers de langue
+# Check language files
 ls ./plugin.lrplugin/TranslatedStrings_*.txt
 
-# Vérifier UPDATE_en.json
+# Check UPDATE_en.json
 cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/UPDATE_en.json
 ```
 
-### INJECT n'ajoute rien
+### INJECT Adds Nothing
 
-**Causes possibles :**
-1. Les fichiers `TRANSLATE_xx.txt` sont vides
-2. Les clés sont déjà présentes dans `TranslatedStrings_xx.txt`
-3. Le dossier `--update` est incorrect (valeurs EN introuvables)
+**Possible causes:**
+1. The `TRANSLATE_xx.txt` files are empty
+2. Keys already exist in `TranslatedStrings_xx.txt`
+3. The `--update` folder is incorrect (EN values not found)
 
-**Solutions :**
+**Solutions:**
 ```bash
-# Vérifier TRANSLATE_fr.txt
+# Check TRANSLATE_fr.txt
 cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/TRANSLATE_fr.txt
 
-# Vérifier UPDATE_en.json
+# Check UPDATE_en.json
 cat ./plugin/__i18n_tmp__/TranslationManager/<timestamp>/UPDATE_en.json
 ```
 
-### SYNC supprime des traductions
+### SYNC Removes Translations
 
-SYNC supprime uniquement les clés obsolètes (présentes dans "deleted" de `UPDATE_en.json`). C'est normal.
+SYNC only removes obsolete keys (present in "deleted" of `UPDATE_en.json`). This is normal.
 
-Si vous voulez les conserver :
+If you want to keep them:
 
-1. Éditez `UPDATE_en.json` et retirez les clés de "deleted"
-2. Relancez SYNC
+1. Edit `UPDATE_en.json` and remove keys from "deleted"
+2. Re-run SYNC
 
-### Encodage incorrect
+### Incorrect Encoding
 
-Tous les fichiers sont en UTF-8. Si vous voyez des caractères mal encodés :
+All files are in UTF-8. If you see incorrectly encoded characters:
 
 ```bash
-# Vérifier l'encodage
+# Check encoding
 file --mime-encoding TranslatedStrings_fr.txt
 
-# Convertir si nécessaire
+# Convert if necessary
 iconv -f ISO-8859-1 -t UTF-8 TranslatedStrings_fr.txt > TranslatedStrings_fr_utf8.txt
 ```
 
-## FAQ technique
+## Technical FAQ
 
-### Puis-je utiliser EXTRACT sans COMPARE ?
+### Can I Use EXTRACT Without COMPARE?
 
-Non, EXTRACT a besoin de `UPDATE_en.json` généré par COMPARE pour savoir quelles clés extraire.
+No, EXTRACT needs `UPDATE_en.json` generated by COMPARE to know which keys to extract.
 
-### Puis-je sauter INJECT et éditer directement les fichiers ?
+### Can I Skip INJECT and Directly Edit Files?
 
-Oui, c'est possible. INJECT est une commodité pour fusionner facilement les petits fichiers `TRANSLATE_xx.txt` dans les fichiers complets.
+Yes, it's possible. INJECT is a convenience to easily merge small `TRANSLATE_xx.txt` files into complete files.
 
-### SYNC est-il obligatoire ?
+### Is SYNC Mandatory?
 
-Non, mais c'est fortement recommandé. SYNC nettoie les fichiers (supprime les clés obsolètes) et ajoute les marqueurs `[NEW]` et `[NEEDS_REVIEW]` pour faciliter les révisions futures.
+No, but it's strongly recommended. SYNC cleans up files (removes obsolete keys) and adds `[NEW]` and `[NEEDS_REVIEW]` markers to facilitate future reviews.
 
-### Que se passe-t-il si je ne traduis pas une clé ?
+### What Happens If I Don't Translate a Key?
 
-INJECT utilisera la valeur anglaise par défaut depuis `UPDATE_en.json`. L'utilisateur verra le texte en anglais au lieu d'un texte vide ou une clé brute.
+INJECT will use the default English value from `UPDATE_en.json`. The user will see English text instead of empty text or a raw key.
 
-### Puis-je réutiliser un ancien UPDATE_en.json ?
+### Can I Reuse an Old UPDATE_en.json?
 
-Oui, tant qu'il correspond aux fichiers que vous voulez synchroniser. Mais il est préférable de faire un nouveau COMPARE avec les versions actuelles.
+Yes, as long as it corresponds to the files you want to synchronize. But it's better to do a new COMPARE with current versions.
 
-### Comment gérer plusieurs branches Git ?
+### How to Manage Multiple Git Branches?
 
 ```bash
-# Branche dev
+# Dev branch
 git checkout dev
 python TranslationManager.py compare --old main_en.txt --new dev_en.txt --output ./dev_update/
 
-# Branche feature
+# Feature branch
 git checkout feature
 python TranslationManager.py compare --old main_en.txt --new feature_en.txt --output ./feature_update/
 ```
 
-Chaque branche peut avoir son propre dossier de mise à jour.
+Each branch can have its own update folder.
 
-## Performances
+## Performance
 
-### Temps d'exécution typiques
+### Typical Execution Times
 
-- **COMPARE** (120 vs 133 clés) : < 1 seconde
-- **EXTRACT** (3 langues, 15 clés) : < 1 seconde
-- **INJECT** (3 langues, 15 clés) : < 1 seconde
-- **SYNC** (3 langues, 133 clés) : 1-2 secondes
+- **COMPARE** (120 vs 133 keys): < 1 second
+- **EXTRACT** (3 languages, 15 keys): < 1 second
+- **INJECT** (3 languages, 15 keys): < 1 second
+- **SYNC** (3 languages, 133 keys): 1-2 seconds
 
-TranslationManager est très rapide car il manipule uniquement des fichiers texte.
+TranslationManager is very fast because it only manipulates text files.
 
-### Optimisations possibles
+### Possible Optimizations
 
-Si vous avez beaucoup de langues (10+) ou de clés (1000+) :
+If you have many languages (10+) or keys (1000+):
 
-1. Utilisez EXTRACT avec `--lang` pour traiter une langue à la fois
-2. Lancez les commandes hors heures de développement actif
-3. Excluez les langues non maintenues de `--locales`
+1. Use EXTRACT with `--lang` to process one language at a time
+2. Run commands outside active development hours
+3. Exclude unmaintained languages from `--locales`
 
-## Intégration dans un workflow automatisé
+## Integration into an Automated Workflow
 
-### Script bash complet
+### Complete Bash Script
 
 ```bash
 #!/bin/bash
@@ -764,47 +764,47 @@ PLUGIN_PATH="./plugin.lrplugin"
 OLD_EN="./backup/TranslatedStrings_en.txt"
 NEW_EN="$PLUGIN_PATH/__i18n_tmp__/Extractor/latest/TranslatedStrings_en.txt"
 
-echo "=== Étape 1 : Comparaison ==="
+echo "=== Step 1: Comparison ==="
 python TranslationManager.py compare \
   --old "$OLD_EN" \
   --new "$NEW_EN" \
   --plugin-path "$PLUGIN_PATH"
 
 if [ $? -ne 0 ]; then
-  echo "Erreur lors de la comparaison"
+  echo "Error during comparison"
   exit 1
 fi
 
 echo ""
-echo "=== Étape 2 : Extraction ==="
+echo "=== Step 2: Extraction ==="
 python TranslationManager.py extract \
   --plugin-path "$PLUGIN_PATH" \
   --locales "$PLUGIN_PATH"
 
 echo ""
-echo "=== Étape 3 : Traduction ==="
-echo "Veuillez traduire les fichiers TRANSLATE_xx.txt dans:"
+echo "=== Step 3: Translation ==="
+echo "Please translate TRANSLATE_xx.txt files in:"
 echo "$PLUGIN_PATH/__i18n_tmp__/TranslationManager/<timestamp>/"
-read -p "Appuyez sur Entrée quand les traductions sont prêtes..."
+read -p "Press Enter when translations are ready..."
 
 echo ""
-echo "=== Étape 4 : Injection ==="
+echo "=== Step 4: Injection ==="
 python TranslationManager.py inject \
   --plugin-path "$PLUGIN_PATH" \
   --locales "$PLUGIN_PATH"
 
 echo ""
-echo "=== Étape 5 : Synchronisation ==="
+echo "=== Step 5: Synchronization ==="
 python TranslationManager.py sync \
   --plugin-path "$PLUGIN_PATH" \
   --locales "$PLUGIN_PATH"
 
 echo ""
-echo "✓ Traductions mises à jour avec succès"
-echo "  Redémarrez Lightroom pour tester"
+echo "✓ Translations successfully updated"
+echo "  Restart Lightroom to test"
 ```
 
-### Script Python avec API
+### Python Script with API
 
 ```python
 #!/usr/bin/env python3
@@ -813,12 +813,12 @@ import sys
 from pathlib import Path
 
 def run_tm_command(command, args):
-    """Exécute une commande TranslationManager."""
+    """Execute a TranslationManager command."""
     cmd = [sys.executable, "TranslationManager.py", command] + args
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0:
-        print(f"Erreur : {result.stderr}")
+        print(f"Error: {result.stderr}")
         return False
 
     print(result.stdout)
@@ -830,7 +830,7 @@ def main():
     new_en = f"{plugin_path}/__i18n_tmp__/Extractor/latest/TranslatedStrings_en.txt"
 
     # 1. COMPARE
-    print("=== Comparaison ===")
+    print("=== Comparison ===")
     if not run_tm_command("compare", [
         "--old", old_en,
         "--new", new_en,
@@ -846,8 +846,8 @@ def main():
     ]):
         return 1
 
-    # 3. Attendre traduction (interactif ou automatisé)
-    input("\nTraduisez les fichiers TRANSLATE_xx.txt puis appuyez sur Entrée...")
+    # 3. Wait for translation (interactive or automated)
+    input("\nTranslate TRANSLATE_xx.txt files then press Enter...")
 
     # 4. INJECT
     print("\n=== Injection ===")
@@ -858,54 +858,54 @@ def main():
         return 1
 
     # 5. SYNC
-    print("\n=== Synchronisation ===")
+    print("\n=== Synchronization ===")
     if not run_tm_command("sync", [
         "--plugin-path", plugin_path,
         "--locales", plugin_path
     ]):
         return 1
 
-    print("\n✓ Traductions mises à jour avec succès")
+    print("\n✓ Translations successfully updated")
     return 0
 
 if __name__ == "__main__":
     sys.exit(main())
 ```
 
-## Checklist de mise à jour des traductions
+## Translation Update Checklist
 
-- [ ] Sauvegarder l'ancien `TranslatedStrings_en.txt`
-- [ ] Lancer Extractor sur le code modifié
-- [ ] Lancer COMPARE (ancien vs nouveau EN)
-- [ ] Consulter `CHANGELOG.txt` pour comprendre les changements
-- [ ] Lancer EXTRACT pour générer `TRANSLATE_xx.txt`
-- [ ] Traduire les fichiers `TRANSLATE_xx.txt`
-- [ ] Lancer INJECT pour fusionner les traductions
-- [ ] Lancer SYNC pour finaliser et nettoyer
-- [ ] Vérifier les fichiers `TranslatedStrings_xx.txt`
-- [ ] Commit des modifications dans Git
-- [ ] Redémarrer Lightroom et tester
-- [ ] Supprimer `__i18n_tmp__/` si désiré (nettoyage)
+- [ ] Backup old `TranslatedStrings_en.txt`
+- [ ] Run Extractor on modified code
+- [ ] Run COMPARE (old vs new EN)
+- [ ] Consult `CHANGELOG.txt` to understand changes
+- [ ] Run EXTRACT to generate `TRANSLATE_xx.txt`
+- [ ] Translate `TRANSLATE_xx.txt` files
+- [ ] Run INJECT to merge translations
+- [ ] Run SYNC to finalize and clean up
+- [ ] Verify `TranslatedStrings_xx.txt` files
+- [ ] Commit changes to Git
+- [ ] Restart Lightroom and test
+- [ ] Delete `__i18n_tmp__/` if desired (cleanup)
 
-## Ressources complémentaires
+## Additional Resources
 
-- **SDK Lightroom** : [Adobe Developer Console](https://developer.adobe.com/console)
-- **Format de fichiers de traduction** : Format texte simple `"Clé=Valeur"`
-- **JSON Python** : [Documentation json](https://docs.python.org/3/library/json.html)
-- **difflib Python** : Utilisé en interne pour comparer les fichiers
+- **Lightroom SDK**: [Adobe Developer Console](https://developer.adobe.com/console)
+- **Translation file format**: Simple text format `"Key=Value"`
+- **Python JSON**: [json documentation](https://docs.python.org/3/library/json.html)
+- **Python difflib**: Used internally to compare files
 
 ## Contributions
 
-Pour améliorer TranslationManager, vous pouvez :
-- Ajouter de nouveaux formats de sortie (CSV, XLSX, etc.)
-- Améliorer la détection des changements (fuzzy matching)
-- Ajouter une interface graphique
-- Support de nouveaux types de marqueurs
+To improve TranslationManager, you can:
+- Add new output formats (CSV, XLSX, etc.)
+- Improve change detection (fuzzy matching)
+- Add a graphical interface
+- Support new marker types
 
-N'hésitez pas à proposer vos modifications !
+Feel free to propose your modifications!
 
 ---
 
-**Développé par Julien MOREAU avec l'aide de Claude (Anthropic)**
+**Developed by Julien MOREAU with the help of Claude (Anthropic)**
 
-Pour toute question ou problème, consultez le README principal ou ouvrez une issue sur le dépôt GitHub.
+For any questions or issues, consult the main README or open an issue on the GitHub repository.

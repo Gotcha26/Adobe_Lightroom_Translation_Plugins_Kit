@@ -1,29 +1,29 @@
 # Adobe Lightroom Translation Plugins Kit
 
-**Version 2.1 | Janvier 2026**
+**Version 2.1 | January 2026**
 
-## Qu'est-ce que c'est ?
+## What is this?
 
-Un ensemble d'outils Python pour faciliter la traduction et la maintenance des traductions de plugins Adobe Lightroom Classic. Si vous développez un plugin Lightroom en Lua et que vous souhaitez le rendre multilingue, ce kit est fait pour vous.
+A set of Python tools to facilitate translation and maintenance of Adobe Lightroom Classic plugin translations. If you develop a Lightroom plugin in Lua and want to make it multilingual, this kit is for you.
 
-## Le problème
+## The Problem
 
-Développer un plugin Lightroom multilingue, c'est comme essayer de jongler avec plusieurs balles en même temps :
-- Vous avez des textes en dur dans votre code Lua ("Submit", "Cancel", "Please wait...")
-- Vous devez les extraire et les remplacer par des clés de localisation
-- Vous devez maintenir les traductions à jour à chaque modification du code
-- Vous devez gérer plusieurs langues sans perdre les traductions existantes
+Developing a multilingual Lightroom plugin is like trying to juggle multiple balls at once:
+- You have hardcoded text in your Lua code ("Submit", "Cancel", "Please wait...")
+- You need to extract them and replace them with localization keys
+- You need to keep translations up-to-date with every code change
+- You need to manage multiple languages without losing existing translations
 
-Sans outil, c'est un travail fastidieux et source d'erreurs.
+Without tools, it's tedious and error-prone work.
 
-## La solution
+## The Solution
 
-Ce kit automatise tout le processus en 4 outils simples :
+This kit automates the entire process with 4 simple tools:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                 LocalisationToolKit.py                      │
-│           🎯 Point d'entrée principal (recommandé)          │
+│           🎯 Main entry point (recommended)                 │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -36,140 +36,140 @@ Ce kit automatise tout le processus en 4 outils simples :
 └─────────┘  └──────────┘  └──────────────┘  └─────────┘
 ```
 
-### 0. LocalisationToolKit.py - Le chef d'orchestre
+### 0. LocalisationToolKit.py - The Conductor
 
-C'est votre point d'entrée unique. Un menu interactif qui vous guide et lance les bons outils au bon moment. Plus besoin de se perdre dans les commandes !
+This is your single entry point. An interactive menu that guides you and launches the right tools at the right time. No need to get lost in commands!
 
-**Utilisez-le en priorité**, c'est le moyen le plus simple de travailler avec ce kit.
+**Use it as your priority**, it's the simplest way to work with this kit.
 
-### 1. Extractor - L'extracteur intelligent
+### 1. Extractor - The Smart Extractor
 
-Il analyse vos fichiers Lua et trouve automatiquement toutes les chaînes de texte qui devraient être traduites.
+It analyzes your Lua files and automatically finds all text strings that should be translated.
 
-**Ce qu'il fait :**
-- Scanne tous vos fichiers `.lua`
-- Détecte les textes en dur (`"Submit"`, `"Cancel"`, etc.)
-- Ignore intelligemment les logs, les valeurs techniques, les clés déjà localisées
-- Génère un fichier `TranslatedStrings_en.txt` conforme au SDK Lightroom
-- Crée des métadonnées pour préserver les espaces et la mise en forme
-- Produit un fichier `replacements.json` pour l'Applicator
+**What it does:**
+- Scans all your `.lua` files
+- Detects hardcoded text (`"Submit"`, `"Cancel"`, etc.)
+- Intelligently ignores logs, technical values, already localized keys
+- Generates a `TranslatedStrings_en.txt` file compliant with the Lightroom SDK
+- Creates metadata to preserve spaces and formatting
+- Produces a `replacements.json` file for the Applicator
 
-**Exemple d'utilisation :**
+**Usage example:**
 ```bash
-# Via le menu principal (recommandé)
+# Via main menu (recommended)
 python LocalisationToolKit.py
 
-# Ou directement en CLI
-python 1_Extractor/Extractor_main.py --plugin-path ./monPlugin.lrplugin
+# Or directly via CLI
+python 1_Extractor/Extractor_main.py --plugin-path ./myPlugin.lrplugin
 ```
 
-### 2. Applicator - L'applicateur précis
+### 2. Applicator - The Precise Applicator
 
-Il prend les chaînes extraites et remplace automatiquement le texte en dur dans votre code par des appels à la fonction de localisation `LOC`.
+It takes the extracted strings and automatically replaces hardcoded text in your code with calls to the `LOC` localization function.
 
-**Ce qu'il fait :**
-- Lit le fichier `replacements.json` généré par Extractor
-- Remplace `"Submit"` par `LOC "$$$/MonPlugin/Submit=Submit"`
-- Crée des backups automatiques de vos fichiers (dans `__i18n_tmp__/Applicator/backups/`)
-- Préserve les espaces, les concaténations et la mise en forme
-- Génère un rapport détaillé des modifications
+**What it does:**
+- Reads the `replacements.json` file generated by Extractor
+- Replaces `"Submit"` with `LOC "$$$/MyPlugin/Submit=Submit"`
+- Creates automatic backups of your files (in `__i18n_tmp__/Applicator/backups/`)
+- Preserves spaces, concatenations and formatting
+- Generates a detailed report of modifications
 
-**Format SDK Lightroom :**
-Le format `LOC "$$$/Key=Default"` est obligatoire. La valeur par défaut après `=` permet à Lightroom d'afficher quelque chose même si la traduction n'existe pas encore.
+**Lightroom SDK Format:**
+The `LOC "$$$/Key=Default"` format is mandatory. The default value after `=` allows Lightroom to display something even if the translation doesn't exist yet.
 
-**Exemple d'utilisation :**
+**Usage example:**
 ```bash
-# Via le menu principal (recommandé)
+# Via main menu (recommended)
 python LocalisationToolKit.py
 
-# Ou directement en CLI
-python 2_Applicator/Applicator_main.py --plugin-path ./monPlugin.lrplugin
+# Or directly via CLI
+python 2_Applicator/Applicator_main.py --plugin-path ./myPlugin.lrplugin
 ```
 
-### 3. TranslationManager - Le gestionnaire de versions
+### 3. TranslationManager - The Version Manager
 
-C'est le pivot pour maintenir vos traductions à jour au fil du temps. Il compare deux versions de vos extractions et identifie ce qui a changé.
+This is the pivot for keeping your translations up-to-date over time. It compares two versions of your extractions and identifies what has changed.
 
-**Ce qu'il fait :**
-- **COMPARE** : Compare une ancienne et une nouvelle extraction
-  - Identifie les clés ajoutées, modifiées, supprimées
-  - Génère `UPDATE_en.json` et `CHANGELOG.txt`
-- **EXTRACT** : Crée de petits fichiers `TRANSLATE_xx.txt` avec uniquement les nouvelles clés à traduire
-- **INJECT** : Réinjecte les traductions dans les fichiers de langue complets
-- **SYNC** : Synchronise tous les fichiers de langue avec la version anglaise de référence
-  - Ajoute `[NEW]` pour les nouvelles clés
-  - Marque `[NEEDS_REVIEW]` pour les clés modifiées
-  - Supprime les clés obsolètes
+**What it does:**
+- **COMPARE**: Compares an old and a new extraction
+  - Identifies added, modified, deleted keys
+  - Generates `UPDATE_en.json` and `CHANGELOG.txt`
+- **EXTRACT**: Creates small `TRANSLATE_xx.txt` files with only the new keys to translate
+- **INJECT**: Reinjects translations into complete language files
+- **SYNC**: Synchronizes all language files with the English reference version
+  - Adds `[NEW]` for new keys
+  - Marks `[NEEDS_REVIEW]` for modified keys
+  - Removes obsolete keys
 
-**Workflow typique :**
+**Typical Workflow:**
 ```
-Code modifié
+Modified code
     │
     ▼
-Extractor → nouveau TranslatedStrings_en.txt
+Extractor → new TranslatedStrings_en.txt
     │
     ▼
-COMPARE (ancien vs nouveau)
+COMPARE (old vs new)
     │
     ▼
-EXTRACT (génère TRANSLATE_fr.txt, TRANSLATE_de.txt, etc.)
+EXTRACT (generates TRANSLATE_fr.txt, TRANSLATE_de.txt, etc.)
     │
     ▼
-[Vous traduisez les fichiers TRANSLATE_xx.txt]
+[You translate the TRANSLATE_xx.txt files]
     │
     ▼
-INJECT (fusionne dans TranslatedStrings_xx.txt)
+INJECT (merges into TranslatedStrings_xx.txt)
     │
     ▼
-SYNC (finalise tous les fichiers de langue)
+SYNC (finalizes all language files)
 ```
 
-**Exemple d'utilisation :**
+**Usage example:**
 ```bash
-# Via le menu principal (recommandé)
+# Via main menu (recommended)
 python LocalisationToolKit.py
 
-# Ou directement en CLI
-python 3_Translation_manager/TranslationManager.py compare --old ancien.txt --new nouveau.txt --plugin-path ./monPlugin.lrplugin
-python 3_Translation_manager/TranslationManager.py extract --plugin-path ./monPlugin.lrplugin --locales ./monPlugin.lrplugin
-python 3_Translation_manager/TranslationManager.py sync --plugin-path ./monPlugin.lrplugin --locales ./monPlugin.lrplugin
+# Or directly via CLI
+python 3_Translation_manager/TranslationManager.py compare --old old.txt --new new.txt --plugin-path ./myPlugin.lrplugin
+python 3_Translation_manager/TranslationManager.py extract --plugin-path ./myPlugin.lrplugin --locales ./myPlugin.lrplugin
+python 3_Translation_manager/TranslationManager.py sync --plugin-path ./myPlugin.lrplugin --locales ./myPlugin.lrplugin
 ```
 
-### 4. Tools - La boîte à outils
+### 4. Tools - The Toolbox
 
-Deux petits utilitaires pratiques :
+Two handy little utilities:
 
-- **Delete_temp_dir.py** : Supprime le dossier temporaire `__i18n_tmp__` (nettoie l'espace)
-- **Restore_backup.py** : Restaure les fichiers depuis les backups créés par Applicator (annule les modifications)
+- **Delete_temp_dir.py**: Deletes the temporary `__i18n_tmp__` folder (cleans up space)
+- **Restore_backup.py**: Restores files from backups created by Applicator (undoes changes)
 
-**Exemple d'utilisation :**
+**Usage example:**
 ```bash
-# Via le menu principal (recommandé)
+# Via main menu (recommended)
 python LocalisationToolKit.py
 
-# Ou directement en CLI
+# Or directly via CLI
 python 9_Tools/Delete_temp_dir.py
 python 9_Tools/Restore_backup.py
 ```
 
-## Organisation des fichiers générés
+## Organization of Generated Files
 
-Tous les outils génèrent leurs sorties dans un dossier temporaire `__i18n_tmp__` (configurable) à la racine de votre plugin :
+All tools generate their outputs in a temporary `__i18n_tmp__` folder (configurable) at the root of your plugin:
 
 ```
-monPlugin.lrplugin/
+myPlugin.lrplugin/
 ├── Info.lua
 ├── *.lua
 ├── TranslatedStrings_en.txt
 ├── TranslatedStrings_fr.txt
-└── __i18n_tmp__/                    ← Dossier temporaire
+└── __i18n_tmp__/                    ← Temporary folder
     ├── Extractor/
-    │   ├── 20260129_143022/         ← Timestamp de l'exécution
+    │   ├── 20260129_143022/         ← Execution timestamp
     │   │   ├── TranslatedStrings_en.txt
     │   │   ├── spacing_metadata.json
     │   │   ├── replacements.json
     │   │   └── extraction_report.txt
-    │   └── 20260129_151500/         ← Autre exécution
+    │   └── 20260129_151500/         ← Another execution
     │       └── ...
     ├── Applicator/
     │   └── 20260129_143530/
@@ -187,141 +187,143 @@ monPlugin.lrplugin/
             └── restore_log.txt
 ```
 
-Chaque exécution crée un sous-dossier horodaté pour conserver l'historique. Les rapports et fichiers intermédiaires sont organisés par outil.
+Each execution creates a timestamped subfolder to preserve history. Reports and intermediate files are organized by tool.
 
-## Cas concrets d'utilisation
+## Concrete Use Cases
 
-### Cas 1 : Premier plugin multilingue
+### Case 1: First Multilingual Plugin
 
-Vous avez développé un plugin entièrement en anglais avec du texte en dur. Vous voulez le rendre multilingue.
+You've developed a plugin entirely in English with hardcoded text. You want to make it multilingual.
 
-1. Lancez `LocalisationToolKit.py`
-2. Configurez le chemin de votre plugin (option 6)
-3. Lancez **Extractor** (option 1) pour extraire toutes les chaînes
-4. Lancez **Applicator** (option 2) pour remplacer le texte en dur par des appels LOC
-5. Redémarrez Lightroom et testez
-6. Copiez `TranslatedStrings_en.txt` et renommez-le en `TranslatedStrings_fr.txt`, `TranslatedStrings_de.txt`, etc.
-7. Traduisez les valeurs dans ces fichiers
+1. Launch `LocalisationToolKit.py`
+2. Configure your plugin path (option 6)
+3. Run **Extractor** (option 1) to extract all strings
+4. Run **Applicator** (option 2) to replace hardcoded text with LOC calls
+5. Restart Lightroom and test
+6. Copy `TranslatedStrings_en.txt` and rename it to `TranslatedStrings_fr.txt`, `TranslatedStrings_de.txt`, etc.
+7. Translate the values in these files
 
-### Cas 2 : Mise à jour d'un plugin existant
+### Case 2: Updating an Existing Plugin
 
-Vous avez déjà un plugin multilingue et vous venez d'ajouter de nouvelles fonctionnalités avec du nouveau texte.
+You already have a multilingual plugin and you just added new features with new text.
 
-1. Lancez **Extractor** pour créer une nouvelle extraction
-2. Lancez **TranslationManager** (option 3) → **COMPARE**
-   - Sélectionnez l'ancienne extraction
-   - Sélectionnez la nouvelle extraction
-3. Lancez **EXTRACT** pour générer les fichiers `TRANSLATE_xx.txt` avec uniquement les nouvelles clés
-4. Traduisez ces petits fichiers (beaucoup plus rapide que de tout retraduire !)
-5. Lancez **INJECT** pour fusionner les traductions dans les fichiers complets
-6. Lancez **SYNC** pour finaliser et marquer les clés à revoir
-7. Lancez **Applicator** pour appliquer les nouvelles localisations au code
-8. Redémarrez Lightroom et testez
+1. Run **Extractor** to create a new extraction
+2. Run **TranslationManager** (option 3) → **COMPARE**
+   - Select the old extraction
+   - Select the new extraction
+3. Run **EXTRACT** to generate `TRANSLATE_xx.txt` files with only the new keys
+4. Translate these small files (much faster than retranslating everything!)
+5. Run **INJECT** to merge translations into complete files
+6. Run **SYNC** to finalize and mark keys for review
+7. Run **Applicator** to apply new localizations to code
+8. Restart Lightroom and test
 
-### Cas 3 : Correction d'une traduction existante
+### Case 3: Correcting an Existing Translation
 
-Vous avez trouvé une erreur dans une traduction ou vous voulez améliorer un texte.
+You found an error in a translation or want to improve a text.
 
-1. Ouvrez directement le fichier `TranslatedStrings_xx.txt` dans votre éditeur
-2. Modifiez la valeur de la clé concernée
-3. Redémarrez Lightroom (un simple reload ne suffit pas)
-4. Testez
+1. Open the `TranslatedStrings_xx.txt` file directly in your editor
+2. Modify the value of the concerned key
+3. Restart Lightroom completely (a simple reload is not enough)
+4. Test
 
-Pas besoin d'outils pour ce cas simple !
+No tools needed for this simple case!
 
-### Cas 4 : Restauration après une erreur
+### Case 4: Restoration After an Error
 
-Vous avez lancé Applicator mais le résultat ne vous convient pas.
+You ran Applicator but the result doesn't suit you.
 
-1. Lancez `LocalisationToolKit.py`
-2. Choisissez **Restore** (option 4)
-3. Sélectionnez le backup à restaurer
-4. Vos fichiers sont restaurés à leur état initial
+1. Launch `LocalisationToolKit.py`
+2. Choose **Restore** (option 4)
+3. Select the backup to restore
+4. Your files are restored to their initial state
 
-## Prérequis
+## Prerequisites
 
-- Python 3.7 ou supérieur
-- Un plugin Adobe Lightroom Classic (fichiers `.lua`)
-- Système Windows (principalement testé, mais compatible Linux/Mac)
+- Python 3.7 or higher
+- An Adobe Lightroom Classic plugin (`.lua` files)
+- Windows system (mainly tested, but Linux/Mac compatible)
 
 ## Installation
 
-1. Clonez ou téléchargez ce dépôt
-2. Assurez-vous que Python est installé
-3. Lancez `python LocalisationToolKit.py`
+1. Clone or download this repository
+2. Make sure Python is installed
+3. Run `python LocalisationToolKit.py`
 
-Aucune dépendance externe requise, uniquement la bibliothèque standard Python.
+No external dependencies required, only the Python standard library.
 
 ## Configuration
 
-Le fichier `config.json` (créé automatiquement) stocke vos préférences :
-- Chemin du plugin
-- Préfixe des clés LOC (ex: `$$$/MonPlugin`)
-- Langue par défaut (généralement `en`)
-- Nom du dossier temporaire (par défaut `__i18n_tmp__`)
+The `config.json` file (created automatically) stores your preferences:
+- Plugin path
+- LOC keys prefix (e.g., `$$$/MyPlugin`)
+- Default language (usually `en`)
+- Temporary folder name (default `__i18n_tmp__`)
 
-Vous pouvez modifier ces paramètres via le menu ou éditer directement le fichier JSON.
+You can modify these settings via the menu or edit the JSON file directly.
 
 ## FAQ
 
-### Dois-je traduire toutes les clés ?
+### Do I need to translate all keys?
 
-Non ! Le système de fallback du SDK Lightroom affiche la valeur par défaut (en anglais) si une traduction est manquante. Vous pouvez traduire progressivement.
+No! The Lightroom SDK fallback system displays the default value (in English) if a translation is missing. You can translate progressively.
 
-### Puis-je utiliser les outils en ligne de commande ?
+### Can I use the tools via command line?
 
-Oui ! Tous les outils supportent un mode CLI complet. Le `LocalisationToolKit.py` propose aussi des commandes rapides :
+Yes! All tools support full CLI mode. The `LocalisationToolKit.py` also offers quick commands:
 ```bash
 python LocalisationToolKit.py extract
 python LocalisationToolKit.py apply
 python LocalisationToolKit.py translate
 ```
 
-### Que faire si Lightroom n'affiche pas mes traductions ?
+### What if Lightroom doesn't display my translations?
 
-1. Vérifiez que le fichier `TranslatedStrings_xx.txt` est à la racine du plugin
-2. Le nom du fichier doit correspondre à la langue système (ex: `TranslatedStrings_fr.txt` pour le français)
-3. Redémarrez complètement Lightroom (pas juste "Reload Plugin")
-4. Vérifiez que les clés dans le fichier correspondent à celles dans le code
+1. Check that the `TranslatedStrings_xx.txt` file is at the plugin root
+2. The filename must match the system language (e.g., `TranslatedStrings_fr.txt` for French)
+3. Restart Lightroom completely (not just "Reload Plugin")
+4. Check that the keys in the file match those in the code
 
-### Puis-je modifier manuellement les fichiers générés ?
+### Can I manually edit the generated files?
 
-Oui ! Les fichiers `TranslatedStrings_xx.txt` sont de simples fichiers texte. Vous pouvez les éditer à la main. Les fichiers JSON sont aussi éditables mais faites attention à la syntaxe.
+Yes! The `TranslatedStrings_xx.txt` files are simple text files. You can edit them by hand. JSON files are also editable but watch the syntax.
 
-### Que signifie `[NEW]` ou `[NEEDS_REVIEW]` dans mes fichiers ?
+### What does `[NEW]` or `[NEEDS_REVIEW]` mean in my files?
 
-Ce sont des marqueurs ajoutés par la commande **SYNC** du TranslationManager :
-- `[NEW]` : Nouvelle clé à traduire
-- `[NEEDS_REVIEW]` : Valeur anglaise modifiée, la traduction doit être revue
+These are markers added by the TranslationManager's **SYNC** command:
+- `[NEW]`: New key to translate
+- `[NEEDS_REVIEW]`: English value modified, translation needs review
 
-Traduisez ces entrées puis supprimez le marqueur.
+Translate these entries then remove the marker.
 
-### Le dossier `__i18n_tmp__` prend beaucoup de place
+### The `__i18n_tmp__` folder takes up a lot of space
 
-Vous pouvez le supprimer sans risque via l'option 5 du menu principal ou manuellement. Il sera recréé automatiquement à la prochaine exécution. Pensez à le faire régulièrement pour économiser de l'espace.
+You can delete it without risk via option 5 of the main menu or manually. It will be recreated automatically on the next execution. Remember to do this regularly to save space.
 
-### Puis-je contribuer ou signaler un bug ?
+### Can I contribute or report a bug?
 
-Absolument ! Ce projet est ouvert aux contributions. Utilisez les issues GitHub pour signaler des bugs ou proposer des améliorations.
+Absolutely! This project is open to contributions. Use GitHub issues to report bugs or suggest improvements.
 
-## Crédits
+## Credits
 
-**Développé par Julien MOREAU** avec l'aide de **Claude (Anthropic)**.
+**Developed by Julien MOREAU** with the help of **Claude (Anthropic)**.
 
-Ce projet est né d'un besoin personnel pour un tout petit usage initial. Sans connaissances pointues dans le domaine et grâce à l'assistance de Claude, j'ai réussi à créer un outil performant capable de servir à d'autres développeurs de plugins Lightroom.
+This project was born from a personal need for a very small initial use. Without in-depth knowledge in the field and thanks to Claude's assistance, I managed to create a powerful tool capable of serving other Lightroom plugin developers.
 
-Les contributions sont grandement acceptées et les retours sont encouragés. N'hésitez pas à partager vos expériences et suggestions !
+Contributions are greatly welcomed and feedback is encouraged. Don't hesitate to share your experiences and suggestions!
 
-## Ressources
+Make it happen!
 
-- [SDK Adobe Lightroom Classic](https://developer.adobe.com/console) - Documentation officielle
-- [Format de localisation](https://developer.adobe.com/console/servicesandapis) - `LOC "$$$/Key=Default"`
-- [Timestamps Python](https://docs.python.org/3/library/datetime.html) - Format strict `YYYYMMDD_HHMMSS`
+## Resources
 
-## Licence
+- [Adobe Lightroom Classic SDK](https://developer.adobe.com/console) - Official documentation
+- [Localization format](https://developer.adobe.com/console/servicesandapis) - `LOC "$$$/Key=Default"`
+- [Python timestamps](https://docs.python.org/3/library/datetime.html) - Strict format `YYYYMMDD_HHMMSS`
 
-Ce projet est open source. Utilisez-le librement pour vos plugins Lightroom !
+## License
+
+This project is open source. Use it freely for your Lightroom plugins!
 
 ---
 
-**Besoin d'aide ?** Consultez les documentations techniques dans les sous-dossiers `__doc` de chaque outil pour plus de détails.
+**Need help?** Check out the technical documentation in the `__doc` subfolders of each tool for more details.

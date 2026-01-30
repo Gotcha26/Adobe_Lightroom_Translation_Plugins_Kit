@@ -1,242 +1,242 @@
-# Tools - Documentation technique
+# Tools - Technical Documentation
 
-**Version 1.0 | Janvier 2026**
+**Version 1.0 | January 2026**
 
-## Vue d'ensemble
+## Overview
 
-Le dossier Tools contient deux utilitaires pratiques pour gérer les fichiers temporaires et restaurer les backups. Ces outils sont simples mais essentiels pour maintenir un environnement de travail propre et sécurisé.
+The Tools folder contains two practical utilities for managing temporary files and restoring backups. These tools are simple but essential for maintaining a clean and secure working environment.
 
-## Architecture du projet
+## Project Architecture
 
 ```
 9_Tools/
-├── Delete_temp_dir.py       ← Suppression du dossier temporaire
-├── Restore_backup.py        ← Restauration des backups
+├── Delete_temp_dir.py       ← Deleting the temporary folder
+├── Restore_backup.py        ← Restoring backups
 └── __doc/
-    └── README.md            ← Ce fichier
+    └── README.md            ← This file
 ```
 
-Ces deux scripts sont indépendants et peuvent être utilisés directement en CLI ou via le `LocalisationToolKit.py`.
+These two scripts are independent and can be used directly in CLI or via `LocalisationToolKit.py`.
 
-## Delete_temp_dir.py - Nettoyage du dossier temporaire
+## Delete_temp_dir.py - Cleaning the Temporary Folder
 
 ### Description
 
-Cet outil supprime le dossier temporaire `__i18n_tmp__` (ou le nom configuré) d'un plugin Lightroom. Ce dossier contient toutes les sorties des outils (extractions, backups, rapports).
+This tool deletes the `__i18n_tmp__` temporary folder (or the configured name) from a Lightroom plugin. This folder contains all the outputs from the tools (extractions, backups, reports).
 
-### Quand l'utiliser ?
+### When to use it?
 
-- Pour libérer de l'espace disque
-- Après avoir terminé un cycle complet de localisation
-- Pour nettoyer les anciennes exécutions qui ne sont plus nécessaires
-- Avant de versionner le plugin (le dossier temporaire ne doit pas être dans Git)
+- To free up disk space
+- After completing a full localization cycle
+- To clean up old executions that are no longer needed
+- Before versioning the plugin (the temporary folder should not be in Git)
 
-### Comment ça fonctionne ?
+### How does it work?
 
 ```
-Plugin Lightroom
+Lightroom Plugin
     │
     └── __i18n_tmp__/
         ├── Extractor/
-        │   ├── 20260120_100000/    (5 fichiers, 120 Ko)
-        │   └── 20260129_143022/    (5 fichiers, 135 Ko)
+        │   ├── 20260120_100000/    (5 files, 120 KB)
+        │   └── 20260129_143022/    (5 files, 135 KB)
         ├── Applicator/
-        │   └── 20260129_143530/    (15 backups, 2.3 Mo)
+        │   └── 20260129_143530/    (15 backups, 2.3 MB)
         └── TranslationManager/
-            └── 20260129_144000/    (8 fichiers, 45 Ko)
+            └── 20260129_144000/    (8 files, 45 KB)
 
-        TOTAL: 33 fichiers, 2.6 Mo
-
-        ▼
-
-    SUPPRESSION (après triple confirmation)
+        TOTAL: 33 files, 2.6 MB
 
         ▼
 
-    __i18n_tmp__/ supprimé
+    DELETION (after triple confirmation)
+
+        ▼
+
+    __i18n_tmp__/ deleted
 ```
 
-### Utilisation
+### Usage
 
-**Mode interactif :**
+**Interactive mode:**
 ```bash
 python 9_Tools/Delete_temp_dir.py
 ```
 
-L'outil affiche :
-1. Le chemin du dossier temporaire
-2. Le contenu détaillé (nombre de fichiers et taille par sous-dossier)
-3. La taille totale
-4. Une triple confirmation pour la sécurité
+The tool displays:
+1. The temporary folder path
+2. The detailed content (number of files and size per subfolder)
+3. The total size
+4. A triple confirmation for safety
 
-**Exemple de sortie :**
+**Example output:**
 
 ```
 ==================================================
-     SUPPRESSION DU DOSSIER TEMPORAIRE
+     DELETING THE TEMPORARY FOLDER
 ==================================================
 
-Chemin du plugin : ./monPlugin.lrplugin
+Plugin path: ./myPlugin.lrplugin
 
-Dossier temporaire : __i18n_tmp__
-Chemin complet     : ./monPlugin.lrplugin/__i18n_tmp__
+Temporary folder: __i18n_tmp__
+Full path       : ./myPlugin.lrplugin/__i18n_tmp__
 
 ==================================================
-       CONTENU DU DOSSIER TEMPORAIRE
+       TEMPORARY FOLDER CONTENT
 ==================================================
 
-  Extractor                 :   10 fichiers, 255.0 Ko
-  Applicator                :   15 fichiers, 2.3 Mo
-  TranslationManager        :    8 fichiers, 45.0 Ko
+  Extractor                 :   10 files, 255.0 KB
+  Applicator                :   15 files, 2.3 MB
+  TranslationManager        :    8 files, 45.0 KB
 
 --------------------------------------------------
-TOTAL: 33 fichiers, 2.6 Mo
+TOTAL: 33 files, 2.6 MB
 --------------------------------------------------
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!! ATTENTION - OPÉRATION IRRÉVERSIBLE !!!
+!!! WARNING - IRREVERSIBLE OPERATION !!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Cette opération va SUPPRIMER DÉFINITIVEMENT:
-  ./monPlugin.lrplugin/__i18n_tmp__
+This operation will PERMANENTLY DELETE:
+  ./myPlugin.lrplugin/__i18n_tmp__
 
-Vous perdrez:
-  - Toutes les extractions précédentes
-  - Tous les fichiers de backup (.bak)
-  - Toutes les sorties des outils
+You will lose:
+  - All previous extractions
+  - All backup files (.bak)
+  - All tool outputs
 
-Étape 1/3: Confirmation initiale
-Voulez-vous vraiment supprimer ce dossier? [o/N]: o
+Step 1/3: Initial confirmation
+Do you really want to delete this folder? [y/N]: y
 
-Étape 2/3: Confirmation de sécurité
-Tapez 'SUPPRIMER' pour confirmer: SUPPRIMER
+Step 2/3: Security confirmation
+Type 'DELETE' to confirm: DELETE
 
-Étape 3/3: Dernière chance
-Dernière confirmation - Êtes-vous ABSOLUMENT sûr? [o/N]: o
+Step 3/3: Last chance
+Final confirmation - Are you ABSOLUTELY sure? [y/N]: y
 
-Suppression de ./monPlugin.lrplugin/__i18n_tmp__...
-✓ Dossier temporaire supprimé avec succès!
+Deleting ./myPlugin.lrplugin/__i18n_tmp__...
+✓ Temporary folder successfully deleted!
 ```
 
-### Sécurité
+### Security
 
-Le script intègre plusieurs niveaux de protection :
+The script includes several levels of protection:
 
-1. **Validation du chemin** : Vérifie que le plugin existe
-2. **Affichage détaillé** : Montre exactement ce qui sera supprimé
-3. **Triple confirmation** :
-   - Confirmation initiale (o/N)
-   - Mot de passe ("SUPPRIMER")
-   - Dernière chance (o/N)
-4. **Gestion des erreurs** : Détecte les permissions insuffisantes
+1. **Path validation**: Checks that the plugin exists
+2. **Detailed display**: Shows exactly what will be deleted
+3. **Triple confirmation**:
+   - Initial confirmation (y/N)
+   - Password ("DELETE")
+   - Last chance (y/N)
+4. **Error handling**: Detects insufficient permissions
 
-### Cas d'erreur
+### Error Cases
 
-**Erreur de permission :**
+**Permission error:**
 ```
-✗ Permission refusée: [WinError 32] The process cannot access the file...
-  Fermez tous les programmes qui utilisent ces fichiers.
+✗ Permission denied: [WinError 32] The process cannot access the file...
+  Close all programs using these files.
 ```
 
-**Solution :** Fermez tous les éditeurs, explorateurs de fichiers ou programmes qui accèdent au dossier temporaire.
+**Solution:** Close all editors, file explorers, or programs accessing the temporary folder.
 
-### Recommandations
+### Recommendations
 
-- **Ne supprimez pas** si vous avez besoin des backups pour restaurer des fichiers
-- **Ne supprimez pas** si vous voulez comparer deux extractions avec TranslationManager
-- **Supprimez régulièrement** pour éviter l'accumulation de fichiers temporaires
-- **Ajoutez au .gitignore** : `__i18n_tmp__/` pour ne pas versionner ce dossier
+- **Don't delete** if you need the backups to restore files
+- **Don't delete** if you want to compare two extractions with TranslationManager
+- **Delete regularly** to avoid accumulation of temporary files
+- **Add to .gitignore**: `__i18n_tmp__/` to avoid versioning this folder
 
-## Restore_backup.py - Restauration des backups
+## Restore_backup.py - Restoring Backups
 
 ### Description
 
-Cet outil restaure les fichiers `.lua` d'un plugin depuis leurs sauvegardes `.bak` créées par Applicator. Utile pour annuler les modifications en cas d'erreur ou de résultat non souhaité.
+This tool restores a plugin's `.lua` files from their `.bak` backups created by Applicator. Useful for undoing modifications in case of error or unwanted results.
 
-### Quand l'utiliser ?
+### When to use it?
 
-- Après une application qui a produit des résultats incorrects
-- Pour revenir à l'état avant localisation
-- Pour tester différentes versions (appliquer → tester → restaurer → modifier → réappliquer)
-- En cas d'erreur dans les remplacements
+- After an application that produced incorrect results
+- To return to the state before localization
+- To test different versions (apply → test → restore → modify → reapply)
+- In case of error in replacements
 
-### Comment ça fonctionne ?
+### How does it work?
 
 ```
-Plugin Lightroom                  Backups Applicator
+Lightroom Plugin                  Applicator Backups
     │                                 │
-    ├── MyDialog.lua (modifié)        ├── MyDialog.lua.bak (original)
-    ├── Settings.lua (modifié)        ├── Settings.lua.bak (original)
-    └── Upload.lua (modifié)          └── Upload.lua.bak (original)
+    ├── MyDialog.lua (modified)       ├── MyDialog.lua.bak (original)
+    ├── Settings.lua (modified)       ├── Settings.lua.bak (original)
+    └── Upload.lua (modified)         └── Upload.lua.bak (original)
 
                     │
                     ▼
-              RESTAURATION
+              RESTORATION
                     │
                     ▼
 
-    ├── MyDialog.lua (restauré)
-    ├── Settings.lua (restauré)
-    └── Upload.lua (restauré)
+    ├── MyDialog.lua (restored)
+    ├── Settings.lua (restored)
+    └── Upload.lua (restored)
 ```
 
-### Utilisation
+### Usage
 
-**Mode interactif :**
+**Interactive mode:**
 ```bash
 python 9_Tools/Restore_backup.py
 ```
 
-**Mode CLI avec auto-détection :**
+**CLI mode with auto-detection:**
 ```bash
-python 9_Tools/Restore_backup.py /chemin/vers/plugin.lrplugin
+python 9_Tools/Restore_backup.py /path/to/plugin.lrplugin
 ```
 
-**Mode dry-run (simulation) :**
+**Dry-run mode (simulation):**
 ```bash
-python 9_Tools/Restore_backup.py --dry-run /chemin/vers/plugin.lrplugin
+python 9_Tools/Restore_backup.py --dry-run /path/to/plugin.lrplugin
 ```
 
-### Exemple de sortie
+### Example Output
 
-**Détection automatique :**
+**Automatic detection:**
 
 ```
 ============================================================
-  RESTAURATION DES FICHIERS .bak (v2.0)
+  RESTORING .bak FILES (v2.0)
 ============================================================
 
-Repertoire du plugin a restaurer:
-  Exemples: ./piwigoPublish.lrplugin
+Plugin directory to restore:
+  Examples: ./piwigoPublish.lrplugin
             C:\Lightroom\plugin
 
-Chemin: ./monPlugin.lrplugin
+Path: ./myPlugin.lrplugin
 
-[OK] Repertoire: ./monPlugin.lrplugin
+[OK] Directory: ./myPlugin.lrplugin
 
-[OK] 2 session(s) Applicator trouvee(s) dans __i18n_tmp__/
+[OK] 2 Applicator session(s) found in __i18n_tmp__/
 
-Sessions Applicator avec backups disponibles:
+Applicator sessions with available backups:
 ------------------------------------------------------------
-  1. 2026-01-29 14:35:30 (12 fichier(s))
-  2. 2026-01-27 09:12:34 (12 fichier(s))
-  0. Annuler
+  1. 2026-01-29 14:35:30 (12 file(s))
+  2. 2026-01-27 09:12:34 (12 file(s))
+  0. Cancel
 
-Choisir une session (0 pour annuler): 1
+Choose a session (0 to cancel): 1
 
-[OK] Session selectionnee: 2026-01-29 14:35:30
+[OK] Session selected: 2026-01-29 14:35:30
 
-Mode simulation (dry-run) ? [O/n]: n
+Simulation mode (dry-run)? [Y/n]: n
 
-[OK] Mode reel - Les fichiers seront modifies
+[OK] Real mode - Files will be modified
 
 ============================================================
-RECHERCHE DES FICHIERS .bak
+SEARCHING FOR .bak FILES
 ============================================================
-Plugin: ./monPlugin.lrplugin
-Source: ./monPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups
+Plugin: ./myPlugin.lrplugin
+Source: ./myPlugin.lrplugin/__i18n_tmp__/Applicator/20260129_143530/backups
 
-Fichiers trouves: 12
+Files found: 12
 
   [OK] MyDialog.lua
   [OK] Settings.lua
@@ -244,10 +244,10 @@ Fichiers trouves: 12
   [OK] Export.lua
   ...
 
-Restaurer ces 12 fichier(s) ? [o/N]: o
+Restore these 12 file(s)? [y/N]: y
 
 ============================================================
-RESTAURATION
+RESTORATION
 ============================================================
 
   [OK] MyDialog.lua
@@ -256,25 +256,25 @@ RESTAURATION
   [OK] Export.lua
   ...
 
-Supprimer les fichiers .bak ? [o/N]: n
+Delete the .bak files? [y/N]: n
 
 ============================================================
-RESUME
+SUMMARY
 ============================================================
-Fichiers restaures: 12
+Files restored: 12
 
-Termine!
+Done!
 ```
 
-### Structure des backups
+### Backup Structure
 
-Restore_backup prend en charge deux structures :
+Restore_backup supports two structures:
 
-**1. Structure __i18n_tmp__ (recommandée, depuis v2.0) :**
+**1. __i18n_tmp__ structure (recommended, since v2.0):**
 
 ```
-monPlugin.lrplugin/
-├── MyDialog.lua              ← Fichier à restaurer
+myPlugin.lrplugin/
+├── MyDialog.lua              ← File to restore
 ├── Settings.lua
 └── __i18n_tmp__/
     └── Applicator/
@@ -287,30 +287,30 @@ monPlugin.lrplugin/
                 └── ...
 ```
 
-**2. Structure legacy (ancienne) :**
+**2. Legacy structure (old):**
 
 ```
-monPlugin.lrplugin/
-├── MyDialog.lua              ← Fichier à restaurer
-├── MyDialog.lua.bak          ← Source (à côté)
+myPlugin.lrplugin/
+├── MyDialog.lua              ← File to restore
+├── MyDialog.lua.bak          ← Source (side by side)
 ├── Settings.lua
 └── Settings.lua.bak
 ```
 
-L'outil détecte automatiquement la structure disponible.
+The tool automatically detects the available structure.
 
-### Mode dry-run
+### Dry-run Mode
 
-Le mode dry-run (simulation) permet de prévisualiser les actions sans modifier les fichiers.
+Dry-run mode (simulation) allows you to preview actions without modifying files.
 
 ```bash
 python Restore_backup.py --dry-run ./plugin.lrplugin
 ```
 
-Sortie :
+Output:
 ```
 ============================================================
-RESTAURATION (SIMULATION)
+RESTORATION (SIMULATION)
 ============================================================
 
   [SIMULATION] MyDialog.lua
@@ -319,298 +319,298 @@ RESTAURATION (SIMULATION)
   ...
 
 ============================================================
-RESUME
+SUMMARY
 ============================================================
-Fichiers qui seraient restaures: 12
+Files that would be restored: 12
 
-!!! MODE SIMULATION - Aucun fichier modifie
+!!! SIMULATION MODE - No files modified
 
-Termine!
+Done!
 ```
 
-### Gestion des sessions multiples
+### Managing Multiple Sessions
 
-Si plusieurs sessions Applicator existent, l'outil permet de choisir laquelle restaurer :
+If multiple Applicator sessions exist, the tool allows you to choose which one to restore:
 
 ```
-Sessions Applicator avec backups disponibles:
+Applicator sessions with available backups:
 ------------------------------------------------------------
-  1. 2026-01-29 14:35:30 (12 fichier(s))  ← La plus récente
-  2. 2026-01-28 10:20:15 (12 fichier(s))
-  3. 2026-01-27 09:12:34 (11 fichier(s))
-  0. Annuler
+  1. 2026-01-29 14:35:30 (12 file(s))  ← Most recent
+  2. 2026-01-28 10:20:15 (12 file(s))
+  3. 2026-01-27 09:12:34 (11 file(s))
+  0. Cancel
 ```
 
-**En mode CLI**, la session la plus récente est automatiquement sélectionnée.
+**In CLI mode**, the most recent session is automatically selected.
 
-### Suppression des backups
+### Deleting Backups
 
-Après restauration, l'outil propose de supprimer les fichiers `.bak` :
+After restoration, the tool offers to delete the `.bak` files:
 
 ```
-Supprimer les fichiers .bak ? [o/N]: o
+Delete the .bak files? [y/N]: y
 
-Suppression des .bak:
-  [OK] Supprime: MyDialog.lua.bak
-  [OK] Supprime: Settings.lua.bak
+Deleting .bak files:
+  [OK] Deleted: MyDialog.lua.bak
+  [OK] Deleted: Settings.lua.bak
   ...
 
-[OK] 12 fichier(s) .bak supprime(s)
+[OK] 12 .bak file(s) deleted
 ```
 
-**Recommandation :** Gardez les backups tant que vous n'êtes pas sûr du résultat. Vous pouvez toujours les supprimer plus tard avec `Delete_temp_dir.py`.
+**Recommendation:** Keep the backups as long as you're not sure of the result. You can always delete them later with `Delete_temp_dir.py`.
 
-### Cas d'usage avancés
+### Advanced Use Cases
 
-**Restaurer une session spécifique :**
+**Restore a specific session:**
 
-1. Listez les sessions disponibles :
+1. List available sessions:
 ```bash
-ls monPlugin.lrplugin/__i18n_tmp__/Applicator/
+ls myPlugin.lrplugin/__i18n_tmp__/Applicator/
 ```
 
-2. Notez le timestamp de la session souhaitée
+2. Note the timestamp of the desired session
 
-3. En mode interactif, choisissez cette session dans le menu
+3. In interactive mode, choose this session from the menu
 
-**Restaurer après plusieurs applications :**
+**Restore after multiple applications:**
 
-Si vous avez appliqué Applicator plusieurs fois, les backups de chaque session sont préservés :
+If you have applied Applicator several times, the backups from each session are preserved:
 
 ```
 Applicator/
-├── 20260127_091234/    ← Première application
+├── 20260127_091234/    ← First application
 │   └── backups/
-├── 20260129_143530/    ← Deuxième application (avec modifications)
+├── 20260129_143530/    ← Second application (with modifications)
 │   └── backups/
-└── 20260130_101500/    ← Troisième application
+└── 20260130_101500/    ← Third application
     └── backups/
 ```
 
-Pour revenir à l'état avant la deuxième application, restaurez la session `20260127_091234`.
+To return to the state before the second application, restore the session `20260127_091234`.
 
-**Restaurer sélectivement :**
+**Selectively restore:**
 
-Pour ne restaurer que certains fichiers :
+To restore only certain files:
 
-1. Copiez manuellement les `.bak` souhaités :
+1. Manually copy the desired `.bak` files:
 ```bash
-cp monPlugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyDialog.lua.bak \
-   monPlugin.lrplugin/MyDialog.lua
+cp myPlugin.lrplugin/__i18n_tmp__/Applicator/<timestamp>/backups/MyDialog.lua.bak \
+   myPlugin.lrplugin/MyDialog.lua
 ```
 
-2. Ou supprimez les `.bak` non désirés avant d'exécuter le script
+2. Or delete the unwanted `.bak` files before running the script
 
-### Intégration avec Git
+### Integration with Git
 
-Si votre plugin est versionné avec Git, une alternative à Restore_backup est :
+If your plugin is versioned with Git, an alternative to Restore_backup is:
 
 ```bash
-# Voir les modifications
+# View modifications
 git diff
 
-# Restaurer tous les fichiers
-git checkout HEAD -- monPlugin.lrplugin/*.lua
+# Restore all files
+git checkout HEAD -- myPlugin.lrplugin/*.lua
 
-# Restaurer un fichier spécifique
-git checkout HEAD -- monPlugin.lrplugin/MyDialog.lua
+# Restore a specific file
+git checkout HEAD -- myPlugin.lrplugin/MyDialog.lua
 ```
 
-**Avantage de Restore_backup :** Restaure à partir des backups locaux, même si vous avez déjà commité les modifications dans Git.
+**Advantage of Restore_backup:** Restores from local backups, even if you have already committed the modifications in Git.
 
-## FAQ générale
+## General FAQ
 
-### Dois-je supprimer __i18n_tmp__ avant chaque nouvelle exécution ?
+### Should I delete __i18n_tmp__ before each new execution?
 
-Non, le dossier temporaire peut contenir plusieurs exécutions horodatées. Chaque outil crée un nouveau sous-dossier daté. Supprimez uniquement quand l'espace disque devient un problème.
+No, the temporary folder can contain multiple timestamped executions. Each tool creates a new dated subfolder. Delete only when disk space becomes an issue.
 
-### Les backups sont-ils créés automatiquement ?
+### Are backups created automatically?
 
-Oui, Applicator crée automatiquement des backups `.bak` de tous les fichiers modifiés (sauf si vous utilisez `--no-backup`).
+Yes, Applicator automatically creates `.bak` backups of all modified files (unless you use `--no-backup`).
 
-### Puis-je restaurer après avoir supprimé __i18n_tmp__ ?
+### Can I restore after deleting __i18n_tmp__?
 
-Non, les backups sont dans `__i18n_tmp__/Applicator/`. Si vous les supprimez, vous ne pourrez plus les restaurer avec cet outil. Utilisez Git ou vos propres sauvegardes.
+No, the backups are in `__i18n_tmp__/Applicator/`. If you delete them, you can no longer restore them with this tool. Use Git or your own backups.
 
-### Les outils fonctionnent-ils sur Linux/Mac ?
+### Do the tools work on Linux/Mac?
 
-Oui, les deux scripts sont compatibles multi-plateformes (Windows, Linux, macOS).
+Yes, both scripts are cross-platform compatible (Windows, Linux, macOS).
 
-### Comment automatiser le nettoyage ?
+### How to automate cleanup?
 
-Vous pouvez créer un script cron ou tâche planifiée :
+You can create a cron script or scheduled task:
 
 ```bash
 #!/bin/bash
 # cleanup_old_backups.sh
 
-PLUGIN_PATH="./monPlugin.lrplugin"
+PLUGIN_PATH="./myPlugin.lrplugin"
 I18N_DIR="$PLUGIN_PATH/__i18n_tmp__"
 
-# Supprimer les dossiers de plus de 30 jours
+# Delete folders older than 30 days
 find "$I18N_DIR" -type d -mtime +30 -exec rm -rf {} \;
 ```
 
-**Attention :** Testez bien votre script avant de l'automatiser.
+**Warning:** Test your script thoroughly before automating it.
 
-### Puis-je restaurer manuellement sans le script ?
+### Can I restore manually without the script?
 
-Oui, copiez simplement les `.bak` :
+Yes, simply copy the `.bak` files:
 
 ```bash
-# Structure __i18n_tmp__
-cp monPlugin/__i18n_tmp__/Applicator/<timestamp>/backups/*.bak monPlugin/
+# __i18n_tmp__ structure
+cp myPlugin/__i18n_tmp__/Applicator/<timestamp>/backups/*.bak myPlugin/
 
-# Puis renommez pour retirer .bak
-for f in monPlugin/*.lua.bak; do mv "$f" "${f%.bak}"; done
+# Then rename to remove .bak
+for f in myPlugin/*.lua.bak; do mv "$f" "${f%.bak}"; done
 ```
 
-## Dépannage
+## Troubleshooting
 
-### Delete_temp_dir.py - Erreur de permission
+### Delete_temp_dir.py - Permission error
 
-**Symptôme :**
+**Symptom:**
 ```
-✗ Permission refusée: [Errno 13] Permission denied
-```
-
-**Solutions :**
-1. Fermez tous les programmes qui accèdent au dossier (éditeurs, explorateurs)
-2. Relancez le terminal en administrateur (Windows)
-3. Vérifiez les permissions du dossier avec `ls -la` (Linux/Mac)
-
-### Restore_backup.py - Aucun backup trouvé
-
-**Symptôme :**
-```
-Aucun fichier .bak trouve.
-Rien a restaurer.
+✗ Permission denied: [Errno 13] Permission denied
 ```
 
-**Causes possibles :**
-1. Applicator n'a jamais été exécuté sur ce plugin
-2. Applicator a été lancé avec `--no-backup`
-3. Le dossier `__i18n_tmp__` a été supprimé
-4. Les `.bak` ont été supprimés manuellement
+**Solutions:**
+1. Close all programs accessing the folder (editors, explorers)
+2. Restart the terminal as administrator (Windows)
+3. Check folder permissions with `ls -la` (Linux/Mac)
 
-**Solutions :**
-1. Vérifiez que le chemin du plugin est correct
-2. Vérifiez la présence de `__i18n_tmp__/Applicator/`
-3. Utilisez Git pour restaurer : `git checkout HEAD -- *.lua`
+### Restore_backup.py - No backup found
 
-### Restore_backup.py - Fichiers partiellement restaurés
+**Symptom:**
+```
+No .bak files found.
+Nothing to restore.
+```
 
-**Symptôme :**
+**Possible causes:**
+1. Applicator has never been executed on this plugin
+2. Applicator was launched with `--no-backup`
+3. The `__i18n_tmp__` folder was deleted
+4. The `.bak` files were manually deleted
+
+**Solutions:**
+1. Check that the plugin path is correct
+2. Check for the presence of `__i18n_tmp__/Applicator/`
+3. Use Git to restore: `git checkout HEAD -- *.lua`
+
+### Restore_backup.py - Files partially restored
+
+**Symptom:**
 ```
   [OK] MyDialog.lua
-  [FAIL] Settings.lua - Erreur: Permission denied
+  [FAIL] Settings.lua - Error: Permission denied
   [OK] Upload.lua
 ```
 
-**Solutions :**
-1. Fermez le fichier problématique s'il est ouvert dans un éditeur
-2. Vérifiez les permissions du fichier
-3. Relancez le script pour les fichiers échoués
+**Solutions:**
+1. Close the problematic file if it's open in an editor
+2. Check file permissions
+3. Restart the script for the failed files
 
-### Encodage des noms de fichiers
+### File name encoding
 
-Si les noms de fichiers contiennent des caractères spéciaux ou accentués, assurez-vous que votre terminal supporte UTF-8.
+If file names contain special or accented characters, ensure your terminal supports UTF-8.
 
-**Windows :**
+**Windows:**
 ```cmd
 chcp 65001
 ```
 
-**Linux/Mac :**
+**Linux/Mac:**
 ```bash
 export LANG=en_US.UTF-8
 ```
 
-## Performances
+## Performance
 
-Ces deux outils sont très rapides car ils effectuent des opérations simples sur le système de fichiers.
+These two tools are very fast as they perform simple file system operations.
 
-**Temps typiques :**
+**Typical times:**
 
-- **Delete_temp_dir.py** : 1-2 secondes (dépend de la taille du dossier)
-- **Restore_backup.py** : < 1 seconde pour 10-20 fichiers
+- **Delete_temp_dir.py**: 1-2 seconds (depends on folder size)
+- **Restore_backup.py**: < 1 second for 10-20 files
 
-## Intégration dans un workflow
+## Integration in a Workflow
 
-### Workflow complet avec nettoyage
+### Complete workflow with cleanup
 
 ```bash
 #!/bin/bash
 # complete_workflow.sh
 
-PLUGIN="./monPlugin.lrplugin"
+PLUGIN="./myPlugin.lrplugin"
 
 # 1. Extraction
 python 1_Extractor/Extractor_main.py --plugin-path "$PLUGIN"
 
-# 2. Application (avec confirmation)
+# 2. Application (with confirmation)
 python 2_Applicator/Applicator_main.py --plugin-path "$PLUGIN" --dry-run
-read -p "Appliquer? [o/N] " response
-if [[ $response =~ ^[Oo]$ ]]; then
+read -p "Apply? [y/N] " response
+if [[ $response =~ ^[Yy]$ ]]; then
   python 2_Applicator/Applicator_main.py --plugin-path "$PLUGIN"
 fi
 
-# 3. Test dans Lightroom
-echo "Testez dans Lightroom, puis appuyez sur Entrée..."
+# 3. Test in Lightroom
+echo "Test in Lightroom, then press Enter..."
 read
 
-# 4. Si OK, nettoyer
-read -p "Supprimer les fichiers temporaires? [o/N] " response
-if [[ $response =~ ^[Oo]$ ]]; then
+# 4. If OK, clean up
+read -p "Delete temporary files? [y/N] " response
+if [[ $response =~ ^[Yy]$ ]]; then
   python 9_Tools/Delete_temp_dir.py
 fi
 ```
 
-### Workflow avec restauration automatique
+### Workflow with automatic restoration
 
 ```bash
 #!/bin/bash
 # safe_apply.sh
 
-PLUGIN="./monPlugin.lrplugin"
+PLUGIN="./myPlugin.lrplugin"
 
-# Sauvegarder avant application
+# Backup before application
 BACKUP_DIR="/tmp/plugin_backup_$(date +%s)"
 cp -r "$PLUGIN" "$BACKUP_DIR"
 
-# Appliquer
+# Apply
 python 2_Applicator/Applicator_main.py --plugin-path "$PLUGIN"
 
-# Tester
-echo "Testez dans Lightroom."
-read -p "Résultat OK? [o/N] " response
+# Test
+echo "Test in Lightroom."
+read -p "Result OK? [y/N] " response
 
-if [[ ! $response =~ ^[Oo]$ ]]; then
-  echo "Restauration des backups..."
+if [[ ! $response =~ ^[Yy]$ ]]; then
+  echo "Restoring backups..."
   python 9_Tools/Restore_backup.py "$PLUGIN"
-  echo "Ou restauration complète depuis sauvegarde externe:"
+  echo "Or full restoration from external backup:"
   echo "  rm -rf $PLUGIN && cp -r $BACKUP_DIR $PLUGIN"
 fi
 ```
 
 ## Contributions
 
-Pour améliorer les outils, vous pouvez :
-- Ajouter une option pour supprimer uniquement les sessions de plus de X jours
-- Améliorer la gestion des erreurs pour des cas spécifiques
-- Ajouter un mode batch pour traiter plusieurs plugins
-- Créer une interface graphique
+To improve the tools, you can:
+- Add an option to delete only sessions older than X days
+- Improve error handling for specific cases
+- Add batch mode to process multiple plugins
+- Create a graphical interface
 
-N'hésitez pas à proposer vos modifications !
+Feel free to propose your modifications!
 
-## Ressources complémentaires
+## Additional Resources
 
-- **shutil Python** : [Documentation shutil](https://docs.python.org/3/library/shutil.html) (copie/suppression de fichiers)
-- **os.path Python** : [Documentation os.path](https://docs.python.org/3/library/os.path.html)
-- **Gestion des fichiers** : [Real Python - Working With Files](https://realpython.com/working-with-files-in-python/)
+- **Python shutil**: [shutil Documentation](https://docs.python.org/3/library/shutil.html) (file copy/deletion)
+- **Python os.path**: [os.path Documentation](https://docs.python.org/3/library/os.path.html)
+- **File handling**: [Real Python - Working With Files](https://realpython.com/working-with-files-in-python/)
 
 ---
 
-**Développé par Julien MOREAU avec l'aide de Claude (Anthropic)**
+**Developed by Julien MOREAU with the help of Claude (Anthropic)**
 
-Pour toute question ou problème, consultez le README principal ou ouvrez une issue sur le dépôt GitHub.
+For any questions or issues, consult the main README or open an issue on the GitHub repository.
