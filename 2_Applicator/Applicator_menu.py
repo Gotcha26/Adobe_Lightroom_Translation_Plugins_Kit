@@ -15,6 +15,7 @@ from typing import Tuple, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import find_latest_tool_output, validate_plugin_path, get_i18n_dir
 from common.colors import Colors
+from common.menu_helpers import select_tool_output_dir
 
 # Instance couleurs
 c = Colors()
@@ -183,78 +184,26 @@ class ApplicatorMenu:
         return True
 
     def input_extraction_dir(self) -> bool:
-        """Demande le répertoire d'extraction."""
-        print()
-        print(c.title("2. Dossier d'extraction Extractor"))
-        print(c.separator())
+        """Demande le répertoire d'extraction avec choix multiple si plusieurs disponibles."""
+        selected_dir = select_tool_output_dir(self.plugin_path, "Extractor", self.extraction_dir)
 
-        # Chercher automatiquement
-        auto_dir = None
-        if self.plugin_path:
-            auto_dir = find_latest_tool_output(self.plugin_path, "Extractor")
+        if selected_dir:
+            # Vérifier les fichiers requis
+            required = ["replacements.json"]
+            missing = [f for f in required if not os.path.exists(os.path.join(selected_dir, f))]
 
-        if auto_dir:
-            print(f"Détection automatique:")
-            print(f"  {c.VALUE}{auto_dir}{c.RESET}")
-            print()
-            print(c.menu_option("1", "Utiliser ce dossier (recommandé)"))
-            print(c.menu_option("2", "Spécifier un autre dossier"))
-            print(c.menu_option("0", "Annuler"))
-            print()
+            if missing:
+                print()
+                print(c.warning(f"Fichiers manquants: {', '.join(missing)}"))
+                print("         Ce n'est peut-être pas un dossier Extractor valide.")
+                confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+                if confirm not in ['o', 'oui', 'y', 'yes']:
+                    return False
 
-            choice = input(c.prompt("Choix [1]: ")).strip()
+            self.extraction_dir = selected_dir
+            return True
 
-            if choice in ['1', '']:
-                self.extraction_dir = auto_dir
-                print(c.success(f"Extraction: {auto_dir}"))
-                return True
-            elif choice == '0':
-                return True  # Ne pas changer
-            elif choice != '2':
-                print(c.error("Choix invalide"))
-                return self.input_extraction_dir()
-        else:
-            print(f"{c.WARNING}Aucune extraction détectée dans {get_i18n_dir()}/Extractor/{c.RESET}")
-            print("Spécifiez le chemin manuellement.")
-            print()
-
-        # Entrée manuelle
-        print("Exemples:")
-        print(f"  {c.VALUE}<plugin>/{get_i18n_dir()}/Extractor/20260130_091234{c.RESET}")
-        print()
-
-        if self.extraction_dir:
-            print(f"Actuel: {c.VALUE}{self.extraction_dir}{c.RESET}")
-
-        path = input(c.prompt("Dossier d'extraction: ")).strip()
-
-        if not path:
-            if self.extraction_dir:
-                print(c.success("Dossier inchangé"))
-                return True
-            print(c.error("Dossier requis!"))
-            return False
-
-        normalized = os.path.normpath(path)
-
-        if not os.path.isdir(normalized):
-            print(c.error(f"Répertoire introuvable: {normalized}"))
-            return False
-
-        # Vérifier les fichiers requis
-        required = ["replacements.json"]
-        missing = [f for f in required if not os.path.exists(os.path.join(normalized, f))]
-
-        if missing:
-            print(c.warning(f"Fichiers manquants: {', '.join(missing)}"))
-            print("         Ce n'est peut-être pas un dossier Extractor valide.")
-            confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
-            if confirm not in ['o', 'oui', 'y', 'yes']:
-                return False
-
-        self.extraction_dir = normalized
-        print(c.success(f"Extraction: {normalized}"))
-        return True
+        return False
 
     def input_dry_run(self):
         """Demande le mode dry-run."""

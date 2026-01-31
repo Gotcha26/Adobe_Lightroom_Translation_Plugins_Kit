@@ -67,6 +67,7 @@ TOOL_DIRS = {
     "extractor": "1_Extractor",
     "applicator": "2_Applicator",
     "translation_manager": "3_Translation_manager",
+    "webbridge": "4_WebBridge",
     "tools": "9_Tools"
 }
 
@@ -143,7 +144,7 @@ class ConfigManager:
         """Affiche les dernières exécutions de chaque outil."""
         print(f"   {c.DIM}Exécutions récentes dans {get_i18n_dir()}/:{c.RESET}")
 
-        tools = ["Extractor", "Applicator", "TranslationManager"]
+        tools = ["Extractor", "Applicator", "TranslationManager", "WebBridge"]
 
         for tool in tools:
             latest = find_latest_tool_output(plugin_path, tool)
@@ -208,8 +209,8 @@ class ToolLauncher:
         working_dir = cwd or os.path.dirname(script_path)
 
         try:
-            print(f"\n🚀 Lancement: {os.path.basename(script_path)}")
-            print(f"   Répertoire: {working_dir}")
+            print(f"\nLancement: {os.path.basename(script_path)}")
+            print(f"Repertoire: {working_dir}")
             print("-" * 60)
 
             result = subprocess.run(
@@ -220,7 +221,7 @@ class ToolLauncher:
 
             return result.returncode == 0
         except Exception as e:
-            print(f"❌ Erreur exécution: {e}")
+            print(f"[ERREUR] Erreur execution: {e}")
             return False
 
     def run_extractor(self, interactive: bool = True) -> bool:
@@ -296,6 +297,26 @@ class ToolLauncher:
             args = ["--plugin-path", plugin_path]
             return self._run_script(script, args)
 
+    def run_webbridge(self, interactive: bool = True) -> bool:
+        """Lance le WebBridge."""
+        script = self._get_tool_path("webbridge", "WebBridge_main.py")
+
+        if interactive:
+            # Passer le plugin_path en tant que valeur par défaut
+            plugin_path = self.config.get("plugin_path", "")
+            if plugin_path and os.path.isdir(plugin_path):
+                return self._run_script(script, ["--default-plugin", plugin_path])
+            return self._run_script(script)
+        else:
+            # Mode CLI avec config
+            plugin_path = self.config.get("plugin_path")
+            if not plugin_path:
+                print("[ERREUR] Plugin non configuré.")
+                return False
+
+            args = ["export", "--plugin-path", plugin_path]
+            return self._run_script(script, args)
+
     def run_restore_backup(self) -> bool:
         """Lance la restauration des backups."""
         script = self._get_tool_path("tools", "Restore_backup.py")
@@ -354,13 +375,14 @@ class MainMenu:
         print(c.menu_option("1", "Extractor      - Extraire les chaînes"))
         print(c.menu_option("2", "Applicator     - Appliquer les localisations"))
         print(c.menu_option("3", "Translation    - Gérer les traductions"))
-        print(c.menu_option("4", "Restore        - Restaurer les backups"))
-        print(c.menu_option("5", f"{c.WARNING}Supprimer{c.RESET}      - Supprimer le dossier temporaire"))
+        print(c.menu_option("4", "WebBridge      - Export/Import JSON i18n"))
+        print(c.menu_option("5", "Restore        - Restaurer les backups"))
+        print(c.menu_option("6", f"{c.WARNING}Supprimer{c.RESET}      - Supprimer le dossier temporaire"))
         print()
         print(c.title("CONFIGURATION"))
         print(c.separator())
-        print(c.menu_option("6", "Configurer le plugin"))
-        print(c.menu_option("7", "Afficher la configuration"))
+        print(c.menu_option("7", "Configurer le plugin"))
+        print(c.menu_option("8", "Afficher la configuration"))
         print()
         print(c.menu_option("0", "Quitter"))
         print()
@@ -483,7 +505,7 @@ class MainMenu:
             self.print_header()
             self.print_menu()
 
-            choice = input(c.prompt("Votre choix (0-7): ")).strip()
+            choice = input(c.prompt("Votre choix (0-8): ")).strip()
 
             if choice == '0':
                 print("\nAu revoir!")
@@ -509,14 +531,22 @@ class MainMenu:
                 self.launcher.run_translation_manager()
                 input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
             elif choice == '4':
-                self.launcher.run_restore_backup()
+                plugin = self.config.get("plugin_path")
+                if not plugin or not os.path.isdir(plugin):
+                    print(c.warning("Plugin non configuré!"))
+                    self.input_plugin_path()
+                else:
+                    self.launcher.run_webbridge()
                 input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
             elif choice == '5':
-                self.launcher.run_delete_temp_dir()
+                self.launcher.run_restore_backup()
                 input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
             elif choice == '6':
-                self.configure_paths()
+                self.launcher.run_delete_temp_dir()
+                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
             elif choice == '7':
+                self.configure_paths()
+            elif choice == '8':
                 self.config.display()
                 input(f"{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
             else:
@@ -545,9 +575,11 @@ def main():
             success = launcher.run_applicator(interactive=len(sys.argv) == 2)
         elif cmd in ['translate', 'translation', '3']:
             success = launcher.run_translation_manager()
-        elif cmd in ['restore', '4']:
+        elif cmd in ['webbridge', 'web', '4']:
+            success = launcher.run_webbridge(interactive=len(sys.argv) == 2)
+        elif cmd in ['restore', '5']:
             success = launcher.run_restore_backup()
-        elif cmd in ['delete', 'clean', '5']:
+        elif cmd in ['delete', 'clean', '6']:
             success = launcher.run_delete_temp_dir()
         elif cmd == '--config':
             config.display()
@@ -559,6 +591,7 @@ def main():
             print("  python LocalizationToolkit.py extract   # Lancer Extractor")
             print("  python LocalizationToolkit.py apply     # Lancer Applicator")
             print("  python LocalizationToolkit.py translate # Lancer TranslationManager")
+            print("  python LocalizationToolkit.py webbridge # Lancer WebBridge")
             print("  python LocalizationToolkit.py restore   # Lancer Restore")
             print("  python LocalizationToolkit.py delete    # Supprimer dossier temporaire")
             print("  python LocalizationToolkit.py --config  # Afficher config")

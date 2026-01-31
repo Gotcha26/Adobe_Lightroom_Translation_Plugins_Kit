@@ -228,6 +228,7 @@ def menu_sync(plugin_path: str = ""):
     """
     from TM_common import clear_screen, print_header
     from common.paths import find_latest_tool_output
+    from common.menu_helpers import select_tool_output_dir
 
     clear_screen()
     print_header()
@@ -243,13 +244,13 @@ def menu_sync(plugin_path: str = ""):
     locales_dir = None
 
     if has_update in ['o', 'y', '', 'oui', 'yes']:
-        # Auto-détection si plugin_path fourni
+        # Auto-détection et sélection interactive si plugin_path fourni
         if plugin_path:
-            update_dir = find_latest_tool_output(plugin_path, "TranslationManager")
+            update_dir = select_tool_output_dir(plugin_path, "TranslationManager", "")
             if update_dir:
-                print(f"\n{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
+                print(f"\n{c.INFO}[INFO]{c.RESET} Dossier sélectionné: {c.VALUE}{update_dir}{c.RESET}")
             else:
-                print(c.warning("Aucun dossier TranslationManager trouvé"))
+                print(c.warning("Aucun dossier TranslationManager sélectionné"))
 
         if not update_dir:
             print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")

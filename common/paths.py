@@ -20,7 +20,7 @@ Version : 1.0
 
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 
 # Nom du dossier racine par défaut pour tous les outils i18n
@@ -156,6 +156,78 @@ def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) 
     return path
 
 
+def find_all_tool_outputs(plugin_path: str, tool_name: str) -> List[str]:
+    """
+    Trouve tous les dossiers horodatés pour un outil, triés du plus récent au plus ancien.
+
+    Recherche parmi les dossiers horodatés (format YYYYMMDD_HHMMSS)
+    et retourne tous les dossiers trouvés, triés par date décroissante.
+
+    Supporte les dossiers avec et sans préfixe numérique
+    (ex: "Extractor" ou "1_Extractor").
+
+    Args:
+        plugin_path: Chemin vers le plugin Lightroom
+        tool_name: Nom de l'outil (Extractor, Applicator, etc.)
+
+    Returns:
+        Liste des chemins complets des dossiers trouvés, triés du plus récent au plus ancien.
+        Liste vide si aucun dossier trouvé.
+
+    Example:
+        >>> find_all_tool_outputs("/path/to/plugin.lrplugin", "Extractor")
+        ['/path/.../1_Extractor/20260129_143022', '/path/.../1_Extractor/20260129_120000']
+    """
+    import re
+
+    i18n_kit = get_i18n_kit_path(plugin_path)
+
+    if not os.path.exists(i18n_kit):
+        return []
+
+    # Chercher tous les dossiers qui correspondent au pattern: X_ToolName ou ToolName
+    # où X peut être n'importe quel chiffre
+    tool_dir = None
+    normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
+
+    # Lister tous les dossiers dans __i18n_kit__
+    for dir_name in os.listdir(i18n_kit):
+        dir_path = os.path.join(i18n_kit, dir_name)
+        if not os.path.isdir(dir_path):
+            continue
+
+        # Vérifier si c'est le bon outil (avec ou sans préfixe)
+        # Pattern: X_ToolName ou ToolName
+        match = re.match(r'^(\d+_)?(.+)$', dir_name)
+        if match:
+            folder_tool_name = match.group(2)
+            normalized_folder = folder_tool_name.lower().replace('_', '').replace('-', '')
+
+            if normalized_folder == normalized_tool or \
+               normalized_folder.startswith(normalized_tool) or \
+               normalized_tool.startswith(normalized_folder):
+                tool_dir = dir_path
+                break
+
+    if not tool_dir or not os.path.exists(tool_dir):
+        return []
+
+    # Lister uniquement les dossiers au format YYYYMMDD_HHMMSS (15 caractères)
+    dirs = [
+        d for d in os.listdir(tool_dir)
+        if os.path.isdir(os.path.join(tool_dir, d)) and len(d) == TIMESTAMP_LENGTH
+    ]
+
+    if not dirs:
+        return []
+
+    # Tri décroissant (le plus récent en premier)
+    # Le format YYYYMMDD_HHMMSS permet un tri lexicographique correct
+    dirs.sort(reverse=True)
+
+    return [os.path.join(tool_dir, d) for d in dirs]
+
+
 def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
     """
     Trouve le dossier le plus récent pour un outil.
@@ -177,31 +249,8 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
         >>> find_latest_tool_output("/path/to/plugin.lrplugin", "Extractor")
         '/path/to/plugin.lrplugin/__i18n_kit__/1_Extractor/20260129_143022'
     """
-    # Essayer d'abord avec le préfixe
-    prefixed_tool_name = _extract_tool_prefix(tool_name)
-    tool_dir = os.path.join(get_i18n_kit_path(plugin_path), prefixed_tool_name)
-
-    # Si le dossier avec préfixe n'existe pas, essayer sans préfixe (rétrocompatibilité)
-    if not os.path.exists(tool_dir):
-        tool_dir = os.path.join(get_i18n_kit_path(plugin_path), tool_name)
-
-    if not os.path.exists(tool_dir):
-        return None
-
-    # Lister uniquement les dossiers au format YYYYMMDD_HHMMSS (15 caractères)
-    dirs = [
-        d for d in os.listdir(tool_dir)
-        if os.path.isdir(os.path.join(tool_dir, d)) and len(d) == TIMESTAMP_LENGTH
-    ]
-
-    if not dirs:
-        return None
-
-    # Tri décroissant (le plus récent en premier)
-    # Le format YYYYMMDD_HHMMSS permet un tri lexicographique correct
-    dirs.sort(reverse=True)
-
-    return os.path.join(tool_dir, dirs[0])
+    all_outputs = find_all_tool_outputs(plugin_path, tool_name)
+    return all_outputs[0] if all_outputs else None
 
 
 def is_valid_plugin_path(path: str) -> bool:
