@@ -182,7 +182,9 @@ def export_to_i18n(
     extraction_dir: str,
     output_file: Optional[str] = None,
     plugin_name: str = "",
-    include_languages: Optional[List[str]] = None
+    include_languages: Optional[List[str]] = None,
+    include_context: bool = True,
+    include_default: bool = False
 ) -> Tuple[I18nTranslations, Dict[str, any]]:
     """
     Exporte les fichiers d'extraction vers le format JSON i18n.
@@ -192,6 +194,8 @@ def export_to_i18n(
         output_file: Fichier de sortie optionnel (si None, ne sauvegarde pas)
         plugin_name: Nom du plugin (ex: "piwigoPublish.lrplugin")
         include_languages: Langues à inclure (si None, toutes les langues trouvées)
+        include_context: Si True, inclut le contexte (fichier:ligne) dans l'export (défaut: True)
+        include_default: Si True, inclut le champ 'default' (chaîne originale EN) (défaut: False)
 
     Returns:
         Tuple (I18nTranslations, stats)
@@ -281,6 +285,7 @@ def export_to_i18n(
         "languages_processed": [],
         "keys_with_metadata": 0,
         "keys_with_context": 0,
+        "keys_with_default": 0,
         "warnings": []
     }
 
@@ -309,15 +314,17 @@ def export_to_i18n(
             # Créer l'entrée
             entry = I18nEntry(text=value)
 
-            # Ajouter le contexte (uniquement pour EN)
-            if lang == "en" and loc_key in context_data:
+            # Ajouter le contexte (uniquement pour EN et si demandé)
+            if include_context and lang == "en" and loc_key in context_data:
                 entry.context = context_data[loc_key]
                 stats["keys_with_context"] += 1
 
-            # Ajouter la chaîne de référence (EN) pour toutes les langues
-            # Pour EN: inclure la valeur comme référence de base
-            # Pour autres langues: permet aux traducteurs de voir le texte original pendant l'édition
-            entry.default = data['value']
+            # Ajouter la chaîne de référence (EN) optionnellement
+            # Si include_default=True: inclure la valeur originale EN pour toutes les langues
+            # Utile pour les traducteurs qui veulent voir le texte original
+            if include_default:
+                entry.default = data['value']
+                stats["keys_with_default"] += 1
 
             # NOTE: Les métadonnées d'espacement NE SONT PAS exportées
             # Elles sont utiles uniquement pour la reconstruction du code source Lua,

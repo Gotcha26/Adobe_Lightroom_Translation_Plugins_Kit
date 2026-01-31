@@ -54,6 +54,7 @@ def print_export_stats(stats: Dict):
     print(c.config_line("Clés exportées", str(stats['total_keys'])))
     print(c.config_line("Langues", ', '.join(stats['languages_processed'])))
     print(c.config_line("Clés avec contexte", str(stats['keys_with_context'])))
+    print(c.config_line("Clés avec champ 'default'", str(stats.get('keys_with_default', 0))))
     print(c.config_line("Clés avec métadonnées", str(stats['keys_with_metadata'])))
 
     if stats.get('warnings'):
@@ -126,7 +127,8 @@ def print_validation_result(result):
 
 
 def run_export(plugin_path: str, extraction_dir: Optional[str] = None,
-               output_file: Optional[str] = None, plugin_name: Optional[str] = None):
+               output_file: Optional[str] = None, plugin_name: Optional[str] = None,
+               include_context: bool = True, include_default: bool = False):
     """Lance l'export vers JSON i18n."""
 
     # Vérifier le chemin du plugin
@@ -163,6 +165,10 @@ def run_export(plugin_path: str, extraction_dir: Optional[str] = None,
     print(c.config_line("Dossier Extractor", extraction_dir))
     print(c.config_line("Fichier JSON", output_file))
     print(c.config_line("Nom du plugin", plugin_name))
+    context_label = f"{c.OK}Oui{c.RESET}" if include_context else f"{c.DIM}Non{c.RESET}"
+    print(c.config_line("Inclure contexte", context_label))
+    default_label = f"{c.OK}Oui{c.RESET}" if include_default else f"{c.DIM}Non{c.RESET}"
+    print(c.config_line("Inclure champ 'default'", default_label))
     print()
     print(c.separator())
     print()
@@ -172,7 +178,9 @@ def run_export(plugin_path: str, extraction_dir: Optional[str] = None,
         translations, stats = export_to_i18n(
             extraction_dir,
             output_file=output_file,
-            plugin_name=plugin_name
+            plugin_name=plugin_name,
+            include_context=include_context,
+            include_default=include_default
         )
 
         print(c.success(f"Export réussi!"))

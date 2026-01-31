@@ -38,6 +38,8 @@ class InteractiveMenu:
         self.output_file = ""
         self.languages: List[str] = []
         self.validate_before_import = True
+        self.include_context = True   # Par défaut: contexte activé
+        self.include_default = False  # Par défaut: pas de champ 'default'
 
         # Valider le chemin par défaut s'il est fourni
         if default_plugin_path:
@@ -132,6 +134,14 @@ class InteractiveMenu:
             else:
                 print(c.config_line("3. Fichier JSON", f"{c.DIM}(auto){c.RESET}"))
 
+        # Option: Inclure le contexte (défaut: activé)
+        context_display = f"{c.OK}Oui{c.RESET}" if self.include_context else f"{c.DIM}Non{c.RESET}"
+        print(c.config_line("4. Inclure contexte", context_display))
+
+        # Option: Inclure le champ 'default' (défaut: désactivé)
+        default_display = f"{c.OK}Oui{c.RESET}" if self.include_default else f"{c.DIM}Non{c.RESET}"
+        print(c.config_line("5. Inclure champ 'default'", default_display))
+
     def _print_import_config(self):
         """Affiche la configuration pour le mode import."""
         # Fichier JSON
@@ -204,6 +214,8 @@ class InteractiveMenu:
         print(c.menu_option("1", "Chemin du plugin"))
         print(c.menu_option("2", "Dossier Extractor"))
         print(c.menu_option("3", "Fichier JSON de sortie"))
+        print(c.menu_option("4", "Inclure contexte (fichier:ligne) dans le JSON"))
+        print(c.menu_option("5", "Inclure champ 'default' (texte original EN)"))
 
     def _print_import_menu(self):
         """Affiche le menu pour le mode import."""
@@ -356,6 +368,22 @@ class InteractiveMenu:
         else:
             print(c.warning("Validation désactivée"))
 
+    def toggle_include_context(self):
+        """Inverse l'inclusion du contexte dans l'export."""
+        self.include_context = not self.include_context
+        if self.include_context:
+            print(c.success("Contexte activé - Les champs fichier:ligne seront inclus"))
+        else:
+            print(c.warning("Contexte désactivé - Les champs fichier:ligne seront omis"))
+
+    def toggle_include_default(self):
+        """Inverse l'inclusion du champ 'default' dans l'export."""
+        self.include_default = not self.include_default
+        if self.include_default:
+            print(c.success("Champ 'default' activé - Le texte original EN sera inclus"))
+        else:
+            print(c.warning("Champ 'default' désactivé - Le texte original EN sera omis"))
+
     def change_mode(self):
         """Change de mode (export/import/validate)."""
         print()
@@ -409,7 +437,9 @@ class InteractiveMenu:
                         'plugin_path': self.plugin_path,
                         'extraction_dir': self.extraction_dir or None,
                         'output_file': self.output_file or None,
-                        'plugin_name': os.path.basename(self.plugin_path)
+                        'plugin_name': os.path.basename(self.plugin_path),
+                        'include_context': self.include_context,
+                        'include_default': self.include_default
                     }
                 elif self.mode == "import":
                     params = {
@@ -456,8 +486,19 @@ class InteractiveMenu:
                 input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
 
             elif choice == '4':
-                if self.mode == "import":
+                if self.mode == "export":
+                    self.toggle_include_context()
+                    input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                elif self.mode == "import":
                     self.toggle_validation()
+                    input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                else:
+                    print(c.error("Choix invalide"))
+                    input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+
+            elif choice == '5':
+                if self.mode == "export":
+                    self.toggle_include_default()
                     input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
                 else:
                     print(c.error("Choix invalide"))

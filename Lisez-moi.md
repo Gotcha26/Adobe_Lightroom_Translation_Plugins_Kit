@@ -18,7 +18,7 @@ Sans outil, c'est un travail fastidieux et source d'erreurs.
 
 ## La solution
 
-Ce kit automatise tout le processus en 4 outils simples :
+Ce kit automatise tout le processus en 5 modules complémentaires :
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -27,13 +27,13 @@ Ce kit automatise tout le processus en 4 outils simples :
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
-     ┌──────────────┬─────────────────┬──────────────┐
-     │              │                 │              │
-     ▼              ▼                 ▼              ▼
-┌─────────┐  ┌──────────┐  ┌──────────────┐  ┌─────────┐
-│Extractor│  │Applicator│  │Translation   │  │  Tools  │
-│         │  │          │  │Manager       │  │         │
-└─────────┘  └──────────┘  └──────────────┘  └─────────┘
+     ┌──────────────┬─────────────────┬──────────────┬──────────────┐
+     │              │                 │              │              │
+     ▼              ▼                 ▼              ▼              ▼
+┌─────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────┐  ┌─────────┐
+│Extractor│  │Applicator│  │Translation   │  │WebBridge │  │  Tools  │
+│         │  │          │  │Manager       │  │   ⭐     │  │         │
+└─────────┘  └──────────┘  └──────────────┘  └──────────┘  └─────────┘
 ```
 
 ### 0. LocalisationToolKit.py - Le chef d'orchestre
@@ -135,7 +135,59 @@ python 3_Translation_manager/TranslationManager.py extract --plugin-path ./monPl
 python 3_Translation_manager/TranslationManager.py sync --plugin-path ./monPlugin.lrplugin --locales ./monPlugin.lrplugin
 ```
 
-### 4. Tools - La boîte à outils
+### 4. WebBridge - Le pont web pour traducteurs ⭐
+
+C'est le module moderne qui permet aux traducteurs non-techniques de contribuer facilement via une interface web visuelle.
+
+**Ce qu'il fait :**
+- **EXPORT** : Convertit `TranslatedStrings_xx.txt` vers `translations.json` (format i18n standard)
+- **IMPORT** : Convertit `translations.json` vers `TranslatedStrings_xx.txt` (format Lightroom)
+- Validation automatique des placeholders (`%s`, `%d`, `\n`)
+- Compatible avec [quicki18n.studio](https://www.quicki18n.studio/) (gratuit, browser-based)
+- Contexte visible pour chaque clé (fichier:ligne)
+
+**Workflow typique :**
+```
+Développeur:
+  Extractor → TranslatedStrings_en.txt
+  WebBridge Export → translations.json
+  Envoyer à traducteur
+
+Traducteur (navigateur web uniquement):
+  Ouvrir quicki18n.studio
+  Importer translations.json
+  Traduire visuellement
+  Exporter translations.json
+  Renvoyer au développeur
+
+Développeur:
+  WebBridge Import → TranslatedStrings_fr.txt
+  Copier dans plugin
+  Tester
+```
+
+**Avantages :**
+- ✅ Interface intuitive pour traducteurs non-techniques
+- ✅ Pas d'outil à installer (tout dans le navigateur)
+- ✅ Validation automatique (aucune erreur de formatage)
+- ✅ Contexte visible (fichier:ligne)
+- ✅ Beaucoup plus rapide que l'édition manuelle
+
+**Exemple d'utilisation :**
+```bash
+# Via le menu principal (recommandé)
+python LocalizationToolkit.py
+# [8] Export Web → Génère translations.json
+# [9] Import Web → Génère TranslatedStrings_xx.txt
+
+# Ou directement en CLI
+python 4_WebBridge/WebBridge_main.py export --plugin-path ./monPlugin.lrplugin
+python 4_WebBridge/WebBridge_main.py import --json translations.json --plugin-path ./monPlugin.lrplugin
+```
+
+**Testé avec succès** : Plugin PiwigoPublish (278 clés)
+
+### 5. Tools - La boîte à outils
 
 Deux petits utilitaires pratiques :
 
@@ -189,6 +241,35 @@ monPlugin.lrplugin/
 
 Chaque exécution crée un sous-dossier horodaté pour conserver l'historique. Les rapports et fichiers intermédiaires sont organisés par outil.
 
+## Workflows disponibles
+
+Ce toolkit supporte **3 workflows** selon votre situation :
+
+1. **[Workflow GitHub](WORKFLOW_GITHUB.md)** 🌟 **RECOMMANDÉ pour plugins open-source**
+   - Collaboration via Pull Requests GitHub
+   - Simple, traçable, standard
+   - Idéal pour traducteurs techniques
+
+2. **[Workflow WebBridge](WORKFLOW_MISE_A_JOUR.md#workflow-2--webbridge-moderne--disponible)**
+   - Interface web visuelle (quicki18n.studio)
+   - Idéal pour traducteurs non-techniques
+   - Validation automatique
+
+3. **[Workflow Classique](WORKFLOW_MISE_A_JOUR.md#workflow-1--classique--disponible)**
+   - Édition directe des fichiers .txt
+   - Pour cas spécifiques
+
+### 🤔 Pas sûr de quel workflow choisir ?
+
+Consultez le **[Guide de choix](CHOIX_WORKFLOW.md)** qui compare les 3 workflows et vous aide à choisir selon votre situation.
+
+**Recommandation rapide** :
+- Plugin sur GitHub ? → [Workflow GitHub](WORKFLOW_GITHUB.md)
+- Traducteur non technique ? → [Workflow WebBridge](WORKFLOW_MISE_A_JOUR.md#workflow-2--webbridge-moderne--disponible)
+- Workflow établi ? → [Workflow Classique](WORKFLOW_MISE_A_JOUR.md#workflow-1--classique--disponible)
+
+---
+
 ## Cas concrets d'utilisation
 
 ### Cas 1 : Premier plugin multilingue
@@ -229,7 +310,23 @@ Vous avez trouvé une erreur dans une traduction ou vous voulez améliorer un te
 
 Pas besoin d'outils pour ce cas simple !
 
-### Cas 4 : Restauration après une erreur
+### Cas 4 : Collaboration avec un traducteur externe
+
+Vous avez un traducteur qui ne connaît pas les outils de développement. WebBridge rend tout simple !
+
+1. Lancez **Extractor** pour extraire les chaînes
+2. Lancez **WebBridge Export** (option 8) pour générer `translations.json`
+3. Envoyez `translations.json` à votre traducteur par email
+4. Le traducteur ouvre https://www.quicki18n.studio/ dans son navigateur
+5. Il importe le JSON, traduit visuellement, et exporte le JSON
+6. Il vous renvoie `translations.json` (traduit)
+7. Lancez **WebBridge Import** (option 9) pour générer les fichiers `.txt`
+8. Copiez les fichiers dans votre plugin et testez
+
+**Temps développeur** : 5-10 minutes
+**Outils requis pour le traducteur** : Navigateur web uniquement
+
+### Cas 5 : Restauration après une erreur
 
 Vous avez lancé Applicator mais le résultat ne vous convient pas.
 
@@ -299,6 +396,18 @@ Traduisez ces entrées puis supprimez le marqueur.
 ### Le dossier `__i18n_tmp__` prend beaucoup de place
 
 Vous pouvez le supprimer sans risque via l'option 5 du menu principal ou manuellement. Il sera recréé automatiquement à la prochaine exécution. Pensez à le faire régulièrement pour économiser de l'espace.
+
+### Comment faire traduire mon plugin par quelqu'un qui n'est pas développeur ?
+
+Utilisez **WebBridge** ! C'est exactement son but.
+
+1. Lancez **[8] Export Web** pour générer un fichier JSON
+2. Envoyez le JSON à votre traducteur
+3. Le traducteur utilise https://www.quicki18n.studio/ (gratuit, dans le navigateur)
+4. Il vous renvoie le JSON traduit
+5. Lancez **[9] Import Web** pour générer les fichiers `.txt`
+
+Aucun outil de développement requis côté traducteur, juste un navigateur !
 
 ### Puis-je contribuer ou signaler un bug ?
 

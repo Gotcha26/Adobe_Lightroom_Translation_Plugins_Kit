@@ -2,21 +2,23 @@
 
 ## Vue d'ensemble
 
-Le module **WebBridge** permet de convertir les fichiers de localisation Lightroom (format propriétaire `.txt`) vers un format JSON i18n standard, compatible avec des outils web modernes comme [quicki18n.studio](https://www.quicki18n.studio/).
+Le module **WebBridge** est **pleinement opérationnel** et permet de convertir les fichiers de localisation Lightroom (format propriétaire `.txt`) vers un format JSON i18n standard, compatible avec des outils web modernes comme [quicki18n.studio](https://www.quicki18n.studio/).
 
 ### Problème résolu
 
 Les traducteurs ne sont pas des développeurs. Éditer des fichiers `TranslatedStrings_xx.txt` directement est :
-- Peu convivial (format propriétaire)
-- Sujet aux erreurs de formatage
-- Sans aide visuelle ou contextuelle
-- Difficile à organiser pour plusieurs langues
+- Peu convivial (format propriétaire du SDK Lightroom)
+- Sujet aux erreurs de formatage (risque de casser le plugin)
+- Sans aide visuelle ou contextuelle (pas de contexte fichier:ligne)
+- Difficile à organiser pour plusieurs langues (1 fichier à la fois)
 
 ### Solution apportée
 
-WebBridge crée un **pont bidirectionnel sûr** entre :
-- **Format Lightroom SDK** : `TranslatedStrings_xx.txt` (source de vérité finale)
-- **Format i18n JSON** : Compatible avec outils web modernes (édition visuelle)
+WebBridge crée un **pont bidirectionnel automatique** entre :
+- **Format Lightroom SDK** : `TranslatedStrings_xx.txt` (source de vérité finale, compatible Lightroom)
+- **Format i18n JSON** : Compatible avec outils web modernes (édition visuelle intuitive)
+
+**Statut** : ✅ Testé et validé sur le plugin PiwigoPublish (278 clés)
 
 ---
 
@@ -24,25 +26,16 @@ WebBridge crée un **pont bidirectionnel sûr** entre :
 
 ```
 4_WebBridge/
-├── .claude/                      # Auto-conditionnement Claude
-│   ├── webbridge-context.md     # Contexte technique détaillé
-│   └── webbridge-tests.md       # Stratégie de tests
+├── __doc/                        # Documentation
+│   ├── Lisez-moi.md             # Documentation française
+│   └── README.md                # Documentation anglaise
 │
 ├── WebBridge_main.py             # Interface principale (menu interactif)
 ├── WebBridge_export.py           # Export .txt → .json
 ├── WebBridge_import.py           # Import .json → .txt
 ├── WebBridge_models.py           # Classes de données
 ├── WebBridge_utils.py            # Utilitaires de parsing
-├── WebBridge_validator.py        # Validation stricte
-│
-├── tests/                        # Tests unitaires
-│   ├── test_export.py
-│   ├── test_import.py
-│   ├── test_validation.py
-│   ├── test_roundtrip.py
-│   └── fixtures/                 # Données de test
-│
-└── README.md                     # Ce fichier
+└── WebBridge_validator.py        # Validation stricte
 ```
 
 ---
@@ -52,44 +45,99 @@ WebBridge crée un **pont bidirectionnel sûr** entre :
 ### 1. Développeur : Extraction et export
 
 ```bash
-# 1. Extraire les chaînes du code Lua
+# Étape 1 : Extraire les chaînes du code Lua
 python LocalizationToolkit.py
 # Sélectionner [1] Extractor
+# → Génère TranslatedStrings_en.txt
 
-# 2. Exporter vers format i18n JSON
+# Étape 2 : Exporter vers format JSON
 python LocalizationToolkit.py
-# Sélectionner [8] Export Web
-# → Génère i18n_translations.json
+# Sélectionner [8] Export Web (WebBridge)
+# → Génère translations.json
 
-# 3. Envoyer le fichier JSON au traducteur
+# Étape 3 : Envoyer translations.json au traducteur
+# (Email, GitHub, Dropbox, etc.)
 ```
 
-### 2. Traducteur : Édition visuelle
+### 2. Traducteur : Édition visuelle (aucun outil à installer)
 
-```bash
-# 1. Ouvrir https://www.quicki18n.studio/
-# 2. Importer i18n_translations.json
-# 3. Traduire visuellement les clés manquantes
-# 4. Exporter i18n_translations.json (modifié)
-# 5. Renvoyer le fichier au développeur
+```
+1. Recevoir le fichier translations.json
+2. Ouvrir https://www.quicki18n.studio/ dans le navigateur
+3. Cliquer "Import JSON" et sélectionner translations.json
+4. Sélectionner la langue à traduire (FR, DE, ES, etc.)
+5. Traduire visuellement clé par clé
+   - Texte EN visible à gauche (référence)
+   - Champ traduction à droite (éditable)
+   - Contexte fichier:ligne visible
+6. Cliquer "Export JSON"
+7. Renvoyer translations.json au développeur
 ```
 
-### 3. Développeur : Import et application
+### 3. Développeur : Import et finalisation
 
 ```bash
-# 1. Importer le JSON traduit
+# Étape 1 : Importer le JSON traduit
 python LocalizationToolkit.py
-# Sélectionner [9] Import Web
-# → Validation automatique
+# Sélectionner [9] Import Web (WebBridge)
+# → Validation automatique (placeholders, structure)
 # → Génère TranslatedStrings_fr.txt, TranslatedStrings_de.txt, etc.
 
-# 2. Copier dans le plugin
-# Les fichiers générés sont prêts pour Lightroom
+# Étape 2 : Copier dans le plugin
+cp __i18n_tmp__/4_WebBridge/<timestamp>/TranslatedStrings_*.txt .
 
-# 3. (Optionnel) Synchroniser avec TranslationManager
-python LocalizationToolkit.py
-# Sélectionner [3] Translation → SYNC
+# Étape 3 : Tester dans Lightroom
+# Recharger le plugin et vérifier les traductions
 ```
+
+**Note importante** : Pas besoin d'utiliser les outils COMPARE, EXTRACT, INJECT ou SYNC du TranslationManager. WebBridge gère tout automatiquement.
+
+---
+
+## Exemple concret : Plugin PiwigoPublish
+
+Voici un exemple réel d'utilisation avec le plugin **PiwigoPublish** (278 clés) :
+
+### Développeur
+
+```bash
+# Export
+python LocalizationToolkit.py
+# [1] Extractor → 278 clés extraites
+# [8] Export Web → translations.json généré
+
+# Résultat
+__i18n_tmp__/4_WebBridge/20260131_164318/translations.json
+```
+
+### Traducteur
+
+1. Reçoit `translations.json` (278 clés EN)
+2. Ouvre https://www.quicki18n.studio/
+3. Importe le fichier
+4. Traduit en français (exemple) :
+   - `"Cannot log in to Piwigo"` → `"Impossible de se connecter à Piwigo"`
+   - `"Albums created on Piwigo: %s"` → `"Albums créés sur Piwigo : %s"`
+   - Contexte visible : `PiwigoAPI.lua:1352`
+5. Exporte `translations.json` (FR ajouté)
+6. Renvoie au développeur
+
+### Développeur
+
+```bash
+# Import
+python LocalizationToolkit.py
+# [9] Import Web → TranslatedStrings_fr.txt généré (278 clés)
+
+# Résultat
+__i18n_tmp__/4_WebBridge/20260131_165500/TranslatedStrings_fr.txt
+
+# Copier
+cp __i18n_tmp__/4_WebBridge/20260131_165500/TranslatedStrings_*.txt piwigoPublish.lrplugin/
+```
+
+**Temps total développeur** : 5-10 minutes
+**Aucune erreur de formatage** : Validation automatique
 
 ---
 
@@ -145,13 +193,13 @@ python LocalizationToolkit.py
   - **Niveau 3** : Clé
   - **Valeur** : Objet avec :
     - `text` (obligatoire) : Le texte traduit
-    - `default` (optionnel) : Chaîne originale (EN) - visible lors de l'édition du JSON pour référence directe
-    - `context` (optionnel) : Contexte du code source (fichier:ligne)
+    - `context` (présent par défaut) : Contexte du code source (fichier:ligne) - peut être désactivé via option [4]
+    - `default` (absent par défaut) : Chaîne originale (EN) - peut être activée via option [5] pour référence directe lors de l'édition
     - `metadata` (optionnel) : Métadonnées d'espacement
 
-### Champ `default` (chaîne de référence)
+### Champ `default` (chaîne de référence) - OPTIONNEL
 
-Pour faciliter la traduction et le maintien de la qualité, **chaque clé dans TOUTES les langues** inclut `default` contenant la chaîne originale EN :
+Optionnellement, vous pouvez inclure le champ `default` contenant la chaîne originale EN dans chaque clé (toutes les langues). Cela facilite la traduction et le maintien de la qualité :
 
 ```json
 "en": {
@@ -181,7 +229,16 @@ Pour faciliter la traduction et le maintien de la qualité, **chaque clé dans T
 - Comparaison directe lors de l'édition manuelle
 - Pour EN: permet une cohérence visuelle du JSON
 
-**Note** : Le champ `default` est automatiquement rempli lors de l'export avec le contenu du fichier TranslatedStrings_en.txt. Il contient toujours la chaîne originale, quelle que soit la langue.
+**Quand l'inclure ?**
+- ✓ Utile si les traducteurs éditent manuellement le JSON et veulent voir la référence
+- ✓ Aide à la comparaison directe EN/traduction
+- ✗ Ajoute du volume au JSON (non-bloquant)
+- ✗ Non nécessaire si utilisant uniquement quicki18n.studio
+
+**Configuration** :
+- Menu interactif : Option **[5] Inclure champ 'default'** en mode export
+- CLI : Ajouter le flag `--include-default` à l'export
+- Défaut : **Désactivé** (pour un JSON plus léger)
 
 ### Métadonnées critiques
 
@@ -196,6 +253,28 @@ Certaines chaînes ont des **espaces ou suffixes intentionnels** :
 ```
 
 **Ces métadonnées sont préservées automatiquement** lors de l'export/import.
+
+### Option: Inclure le contexte (fichier:ligne)
+
+Par défaut, le JSON exporté inclut le **contexte source** (fichier:ligne) pour chaque clé :
+
+```json
+"CannotLogPiwigo": {
+  "text": "Cannot log in to Piwigo",
+  "context": "PiwigoAPI.lua:1352"  // ← Présent par défaut
+}
+```
+
+**Quand le désactiver ?**
+- ✓ Si vous voulez un JSON plus léger (sans contexte source)
+- ✓ Si les traducteurs utilisent uniquement quicki18n.studio
+- ✗ Utile de garder si naviguer dans le code source Lua pendant la traduction
+- ✗ Aide à comprendre le contexte d'utilisation
+
+**Configuration** :
+- Menu interactif : Option **[4] Inclure contexte** en mode export (désactiver si souhaité)
+- CLI : Ajouter le flag `--no-context` à l'export
+- Défaut : **Activé** (inclusion du contexte source)
 
 ---
 
@@ -357,10 +436,10 @@ Compatible avec toutes les versions du SDK Adobe Lightroom Classic qui utilisent
 
 ## Limitations connues
 
-1. **quicki18n.studio** : Validation manuelle requise (test import/export sur le site)
-2. **Commentaires** : Les commentaires dans `.txt` ne sont pas préservés (régénérés à l'import)
-3. **Ordre des clés** : L'ordre peut changer (groupé par catégorie alphabétique)
-4. **Langues multiples** : Le traducteur doit avoir accès à toutes les langues dans le JSON (ou travailler langue par langue)
+1. **quicki18n.studio** : Outil externe (mais gratuit, local dans le navigateur, aucune installation)
+2. **Commentaires personnalisés** : Les commentaires ajoutés manuellement dans `.txt` ne sont pas préservés (régénérés automatiquement à l'import)
+3. **Ordre des clés** : L'ordre des clés peut changer lors de l'import (groupées par catégorie alphabétique)
+4. **Métadonnées d'espacement** : Les espaces intentionnels (alignement dans le code Lua) ne sont pas préservés dans les fichiers `.txt` générés (normal, car ces métadonnées sont pour le code source uniquement)
 
 ---
 
@@ -415,9 +494,11 @@ python -m pytest tests/test_roundtrip.py -v
 
 ### Documentation
 
-- [Plan d'intégration complet](../.claude/webbridge-mission.md)
-- [Contexte technique détaillé](.claude/webbridge-context.md)
-- [Skills WebBridge](../.claude/webbridge-skills.md)
+- [Plan d'intégration complet](../../.claude/webbridge-mission.md)
+- [Contexte technique détaillé](../../.claude/webbridge-context.md)
+- [Skills WebBridge](../../.claude/webbridge-skills.md)
+- [Historique du champ 'default'](../MODIFICATIONS_DEFAULT_FIELD.md)
+- [Historique de l'option 'context'](../MODIFICATIONS_INCLUDE_CONTEXT.md)
 
 ### Outils externes
 
