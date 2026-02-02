@@ -15,30 +15,30 @@ from Extractor_models import ExtractedString, ExtractionStats
 
 class ReportGenerator:
     """Génère les rapports détaillés d'extraction."""
-    
+
     def __init__(self, plugin_path: str, prefix: str, stats: ExtractionStats):
         self.plugin_path = plugin_path
         self.prefix = prefix
         self.stats = stats
-    
-    def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict], 
+
+    def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict],
                        output_path: str):
         """Génère le rapport détaillé pour remplacement."""
         # Grouper par fichier
         by_file: Dict[str, List[ExtractedString]] = defaultdict(list)
         for entry in extracted:
             by_file[entry.file_path].append(entry)
-        
+
         with open(output_path, 'w', encoding='utf-8') as f:
             # En-tête
             f.write("=" * 80 + "\n")
             f.write("RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n")
             f.write("=" * 80 + "\n\n")
-            
+
             f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"Plugin: {self.plugin_path}\n")
             f.write(f"Préfixe: {self.prefix}\n\n")
-            
+
             # Légende des émojis
             f.write("LÉGENDE:\n")
             f.write("  ⬅️   = Espace(s) en DÉBUT de chaîne\n")
@@ -46,7 +46,7 @@ class ReportGenerator:
             f.write("  ⬅️➡️ = Espaces des DEUX côtés\n")
             f.write("  🔚  = Suffixe détecté (\" - \", \" -\", \"...\")\n")
             f.write("  🔗  = Membre d'une chaîne concaténée\n\n")
-            
+
             # Statistiques
             f.write("STATISTIQUES\n")
             f.write("-" * 80 + "\n")
@@ -60,18 +60,18 @@ class ReportGenerator:
             f.write(f"Chaînes avec suffixes      : {self.stats.strings_with_suffix}\n")
             f.write(f"Lignes concaténées         : {self.stats.concatenated_lines}\n")
             f.write(f"Membres de concaténation   : {self.stats.concat_members_total}\n")
-            
+
             # Compter les clés existantes
             existing_loc_count = sum(1 for e in extracted if e.pattern_name == "existing_loc")
             f.write(f"Clés LOC existantes        : {existing_loc_count} (déjà localisées, non modifiées)\n\n")
-            
+
             # Patterns détectés
             f.write("PATTERNS DÉTECTÉS\n")
             f.write("-" * 80 + "\n")
             for pattern, count in sorted(self.stats.patterns_found.items(), key=lambda x: -x[1]):
                 f.write(f"  {pattern:25} : {count}\n")
             f.write("\n")
-            
+
             # Section des clés LOC existantes (pour information)
             existing_entries = [e for e in extracted if e.pattern_name == "existing_loc"]
             if existing_entries:
@@ -83,35 +83,35 @@ class ReportGenerator:
                     f.write(f"     Clé    : {entry.suggested_key}\n")
                     f.write(f"     Valeur : {entry.base_text}\n\n")
                 f.write("\n")
-            
+
             # Détail par fichier (pour remplacement)
             f.write("=" * 80 + "\n")
             f.write("DÉTAIL PAR FICHIER (pour remplacement)\n")
             f.write("=" * 80 + "\n")
-            
+
             for file_path in sorted(by_file.keys()):
                 entries = by_file[file_path]
                 unique_count = len(set(e.base_text for e in entries))
-                
+
                 f.write(f"\n{'-' * 80}\n")
                 f.write(f"Fichier: {file_path}\n")
                 f.write(f"Chaînes: {len(entries)} ({unique_count} clés uniques)\n")
                 f.write(f"{'-' * 80}\n\n")
-                
+
                 # Grouper par numéro de ligne pour afficher les concaténations ensemble
                 by_line: Dict[int, List[ExtractedString]] = defaultdict(list)
                 for entry in entries:
                     by_line[entry.line_num].append(entry)
-                
+
                 for line_num in sorted(by_line.keys()):
                     line_entries = by_line[line_num]
                     first_entry = line_entries[0]
-                    
+
                     # Afficher l'en-tête de la ligne
                     if first_entry.is_concat_member and len(line_entries) > 1:
                         f.write(f"  [Ligne {line_num}] Pattern: {first_entry.pattern_name} 🔗 CHAÎNE CONCATÉNÉE ({len(line_entries)} membres)\n")
                         f.write(f"  LIGNE    : {first_entry.line_content[:100]}\n")
-                        
+
                         # Afficher chaque membre
                         for idx, entry in enumerate(line_entries, 1):
                             markers = self._get_markers(entry)
@@ -122,7 +122,7 @@ class ReportGenerator:
                                 f.write(f"    ESPACES: {entry.leading_spaces} début, {entry.trailing_spaces} fin\n")
                             if entry.has_suffix():
                                 f.write(f"    SUFFIXE: \"{entry.suffix}\"\n")
-                        
+
                         f.write("\n")
                     else:
                         # Chaîne simple (non concaténée)
@@ -137,18 +137,18 @@ class ReportGenerator:
                             if entry.has_suffix():
                                 f.write(f"  SUFFIXE  : \"{entry.suffix}\"\n")
                             f.write(f"  REMPLACER: {entry.replacement_code}\n\n")
-            
+
             # Chaînes avec espaces ou suffixes (résumé)
             if spacing_metadata:
                 f.write("=" * 80 + "\n")
                 f.write("CHAÎNES AVEC ESPACES OU SUFFIXES\n")
                 f.write("=" * 80 + "\n\n")
                 f.write("Ces chaînes nécessitent une réinjection des espaces/suffixes.\n\n")
-                
+
                 for i, (key, meta) in enumerate(sorted(spacing_metadata.items()), 1):
                     emojis = self._get_spacing_emojis(meta)
                     emoji_str = "".join(emojis)
-                    
+
                     f.write(f"  {i}. {emoji_str} {key}\n")
                     f.write(f"     Original: \"{meta['original_text']}\"\n")
                     f.write(f"     Base: \"{meta.get('base_text', meta['clean_text'])}\"\n")
@@ -157,27 +157,27 @@ class ReportGenerator:
                     if meta.get('suffix'):
                         f.write(f"     Suffixe: \"{meta['suffix']}\"\n")
                     f.write(f"     Fichier: {meta['file']}:{meta['line']}\n\n")
-            
+
             # Liste des clés uniques pour PluginStrings
             f.write("=" * 80 + "\n")
             f.write("LISTE DES CLÉS POUR PluginStrings.txt\n")
             f.write("=" * 80 + "\n\n")
-            
+
             # Construire la liste des clés uniques
             unique_keys: Dict[str, ExtractedString] = {}
             for entry in extracted:
                 if entry.suggested_key not in unique_keys:
                     unique_keys[entry.suggested_key] = entry
-            
+
             f.write(f"-- {len(unique_keys)} clés uniques\n\n")
-            
+
             for entry in sorted(unique_keys.values(), key=lambda e: e.suggested_key):
                 markers = self._get_markers(entry)
                 # Utiliser base_text (sans suffixe) pour la valeur
                 f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
-        
-        print(f"✓ Rapport: {output_path}")
-    
+
+        print(f"✓ Rapport:              {output_path}")
+
     def _get_markers(self, entry: ExtractedString) -> str:
         """Retourne la chaîne de marqueurs (émojis) pour une entrée."""
         markers = []
@@ -189,7 +189,7 @@ class ReportGenerator:
             markers.append(entry.concat_emoji())
         marker_str = f" -- {''.join(markers)}" if markers else ""
         return marker_str
-    
+
     def _get_spacing_emojis(self, meta: Dict) -> list:
         """Retourne les émojis pour les espaces et suffixes."""
         emojis = []

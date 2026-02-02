@@ -7,9 +7,14 @@ Analyse les fichiers Lua et extrait les chaînes UI.
 """
 
 import os
+import sys
 import re
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.colors import Colors
 
 from Extractor_config import (
     LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, ALL_STRINGS_PATTERN,
@@ -21,6 +26,9 @@ from Extractor_utils import (
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
     is_in_technical_context
 )
+
+# Instance couleurs
+c = Colors()
 
 
 class MultiLineContext:
@@ -540,18 +548,7 @@ class LocalizableStringExtractor:
         self.stats.unique_strings = len(self.used_keys)
 
     def print_summary(self):
-        """Affiche le résumé dans la console."""
-        print("\n" + "=" * 80)
-        print("RÉSUMÉ DE L'EXTRACTION")
-        print("=" * 80)
-        print(f"Fichiers analysés          : {self.stats.files_processed}")
-        print(f"Fichiers avec chaînes      : {self.stats.files_with_strings}")
-        print(f"Total chaînes trouvées     : {self.stats.total_strings}")
-        print(f"Clés uniques               : {self.stats.unique_strings}")
-        print(f"Lignes de log ignorées     : {self.stats.log_lines_ignored}")
-        print(f"Chaînes techniques ignorées: {self.stats.technical_ignored}")
-        print(f"Chaînes avec espaces       : {self.stats.strings_with_spacing}")
-        print(f"Chaînes avec suffixes      : {self.stats.strings_with_suffix}")
-        print(f"Lignes concaténées         : {self.stats.concatenated_lines}")
-        print(f"Membres de concaténation   : {self.stats.concat_members_total}")
-        print("=" * 80)
+        """Deprecated: Utilisez OutputFormatter.print_extraction_summary() à la place."""
+        # Cette méthode est conservée pour la rétrocompatibilité
+        # mais n'affiche plus rien. Le formatting est maintenant géré par OutputFormatter
+        pass

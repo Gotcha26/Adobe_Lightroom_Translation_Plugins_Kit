@@ -466,10 +466,10 @@ def find_translation_template(extraction_dir: str) -> Optional[str]:
 
 def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> None:
     """
-    Gere les fichiers de traduction apres l'application.
+    Gère les fichiers de traduction apres l'application.
 
-    - Si TranslatedStrings_xx.txt n'existe pas: propose de le creer
-    - Si TranslatedStrings_xx.txt existe: propose d'ouvrir TranslationManager
+    - Si TranslatedStrings_xx.txt n'existe pas: propose de le créer
+    - Si TranslatedStrings_xx.txt existe: propose d'ouvrir Translator
     """
     print("\n" + "-" * 80)
     print("GESTION DES TRADUCTIONS")
@@ -479,26 +479,26 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
 
     if existing_files:
         # Fichier(s) de traduction existant(s)
-        print("\nFichier(s) de traduction trouve(s):")
+        print("\nFichier(s) de traduction trouvé(s) à la racine du plugin:")
         for f in existing_files:
             print(f"  - {os.path.basename(f)}")
 
-        print("\nVoulez-vous ouvrir le gestionnaire de traductions (TranslationManager)?")
+        print("\nVoulez-vous ouvrir le gestionnaire de traductions (Translator)?")
         print("Cela permet de synchroniser les traductions avec les nouvelles cles.")
         print()
 
-        choice = input("Ouvrir TranslationManager? [o/N]: ").strip().lower()
+        choice = input("Ouvrir Translator? [o/N]: ").strip().lower()
 
         if choice in ['o', 'oui', 'y', 'yes']:
-            # Lancer TranslationManager
+            # Lancer Translator
             tm_script = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                 "3_Translation_manager",
-                "TranslationManager.py"
+                "Translator.py"
             )
 
             if os.path.exists(tm_script):
-                print(f"\nLancement de TranslationManager...")
+                print(f"\nLancement de Translator...")
                 try:
                     subprocess.run(
                         [sys.executable, tm_script],
@@ -506,11 +506,11 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
                         env={**os.environ, 'PYTHONIOENCODING': 'utf-8'}
                     )
                 except Exception as e:
-                    print(f"[ERREUR] Impossible de lancer TranslationManager: {e}")
+                    print(f"[ERREUR] Impossible de lancer Translator: {e}")
             else:
-                print(f"[ERREUR] TranslationManager introuvable: {tm_script}")
+                print(f"[ERREUR] Translator introuvable: {tm_script}")
         else:
-            print("[OK] TranslationManager non lance")
+            print("[OK] Translator non lance")
     else:
         # Aucun fichier de traduction
         print("\nAucun fichier TranslatedStrings_xx.txt trouve a la racine du plugin.")

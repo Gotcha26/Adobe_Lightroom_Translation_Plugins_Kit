@@ -2,7 +2,7 @@
 """
 TM_sync.py
 
-Module SYNC pour TranslationManager.
+Module SYNC pour Translator.
 Synchronise les langues étrangères avec le fichier EN de référence.
 """
 
@@ -127,16 +127,18 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
     for key in common_keys:
         new_strings[key] = lang_strings[key]
         stats['kept'] += 1
-        
-        # Marquer si le texte EN a changé
-        if key in changed_keys:
-            markers[key] = f"-- ## NEEDS_REVIEW ## Texte EN modifié"
+
+        # Marquer si le texte EN a changé (UNIQUEMENT si update_data fourni via COMPARE)
+        if update_data and key in changed_keys:
+            markers[key] = "-- [NEEDS_REVIEW] English text was modified"
             stats['needs_review'] += 1
-    
+
     # Clés manquantes : ajouter avec valeur EN
     for key in missing_in_lang:
         new_strings[key] = en_strings[key]  # Valeur EN par défaut
-        markers[key] = f"-- ## NEW ## À traduire"
+        # Marquer UNIQUEMENT si update_data fourni via COMPARE
+        if update_data:
+            markers[key] = "-- [NEW] To translate"
         stats['added'] += 1
     
     # Clés en trop : ne pas copier (= supprimées)
@@ -246,11 +248,11 @@ def menu_sync(plugin_path: str = ""):
     if has_update in ['o', 'y', '', 'oui', 'yes']:
         # Auto-détection et sélection interactive si plugin_path fourni
         if plugin_path:
-            update_dir = select_tool_output_dir(plugin_path, "TranslationManager", "")
+            update_dir = select_tool_output_dir(plugin_path, "Translator", "")
             if update_dir:
                 print(f"\n{c.INFO}[INFO]{c.RESET} Dossier sélectionné: {c.VALUE}{update_dir}{c.RESET}")
             else:
-                print(c.warning("Aucun dossier TranslationManager sélectionné"))
+                print(c.warning("Aucun dossier Translator sélectionné"))
 
         if not update_dir:
             print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")

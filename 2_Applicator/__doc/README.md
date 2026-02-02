@@ -413,13 +413,13 @@ Translation file(s) found:
   - TranslatedStrings_en.txt
   - TranslatedStrings_fr.txt
 
-Do you want to open the translation manager (TranslationManager)?
+Do you want to open the translation manager (Translator)?
 This allows synchronizing translations with new keys.
 
-Open TranslationManager? [y/N]:
+Open Translator? [y/N]:
 ```
 
-If you accept, TranslationManager is launched automatically.
+If you accept, Translator is launched automatically.
 
 ## Advanced Use Cases
 

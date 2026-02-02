@@ -2,7 +2,7 @@
 """
 TM_inject.py
 
-Module INJECT pour TranslationManager.
+Module INJECT pour Translator.
 Réinjecte les traductions depuis TRANSLATE_xx.txt dans les fichiers de langue.
 
 IMPORTANT: Les clés non traduites (→ vide) reçoivent la valeur EN par défaut.
@@ -222,7 +222,6 @@ def menu_inject(plugin_path: str = ""):
         plugin_path: Chemin du plugin (optionnel) pour auto-détection
     """
     from TM_common import clear_screen, print_header
-    from common.paths import find_latest_tool_output
 
     clear_screen()
     print_header()

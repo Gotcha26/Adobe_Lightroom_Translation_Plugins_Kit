@@ -29,12 +29,18 @@ DEFAULT_I18N_DIR = "__i18n_tmp__"
 # Variable globale pour le nom du dossier (configurable)
 _i18n_dir = DEFAULT_I18N_DIR
 
-# Alias pour compatibilité avec le code existant
-I18N_KIT_DIR = DEFAULT_I18N_DIR
-
 # Format du timestamp : YYYYMMDD_HHMMSS (15 caractères)
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 TIMESTAMP_LENGTH = 15
+
+# Mapping des noms d'outils vers leurs dossiers de sortie avec préfixe numérique
+# Le préfixe correspond à l'ordre dans le workflow : 1_Extractor → 2_Applicator → 3_Translator
+TOOL_FOLDER_NAMES = {
+    "Extractor": "1_Extractor",
+    "Applicator": "2_Applicator",
+    "Translator": "3_Translator",
+    "Tools": "9_Tools",
+}
 
 
 def set_i18n_dir(name: str) -> None:
@@ -44,10 +50,9 @@ def set_i18n_dir(name: str) -> None:
     Args:
         name: Nom du dossier (ex: "__i18n_tmp__", "__i18n_kit__")
     """
-    global _i18n_dir, I18N_KIT_DIR
+    global _i18n_dir
     if name and name.strip():
         _i18n_dir = name.strip()
-        I18N_KIT_DIR = _i18n_dir  # Maintenir compatibilité
 
 
 def get_i18n_dir() -> str:
@@ -125,24 +130,26 @@ def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) 
     conserver l'historique des opérations.
 
     Le nom du dossier outil inclut automatiquement le préfixe numérique
-    du dossier d'installation (ex: 1_Extractor, 2_Applicator, etc.).
+    défini dans TOOL_FOLDER_NAMES (ex: 1_Extractor, 2_Applicator, 3_Translator).
 
     Args:
         plugin_path: Chemin vers le plugin Lightroom (.lrplugin)
-        tool_name: Nom de l'outil (Extractor, Applicator, TranslationManager, Tools)
+        tool_name: Nom de l'outil (Extractor, Applicator, Translator, Tools)
         create: Si True, crée le dossier. Si False, retourne juste le chemin.
 
     Returns:
-        Chemin complet: <plugin>/__i18n_kit__/<prefix_tool_name>/<YYYYMMDD_HHMMSS>/
+        Chemin complet: <plugin>/__i18n_tmp__/<prefix_tool_name>/<YYYYMMDD_HHMMSS>/
 
     Example:
         >>> get_tool_output_path("/path/to/plugin.lrplugin", "Extractor")
-        '/path/to/plugin.lrplugin/__i18n_kit__/1_Extractor/20260129_143022'
+        '/path/to/plugin.lrplugin/__i18n_tmp__/1_Extractor/20260129_143022'
     """
     timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    # Ajouter le préfixe numérique au nom de l'outil
-    prefixed_tool_name = _extract_tool_prefix(tool_name)
+    # Utiliser le mapping TOOL_FOLDER_NAMES, ou fallback sur _extract_tool_prefix
+    prefixed_tool_name = TOOL_FOLDER_NAMES.get(tool_name)
+    if not prefixed_tool_name:
+        prefixed_tool_name = _extract_tool_prefix(tool_name)
 
     path = os.path.join(
         get_i18n_kit_path(plugin_path),

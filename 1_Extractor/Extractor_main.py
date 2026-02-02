@@ -38,6 +38,7 @@ from datetime import datetime
 # Ajouter le répertoire parent au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_tool_output_path
+from common.output_formatters import OutputFormatter
 
 from Extractor_engine import LocalizableStringExtractor
 from Extractor_output import OutputGenerator
@@ -48,7 +49,7 @@ from Extractor_menu import show_interactive_menu
 def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
                    exclude_files: list, min_length: int, ignore_log: bool):
     """Lance l'extraction avec les paramètres fournis."""
-    
+
     # Vérifier le chemin du plugin
     if not os.path.isdir(plugin_path):
         print(f"❌ ERREUR: Répertoire introuvable: {plugin_path}")
@@ -64,16 +65,10 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     else:
         # Nouvelle structure dans le plugin
         timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
-    
-    print(f"\n{'=' * 80}")
-    print(f"EXTRACTION - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"{'=' * 80}")
-    print(f"Plugin: {plugin_path}")
-    print(f"Sortie: {timestamped_output_dir}")
-    print(f"Préfixe: {prefix}")
-    print(f"Langue: {lang}")
-    print(f"{'=' * 80}\n")
-    
+
+    print(f"\nEXTRACTION - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Analyse de {os.path.basename(plugin_path)}...\n")
+
     # Créer l'extracteur
     extractor = LocalizableStringExtractor(
         plugin_path=plugin_path,
@@ -82,40 +77,68 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         exclude_files=exclude_files,
         ignore_log=ignore_log
     )
-    
+
     # Extraire
-    print(f"Analyse de {plugin_path}...")
     extractor.extract_all()
-    
+
     # Chemins des fichiers de sortie dans le sous-dossier timestampé
     strings_file = os.path.join(timestamped_output_dir, f"TranslatedStrings_{lang}.txt")
     spacing_file = os.path.join(timestamped_output_dir, "spacing_metadata.json")
     replacements_file = os.path.join(timestamped_output_dir, "replacements.json")
     report_file = os.path.join(timestamped_output_dir, f"extraction_report.txt")
-    
+
     # Générateurs
     output_gen = OutputGenerator(plugin_path, prefix)
     report_gen = ReportGenerator(plugin_path, prefix, extractor.stats)
-    
+
     # Générer les fichiers
     output_gen.generate_plugin_strings(extractor.extracted, strings_file, lang)
     output_gen.generate_spacing_metadata(extractor.spacing_metadata, extractor.text_to_key, spacing_file)
     output_gen.generate_replacements_json(extractor.extracted, replacements_file, extractor.text_to_key)
     report_gen.generate_report(extractor.extracted, extractor.spacing_metadata, report_file)
-    
-    # Afficher le résumé
-    extractor.print_summary()
-    
-    print(f"\n{'=' * 80}")
-    print("FICHIERS GÉNÉRÉS")
-    print(f"{'=' * 80}")
-    print(f"📂 Dossier de sortie: {timestamped_output_dir}")
-    print(f"\n📄 Fichiers créés:")
-    print(f"  ✓ TranslatedStrings_{lang}.txt ({extractor.stats.unique_strings} clés)")
-    print(f"  ✓ spacing_metadata.json ({len(extractor.spacing_metadata)} entrées)")
-    print(f"  ✓ replacements.json (pour Applicator)")
-    print(f"  ✓ extraction_report.txt (rapport détaillé)")
-    print(f"{'=' * 80}\n")
+
+    # Préparer le résumé avec le formatteur
+    formatter = OutputFormatter()
+
+    # Compter les clés LOC existantes
+    existing_loc_count = sum(1 for e in extractor.extracted if e.pattern_name == "existing_loc")
+
+    # Statistiques principales
+    main_stats = {
+        "Fichiers analysés": extractor.stats.files_processed,
+        "Fichiers avec chaînes": extractor.stats.files_with_strings,
+        "Total chaînes trouvées": extractor.stats.total_strings,
+        "Clés uniques": extractor.stats.unique_strings,
+    }
+
+    # Détails supplémentaires
+    detail_stats = {
+        "Chaînes avec espaces": extractor.stats.strings_with_spacing,
+        "Chaînes avec suffixes": extractor.stats.strings_with_suffix,
+        "Lignes concaténées": extractor.stats.concatenated_lines,
+        "Membres de concaténation": extractor.stats.concat_members_total,
+    }
+
+    # Afficher le résumé formaté
+    formatter.print_extraction_summary(
+        plugin_path=plugin_path,
+        output_dir=timestamped_output_dir,
+        prefix=prefix,
+        lang=lang,
+        main_stats=main_stats,
+        detail_stats=detail_stats,
+        existing_loc_count=existing_loc_count
+    )
+
+    # Afficher les fichiers générés
+    files_generated = [
+        (f"TranslatedStrings_{lang}.txt", f"{extractor.stats.unique_strings} clés", "Fichier de chaînes"),
+        ("spacing_metadata.json", f"{len(extractor.spacing_metadata)} entrées", "Métadonnées d'espaces/suffixes"),
+        ("replacements.json", f"pour Applicator", "Remplacement des chaînes"),
+        ("extraction_report.txt", "rapport détaillé", "Analyse complète"),
+    ]
+
+    formatter.print_files_generated(files_generated, timestamped_output_dir)
 
 
 def main():
@@ -132,7 +155,7 @@ def main():
         result = show_interactive_menu(default_plugin)
 
         if result is None:
-            print("\nExtraction annulee")
+            print("\nExtraction annulée")
             sys.exit(1)
 
         plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log = result
@@ -155,13 +178,13 @@ def main():
 Exemples:
   # Mode interactif (menu)
   python Extractor_main.py
-  
+
   # Mode CLI
   python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
   python Extractor_main.py --plugin-path ./plugin --output-dir ./output
             """
         )
-        
+
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
         parser.add_argument('--output-dir', default=None,
@@ -176,9 +199,9 @@ Exemples:
                             help='Longueur minimale des chaînes (défaut: 3)')
         parser.add_argument('--no-ignore-log', action='store_true',
                             help='NE PAS ignorer les lignes de log')
-        
+
         args = parser.parse_args()
-        
+
         run_extraction(
             plugin_path=args.plugin_path,
             output_dir=args.output_dir or "",

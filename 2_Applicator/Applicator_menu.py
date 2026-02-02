@@ -68,6 +68,31 @@ class ApplicatorMenu:
             bool(self.extraction_dir and os.path.isdir(self.extraction_dir))
         )
 
+    def _shorten_extraction_path(self, extraction_path: str) -> str:
+        """
+        Raccourcit le chemin d'extraction en remplaçant la partie du plugin par <plugin>.
+
+        Args:
+            extraction_path: Chemin complet d'extraction
+
+        Returns:
+            Chemin raccourci
+        """
+        if not self.plugin_path or not extraction_path:
+            return extraction_path
+
+        # Normaliser les chemins pour la comparaison
+        plugin_norm = os.path.normpath(self.plugin_path)
+        extraction_norm = os.path.normpath(extraction_path)
+
+        # Si le chemin d'extraction commence par le chemin du plugin
+        if extraction_norm.startswith(plugin_norm):
+            # Remplacer la partie plugin par <plugin>
+            relative_part = extraction_norm[len(plugin_norm):]
+            return f"<plugin>{relative_part}"
+
+        return extraction_path
+
     def print_config(self):
         """Affiche la configuration actuelle."""
         print(c.title("Configuration:"))
@@ -92,9 +117,12 @@ class ApplicatorMenu:
                     status = f"{c.OK}OK{c.RESET}"
                 else:
                     status = f"{c.WARNING}replacements.json manquant{c.RESET}"
-                print(c.config_line("2. Extraction", f"{self.extraction_dir} [{status}]"))
+                # Raccourcir le chemin affiché
+                display_path = self._shorten_extraction_path(self.extraction_dir)
+                print(c.config_line("2. Extraction", f"{display_path} [{status}]"))
             else:
-                print(c.config_line("2. Extraction", f"{self.extraction_dir} [{c.ERROR}INTROUVABLE{c.RESET}]"))
+                display_path = self._shorten_extraction_path(self.extraction_dir)
+                print(c.config_line("2. Extraction", f"{display_path} [{c.ERROR}INTROUVABLE{c.RESET}]"))
         else:
             print(c.config_line("2. Extraction", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
 

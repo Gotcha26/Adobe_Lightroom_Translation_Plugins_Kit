@@ -13,7 +13,7 @@ Applicator est le deuxième outil de la chaîne de localisation. Son rôle est d
 ├── Applicator_main.py        ← Point d'entrée, logique principale
 ├── Applicator_menu.py        ← Interface interactive
 └── __doc/
-    └── README.md             ← Ce fichier
+    └── Lisez-moi.md          ← Ce fichier
 ```
 
 L'architecture est volontairement simple : un seul fichier principal contient toute la logique. Cela facilite la compréhension et les modifications ponctuelles.
@@ -409,17 +409,17 @@ Si vous acceptez, le fichier est copié automatiquement.
 ### Scénario 2 : Fichiers existants
 
 ```
-Fichier(s) de traduction trouvé(s):
+Fichier(s) de traduction trouvé(s) à la racine du plugin:
   - TranslatedStrings_en.txt
   - TranslatedStrings_fr.txt
 
-Voulez-vous ouvrir le gestionnaire de traductions (TranslationManager)?
+Voulez-vous ouvrir le gestionnaire de traductions (Translator)?
 Cela permet de synchroniser les traductions avec les nouvelles clés.
 
-Ouvrir TranslationManager? [o/N]:
+Ouvrir Translator? [o/N]:
 ```
 
-Si vous acceptez, TranslationManager est lancé automatiquement.
+Si vous acceptez, Translator est lancé automatiquement.
 
 ## Cas d'usage avancés
 

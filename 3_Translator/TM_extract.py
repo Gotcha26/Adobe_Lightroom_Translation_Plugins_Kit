@@ -2,7 +2,7 @@
 """
 TM_extract.py
 
-Module EXTRACT pour TranslationManager.
+Module EXTRACT pour Translator.
 Génère les fichiers TRANSLATE_xx.txt pour faciliter la traduction.
 """
 
@@ -138,7 +138,7 @@ def run_extract_all(update_dir: str, locales_dir: str = None,
             output_file = run_extract(update_dir, lang, locales_dir, output_dir)
             generated_files.append(output_file)
         except Exception as e:
-            print(f"  ⚠️  Erreur pour {lang}: {e}")
+            print(c.warning(f"Erreur pour {lang}: {e}"))
     
     return generated_files
 
@@ -165,11 +165,11 @@ def menu_extract(plugin_path: str = ""):
     # Auto-détection et sélection interactive du dossier UPDATE
     update_dir = None
     if plugin_path:
-        update_dir = select_tool_output_dir(plugin_path, "TranslationManager", "")
+        update_dir = select_tool_output_dir(plugin_path, "Translator", "")
         if update_dir:
             print(f"\n{c.INFO}[INFO]{c.RESET} Dossier sélectionné: {c.VALUE}{update_dir}{c.RESET}")
         else:
-            print(c.warning("Aucun dossier TranslationManager sélectionné"))
+            print(c.warning("Aucun dossier Translator sélectionné"))
             print(f"{c.DIM}  Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement{c.RESET}")
 
     if not update_dir:

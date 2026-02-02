@@ -2,7 +2,7 @@
 """
 TM_common.py
 
-Module commun pour TranslationManager.
+Module commun pour Translator.
 Contient les fonctions de parsing, écriture et utilitaires.
 """
 

@@ -69,9 +69,9 @@ class InteractiveMenu:
                 status = f"{c.OK}OK{c.RESET}"
             else:
                 status = f"{c.ERROR}INTROUVABLE{c.RESET}"
-            print(c.config_line("1. Plugin", f"{self.plugin_path} [{status}]"))
+            print(c.config_line("1. Plugin ciblé", f"{self.plugin_path} [{status}]"))
         else:
-            print(c.config_line("1. Plugin", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
+            print(c.config_line("1. Plugin ciblé", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
 
         # Répertoire de sortie
         if self.output_dir:
@@ -82,7 +82,7 @@ class InteractiveMenu:
 
         # Autres options
         print(c.config_line("3. Préfixe LOC", self.prefix))
-        print(c.config_line("4. Langue", self.lang))
+        print(c.config_line("4. Langue extraite", self.lang))
 
         exclude_display = ', '.join(self.exclude_files) if self.exclude_files else "(aucun)"
         print(c.config_line("5. Exclusions", exclude_display))

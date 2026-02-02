@@ -5,7 +5,7 @@ Restore_backup.py
 Script pour restaurer les fichiers .lua à partir de leurs sauvegardes .bak
 générées par Applicator.
 
-Les backups sont stockés dans: <plugin>/__i18n_kit__/2_Applicator/<timestamp>/backups/
+Les backups sont stockés dans: <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/backups/
 
 Usage:
     python Restore_backup.py                    # Menu interactif
@@ -13,8 +13,8 @@ Usage:
     python Restore_backup.py --dry-run /path    # Simulation
 
 Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-29
-Version : 2.0 - Support structure __i18n_kit__
+Date : 2026-02-01
+Version : 3.0 - Intégration menu_generator + chemins LocalisationToolKit
 """
 
 import os
@@ -25,7 +25,35 @@ from typing import List, Tuple, Optional
 
 # Ajouter le répertoire parent au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common.paths import get_i18n_kit_path, I18N_KIT_DIR
+from common.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
+
+# Ajouter le chemin du skill menu_generator
+MENU_GENERATOR_PATH = r"C:\Users\Gotcha\.claude\skills\menu_generator.py"
+if os.path.exists(MENU_GENERATOR_PATH):
+    skill_dir = os.path.dirname(MENU_GENERATOR_PATH)
+    if skill_dir not in sys.path:
+        sys.path.insert(0, skill_dir)
+    from menu_generator import MenuGenerator, Colors
+else:
+    # Fallback si menu_generator n'est pas disponible
+    class Colors:
+        def __init__(self): pass
+        RESET = OK = ERROR = WARNING = INFO = VALUE = KEY = PROMPT = DIM = YELLOW = ''
+        def success(self, t): return f"[OK] {t}"
+        def error(self, t): return f"[ERREUR] {t}"
+        def warning(self, t): return f"[ATTENTION] {t}"
+        def info(self, t): return f"[INFO] {t}"
+        def separator(self, c="-", w=60): return c * w
+        def title(self, t): return t
+        def box_header(self, t, w=70): return "=" * w + f"\n  {t}\n" + "=" * w
+
+    class MenuGenerator:
+        def __init__(self, title="", enable_colors=None):
+            self.c = Colors()
+        def clear_screen(self): os.system('cls' if os.name == 'nt' else 'clear')
+
+# Instance globale des couleurs
+c = Colors()
 
 
 def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
@@ -119,7 +147,7 @@ def find_backup_pairs_legacy(directory: str) -> List[Tuple[str, str]]:
 
     for root, dirs, files in os.walk(directory):
         # Ignorer certains dossiers
-        dirs[:] = [d for d in dirs if d not in ['Locales', 'Resources', '.git', I18N_KIT_DIR]]
+        dirs[:] = [d for d in dirs if d not in ['Locales', 'Resources', '.git', get_i18n_dir()]]
 
         for file in files:
             if file.endswith('.lua.bak'):
@@ -145,14 +173,14 @@ def restore_files(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
         rel_path = os.path.basename(lua_path)
 
         if dry_run:
-            print(f"  [SIMULATION] {rel_path}")
+            print(f"  {c.INFO}[SIMULATION]{c.RESET} {rel_path}")
         else:
             try:
                 shutil.copy2(bak_path, lua_path)
-                print(f"  [OK] {rel_path}")
+                print(f"  {c.OK}[OK]{c.RESET} {rel_path}")
                 restored += 1
             except Exception as e:
-                print(f"  [FAIL] {rel_path} - Erreur: {e}")
+                print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
 
     return restored
 
@@ -170,14 +198,14 @@ def delete_backups(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
         rel_path = os.path.basename(bak_path)
 
         if dry_run:
-            print(f"  [SIMULATION] Suppression: {rel_path}")
+            print(f"  {c.INFO}[SIMULATION]{c.RESET} Suppression: {rel_path}")
         else:
             try:
                 os.remove(bak_path)
-                print(f"  [OK] Supprime: {rel_path}")
+                print(f"  {c.OK}[OK]{c.RESET} Supprimé: {rel_path}")
                 deleted += 1
             except Exception as e:
-                print(f"  [FAIL] {rel_path} - Erreur: {e}")
+                print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
 
     return deleted
 
@@ -199,97 +227,161 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
     Returns:
         Tuple (timestamp, backup_dir) ou None si annulé
     """
-    print("\nSessions Applicator avec backups disponibles:")
-    print("-" * 60)
+    print()
+    print(c.title("Sessions Applicator avec backups disponibles"))
+    print(c.separator())
+    print()
 
+    # Afficher les sessions avec numérotation
     for i, (timestamp, backup_dir) in enumerate(sessions, 1):
         bak_count = len([f for f in os.listdir(backup_dir) if f.endswith('.bak')])
         formatted = format_timestamp(timestamp)
-        print(f"  {i}. {formatted} ({bak_count} fichier(s))")
 
-    print(f"  0. Annuler")
+        # Marquer la plus récente (première)
+        if i == 1:
+            marker = f"{c.OK}[DERNIÈRE]{c.RESET} "
+        else:
+            marker = "           "
+
+        print(f"  {c.YELLOW}{i}{c.RESET}. {marker}{c.VALUE}{formatted}{c.RESET} {c.DIM}({bak_count} fichier(s)){c.RESET}")
+
+    print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Annuler{c.RESET}")
     print()
+
+    # Suggestion par défaut: la plus récente
+    default_choice = "1"
 
     while True:
         try:
-            choice = input("Choisir une session (0 pour annuler): ").strip()
+            choice = input(f"{c.PROMPT}Choisir une session [{c.OK}{default_choice}{c.RESET}{c.PROMPT} par défaut]{c.RESET}: ").strip()
 
-            if choice == '0' or choice == '':
+            # Si vide, utiliser le défaut
+            if choice == '':
+                choice = default_choice
+
+            if choice == '0':
                 return None
 
             idx = int(choice) - 1
             if 0 <= idx < len(sessions):
                 return sessions[idx]
             else:
-                print("[ERREUR] Choix invalide")
+                print(c.error(f"Choix invalide. Entrez un nombre entre 0 et {len(sessions)}"))
         except ValueError:
-            print("[ERREUR] Entrez un nombre")
+            print(c.error("Entrez un nombre valide"))
 
 
-def interactive_menu() -> Tuple[str, Optional[str], bool]:
+def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str], bool]:
     """
     Menu interactif pour configurer la restauration.
+
+    Args:
+        default_plugin_path: Chemin du plugin pré-configuré (optionnel)
 
     Returns:
         (chemin_plugin, backup_dir ou None, dry_run)
     """
-    print("\n" + "=" * 60)
-    print("  RESTAURATION DES FICHIERS .bak (v2.0)")
-    print("=" * 60 + "\n")
-
-    # Demander le répertoire du plugin
-    print("Repertoire du plugin a restaurer:")
-    print("  Exemples: ./piwigoPublish.lrplugin")
-    print("            C:\\Lightroom\\plugin")
+    gen = MenuGenerator("RESTAURATION DES FICHIERS .bak (v3.0)", enable_colors=True)
+    gen.clear_screen()
+    print(c.box_header("RESTAURATION DES FICHIERS .bak (v3.0)"))
     print()
 
-    while True:
-        path = input("Chemin: ").strip()
+    # Si un plugin par défaut est fourni et valide, l'utiliser directement
+    if default_plugin_path:
+        is_valid, normalized, warning = validate_plugin_path(default_plugin_path)
+        if is_valid:
+            print(c.success(f"Plugin: {c.VALUE}{os.path.basename(normalized)}{c.RESET}"))
+            print(f"{c.DIM}  Chemin: {normalized}{c.RESET}")
+            print()
+        else:
+            # Le chemin par défaut est invalide, demander à l'utilisateur
+            print(c.warning(f"Plugin par défaut invalide: {warning}"))
+            print()
+            default_plugin_path = ""
 
-        if not path:
-            print("[ERREUR] Chemin obligatoire\n")
-            continue
+    # Si pas de plugin par défaut valide, demander à l'utilisateur
+    if not default_plugin_path:
+        print(c.title("Configuration du plugin"))
+        print(c.separator())
+        print()
+        print(f"{c.DIM}Répertoire du plugin à restaurer:{c.RESET}")
+        print(f"{c.DIM}  Exemples: ./piwigoPublish.lrplugin{c.RESET}")
+        print(f"{c.DIM}            D:\\Lightroom\\plugin.lrplugin{c.RESET}")
+        print()
 
-        normalized = os.path.normpath(path)
+        while True:
+            path = input(f"{c.PROMPT}Chemin du plugin: {c.RESET}").strip()
 
-        if not os.path.isdir(normalized):
-            print(f"[ERREUR] Repertoire introuvable: {normalized}\n")
-            continue
+            if not path:
+                print(c.error("Chemin obligatoire"))
+                print()
+                continue
 
-        break
+            # Utiliser validate_plugin_path pour validation
+            is_valid, normalized, warning = validate_plugin_path(path)
 
-    print(f"\n[OK] Repertoire: {normalized}\n")
+            if not is_valid:
+                print(c.error(warning))
+                print()
+                continue
+
+            # Avertissement si pas .lrplugin
+            if warning:
+                print(c.warning(warning))
+                confirm = input(f"{c.PROMPT}Continuer quand même? [o/N]: {c.RESET}").strip().lower()
+                if confirm not in ['o', 'oui', 'y', 'yes']:
+                    print()
+                    continue
+
+            break
+
+        print()
+        print(c.success(f"Plugin: {c.VALUE}{normalized}{c.RESET}"))
+        print()
+    else:
+        # Utiliser le plugin par défaut validé
+        normalized = default_plugin_path
 
     # Chercher les sessions Applicator avec backups
     sessions = find_applicator_sessions(normalized)
     backup_dir = None
 
     if sessions:
-        print(f"[OK] {len(sessions)} session(s) Applicator trouvee(s) dans __i18n_kit__/")
+        print(c.info(f"{len(sessions)} session(s) Applicator trouvée(s) dans {get_i18n_dir()}/"))
+        print()
 
         selected = select_backup_session(sessions)
         if selected:
             timestamp, backup_dir = selected
-            print(f"\n[OK] Session selectionnee: {format_timestamp(timestamp)}")
+            print()
+            print(c.success(f"Session sélectionnée: {c.VALUE}{format_timestamp(timestamp)}{c.RESET}"))
+        else:
+            print()
+            print(c.warning("Restauration annulée"))
+            sys.exit(0)
     else:
-        print("Aucune session Applicator trouvee dans __i18n_kit__/")
-        print("Recherche des backups legacy (.lua.bak a cote des fichiers)...")
+        print(c.warning(f"Aucune session Applicator trouvée dans {get_i18n_dir()}/"))
+        print(f"{c.DIM}Recherche des backups legacy (.lua.bak à côté des fichiers)...{c.RESET}")
 
     # Mode dry-run ?
     print()
+    print(c.separator())
     while True:
-        response = input("Mode simulation (dry-run) ? [O/n]: ").strip().lower()
+        response = input(f"{c.PROMPT}Mode simulation (dry-run) ? [{c.OK}O{c.RESET}{c.PROMPT}/n]: {c.RESET}").strip().lower()
 
         if response in ['o', 'y', '', 'oui', 'yes']:
             dry_run = True
-            print("[OK] Mode simulation active\n")
+            print(c.info("Mode simulation activé"))
+            print()
             break
         elif response in ['n', 'non', 'no']:
             dry_run = False
-            print("[OK] Mode reel - Les fichiers seront modifies\n")
+            print(c.warning("Mode réel - Les fichiers seront modifiés"))
+            print()
             break
         else:
-            print("[ERREUR] Entrez 'o' ou 'n'\n")
+            print(c.error("Entrez 'o' ou 'n'"))
+            print()
 
     return normalized, backup_dir, dry_run
 
@@ -301,6 +393,7 @@ def main():
     dry_run = False
     directory = None
     backup_dir = None
+    default_plugin = ""
 
     args = sys.argv[1:]
 
@@ -312,86 +405,112 @@ def main():
         dry_run = True
         args.remove('--dry-run')
 
+    # Vérifier si --default-plugin est fourni (depuis LocalisationToolKit.py)
+    if '--default-plugin' in args:
+        idx = args.index('--default-plugin')
+        if idx + 1 < len(args):
+            default_plugin = args[idx + 1]
+            args.remove('--default-plugin')
+            args.remove(default_plugin)
+
     if args:
+        # Mode CLI avec chemin direct
         directory = os.path.normpath(args[0])
         if not os.path.isdir(directory):
-            print(f"[ERREUR] Repertoire introuvable: {directory}")
+            print(c.error(f"Répertoire introuvable: {directory}"))
             sys.exit(1)
 
         # En mode CLI, chercher automatiquement la dernière session
         sessions = find_applicator_sessions(directory)
         if sessions:
             timestamp, backup_dir = sessions[0]  # La plus récente
-            print(f"[OK] Session Applicator trouvee: {format_timestamp(timestamp)}")
+            print(c.success(f"Session Applicator trouvée: {c.VALUE}{format_timestamp(timestamp)}{c.RESET}"))
     else:
-        # Menu interactif
-        directory, backup_dir, dry_run = interactive_menu()
+        # Menu interactif (avec plugin par défaut si fourni)
+        directory, backup_dir, dry_run = interactive_menu(default_plugin)
 
     # Rechercher les paires
-    print("=" * 60)
-    print("RECHERCHE DES FICHIERS .bak")
-    print("=" * 60)
-    print(f"Plugin: {directory}")
+    print(c.separator("=", 60))
+    print(c.title("RECHERCHE DES FICHIERS .bak"))
+    print(c.separator("=", 60))
+    print(f"{c.KEY}Plugin{c.RESET}: {c.VALUE}{directory}{c.RESET}")
 
     if backup_dir:
-        print(f"Source: {backup_dir}")
+        print(f"{c.KEY}Source{c.RESET}: {c.VALUE}{backup_dir}{c.RESET}")
         pairs = find_backup_pairs_in_dir(backup_dir, directory)
     else:
-        print("Source: Legacy (fichiers .bak a cote des .lua)")
+        print(f"{c.KEY}Source{c.RESET}: {c.DIM}Legacy (fichiers .bak à côté des .lua){c.RESET}")
         pairs = find_backup_pairs_legacy(directory)
 
     print()
 
     if not pairs:
-        print("Aucun fichier .bak trouve.")
-        print("\nRien a restaurer.")
+        print(c.warning("Aucun fichier .bak trouvé"))
+        print()
+        print(c.info("Rien à restaurer"))
         sys.exit(0)
 
     # Afficher les fichiers trouvés
-    print(f"Fichiers trouves: {len(pairs)}\n")
+    print(c.info(f"Fichiers trouvés: {c.VALUE}{len(pairs)}{c.RESET}"))
+    print()
 
     for lua_path, bak_path in pairs:
         lua_name = os.path.basename(lua_path)
-        exists_marker = "[OK]" if os.path.exists(lua_path) else "[NEW]"
+        if os.path.exists(lua_path):
+            exists_marker = f"{c.OK}[REMPLACER]{c.RESET}"
+        else:
+            exists_marker = f"{c.INFO}[NOUVEAU]{c.RESET}"
         print(f"  {exists_marker} {lua_name}")
 
     # Confirmation
     print()
     if not dry_run:
-        confirm = input(f"Restaurer ces {len(pairs)} fichier(s) ? [o/N]: ").strip().lower()
+        confirm = input(f"{c.PROMPT}Restaurer ces {len(pairs)} fichier(s) ? [o/N]: {c.RESET}").strip().lower()
         if confirm not in ['o', 'oui', 'yes', 'y']:
-            print("\nRestauration annulee")
+            print()
+            print(c.warning("Restauration annulée"))
             sys.exit(0)
 
     # Restaurer
-    print("\n" + "=" * 60)
-    print("RESTAURATION" + (" (SIMULATION)" if dry_run else ""))
-    print("=" * 60 + "\n")
+    print()
+    print(c.separator("=", 60))
+    if dry_run:
+        print(c.title("RESTAURATION (SIMULATION)"))
+    else:
+        print(c.title("RESTAURATION"))
+    print(c.separator("=", 60))
+    print()
 
     restored = restore_files(pairs, dry_run)
 
     # Demander si on supprime les .bak
     if not dry_run and restored > 0:
         print()
-        delete_confirm = input("Supprimer les fichiers .bak ? [o/N]: ").strip().lower()
+        delete_confirm = input(f"{c.PROMPT}Supprimer les fichiers .bak ? [o/N]: {c.RESET}").strip().lower()
 
         if delete_confirm in ['o', 'oui', 'yes', 'y']:
-            print("\nSuppression des .bak:")
+            print()
+            print(c.info("Suppression des .bak"))
+            print()
             deleted = delete_backups(pairs, dry_run)
-            print(f"\n[OK] {deleted} fichier(s) .bak supprime(s)")
+            print()
+            print(c.success(f"{deleted} fichier(s) .bak supprimé(s)"))
 
     # Résumé
-    print("\n" + "=" * 60)
-    print("RESUME")
-    print("=" * 60)
+    print()
+    print(c.separator("=", 60))
+    print(c.title("RÉSUMÉ"))
+    print(c.separator("=", 60))
 
     if dry_run:
-        print(f"Fichiers qui seraient restaures: {len(pairs)}")
-        print("\n!!! MODE SIMULATION - Aucun fichier modifie")
+        print(f"{c.KEY}Fichiers qui seraient restaurés{c.RESET}: {c.VALUE}{len(pairs)}{c.RESET}")
+        print()
+        print(c.warning("MODE SIMULATION - Aucun fichier modifié"))
     else:
-        print(f"Fichiers restaures: {restored}")
+        print(f"{c.KEY}Fichiers restaurés{c.RESET}: {c.VALUE}{restored}{c.RESET}")
 
-    print("\nTermine!")
+    print()
+    print(c.success("Terminé!"))
 
 
 if __name__ == "__main__":

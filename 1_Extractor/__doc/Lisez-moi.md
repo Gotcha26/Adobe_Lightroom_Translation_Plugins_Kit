@@ -19,7 +19,7 @@ Extractor est le premier outil de la chaîne de localisation. Son rôle est d'an
 ├── Extractor_report.py       ← Génération des rapports
 ├── Extractor_menu.py         ← Interface interactive
 └── __doc/
-    └── README.md             ← Ce fichier
+    └── Lisez-moi.md          ← Ce fichier
 ```
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -85,8 +85,7 @@ Pour chaque chaîne détectée :
         │
         ├── Normalisation (alphanumériques + underscores)
         ├── Camel case (HelloWorld)
-        ├── Ajout contexte fichier (MyDialog_HelloWorld)
-        └── Unicité (HelloWorld_2 si collision)
+        └── Unicité (HelloWorld2 si collision)
 ```
 
 Toutes ces métadonnées sont conservées pour que l'Applicator puisse reconstruire exactement la chaîne originale.
@@ -229,18 +228,24 @@ Lancez simplement `Extractor_main.py` pour accéder au menu interactif :
 ==================================================
 
 Options actuelles:
-  Plugin path    : ./monPlugin.lrplugin
-  Préfixe LOC    : $$$/MonPlugin
-  Langue         : en
-  Longueur min   : 3
-  Ignorer logs   : Oui
+  1. Plugin ciblé      : ./monPlugin.lrplugin
+  2. Sortie            : ./monPlugin.lrplugin/__i18n_tmp__/Extractor/<timestamp>/ (auto)
+  3. Préfixe LOC       : $$$/MonPlugin
+  4. Langue extraite   : en
+  5. Exclusions        : (aucune)
+  6. Long. min chaînes : 3
+  7. Ignorer logs      : Oui
 
-[1] Modifier le chemin du plugin
-[2] Modifier le préfixe LOC
-[3] Modifier la langue
-[4] Options avancées
-[5] Lancer l'extraction
+[1] Modifier le chemin du plugin à traiter.
+[2] Défini le dossier temporaire de travail (par défaut, au sein du plugin).
+[3] Modifier le préfixe pour les clé `LOC`.
+[4] Modifier l'origine de la langue extraite.
+[5] Permet d'eclure des fichiers spécifiques.
+[6] Longueur des chaînes minimale à prendre en compte.
+[7] Ciblage des chaînes affichée via `log:` (débogage)
+
 [0] Quitter
+[Entrée] Lancer l'extraction
 ```
 
 ### Mode CLI
@@ -336,8 +341,9 @@ local messages = {
 
 ```lua
 -- Logs (si --no-ignore-log non spécifié)
-logInfo("Debug message")        -- ✗ Ignoré
-log:trace("Trace info")         -- ✗ Ignoré
+log:info("Debug message")        -- ✗ Ignoré
+log:error("error application")   -- ✗ Ignoré
+log:trace("Trace info")          -- ✗ Ignoré
 
 -- Valeurs techniques
 color = "red"                   -- ✗ Ignoré (valeur technique)
@@ -419,61 +425,94 @@ Les clés LOC sont générées selon un algorithme strict pour garantir leur uni
 ```
 Texte original : "Please wait..."
     │
-    ├── 1. Nettoyage (alphanumériques + espaces)
+    ├── 1. Nettoyage (alphanumériques + espaces + motifs)
     │   └── "Please wait"
     │
     ├── 2. Camel case
     │   └── "PleaseWait"
     │
-    ├── 3. Contexte fichier (nom sans extension)
-    │   └── "MyDialog_PleaseWait"
-    │
-    ├── 4. Vérification unicité
-    │   └── Si existe : "MyDialog_PleaseWait_2"
-    │
-    └── 5. Préfixe
-        └── "$$$/Piwigo/MyDialog_PleaseWait"
+    └── 3. Vérification unicité
+        └── Si existe : "PleaseWait2"
 ```
 
 ### Exemples de génération
 
 | Texte original | Fichier | Clé générée |
 |----------------|---------|-------------|
-| `"Submit"` | `Dialog.lua` | `$$$/Piwigo/Dialog_Submit` |
-| `"Please wait..."` | `Upload.lua` | `$$$/Piwigo/Upload_PleaseWait` |
-| `"API Key:"` | `Settings.lua` | `$$$/Piwigo/Settings_APIKey` |
-| `"Photo(s)"` | `Main.lua` | `$$$/Piwigo/Main_Photos` |
+| `"Submit"` | `Dialog.lua` | `$$$/Piwigo/Dialog/Submit` |
+| `"Please wait..."` | `Upload.lua` | `$$$/Piwigo/Upload/PleaseWait` |
+| `"API Key:"` | `Settings.lua` | `$$$/Piwigo/Settings/APIKey` |
+| `"Photo(s)"` | `Main.lua` | `$$$/Piwigo/Main/Photos` |
 
 ### Gestion des collisions
 
 Si une clé existe déjà, un suffixe numérique est ajouté :
 
 ```
-$$$/Piwigo/Submit       → Première occurrence
-$$$/Piwigo/Submit_2     → Deuxième occurrence
-$$$/Piwigo/Submit_3     → Troisième occurrence
+"$$$/Piwigo/exemple/YouSureYouWant=Are you sure you want to import..."  → Première occurrence
+"$$$/Piwigo/exemple/YouSureYouWant2=Are you sure you want to check..."  → Deuxième occurrence
+"$$$/Piwigo/exemple/YouSureYouWant3=Are you sure you want to create..." → Troisième occurrence
 ```
+L'unicité et la cohérence (stabilité) du procédé de création de la clé avec ce suffixe numérique permet de ne pas avoir des clés à ralonge mais d'identifier toujours avec précision la bonne chaîne à appliquer.
+
 
 ## Statistiques et rapports
 
-Le rapport d'extraction fournit des informations détaillées sur le processus.
+Retrouvez de plus amples détails dans le rapport d'extraction `extraction_repport.txt` qui vous renseignera sur tous c equ'il y a à savoir sur l'extraction. Tout y est consigné.
+C'est un excélent point de départ pour déceller d'éventuelles anomalies ou disfonctionnement.
 
-### Métriques globales
+### Exemple d'affichage sur le terminal
 
-- **Fichiers analysés** : Nombre total de fichiers `.lua` scannés
-- **Fichiers avec extractions** : Fichiers contenant au moins une chaîne à extraire
-- **Lignes UI détectées** : Nombre de lignes contenant des patterns UI
-- **Chaînes uniques** : Nombre de clés LOC générées
-- **Chaînes ignorées** : Chaînes filtrées (logs, techniques, trop courtes)
-- **Clés LOC existantes** : Clés déjà localisées dans le code
+```
+EXTRACTION - 2026-02-01 16:39:03
+Analyse de piwigoPublish.lrplugin...
 
-### Détails par fichier
+✓ PluginStrings généré: D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin\__i18n_tmp__\1_Extractor\20260201_163903\TranslatedStrings_en.txt (272 clés uniques)
+✓ Spacing metadata:     D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin\__i18n_tmp__\1_Extractor\20260201_163903\spacing_metadata.json (82 clés)
+✓ Replacements JSON:    D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin\__i18n_tmp__\1_Extractor\20260201_163903\replacements.json (321 lignes à modifier)
+✓ Rapport:              D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin\__i18n_tmp__\1_Extractor\20260201_163903\extraction_report.txt
 
-Pour chaque fichier :
-- Liste des clés LOC générées
-- Valeur par défaut de chaque clé
-- Métadonnées (espaces, suffixes)
-- Contexte d'extraction
+================================================================================
+RÉSUMÉ DE L'EXTRACTION
+================================================================================
+  Plugin      : piwigoPublish.lrplugin
+  Dossier     : __i18n_tmp__\1_Extractor\20260201_163903
+  Préfixe LOC : $$$/Piwigo
+  Langue      : en
+
+  Fichiers analysés      : 19
+  Fichiers avec chaînes  : 14
+  Total chaînes trouvées : 381
+  Clés uniques           : 272
+  Clés LOC existantes    : 1
+
+Détails
+
+  Chaînes avec espaces     : 91
+  Chaînes avec suffixes    : 32
+  Lignes concaténées       : 12
+  Membres de concaténation : 25
+
+================================================================================
+
+
+================================================================================
+FICHIERS GENERES
+================================================================================
+
+  [Sortie] D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin\__i18n_tmp__\1_Extractor\20260201_163903
+
+    [OK] TranslatedStrings_en.txt       (272 clés)
+        Fichier de chaînes
+    [OK] spacing_metadata.json          (82 entrées)
+        Métadonnées d'espaces/suffixes
+    [OK] replacements.json              (pour Applicator)
+        Remplacement des chaînes
+    [OK] extraction_report.txt          (rapport détaillé)
+        Analyse complète
+
+================================================================================
+```
 
 ## Cas d'usage avancés
 
@@ -488,11 +527,13 @@ python Extractor_main.py \
   --prefix $$$/MonApp
 ```
 
-Cela génère `TranslatedStrings_fr.txt` au lieu de `TranslatedStrings_en.txt`. Vous pouvez ensuite créer `TranslatedStrings_en.txt` en dupliquant et traduisant.
+Cela génère `TranslatedStrings_fr.txt` au lieu de `TranslatedStrings_en.txt`. Vous pouvez ensuite créer `TranslatedStrings_en.txt` en dupliquant le fichier original puis en le traduisant.
+
+Veuillez à respecter le code du pays.
 
 ### Réexécution sur un projet partiellement localisé
 
-Extractor détecte automatiquement les clés LOC existantes et ne les réextrait pas. Vous pouvez donc relancer l'extraction après avoir ajouté du nouveau code.
+Extractor détecte automatiquement les clés LOC existantes. Il va les extraire pour les inscrire dans le rapport car l'information est nécessaire à certains outils et process. Elles ne seront pas réappliqués. Vous pouvez donc relancer l'extraction après avoir ajouté du nouveau code sans crainte.
 
 ```bash
 # Première extraction
@@ -567,7 +608,7 @@ Les logs sont ignorés par défaut. Si vous avez utilisé `--no-ignore-log`, ret
 Si les clés générées sont trop longues ou complexes :
 
 1. Raccourcissez les textes originaux dans le code
-2. Ou éditez manuellement le fichier `TranslatedStrings_xx.txt` après extraction
+2. Ou éditez manuellement le fichier `TranslatedStrings_xx.txt` après extraction ← Vivement déconseillé !
 3. **Important** : Si vous changez les clés, mettez à jour aussi `replacements.json` pour Applicator
 
 ### Encodage incorrect (caractères spéciaux)
@@ -605,7 +646,7 @@ UI_KEYWORDS = [
 
 ### Puis-je utiliser Extractor sur d'autres types de projets ?
 
-Extractor est spécifique au format Lua et au SDK Lightroom. Pour d'autres langages ou frameworks, il faudrait adapter les patterns dans `Extractor_config.py` et potentiellement le moteur dans `Extractor_engine.py`.
+Extractor est spécifique au format Lua et au SDK Lightroom. Pour d'autres langages ou frameworks, il faudrait adapter les patterns dans `Extractor_config.py` et potentiellement le moteur dans `Extractor_engine.py`. Bref, ce n'est pas idéal...
 
 ### Les fichiers générés peuvent-ils être versionnés (Git) ?
 
