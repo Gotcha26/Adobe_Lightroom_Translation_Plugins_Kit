@@ -229,26 +229,25 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
 
     for member in members:
         original_text = member['original_text']
-        # Chercher avec guillemets doubles ET simples
-        for quote in ['"', "'"]:
-            search_str = f'{quote}{original_text}{quote}'
-            # Trouver toutes les occurrences de cette chaine
-            start = 0
-            while True:
-                pos = result.find(search_str, start)
-                if pos == -1:
-                    break
-                # Verifier que cette position n'est pas deja utilisee
-                if pos not in used_positions:
-                    members_with_pos.append((pos, member, search_str, quote))
-                    used_positions.add(pos)
-                    break  # Utiliser la premiere occurrence non-utilisee
-                start = pos + 1  # Chercher la suivante
+        # Guillemets doubles uniquement (conformément au SDK Adobe et à Extractor)
+        search_str = f'"{original_text}"'
+        # Trouver toutes les occurrences de cette chaine
+        start = 0
+        while True:
+            pos = result.find(search_str, start)
+            if pos == -1:
+                break
+            # Verifier que cette position n'est pas deja utilisee
+            if pos not in used_positions:
+                members_with_pos.append((pos, member, search_str))
+                used_positions.add(pos)
+                break  # Utiliser la premiere occurrence non-utilisee
+            start = pos + 1  # Chercher la suivante
 
     # Trier par position decroissante pour ne pas decaler les indices
     members_with_pos.sort(key=lambda x: x[0], reverse=True)
 
-    for pos, member, search_str, quote in members_with_pos:
+    for pos, member, search_str in members_with_pos:
         # Verifier que cette chaine n'est pas deja dans un LOC
         # Chercher "LOC" avant la position
         before_context = result[max(0, pos-20):pos]
@@ -305,7 +304,7 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 total_applied += len(applied_members)
             else:
                 # Verifier si c'est parce que c'est deja localise
-                if 'LOC "$$$/' in line or "LOC '$$$/'" in line:
+                if 'LOC "$$$/' in line:
                     # Ligne deja (partiellement?) localisee
                     # Essayer quand meme d'appliquer les membres non-localises
                     new_line, applied_members = apply_replacements_to_line(line, members)

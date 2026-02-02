@@ -1,413 +1,146 @@
 # Adobe Lightroom Translation Plugins Kit
 
-Un ensemble d'outils Python pour internationaliser vos plugins **Adobe Lightroom Classic** sans effort.
-Développé pour simplifier la gestion du multilingue, ce kit automatise l'extraction, l'application et la synchronisation des traductions.
+Vous développez un plugin pour **Adobe Lightroom Classic** et vous aimeriez qu'il parle plusieurs langues ?
+Vous êtes traducteur et souhaitez contribuer à un plugin existant ?
+Ce toolkit est fait pour vous !
 
 ---
 
-## 📋 Pour qui ?
+## 🎯 Le constat
 
-**Développeurs de plugins Lightroom**
-- Vous voulez rendre votre plugin multilingue sans gérer manuellement les clés de traduction
-- Vous préférez coder avec du texte en dur et automatiser la conversion vers le système `LOC()`
-- Vous cherchez à maintenir facilement les traductions lors des évolutions de votre code
+Internationaliser un plugin Lightroom, c'est fastidieux :
+- Des dizaines (voire des centaines) de chaînes de texte à extraire
+- Des clés de localisation à créer et à maintenir
+- Des fichiers de traduction à synchroniser à chaque modification
+- Un format SDK Adobe pas toujours intuitif
 
-**Contributeurs de traduction**
-- Vous souhaitez traduire un plugin dans votre langue
-- Vous voulez contribuer via GitHub ou simplement partager un fichier traduit
-- Le plugin n'a pas encore de fichiers `TranslatedStrings_xx.txt` ? Ce kit facilitera la création
+**Résultat ?** Beaucoup de plugins restent monolingues, faute de temps ou d'outils adaptés.
 
 ---
 
-## 🤚 Limitations
+## ✨ La solution
 
-- **Ne modifie pas la langue d'origine** : Le SDK Adobe impose qu'une chaîne par défaut reste hardcodée dans les fichiers `.lua` pour le fallback
-- **Ne traduit pas automatiquement** : La traduction reste manuelle (et c'est mieux ainsi, le contexte compte !)
-- **Ne répare pas la plomberie** : Et ne rend pas riche non plus
+Ce toolkit automatise tout le travail ingrat :
+
+```
+     Votre code Lua                        Plugin multilingue
+    (texte en dur)                        (prêt à traduire)
+          │                                      ▲
+          │                                      │
+          └──────────►  TOOLKIT  ►───────────────┘
+                    (3 outils intégrés)
+```
+
+**En quelques clics**, vous passez d'un plugin monolingue à un plugin prêt pour la traduction internationale — sans toucher manuellement aux fichiers de localisation.
+Et c'est 100% comforme au SDK Adobe.
 
 ---
 
-## 🎯 Le défi du multilingue
+## 👥 Pour qui ?
 
-Internationaliser un plugin Lightroom implique :
-- Extraire toutes les chaînes de texte du code
-- Créer et gérer des clés uniques pour chaque texte
-- Remplacer les textes en dur par des appels `LOC()` compatibles SDK Adobe
-- Synchroniser les fichiers de langue à chaque modification du code
-- Éviter les doublons, les clés obsolètes et les incohérences
+### Développeurs de plugins Lightroom
 
-**Sans outils, c'est chronophage et source d'erreurs.**
+Vous codez, le toolkit s'occupe du reste :
+- **Extraction automatique** de toutes les chaînes de texte
+- **Génération des clés** selon les conventions Adobe SDK
+- **Synchronisation** des fichiers de langue à chaque mise à jour
+- **Backups automatiques** pour revenir en arrière si besoin
 
----
+> *"Je code en anglais, je lance le toolkit, et hop : mon plugin est prêt à recevoir des traductions en français, allemand, espagnol..."*
 
-## ✨ La solution : 3 outils complémentaires
+### Traducteurs & Contributeurs
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   LocalisationToolKit.py                    │
-│                       Menu principal                        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-         ┌────────────────────┼────────────────────┐
-         ▼                    ▼                    ▼
-    ┌─────────┐         ┌──────────┐        ┌──────────┐
-    │Extractor│         │Applicator│        │Translator│
-    └─────────┘         └──────────┘        └──────────┘
-```
+Pas besoin d'être développeur pour contribuer :
+- Fichiers de traduction au format texte simple
+- Instructions claires pour chaque niveau d'implication
+- Possibilité de tester immédiatement vos traductions
 
-### 1. ***Extractor*** - Extraction des chaînes
+> *"J'ai reçu un fichier, j'ai traduit les lignes, j'ai renvoyé. Simple."*
 
-Scanne automatiquement votre code Lua pour en extraire toutes les chaînes de texte.
-
-**Entrée :**
-```lua
-local dialog = LrDialogs.confirm("Delete this photo?", "This cannot be undone")
-```
-
-**Sortie** (`TranslatedStrings_en.txt`) :
-```
-"$$$/MyPlugin/Dialogs/DeleteConfirm=Delete this photo?"
-"$$$/MyPlugin/Dialogs/DeleteWarning=This cannot be undone"
-```
-
-Génère des clés uniques selon une *recette* reproductible et cohérente.
-
-### 2. ***Applicator*** - Application dans le code
-
-Remplace automatiquement les chaînes hardcodées par des appels `LOC()`.
-
-**Résultat :**
-```lua
-local dialog = LrDialogs.confirm(
-    LOC "$$$/MyPlugin/Dialogs/DeleteConfirm=Delete this photo?",
-    LOC "$$$/MyPlugin/Dialogs/DeleteWarning=This cannot be undone"
-)
-```
-
-Crée des backups automatiques avec possibilité de restauration.
-
-### 3. ***Translator*** - Synchronisation des traductions
-
-Maintient tous vos fichiers de langue à jour automatiquement.
-
-**Deux modes principaux :**
-
-#### INSTALL (première fois)
-Copie les fichiers générés par ***Extractor*** dans votre plugin et lance la conversion initiale.
-
-#### AUTO-SYNC ⭐ (usage quotidien)
-Synchronise automatiquement toutes les langues :
-- Détecte la dernière extraction comme référence
-- Ajoute les nouvelles clés à tous les fichiers de langue
-- Supprime les clés obsolètes
-- Préserve toutes les traductions existantes
-- Met la valeur par défaut (langue d'origine) pour les clés modifiées
-
-**C'est la commande à utiliser 99% du temps.**
-
-#### Commandes avancées
-Pour des besoins spécifiques, consultez la [documentation détaillée de Translator](3_Translator/__doc/Lisez-moi.md) :
+> *"Mon plugin préféré mériterait d'être traduit, je vais me lancer sans pression."*
 
 ---
 
-## 🚀 Guide de démarrage
+## 🛠️ Trois outils, un seul lanceur
 
-### Première utilisation (conversion d'un plugin existant)
+Le toolkit regroupe trois outils complémentaires, accessibles via un menu unique :
 
-```
-Code Lua hardcodé
-         │
-         ▼  [1] python LocalisationToolKit.py → Extractor
-TranslatedStrings_en.txt
-         │
-         ▼  [2] Translator → INSTALL
-Fichiers copiés dans plugin.lrplugin/
-         │
-         ▼  [3] Applicator
-Code avec LOC() + Traductions actives
-         │
-         ▼  [4] Test dans Lightroom
-Validation fonctionnelle
-```
+| Outil | Rôle |
+|-------|------|
+| ***Extractor*** | Scanne votre code lua et extrait les textes |
+| ***Applicator*** | Remplace les textes par des appels `LOC()` |
+| ***Translator*** | Synchronise tous les fichiers de langue |
 
-**Commandes :**
-1. Configurer le chemin du plugin : `[Option 6]`
-2. Extraire les chaînes : `[Option 1] Extractor`
-3. Installer : `[Option 3] Translator → INSTALL`
-4. Appliquer les clés : `[Option 2] Applicator`
-5. Tester dans Lightroom
-
-### Maintenance quotidienne (après modifications du code)
-
-```
-Développement normal (texte en dur)
-         │
-         ▼  [1] Extractor
-Nouvelle extraction
-         │
-         ▼  [2] AUTO-SYNC ⭐
-Tous les fichiers de langue synchronisés
-         │
-         ▼  [3] Copie dans plugin + commit
-Prêt pour traduction
-```
-
-**Workflow recommandé :**
-1. Développez normalement avec du texte en dur
-2. Lancez ***Extractor*** : `[Option 1]`
-3. Synchronisez : `[Option 3] Translator → AUTO-SYNC`
-4. Copiez les fichiers synchronisés :
-   ```bash
-   cp __i18n_tmp__/3_Translator/<timestamp>/TranslatedStrings_*.txt ./plugin.lrplugin/
-   ```
-5. Committez :
-   ```bash
-   git add .
-   git commit -m "i18n: Update translation keys"
-   git push
-   ```
+Chaque outil peut fonctionner seul, mais le lanceur ***LocalisationToolKit*** les orchestre intelligemment en conservant votre configuration.
 
 ---
 
-## 💡 Contribuer aux traductions
+## 🚀 Démarrage express
 
-### Via GitHub (recommandé)
-
-```
-Fork du repo → Clonage → Traduction → Pull Request → Merge
-```
-
-**Étapes :**
-1. Forkez le repository du plugin
-2. Clonez : `git clone https://github.com/VOTRE_USERNAME/plugin.git`
-3. Éditez `plugin.lrplugin/TranslatedStrings_XX.txt` (XX = votre langue)
-4. Traduisez les clés (comparez avec `TranslatedStrings_en.txt`)
-5. Créez une Pull Request :
-   ```bash
-   git add TranslatedStrings_fr.txt
-   git commit -m "i18n(fr): Add French translation"
-   git push
-   ```
-
-### Sans GitHub
-
-1. Téléchargez le fichier `TranslatedStrings_XX.txt` depuis le dépôt
-2. Traduisez les lignes
-3. Envoyez le fichier au développeur (email, message)
-4. Utilisez immédiatement votre version traduite en local !
-
-### Rien n'est prêt ?!
-
-Glissez-vous dnas la peau d'un développeur et reprennez le fichier `Lisez-moi.md` dès le début pour extraire par vous-même le fichier `TranslatedString_xx.txt` et tester l'application en direct chez vous !
-
----
-
-## 📁 Structure des fichiers
-
-```
-plugin.lrplugin/
-├── Info.lua
-├── PluginCode.lua
-├── TranslatedStrings_en.txt      ← Anglais (référence/origine)
-├── TranslatedStrings_fr.txt      ← Français
-├── TranslatedStrings_de.txt      ← Allemand
-├── TranslatedStrings_es.txt      ← Espagnol
-└── __i18n_tmp__/                 ← Dossier temporaire (auto-généré)
-    ├── 1_Extractor/
-    │   └── 20260131_120000/
-    │       ├── TranslatedStrings_en.txt
-    │       ├── replacements.json
-    |       ├── spacing_metadata.json
-    │       └── extraction_report.txt
-    ├── 2_Applicator/
-    │   └── 20260131_120500/
-    │       ├── BACKUP/
-    |       |   ├── Fichier1.lua.bak
-    |       |   └── Fichier2.lua.bak
-    │       └── applicator_report.txt
-    └── 3_Translator/
-        └── 20260131_121000/
-            ├── TranslatedStrings_fr.txt
-            ├── TranslatedStrings_de.txt
-            ├── sync_report.txt
-            ├── TRANSLATE_fr.txt
-            ├── UPDATE_en.json
-```
-
-**À propos du dossier temporaire `__i18n_tmp__/` :**
-- Créé automatiquement lors de l'exécution
-- Nom configurable dans les paramètres
-- Peut être supprimé sans risque (recréé au besoin)
-- Exclusion `.gitignore` proposée automatiquement
-
----
-
-## 🎓 Format des fichiers de traduction
-
-### Anatomie d'une clé
-
-```
-"$$$/Piwigo/Dialogs/ConfirmDelete=Are you sure?"
- │    │       │         │            │
- │    │       │         │            └─ Valeur par défaut
- │    │       │         └────────────── Nom descriptif
- │    │       └──────────────────────── Catégorie
- │    └──────────────────────────────── Préfixe du plugin
- └───────────────────────────────────── Marqueur SDK (obligatoire)
-```
-
-**Structure :**
-- `$$$/` : Marqueur obligatoire du SDK Lightroom
-- `Prefix` : Identifiant unique de votre plugin (ex: `Piwigo`)
-- `Category/Key` : Hiérarchie organisationnelle (ex: `Dialogs/ConfirmDelete`)
-- `=Default value` : Texte par défaut (langue d'origine du code)
-
-### Placeholders (à préserver !)
-
-> 🇫🇷 _"Placeholder"_ → Espace réservé
-
-Les chaînes peuvent contenir des variables dynamiques :
-- `%s` : Chaîne de texte
-- `%d` : Nombre entier
-- `\n` : Retour à la ligne
-- `\t` : Tabulation
-
-**⚠️ IMPORTANT : Ne jamais supprimer ni déplacer les placeholders !**
-
-```
-✅ Correct :
-"$$$/Status=Albums created: %s, updated: %d"
-→ "$$$/Status=Albums créés : %s, mis à jour : %d"
-
-❌ Incorrect :
-"$$$/Status=Albums créés, mis à jour"  (placeholders manquants)
-```
-
-### Marqueurs de workflow avancé
-
-Uniquement avec la commande **COMPARE** (usage avancé) :
-- `-- [NEW]` : Nouvelle clé à traduire
-- `-- [NEEDS_REVIEW]` : Valeur d'origine modifiée, retraduction nécessaire
-
-Ces marqueurs **ne sont PAS utilisés** avec **AUTO-SYNC** (workflow quotidien).
-
----
-
-## ⚙️ Configuration
-
-Le fichier `config.json` stocke vos préférences :
-
-```json
-{
-  "plugin_path": "D:\\Lightroom\\monPlugin.lrplugin",
-  "output_base_dir": "",
-  "prefix": "$$$/Piwigo",
-  "lang": "en",
-  "temp_dir": "__i18n_tmp__",
-  "last_extraction_dir": "",
-  "last_used": "",
-  "enable_flip_anim": false
-}
-```
-
-Modifiable via : `[Option 6] Configurer le plugin`
-
----
-
-## 🛠️ Installation du toolkit
-
-### Prérequis
-- Python 3.7+
-- Un plugin Adobe Lightroom Classic (`.lua`)
-- Windows, Linux ou macOS
-
-### Installation
 ```bash
+# 1. Récupérer le toolkit
 git clone https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit.git
+
+# 2. Se placer dans le dossier
 cd Adobe_Lightroom_Translation_Plugins_Kit
+
+# 3. Lancer le menu
 python LocalisationToolKit.py
 ```
 
-**Aucune dépendance externe requise** (uniquement la bibliothèque standard Python).
+**Aucune dépendance externe** — uniquement Python 3.7+ et la bibliothèque standard.
 
 ---
 
-## ❓ FAQ
+## 📖 Documentation
 
-### Dois-je traduire toutes les clés d'un coup ?
-**Non.** Le SDK Lightroom utilise un système de fallback : si une clé manque, la valeur par défaut (hardcodée) s'affiche. Vous pouvez traduire progressivement.
+### Guides par profil
 
-### Lightroom n'affiche pas mes traductions
-Vérifiez :
-1. Le fichier `TranslatedStrings_xx.txt` est à la racine du plugin
-2. Le nom correspond à votre langue système (ex: `TranslatedStrings_fr.txt` pour français)
-3. Redémarrage complet de Lightroom (pas juste "Relancer le plugin")
-4. Les clés du fichier correspondent au code (recherche dans les `.lua`)
+| Vous êtes... | Commencez par... |
+|--------------|------------------|
+| Développeur d'un plugin LrC | [Guide Installation](0_doc/fr/Developpeur/01_Installation.md) |
+| Développeur en maintenance | [Guide Maintenance](0_doc/fr/Developpeur/02_Maintenance.md) |
+| Développeur avancé | [Workflows avancés](0_doc/fr/Developpeur/03_Avance.md) |
+| Traducteur débutant | [Contributeur simple](0_doc/fr/Traducteur/01_Contributeur_simple.md) |
+| Traducteur autonome | [Contributeur débrouillard](0_doc/fr/Traducteur/02_Contributeur_debrouillard.md) |
+| Traducteur professionnel | [Contributeur pro](0_doc/fr/Traducteur/03_Contributeur_pro.md) |
 
-### Puis-je éditer manuellement les fichiers ?
-**Oui !** Les fichiers `TranslatedStrings_xx.txt` sont du texte pur. Éditez-les avec n'importe quel éditeur.
+### Documentation technique des outils
 
-### Le dossier `__i18n_tmp__` prend de la place
-Les backups de ***Applicator*** peuvent être volumineux. Vous pouvez :
-- Le supprimer via `[Option 5] Supprimer` ou manuellement
-- L'exclure de Git en ajoutant `__i18n_tmp__/` dans `.gitignore`
-- Il sera recréé automatiquement au besoin
-
-### Comment contribuer ou signaler un bug ?
-Utilisez les [GitHub Issues](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit/issues).
+Chaque outil dispose de sa propre documentation détaillée :
+- [Extractor](1_Extractor/__doc/fr/Lisez-moi.md) — Extraction des chaînes
+- [Applicator](2_Applicator/__doc/fr/Lisez-moi.md) — Application des clés LOC()
+- [Translator](3_Translator/__doc/fr/Lisez-moi.md) — Gestion des traductions
+- [Tools](9_Tools/__doc/fr/Lisez-moi.md) — Utilitaires (restauration, nettoyage)
 
 ---
 
-## 🎨 Outils complémentaires
+## 🤝 Contribuer
 
-### Restore (Option 4)
-Restaure les fichiers `.lua` originaux avant modification par ***Applicator***.
-Les backups sont créés automatiquement avant toute modification.
+### Au toolkit lui-même
+- Signalez un bug ou proposez une amélioration via [GitHub Issues](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit/issues)
+- Les pull requests sont les bienvenues
 
-### Delete temp dir (Option 5)
-Supprime `__i18n_tmp__/` pour libérer de l'espace.
-Recommandé après chaque version majeure du toolkit.
-
----
-
-## 📚 Documentation technique détaillée
-
-Pour approfondir chaque outil :
-- [Extractor](1_Extractor/__doc/Lisez-moi.md)
-- [Applicator](2_Applicator/__doc/Lisez-moi.md)
-- [Translator](3_Translator/__doc/Lisez-moi.md)
+### Aux traductions de plugins
+- Consultez la documentation du plugin concerné
+- Forkez, traduisez, proposez une PR
+- Ou envoyez simplement votre fichier traduit au développeur
 
 ---
 
-## 🔗 Ressources externes
+## 🙏 Remerciements
 
-- [SDK Adobe Lightroom Classic](https://developer.adobe.com/console)
-- [Format de localisation SDK](https://developer.adobe.com/console/servicesandapis)
-- [Guide des Pull Requests GitHub](https://docs.github.com/en/pull-requests)
+Ce projet est né d'un besoin personnel : rendre mon propre plugin Lightroom multilingue sans y passer des heures. Grâce à l'assistance de **Claude (Anthropic)**, il est devenu un outil que j'espère utile à toute la communauté.
 
-**Besoin d'aide ?** Consultez la documentation technique ou ouvrez une [issue GitHub](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit/issues).
+Les retours, suggestions et contributions sont chaleureusement encouragés !
 
----
-
-## 👏 Crédits
-
-**Développé par Julien MOREAU** avec l'aide de **Claude (Anthropic)**.
-
-Né d'un besoin personnel, ce projet a été créé sans connaissances techniques approfondies, grâce à l'assistance de Claude. Il est désormais un outil performant pour la communauté des développeurs de plugins Lightroom.
-
-Les contributions sont bienvenues et les retours encouragés !
-
-**Outils** : Windows11 | VScode + extensions
+*Fais avec amour et le soleil du sud de la Drôme, entre Mistral et lavandes.*
 
 ---
 
-## 📜 Licence & informations
-
-Ce projet est open source. Utilisez-le librement pour vos plugins Lightroom.
-
-**Page GitHub** : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
-
-**Version** : 3.0
-**Dernière mise à jour** : 2026-02-01
-
-> **Note sur le versioning** : Chaque module (***Extractor, Applicator, Translator, Tools***) possède sa propre version indépendante. La version 3.0 correspond au kit global (***LocalisationToolKit***).
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *Lisez-moi.md* | **Version** | 1.0 |
+| **Type** | Présentation - Auto-promotion | **Langue** | FR - *[EN](README.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |
