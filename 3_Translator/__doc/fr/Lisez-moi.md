@@ -126,9 +126,13 @@ flowchart TB
         M["Menu interactif<br/>+ CLI argparse"]
     end
 
-    subgraph Modules["Modules de commandes"]
+    subgraph Essential["⭐ Modules essentiels"]
         I["TM_install.py"]
         AS["TM_autosync.py"]
+        AL["TM_addlang.py"]
+    end
+
+    subgraph Advanced["🔧 Modules avancés"]
         CO["TM_compare.py"]
         EX["TM_extract.py"]
         IN["TM_inject.py"]
@@ -141,8 +145,12 @@ flowchart TB
         U["Utilitaires"]
     end
 
-    M --> I & AS & CO & EX & IN & SY
-    I & AS & CO & EX & IN & SY --> Common
+    M --> Essential & Advanced
+    Essential --> Common
+    Advanced --> Common
+
+    style Essential fill:#E8F5E9
+    style Advanced fill:#E3F2FD
 ```
 
 ---
