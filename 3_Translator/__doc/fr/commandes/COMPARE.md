@@ -286,4 +286,12 @@ Lancez EXTRACT puis INJECT, ou directement SYNC:
 | Classe principale | `VersionComparator` |
 | Fonction principale | `run_compare()` |
 | Menu interactif | `menu_compare()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *COMPARE.md* | **Version** | 1.0 |
+| **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/COMPARE.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

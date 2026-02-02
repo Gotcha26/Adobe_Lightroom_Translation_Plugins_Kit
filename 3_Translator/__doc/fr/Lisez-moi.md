@@ -457,15 +457,19 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 
 ---
 
-## 📚 Ressources et crédits
+## 📚 Ressources
 
 | Élément | Information |
 |---------|-------------|
 | SDK Lightroom | [Adobe Developer Console](https://developer.adobe.com/console) |
 | Format ZString | `"$$$/Key=Default Value"` |
 | Python argparse | [Documentation](https://docs.python.org/3/library/argparse.html) |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Auteur | Julien MOREAU |
-| Assistance IA | Claude (Anthropic) |
-| Version doc | 7.1 |
-| Date | 2026-02-02 |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *Lisez-moi.md* | **Version** | 7.1 |
+| **Type** | Guide utilisateur TRANSLATOR - Avancé | **Langue** | FR - *[EN](../../en/README.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

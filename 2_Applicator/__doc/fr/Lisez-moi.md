@@ -626,12 +626,12 @@ Non, le format `LOC "$$$/Key=Default"` est imposé par le SDK Lightroom.
 | SDK Lightroom | [Adobe Developer Console](https://developer.adobe.com/console) |
 | Format LOC | `LOC "$$$/Key=Default"` (valeur par défaut obligatoire) |
 | Python JSON | [Documentation json](https://docs.python.org/3/library/json.html) |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Auteur | Julien MOREAU |
-| Assistance IA | Claude (Anthropic) |
-| Version doc | 7.1 |
-| Date | 2026-02-02 |
 
 ---
 
-*Application terminée ? Direction [**Translator**](../../3_Translator/__doc/fr/Lisez-moi.md) pour traduire les fichiers de langue !*
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *Lisez-moi.md* | **Version** | 7.1 |
+| **Type** | Guide utilisateur APPLICATOR - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

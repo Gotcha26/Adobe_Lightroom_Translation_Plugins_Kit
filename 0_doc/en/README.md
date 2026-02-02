@@ -392,13 +392,26 @@ Recommended after each major toolkit version.
 
 ---
 
-## 📚 Detailed Technical Documentation
+## 📚 Documentation Centre
 
-To learn more about each tool:
-- ***[Extractor](../../1_Extractor/__doc/en/README.md)***
-- ***[Applicator](../../2_Applicator/__doc/en/README.md)***
-- ***[Translator](../../3_Translator/__doc/en/README.md)***
-- ***[Tools](../../9_Tools/__doc/en/README.md)***
+### Guides by profile
+
+| You are... | Start with... |
+|--------------|------------------|
+| LrC plugin developer | [Installation Guide](./dev/01_Installation.md) |
+| Maintenance developer | [Maintenance Guide](./dev/02_Maintenance.md) |
+| Advanced developer | [Advanced Workflows](./dev/03_Advanced.md) |
+| Beginner translator | [Simple contributor](./trad/01_Simple_Contributor.md) |
+| Independent translator | [Resourceful contributor](./trad/02_Resourceful_Contributor.md) |
+| Professional translator | [Pro contributor](./trad/03_Pro_Contributor.md) |
+
+### Technical documentation for tools
+
+For more information on each tool:
+- ***[Extractor](../../1_Extractor/__doc/en/README.md)*** — String extraction
+- ***[Applicator](../../2_Applicator/__doc/en/README.md)*** — Applying LOC() keys
+- ***[Translator](../../3_Translator/__doc/en/README.md)*** — Translation management
+- ***[Tools](../../9_Tools/__doc/en/README.md)*** — Utilities (restoration, cleaning)
 
 ---
 
@@ -427,6 +440,6 @@ Contributions are welcome and feedback is encouraged!
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *README.md* | **Version** | 3.1 |
-| **Type** | Presentation - Self-promotion | **Language** | EN - *[FR](../fr/Lisez-moi.md)* |
+| **Type** | Presentation - global view | **Language** | EN - *[FR](../fr/Lisez-moi.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

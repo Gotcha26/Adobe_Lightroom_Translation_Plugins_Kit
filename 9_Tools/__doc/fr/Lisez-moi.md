@@ -288,8 +288,12 @@ git checkout HEAD -- plugin.lrplugin/*.lua
 | Python shutil | [Documentation](https://docs.python.org/3/library/shutil.html) |
 | Python os.path | [Documentation](https://docs.python.org/3/library/os.path.html) |
 | ANSI Colors | [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code) |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Auteur | Julien MOREAU |
-| Assistance IA | Claude (Anthropic) |
-| Version doc | 3.1 |
-| Date | 2026-02-02 |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *Lisez-moi.md* | **Version** | 3.1 |
+| **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

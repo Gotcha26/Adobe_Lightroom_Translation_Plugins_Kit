@@ -216,4 +216,12 @@ AUTO-SYNC affiche un rapport synthétique pour chaque langue :
 | Module source | `TM_autosync.py` |
 | Fonction principale | `run_autosync()` |
 | Menu interactif | `menu_autosync()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *AUTOSYNC.md* | **Version** | 1.0 |
+| **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/AUTOSYNC.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

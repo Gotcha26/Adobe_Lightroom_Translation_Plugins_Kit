@@ -271,6 +271,12 @@ Cela peut arriver si :
 | Menu suppression | `select_deletion_mode()` |
 | Confirmation | `confirm_deletion()` |
 | Suppression | `delete_paths()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Version | 2.0 |
-| Date | 2026-02-01 |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *DELETE_TEMP_DIR.md* | **Version** | 2.0 |
+| **Type** | Guide utilisateur DELETE - Avancé | **Langue** | FR - *[EN](../../en/DELETE_TEMP_DIR.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

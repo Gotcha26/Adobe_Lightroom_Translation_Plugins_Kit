@@ -152,6 +152,9 @@ cp TranslatedStrings_en.txt TranslatedStrings_es.txt
 | `ja` | Japonais | Japon |
 | `zh-CN` | Chinois simplifié | Chine |
 
+> 💡 Vous pouvez aussi passer par la commande incluse dans le toolkit : [ADDLANG](../../../3_Translator/__doc/fr/commandes/ADDLANG.md)
+Cette commande offre bien plus de souplesse qu'un simple écopier/coller".
+
 ---
 
 ## Étape 5 : Tester dans Lightroom
@@ -183,9 +186,9 @@ Envoyez les fichiers à des contributeurs. Consultez le guide [Contributeur simp
 
 ---
 
-|  |  |
-|--|--|
-| **Document** | Guide Développeur - Installation |
-| **Version** | 1.0 |
-| **Date** | 2026-02-02 |
-| **Projet** | https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit |
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *02_Dev_Installation.md* | **Version** | 1.0 |
+| **Type** | Guide développeurs - Installation | **Langue** | FR - *[EN](../../en/trad/01_Dev_Installation.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

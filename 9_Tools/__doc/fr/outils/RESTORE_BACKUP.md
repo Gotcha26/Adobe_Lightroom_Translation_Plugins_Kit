@@ -338,6 +338,12 @@ flowchart LR
 | Suppression .bak | `delete_backups()` |
 | Menu interactif | `interactive_menu()` |
 | Sélection session | `select_backup_session()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Version | 3.0 |
-| Date | 2026-02-01 |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *RESTORE_BACKUP.md* | **Version** | 3.0 |
+| **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../../en/RESTORE_BACKUP.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

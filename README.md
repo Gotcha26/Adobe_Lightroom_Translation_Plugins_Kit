@@ -94,6 +94,10 @@ python LocalisationToolKit.py
 
 ## 📖 Documentation
 
+### To go further
+
+- [Toolkit overview - general view](0_doc/en/README.md)
+
 ### Guides by Profile
 
 | You are... | Start here... |

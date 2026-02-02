@@ -247,4 +247,12 @@ INJECT **fusionne** les traductions, elle ne remplace pas tout le fichier :
 | Fonction principale | `run_inject()` |
 | Fonction batch | `run_inject_from_dir()` |
 | Menu interactif | `menu_inject()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *INJECT.md* | **Version** | 1.0 |
+| **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/INJECT.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

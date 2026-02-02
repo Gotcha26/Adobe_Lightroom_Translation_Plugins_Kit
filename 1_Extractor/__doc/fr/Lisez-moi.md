@@ -826,6 +826,7 @@ Ajoutez `__i18n_tmp__/` à votre `.gitignore`.
 
 | Version | Date | Modifications |
 |---------|------|---------------|
+| 5.2 | 2026-02-02 | Nettoyage |
 | 5.1 | 2026-01-30 | Menu interactif "Ready to go", centralisation des outputs dans `__i18n_tmp__/` |
 | 5.0 | 2026-01-29 | Refactoring complet en modules séparés, support multi-ligne |
 | 4.x | 2025-01-21 | Gestion des concaténations, détection des suffixes |
@@ -842,8 +843,12 @@ Ajoutez `__i18n_tmp__/` à votre `.gitignore`.
 | SDK Lightroom | [Adobe Developer Console](https://developer.adobe.com/console) |
 | Format LOC | `LOC "$$$/Key=Default"` (valeur par défaut obligatoire) |
 | Python regex | [Documentation re](https://docs.python.org/3/library/re.html) |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
-| Auteur | Julien MOREAU |
-| Assistance IA | Claude (Anthropic) |
-| Version doc | 5.2 |
-| Date | 2026-02-02 |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *Lisez-moi.md* | **Version** | 5.2 |
+| **Type** | Guide utilisateur EXTRACTOR - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

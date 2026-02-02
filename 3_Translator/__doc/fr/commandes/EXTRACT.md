@@ -251,4 +251,12 @@ Langue(s) à générer:
 | Fonction principale | `run_extract()` |
 | Fonction batch | `run_extract_all()` |
 | Menu interactif | `menu_extract()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *EXTRACT.md* | **Version** | 1.0 |
+| **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/EXTRACT.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

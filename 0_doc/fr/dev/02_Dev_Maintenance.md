@@ -184,9 +184,9 @@ Si vous supprimez une chaîne de votre code, la clé correspondante est retirée
 
 ---
 
-|  |  |
-|--|--|
-| **Document** | Guide Développeur - Maintenance |
-| **Version** | 1.0 |
-| **Date** | 2026-02-02 |
-| **Projet** | https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit |
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *02_Dev_Maintenance.md* | **Version** | 1.0 |
+| **Type** | Guide développeurs - Maintenance | **Langue** | FR - *[EN](../../en/trad/03_Dev_Avanced.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

@@ -185,4 +185,12 @@ Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt
 | Module source | `TM_install.py` |
 | Fonction principale | `run_install()` |
 | Menu interactif | `menu_install()` |
-| Projet GitHub | [Adobe_Lightroom_Translation_Plugins_Kit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) |
+
+---
+
+| 📜 | Traçabilité |  |  |
+|--|--|--|--|
+| **Nom** | *INSTALL.md* | **Version** | 1.0 |
+| **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/INSTALL.md)* |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Licence** | Open source | | |

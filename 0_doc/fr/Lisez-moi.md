@@ -392,13 +392,26 @@ Recommandé après chaque version majeure du toolkit.
 
 ---
 
-## 📚 Documentation technique détaillée
+## 📚 Centre de cocumentation enrivhie
+
+### Guides par profil
+
+| Vous êtes... | Commencez par... |
+|--------------|------------------|
+| Développeur d'un plugin LrC | [Guide Installation](./dev/01_Installation.md) |
+| Développeur en maintenance | [Guide Maintenance](./dev/02_Maintenance.md) |
+| Développeur avancé | [Workflows avancés](./dev/03_Avance.md) |
+| Traducteur débutant | [Contributeur simple](./trad/01_Contributeur_simple.md) |
+| Traducteur autonome | [Contributeur débrouillard](./trad/02_Contributeur_debrouillard.md) |
+| Traducteur professionnel | [Contributeur pro](./trad/03_Contributeur_pro.md) |
+
+### Documentation technique des outils
 
 Pour approfondir chaque outil :
-- ***[Extractor](../../1_Extractor/__doc/fr/Lisez-moi.md)***
-- ***[Applicator](../../2_Applicator/__doc/fr/Lisez-moi.md)***
-- ***[Translator](../../3_Translator/__doc/fr/Lisez-moi.md)***
-- ***[Tools](../../9_Tools/__doc/fr/Lisez-moi.md)***
+- ***[Extractor](../../1_Extractor/__doc/fr/Lisez-moi.md)*** — Extraction des chaînes
+- ***[Applicator](../../2_Applicator/__doc/fr/Lisez-moi.md)*** — Application des clés LOC()
+- ***[Translator](../../3_Translator/__doc/fr/Lisez-moi.md)*** — Gestion des traductions
+- ***[Tools](../../9_Tools/__doc/fr/Lisez-moi.md)*** — Utilitaires (restauration, nettoyage)
 
 ---
 
@@ -427,6 +440,6 @@ Les contributions sont bienvenues et les retours encouragés !
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
 | **Nom** | *Lisez-moi.md* | **Version** | 3.1 |
-| **Type** | Présentation - Auto-promotion | **Langue** | FR - *[EN](README.md)* |
+| **Type** | Présentation - Vue globale | **Langue** | FR - *[EN](README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **Licence** | Open source | | |
