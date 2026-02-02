@@ -63,16 +63,18 @@ Lors du développement d'un plugin, les textes évoluent :
 ├── TM_common.py            ← Fonctions communes (parser, utils)
 ├── TM_install.py           ← Commande INSTALL
 ├── TM_autosync.py          ← Commande AUTO-SYNC ⭐
-├── TM_compare.py           ← Commande COMPARE
-├── TM_extract.py           ← Commande EXTRACT
-├── TM_inject.py            ← Commande INJECT
-├── TM_sync.py              ← Commande SYNC
+├── TM_addlang.py           ← Commande ADD LANGUAGE
+├── TM_compare.py           ← Commande COMPARE (avancé)
+├── TM_extract.py           ← Commande EXTRACT (avancé)
+├── TM_inject.py            ← Commande INJECT (avancé)
+├── TM_sync.py              ← Commande SYNC (avancé)
 └── __doc/
     └── fr/
         ├── Lisez-moi.md    ← Ce fichier
         └── commandes/
             ├── INSTALL.md
             ├── AUTOSYNC.md
+            ├── ADDLANG.md
             ├── COMPARE.md
             ├── EXTRACT.md
             ├── INJECT.md
@@ -145,25 +147,25 @@ flowchart TB
 
 ---
 
-## ⭐ Commandes principales
+## ⭐ Commandes essentielles
 
-Ces deux commandes couvrent **99% des cas d'usage**. Elles sont conçues pour être simples et rapides.
+Ces trois commandes couvrent **99% des cas d'usage**. Elles sont conçues pour être simples et rapides.
 
 ### INSTALL — Première installation
 
 📄 **Documentation complète** : [commandes/INSTALL.md](commandes/INSTALL.md)
 
-Copie les fichiers `TranslatedStrings_xx.txt` depuis l'extraction vers la racine du plugin.
+Copie **tous** les fichiers `TranslatedStrings_xx.txt` depuis l'extraction vers la racine du plugin.
 
 ```mermaid
 flowchart LR
-    A["__i18n_tmp__/1_Extractor/<br/>TranslatedStrings_en.txt"] -->|INSTALL| B["plugin.lrplugin/<br/>TranslatedStrings_en.txt"]
+    A["__i18n_tmp__/1_Extractor/<br/>TranslatedStrings_*.txt"] -->|INSTALL| B["plugin.lrplugin/<br/>TranslatedStrings_*.txt"]
 
     style A fill:#FFF3E0
     style B fill:#E8F5E9
 ```
 
-**Quand l'utiliser** : Première mise en place du multilingue sur un plugin.
+**Quand l'utiliser** : Première mise en place du multilingue sur un plugin (installation en bloc).
 
 ---
 
@@ -171,7 +173,7 @@ flowchart LR
 
 📄 **Documentation complète** : [commandes/AUTOSYNC.md](commandes/AUTOSYNC.md)
 
-Synchronise automatiquement **tous** les fichiers de langue avec la dernière extraction.
+Synchronise automatiquement **tous** les fichiers de langue existants avec la dernière extraction.
 
 ```mermaid
 flowchart TB
@@ -197,6 +199,38 @@ flowchart TB
 **Quand l'utiliser** : Après chaque modification du code nécessitant une mise à jour des traductions.
 
 > **C'est LA commande à utiliser au quotidien !** Elle remplace avantageusement le workflow COMPARE → EXTRACT → INJECT → SYNC.
+
+---
+
+### ADD LANGUAGE — Ajout/réinstallation d'une langue
+
+📄 **Documentation complète** : [commandes/ADDLANG.md](commandes/ADDLANG.md)
+
+Ajoute ou réinstalle **un seul** fichier de langue, soit depuis l'extraction, soit en créant un nouveau fichier.
+
+```mermaid
+flowchart TB
+    subgraph ModeA["Mode A: Depuis Extractor"]
+        A1["__i18n_tmp__/1_Extractor/<br/>TranslatedStrings_xx.txt"]
+    end
+
+    subgraph ModeB["Mode B: Création"]
+        B1["TranslatedStrings_en.txt<br/>(référence)"]
+    end
+
+    A1 --> C["ADD LANGUAGE"]
+    B1 --> C
+
+    C --> D["plugin.lrplugin/<br/>TranslatedStrings_xx.txt"]
+
+    style C fill:#FF9800,color:#fff
+    style D fill:#4CAF50,color:#fff
+```
+
+**Quand l'utiliser** :
+- Installation différée d'une langue non installée initialement
+- Préparation de nouveaux fichiers de langue pour étendre le support multilingue
+- Réinstallation d'un fichier de langue corrompu ou supprimé
 
 ---
 

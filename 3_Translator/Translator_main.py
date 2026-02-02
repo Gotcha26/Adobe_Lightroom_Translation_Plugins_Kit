@@ -78,6 +78,7 @@ from TM_inject import run_inject, run_inject_from_dir, menu_inject
 from TM_sync import run_sync, generate_sync_report, menu_sync
 from TM_install import menu_install, run_install
 from TM_autosync import menu_autosync, run_autosync
+from TM_addlang import menu_addlang, run_addlang_cli
 
 # Instance couleurs
 c = Colors()
@@ -86,6 +87,57 @@ c = Colors()
 # =============================================================================
 # MENU INTERACTIF
 # =============================================================================
+
+def advanced_menu(plugin_path: str):
+    """Menu des options avancées (workflow manuel)."""
+    while True:
+        clear_screen()
+        print_header()
+
+        print(f"\n{c.TITLE}  OPTIONS AVANCÉES{c.RESET}")
+        print(f"  {c.DIM}Workflow manuel étape par étape{c.RESET}")
+        print(c.separator())
+
+        # Afficher le plugin configuré
+        if plugin_path:
+            print(f"\n{c.INFO}[INFO]{c.RESET} Plugin: {c.VALUE}{os.path.basename(plugin_path)}{c.RESET}")
+        else:
+            print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Aucun plugin configuré - utilise répertoires locaux")
+
+        print(f"\n{c.TITLE}  Commandes:{c.RESET}")
+        print(c.separator())
+        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}COMPARE{c.RESET}  - Comparer 2 versions EN")
+        print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}EXTRACT{c.RESET}  - Extraire les clés à traduire")
+        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}INJECT{c.RESET}   - Réinjecter les traductions")
+        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}SYNC{c.RESET}     - Synchroniser les langues avec EN")
+        print()
+        print(c.separator())
+        print(f"  {c.YELLOW}5{c.RESET}. {c.CYAN}Aide{c.RESET}     - Documentation complète")
+        print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour au menu principal{c.RESET}")
+        print(c.separator())
+
+        choice = input(f"\n{c.PROMPT}  Votre choix (0-5): {c.RESET}").strip()
+
+        if choice == '1':
+            menu_compare(plugin_path)
+            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
+        elif choice == '2':
+            menu_extract(plugin_path)
+            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
+        elif choice == '3':
+            menu_inject(plugin_path)
+        elif choice == '4':
+            menu_sync(plugin_path)
+        elif choice == '5':
+            clear_screen()
+            print(__doc__)
+            input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
+        elif choice == '0':
+            return  # Retour au menu principal
+        else:
+            print(c.error("Choix invalide"))
+            input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
+
 
 def main_menu(default_plugin_path: str = ""):
     """Menu principal interactif.
@@ -128,39 +180,19 @@ def main_menu(default_plugin_path: str = ""):
         else:
             print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Aucun plugin configuré - utilise répertoires locaux")
 
-        print(f"\n{c.TITLE}  Options:{c.RESET}")
+        print(f"\n{c.TITLE}  Options essentielles:{c.RESET}")
         print(c.separator())
-        print(f"  {c.YELLOW}1{c.RESET}. {c.SUCCESS}INSTALL{c.RESET} {c.DIM}(première installation){c.RESET}")
-        print(f"     {c.DIM}Copie TranslatedStrings_xx.txt depuis Extractor vers le plugin{c.RESET}")
-        print()
-        print(f"  {c.YELLOW}2{c.RESET}. {c.SUCCESS}AUTO-SYNC{c.RESET} ⭐ {c.DIM}(maintenance){c.RESET}")
-        print(f"     {c.DIM}Synchronisation automatique de tous les fichiers de langue{c.RESET}")
-        print(f"     {c.DIM}→ Détecte la dernière extraction et synchronise tout{c.RESET}")
+        print(f"  {c.YELLOW}1{c.RESET}. {c.SUCCESS}INSTALL{c.RESET}          - Première installation")
+        print(f"  {c.YELLOW}2{c.RESET}. {c.SUCCESS}AUTO-SYNC{c.RESET} ⭐     - Maintenance automatique")
+        print(f"  {c.YELLOW}3{c.RESET}. {c.SUCCESS}ADD LANGUAGE{c.RESET}     - Ajouter/réinstaller une langue")
         print()
         print(c.separator())
-        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}COMPARE{c.RESET}")
-        print(f"     {c.DIM}Compare ancien EN vs nouveau EN{c.RESET}")
-        print(f"     {c.DIM}→ Génère UPDATE_en.json + CHANGELOG.txt{c.RESET}")
-        print()
-        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}EXTRACT{c.RESET} {c.DIM}(optionnel){c.RESET}")
-        print(f"     {c.DIM}Génère mini fichiers TRANSLATE_xx.txt pour traduction{c.RESET}")
-        print()
-        print(f"  {c.YELLOW}5{c.RESET}. {c.INFO}INJECT{c.RESET} {c.DIM}(optionnel){c.RESET}")
-        print(f"     {c.DIM}Réinjecte les traductions (EN par défaut si vide){c.RESET}")
-        print()
-        print(f"  {c.YELLOW}6{c.RESET}. {c.INFO}SYNC{c.RESET}")
-        print(f"     {c.DIM}Met à jour les langues avec EN{c.RESET}")
-        print(f"     {c.DIM}→ Ajoute [NEW], marque [NEEDS_REVIEW], supprime obsolètes{c.RESET}")
-        print()
-        print(c.separator())
-        print(f"  {c.YELLOW}7{c.RESET}. {c.CYAN}Aide{c.RESET}")
-        print()
+        print(f"  {c.YELLOW}7{c.RESET}. {c.CYAN}Options avancées{c.RESET}")
         print(f"  {c.YELLOW}9{c.RESET}. {c.CYAN}Changer le plugin{c.RESET}")
-        print()
         print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Quitter{c.RESET}")
         print(c.separator())
 
-        choice = input(f"\n{c.PROMPT}  Votre choix (0-7, 9): {c.RESET}").strip()
+        choice = input(f"\n{c.PROMPT}  Votre choix (0-9): {c.RESET}").strip()
 
         if choice == '1':
             menu_install(plugin_path)
@@ -169,19 +201,10 @@ def main_menu(default_plugin_path: str = ""):
             menu_autosync(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
-            menu_compare(plugin_path)
+            menu_addlang(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
-        elif choice == '4':
-            menu_extract(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
-        elif choice == '5':
-            menu_inject(plugin_path)
-        elif choice == '6':
-            menu_sync(plugin_path)
         elif choice == '7':
-            clear_screen()
-            print(__doc__)
-            input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
+            advanced_menu(plugin_path)
         elif choice == '9':
             # Changer le plugin
             clear_screen()
