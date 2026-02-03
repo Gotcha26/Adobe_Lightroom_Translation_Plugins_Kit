@@ -45,6 +45,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common.paths import get_tool_output_path, find_latest_tool_output
 from common.colors import Colors
+from common.i18n import _
 
 from TM_common import clear_screen, print_header
 from TM_compare import run_compare, menu_compare

@@ -13,6 +13,7 @@ Version : 1.0
 import os
 from typing import Dict, List, Tuple
 from common.colors import Colors
+from common.i18n import _
 
 # Instance couleurs
 c = Colors()
@@ -121,10 +122,10 @@ class OutputFormatter:
             ]
             formatter.print_files_generated(files, "/path/to/output")
         """
-        self.print_section_header("FICHIERS GENERES")
+        self.print_section_header(_("FICHIERS GÉNÉRÉS"))
 
         # Afficher le dossier de sortie
-        print(f"\n  [Sortie] {c.VALUE}{output_dir}{c.RESET}\n")
+        print(f"\n  [" + _("Sortie") + f"] {c.VALUE}{output_dir}{c.RESET}\n")
 
         # Afficher la liste des fichiers
         if files:
@@ -154,25 +155,25 @@ class OutputFormatter:
             detail_stats: Stats détaillées {nom: valeur}
             existing_loc_count: Nombre de clés LOC existantes
         """
-        self.print_section_header("RÉSUMÉ DE L'EXTRACTION")
+        self.print_section_header(_("RÉSUMÉ DE L'EXTRACTION"))
 
         # Afficher les paramètres de base (une seule fois)
         base_info = [
-            ("Plugin", self._extract_plugin_name(plugin_path)),
-            ("Dossier", self._extract_relative_path(output_dir, plugin_path)),
-            ("Préfixe LOC", prefix),
-            ("Langue", lang),
+            (_("Plugin"), self._extract_plugin_name(plugin_path)),
+            (_("Dossier"), self._extract_relative_path(output_dir, plugin_path)),
+            (_("Préfixe LOC"), prefix),
+            (_("Langue"), lang),
         ]
         self.aligned_output(base_info)
 
         # Statistiques principales
         print()
-        main_stats["Clés LOC existantes"] = existing_loc_count
+        main_stats[_("Clés LOC existantes")] = existing_loc_count
         self.print_summary_stats(main_stats)
 
         # Détails supplémentaires
         if detail_stats:
-            self.print_summary_details(detail_stats, "Détails")
+            self.print_summary_details(detail_stats, _("Détails"))
 
         print()
         self.print_section_divider()

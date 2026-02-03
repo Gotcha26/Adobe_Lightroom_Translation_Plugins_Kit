@@ -1,0 +1,1321 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: LocalisationToolKit 2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-03 12:46\n"
+"PO-Revision-Date: 2026-02-03 12:50\n"
+"Last-Translator: Claude (Anthropic)\n"
+"Language-Team: English <en@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: 1_Extractor\Extractor_engine.py:204
+msgid "Erreur lecture {path}: {error}"
+msgstr "Read error {path}: {error}"
+
+#: 1_Extractor\Extractor_main.py:109
+msgid "Fichiers analysés"
+msgstr "Files analyzed"
+
+#: 1_Extractor\Extractor_main.py:110
+msgid "Fichiers avec chaînes"
+msgstr "Files with strings"
+
+#: 1_Extractor\Extractor_main.py:111
+msgid "Total chaînes trouvées"
+msgstr "Total strings found"
+
+#: 1_Extractor\Extractor_main.py:112
+msgid "Clés uniques"
+msgstr "Unique keys"
+
+#: 1_Extractor\Extractor_main.py:117
+msgid "Chaînes avec espaces"
+msgstr "Strings with spaces"
+
+#: 1_Extractor\Extractor_main.py:118
+msgid "Chaînes avec suffixes"
+msgstr "Strings with suffixes"
+
+#: 1_Extractor\Extractor_main.py:119
+msgid "Lignes concaténées"
+msgstr "Concatenated lines"
+
+#: 1_Extractor\Extractor_main.py:120
+msgid "Membres de concaténation"
+msgstr "Concatenation members"
+
+#: 1_Extractor\Extractor_main.py:136
+msgid "Fichier de chaînes"
+msgstr "Strings file"
+
+#: 1_Extractor\Extractor_main.py:136
+msgid "{n} clés"
+msgstr "{n} keys"
+
+#: 1_Extractor\Extractor_main.py:137
+msgid "Métadonnées d'espaces/suffixes"
+msgstr "Spacing/suffix metadata"
+
+#: 1_Extractor\Extractor_main.py:137
+msgid "{n} entrées"
+msgstr "{n} entries"
+
+#: 1_Extractor\Extractor_main.py:138
+msgid "Remplacement des chaînes"
+msgstr "String replacement"
+
+#: 1_Extractor\Extractor_main.py:138
+msgid "pour Applicator"
+msgstr "for Applicator"
+
+#: 1_Extractor\Extractor_main.py:139
+msgid "Analyse complète"
+msgstr "Complete analysis"
+
+#: 1_Extractor\Extractor_main.py:139
+msgid "rapport détaillé"
+msgstr "detailed report"
+
+#: 1_Extractor\Extractor_main.py:159
+msgid "Extraction annulée"
+msgstr "Extraction cancelled"
+
+#: 1_Extractor\Extractor_main.py:56
+msgid "ERREUR: Répertoire introuvable: {path}"
+msgstr "ERROR: Directory not found: {path}"
+
+#: 1_Extractor\Extractor_main.py:70
+msgid "EXTRACTION"
+msgstr "EXTRACTION"
+
+#: 1_Extractor\Extractor_main.py:71
+msgid "Analyse de {plugin}..."
+msgstr "Analyzing {plugin}..."
+
+#: 1_Extractor\Extractor_menu.py:103
+#: 1_Extractor\Extractor_menu.py:105
+#: 2_Applicator\Applicator_menu.py:157
+#: 2_Applicator\Applicator_menu.py:159
+#: 2_Applicator\Applicator_menu.py:161
+msgid "ENTRÉE"
+msgstr "ENTER"
+
+#: 1_Extractor\Extractor_menu.py:103
+msgid "Lancer l'extraction"
+msgstr "Run extraction"
+
+#: 1_Extractor\Extractor_menu.py:105
+msgid "Lancer l'extraction (configurer le plugin d'abord)"
+msgstr "Run extraction (configure plugin first)"
+
+#: 1_Extractor\Extractor_menu.py:107
+#: 2_Applicator\Applicator_menu.py:163
+msgid "Modifier une option"
+msgstr "Modify an option"
+
+#: 1_Extractor\Extractor_menu.py:108
+#: 2_Applicator\Applicator_menu.py:164
+#: LocalisationToolKit.py:582
+msgid "Quitter"
+msgstr "Quit"
+
+#: 1_Extractor\Extractor_menu.py:114
+#: 2_Applicator\Applicator_menu.py:170
+msgid "Chemin du plugin Lightroom"
+msgstr "Lightroom plugin path"
+
+#: 1_Extractor\Extractor_menu.py:116
+#: 1_Extractor\Extractor_menu.py:187
+#: 1_Extractor\Extractor_menu.py:203
+#: 1_Extractor\Extractor_menu.py:221
+#: 2_Applicator\Applicator_menu.py:172
+#: LocalisationToolKit.py:596
+#: LocalisationToolKit.py:640
+#: LocalisationToolKit.py:762
+msgid "Exemples:"
+msgstr "Examples:"
+
+#: 1_Extractor\Extractor_menu.py:122
+#: 2_Applicator\Applicator_menu.py:178
+#: LocalisationToolKit.py:593
+#: LocalisationToolKit.py:635
+#: LocalisationToolKit.py:747
+#: common\menu_helpers.py:49
+msgid "Actuel:"
+msgstr "Current:"
+
+#: 1_Extractor\Extractor_menu.py:123
+#: 2_Applicator\Applicator_menu.py:179
+msgid "Nouveau chemin (ENTRÉE pour garder, x pour annuler):"
+msgstr "New path (ENTER to keep, x to cancel):"
+
+#: 1_Extractor\Extractor_menu.py:125
+#: 1_Extractor\Extractor_menu.py:133
+#: 2_Applicator\Applicator_menu.py:181
+#: 2_Applicator\Applicator_menu.py:189
+msgid "Annulation"
+msgstr "Cancelled"
+
+#: 1_Extractor\Extractor_menu.py:128
+#: 2_Applicator\Applicator_menu.py:184
+#: LocalisationToolKit.py:626
+#: common\menu_helpers.py:74
+#: common\menu_helpers.py:108
+msgid "Chemin inchangé"
+msgstr "Path unchanged"
+
+#: 1_Extractor\Extractor_menu.py:131
+#: 2_Applicator\Applicator_menu.py:187
+msgid "Chemin du plugin (x pour annuler):"
+msgstr "Plugin path (x to cancel):"
+
+#: 1_Extractor\Extractor_menu.py:136
+#: 2_Applicator\Applicator_menu.py:192
+msgid "Chemin requis!"
+msgstr "Path required!"
+
+#: 1_Extractor\Extractor_menu.py:147
+#: 2_Applicator\Applicator_menu.py:203
+#: LocalisationToolKit.py:613
+msgid "Les plugins Lightroom doivent se terminer par .lrplugin"
+msgstr "Lightroom plugins must end with .lrplugin"
+
+#: 1_Extractor\Extractor_menu.py:148
+#: 2_Applicator\Applicator_menu.py:204
+#: 2_Applicator\Applicator_menu.py:234
+#: LocalisationToolKit.py:614
+msgid "Continuer quand même? [o/N]:"
+msgstr "Continue anyway? [y/N]:"
+
+#: 1_Extractor\Extractor_menu.py:150
+#: 2_Applicator\Applicator_menu.py:206
+#: LocalisationToolKit.py:616
+msgid "Configuration annulée"
+msgstr "Configuration cancelled"
+
+#: 1_Extractor\Extractor_menu.py:154
+#: 2_Applicator\Applicator_menu.py:211
+msgid "Plugin: {path}"
+msgstr "Plugin: {path}"
+
+#: 1_Extractor\Extractor_menu.py:160
+msgid "Répertoire de sortie"
+msgstr "Output directory"
+
+#: 1_Extractor\Extractor_menu.py:162
+msgid "Par défaut:"
+msgstr "Default:"
+
+#: 1_Extractor\Extractor_menu.py:164
+msgid "Pour forcer un autre emplacement, entrez un chemin."
+msgstr "To force another location, enter a path."
+
+#: 1_Extractor\Extractor_menu.py:165
+msgid "Sinon, appuyez sur ENTRÉE pour utiliser le défaut."
+msgstr "Otherwise, press ENTER to use the default."
+
+#: 1_Extractor\Extractor_menu.py:169
+msgid "Override actuel:"
+msgstr "Current override:"
+
+#: 1_Extractor\Extractor_menu.py:171
+msgid "Répertoire (ENTRÉE pour défaut):"
+msgstr "Directory (ENTER for default):"
+
+#: 1_Extractor\Extractor_menu.py:177
+msgid "Override: {path}"
+msgstr "Override: {path}"
+
+#: 1_Extractor\Extractor_menu.py:180
+msgid "Utilisera: <plugin>/{dir}/Extractor/<timestamp>/"
+msgstr "Will use: <plugin>/{dir}/Extractor/<timestamp>/"
+
+#: 1_Extractor\Extractor_menu.py:185
+msgid "Préfixe des clés LOC"
+msgstr "LOC keys prefix"
+
+#: 1_Extractor\Extractor_menu.py:190
+msgid "Préfixe [{prefix}]:"
+msgstr "Prefix [{prefix}]:"
+
+#: 1_Extractor\Extractor_menu.py:194
+#: LocalisationToolKit.py:752
+msgid "Préfixe: {prefix}"
+msgstr "Prefix: {prefix}"
+
+#: 1_Extractor\Extractor_menu.py:196
+msgid "Préfixe inchangé: {prefix}"
+msgstr "Prefix unchanged: {prefix}"
+
+#: 1_Extractor\Extractor_menu.py:201
+msgid "Code langue"
+msgstr "Language code"
+
+#: 1_Extractor\Extractor_menu.py:203
+msgid "(allemand)"
+msgstr "(German)"
+
+#: 1_Extractor\Extractor_menu.py:203
+msgid "(anglais)"
+msgstr "(English)"
+
+#: 1_Extractor\Extractor_menu.py:203
+msgid "(français)"
+msgstr "(French)"
+
+#: 1_Extractor\Extractor_menu.py:206
+msgid "Langue [{lang}]:"
+msgstr "Language [{lang}]:"
+
+#: 1_Extractor\Extractor_menu.py:210
+#: LocalisationToolKit.py:767
+msgid "Langue: {lang}"
+msgstr "Language: {lang}"
+
+#: 1_Extractor\Extractor_menu.py:212
+msgid "Code invalide (2 caractères requis), valeur inchangée"
+msgstr "Invalid code (2 characters required), value unchanged"
+
+#: 1_Extractor\Extractor_menu.py:214
+msgid "Langue inchangée: {lang}"
+msgstr "Language unchanged: {lang}"
+
+#: 1_Extractor\Extractor_menu.py:219
+msgid "Fichiers à exclure"
+msgstr "Files to exclude"
+
+#: 1_Extractor\Extractor_menu.py:225
+msgid "Actuels:"
+msgstr "Current:"
+
+#: 1_Extractor\Extractor_menu.py:227
+msgid "Fichiers à exclure (virgule pour séparer):"
+msgstr "Files to exclude (comma separated):"
+
+#: 1_Extractor\Extractor_menu.py:231
+msgid "Exclusions: {files}"
+msgstr "Exclusions: {files}"
+
+#: 1_Extractor\Extractor_menu.py:234
+msgid "Aucun fichier exclu"
+msgstr "No excluded files"
+
+#: 1_Extractor\Extractor_menu.py:239
+msgid "Longueur minimale des chaînes"
+msgstr "Minimum string length"
+
+#: 1_Extractor\Extractor_menu.py:241
+msgid "Les chaînes plus courtes seront ignorées."
+msgstr "Shorter strings will be ignored."
+
+#: 1_Extractor\Extractor_menu.py:244
+msgid "Longueur minimale [{n}]:"
+msgstr "Minimum length [{n}]:"
+
+#: 1_Extractor\Extractor_menu.py:247
+msgid "Longueur inchangée: {n}"
+msgstr "Length unchanged: {n}"
+
+#: 1_Extractor\Extractor_menu.py:254
+msgid "Longueur minimale: {n}"
+msgstr "Minimum length: {n}"
+
+#: 1_Extractor\Extractor_menu.py:256
+msgid "Doit être >= 1"
+msgstr "Must be >= 1"
+
+#: 1_Extractor\Extractor_menu.py:258
+msgid "Valeur invalide"
+msgstr "Invalid value"
+
+#: 1_Extractor\Extractor_menu.py:263
+msgid "Ignorer les lignes de log"
+msgstr "Ignore log lines"
+
+#: 1_Extractor\Extractor_menu.py:265
+msgid "Ignore les lignes contenant log(), warn(), etc."
+msgstr "Ignores lines containing log(), warn(), etc."
+
+#: 1_Extractor\Extractor_menu.py:269
+msgid "Ignorer les logs? [{current}]:"
+msgstr "Ignore logs? [{current}]:"
+
+#: 1_Extractor\Extractor_menu.py:273
+msgid "Logs ignorés"
+msgstr "Logs ignored"
+
+#: 1_Extractor\Extractor_menu.py:276
+msgid "Logs inclus"
+msgstr "Logs included"
+
+#: 1_Extractor\Extractor_menu.py:279
+#: 2_Applicator\Applicator_menu.py:263
+#: 2_Applicator\Applicator_menu.py:297
+msgid "Option inchangée: {status}"
+msgstr "Option unchanged: {status}"
+
+#: 1_Extractor\Extractor_menu.py:294
+#: 2_Applicator\Applicator_menu.py:312
+#: common\menu_helpers.py:71
+#: common\menu_helpers.py:105
+msgid "Votre choix:"
+msgstr "Your choice:"
+
+#: 1_Extractor\Extractor_menu.py:298
+#: 2_Applicator\Applicator_menu.py:316
+#: LocalisationToolKit.py:783
+msgid "Au revoir!"
+msgstr "Goodbye!"
+
+#: 1_Extractor\Extractor_menu.py:304
+msgid "Lancement de l'extraction..."
+msgstr "Starting extraction..."
+
+#: 1_Extractor\Extractor_menu.py:309
+#: 1_Extractor\Extractor_menu.py:313
+#: 1_Extractor\Extractor_menu.py:317
+#: 1_Extractor\Extractor_menu.py:321
+#: 1_Extractor\Extractor_menu.py:325
+#: 1_Extractor\Extractor_menu.py:329
+#: 1_Extractor\Extractor_menu.py:333
+#: 1_Extractor\Extractor_menu.py:339
+#: 1_Extractor\Extractor_menu.py:344
+#: 2_Applicator\Applicator_menu.py:276
+#: 2_Applicator\Applicator_menu.py:330
+#: 2_Applicator\Applicator_menu.py:334
+#: 2_Applicator\Applicator_menu.py:338
+#: 2_Applicator\Applicator_menu.py:350
+#: 2_Applicator\Applicator_menu.py:355
+msgid "Appuyez sur ENTRÉE..."
+msgstr "Press ENTER..."
+
+#: 1_Extractor\Extractor_menu.py:338
+#: 2_Applicator\Applicator_menu.py:347
+msgid "Configurez d'abord le chemin du plugin (option 1)"
+msgstr "Configure plugin path first (option 1)"
+
+#: 1_Extractor\Extractor_menu.py:343
+#: 2_Applicator\Applicator_menu.py:354
+msgid "Choix invalide: \\\"{choice}\\\""
+msgstr "Invalid choice: \\\"{choice}\\\""
+
+#: 1_Extractor\Extractor_menu.py:55
+msgid "EXTRACTOR - Extraction des chaînes localisables"
+msgstr "EXTRACTOR - Extract localizable strings"
+
+#: 1_Extractor\Extractor_menu.py:64
+#: 2_Applicator\Applicator_menu.py:99
+msgid "Configuration:"
+msgstr "Configuration:"
+
+#: 1_Extractor\Extractor_menu.py:72
+#: 2_Applicator\Applicator_menu.py:107
+#: 2_Applicator\Applicator_menu.py:126
+msgid "INTROUVABLE"
+msgstr "NOT FOUND"
+
+#: 1_Extractor\Extractor_menu.py:73
+#: 1_Extractor\Extractor_menu.py:75
+msgid "Plugin ciblé"
+msgstr "Target plugin"
+
+#: 1_Extractor\Extractor_menu.py:75
+#: 2_Applicator\Applicator_menu.py:110
+#: 2_Applicator\Applicator_menu.py:128
+msgid "(non défini - REQUIS)"
+msgstr "(not set - REQUIRED)"
+
+#: 1_Extractor\Extractor_menu.py:79
+#: 1_Extractor\Extractor_menu.py:82
+#: 2_Applicator\Applicator_menu.py:147
+#: common\output_formatters.py:128
+msgid "Sortie"
+msgstr "Output"
+
+#: 1_Extractor\Extractor_menu.py:82
+msgid "(auto)"
+msgstr "(auto)"
+
+#: 1_Extractor\Extractor_menu.py:85
+#: LocalisationToolKit.py:137
+#: LocalisationToolKit.py:691
+#: common\output_formatters.py:164
+msgid "Préfixe LOC"
+msgstr "LOC prefix"
+
+#: 1_Extractor\Extractor_menu.py:86
+msgid "Langue extraite"
+msgstr "Extracted language"
+
+#: 1_Extractor\Extractor_menu.py:88
+msgid "(aucun)"
+msgstr "(none)"
+
+#: 1_Extractor\Extractor_menu.py:89
+msgid "Exclusions"
+msgstr "Exclusions"
+
+#: 1_Extractor\Extractor_menu.py:91
+msgid "Long. min chaînes"
+msgstr "Min string length"
+
+#: 1_Extractor\Extractor_menu.py:93
+#: 1_Extractor\Extractor_menu.py:278
+#: 2_Applicator\Applicator_menu.py:141
+#: 2_Applicator\Applicator_menu.py:249
+#: 2_Applicator\Applicator_menu.py:296
+msgid "Non"
+msgstr "No"
+
+#: 1_Extractor\Extractor_menu.py:93
+#: 1_Extractor\Extractor_menu.py:278
+#: 2_Applicator\Applicator_menu.py:248
+#: 2_Applicator\Applicator_menu.py:296
+msgid "Oui"
+msgstr "Yes"
+
+#: 1_Extractor\Extractor_menu.py:94
+msgid "Ignorer logs"
+msgstr "Ignore logs"
+
+#: 1_Extractor\Extractor_output.py:107
+msgid "✓ Spacing metadata: {path} ({n} clés)"
+msgstr "✓ Spacing metadata: {path} ({n} keys)"
+
+#: 1_Extractor\Extractor_output.py:207
+msgid "✓ Replacements JSON: {path} ({n} lignes à modifier)"
+msgstr "✓ Replacements JSON: {path} ({n} lines to modify)"
+
+#: 1_Extractor\Extractor_output.py:92
+msgid "✓ PluginStrings généré: {path} ({n} clés uniques)"
+msgstr "✓ PluginStrings generated: {path} ({n} unique keys)"
+
+#: 1_Extractor\Extractor_report.py:184
+msgid "✓ Rapport: {path}"
+msgstr "✓ Report: {path}"
+
+#: 2_Applicator\Applicator_main.py:169
+msgid "ERREUR: Fichier replacements.json introuvable dans {dir}"
+msgstr "ERROR: File replacements.json not found in {dir}"
+
+#: 2_Applicator\Applicator_main.py:175
+msgid "* replacements.json chargé"
+msgstr "* replacements.json loaded"
+
+#: 2_Applicator\Applicator_main.py:176
+msgid "  - {n} fichiers avec remplacements"
+msgstr "  - {n} files with replacements"
+
+#: 2_Applicator\Applicator_main.py:181
+msgid "  - {n} remplacements prévus"
+msgstr "  - {n} replacements planned"
+
+#: 2_Applicator\Applicator_main.py:184
+msgid "ERREUR lors du chargement de replacements.json: {error}"
+msgstr "ERROR loading replacements.json: {error}"
+
+#: 2_Applicator\Applicator_main.py:349
+msgid "ERREUR: Répertoire du plugin introuvable: {path}"
+msgstr "ERROR: Plugin directory not found: {path}"
+
+#: 2_Applicator\Applicator_main.py:356
+msgid "ERREUR: Aucune extraction trouvée dans __i18n_kit__/Extractor/"
+msgstr "ERROR: No extraction found in __i18n_kit__/Extractor/"
+
+#: 2_Applicator\Applicator_main.py:357
+msgid "        Lancez d'abord Extractor sur ce plugin."
+msgstr "        Run Extractor on this plugin first."
+
+#: 2_Applicator\Applicator_main.py:359
+msgid "* Auto-détection: {dir}"
+msgstr "* Auto-detection: {dir}"
+
+#: 2_Applicator\Applicator_main.py:362
+msgid "ERREUR: Répertoire Extractor introuvable: {dir}"
+msgstr "ERROR: Extractor directory not found: {dir}"
+
+#: 2_Applicator\Applicator_main.py:370
+msgid "LOCALISATION DU PLUGIN"
+msgstr "PLUGIN LOCALIZATION"
+
+#: 2_Applicator\Applicator_main.py:372
+msgid "Répertoire du plugin"
+msgstr "Plugin directory"
+
+#: 2_Applicator\Applicator_main.py:373
+msgid "Dossier Extractor"
+msgstr "Extractor folder"
+
+#: 2_Applicator\Applicator_main.py:374
+#: 2_Applicator\Applicator_main.py:427
+msgid "Sortie Applicator"
+msgstr "Applicator output"
+
+#: 2_Applicator\Applicator_main.py:375
+msgid "DRY-RUN (simulation)"
+msgstr "DRY-RUN (simulation)"
+
+#: 2_Applicator\Applicator_main.py:375
+msgid "MODIFICATION RÉELLE"
+msgstr "REAL MODIFICATION"
+
+#: 2_Applicator\Applicator_main.py:376
+msgid "Mode"
+msgstr "Mode"
+
+#: 2_Applicator\Applicator_main.py:377
+msgid "NON"
+msgstr "NO"
+
+#: 2_Applicator\Applicator_main.py:377
+msgid "OUI"
+msgstr "YES"
+
+#: 2_Applicator\Applicator_main.py:378
+#: 2_Applicator\Applicator_menu.py:142
+#: 2_Applicator\Applicator_menu.py:268
+msgid "Sauvegardes .bak"
+msgstr ".bak backups"
+
+#: 2_Applicator\Applicator_main.py:385
+msgid "ERREUR: Impossible de charger les remplacements"
+msgstr "ERROR: Cannot load replacements"
+
+#: 2_Applicator\Applicator_main.py:391
+msgid "Aucun remplacement à effectuer"
+msgstr "No replacements to perform"
+
+#: 2_Applicator\Applicator_main.py:401
+msgid "Traitement de {file}..."
+msgstr "Processing {file}..."
+
+#: 2_Applicator\Applicator_main.py:408
+msgid "  * {n} chaîne(s) remplacée(s)"
+msgstr "  * {n} string(s) replaced"
+
+#: 2_Applicator\Applicator_main.py:410
+msgid "  - Aucun remplacement"
+msgstr "  - No replacements"
+
+#: 2_Applicator\Applicator_main.py:412
+msgid "  ! Fichier introuvable: {file}"
+msgstr "  ! File not found: {file}"
+
+#: 2_Applicator\Applicator_main.py:420
+msgid "RÉSUMÉ"
+msgstr "SUMMARY"
+
+#: 2_Applicator\Applicator_main.py:422
+msgid "Fichiers traités"
+msgstr "Files processed"
+
+#: 2_Applicator\Applicator_main.py:423
+msgid "Fichiers modifiés"
+msgstr "Files modified"
+
+#: 2_Applicator\Applicator_main.py:424
+msgid "Lignes modifiées"
+msgstr "Lines modified"
+
+#: 2_Applicator\Applicator_main.py:425
+msgid "Chaînes remplacées"
+msgstr "Strings replaced"
+
+#: 2_Applicator\Applicator_main.py:426
+msgid "Chaînes ignorées"
+msgstr "Strings skipped"
+
+#: 2_Applicator\Applicator_main.py:429
+msgid "Backups"
+msgstr "Backups"
+
+#: 2_Applicator\Applicator_main.py:430
+msgid "Rapport détaillé"
+msgstr "Detailed report"
+
+#: 2_Applicator\Applicator_main.py:433
+msgid "MODE DRY-RUN: Aucun fichier n'a été modifié"
+msgstr "DRY-RUN MODE: No files were modified"
+
+#: 2_Applicator\Applicator_main.py:436
+msgid "IMPORTANT: Redémarrez Lightroom après les modifications!"
+msgstr "IMPORTANT: Restart Lightroom after modifications!"
+
+#: 2_Applicator\Applicator_main.py:437
+msgid "           (le rechargement du plugin ne suffit pas)"
+msgstr "           (reloading the plugin is not enough)"
+
+#: 2_Applicator\Applicator_main.py:477
+msgid "GESTION DES TRADUCTIONS"
+msgstr "TRANSLATION MANAGEMENT"
+
+#: 2_Applicator\Applicator_main.py:484
+msgid "Fichier(s) de traduction trouvé(s) à la racine du plugin:"
+msgstr "Translation file(s) found at plugin root:"
+
+#: 2_Applicator\Applicator_main.py:488
+msgid "Voulez-vous ouvrir le gestionnaire de traductions (Translator)?"
+msgstr "Do you want to open the translation manager (Translator)?"
+
+#: 2_Applicator\Applicator_main.py:489
+msgid "Cela permet de synchroniser les traductions avec les nouvelles clés."
+msgstr "This allows synchronizing translations with new keys."
+
+#: 2_Applicator\Applicator_main.py:492
+msgid "Ouvrir Translator? [o/N]:"
+msgstr "Open Translator? [y/N]:"
+
+#: 2_Applicator\Applicator_main.py:503
+msgid "Lancement de Translator..."
+msgstr "Starting Translator..."
+
+#: 2_Applicator\Applicator_main.py:511
+msgid "[ERREUR] Impossible de lancer Translator: {error}"
+msgstr "[ERROR] Cannot start Translator: {error}"
+
+#: 2_Applicator\Applicator_main.py:513
+msgid "[ERREUR] Translator introuvable: {path}"
+msgstr "[ERROR] Translator not found: {path}"
+
+#: 2_Applicator\Applicator_main.py:515
+msgid "[OK] Translator non lancé"
+msgstr "[OK] Translator not started"
+
+#: 2_Applicator\Applicator_main.py:518
+msgid "Aucun fichier TranslatedStrings_xx.txt trouvé à la racine du plugin."
+msgstr "No TranslatedStrings_xx.txt file found at plugin root."
+
+#: 2_Applicator\Applicator_main.py:519
+msgid "Ce fichier est nécessaire pour les traductions Lightroom."
+msgstr "This file is required for Lightroom translations."
+
+#: 2_Applicator\Applicator_main.py:531
+msgid "Un fichier template a été trouvé dans l'extraction:"
+msgstr "A template file was found in the extraction:"
+
+#: 2_Applicator\Applicator_main.py:534
+msgid "Voulez-vous le copier à la racine du plugin?"
+msgstr "Do you want to copy it to the plugin root?"
+
+#: 2_Applicator\Applicator_main.py:538
+msgid "Copier le fichier? [O/n]:"
+msgstr "Copy file? [Y/n]:"
+
+#: 2_Applicator\Applicator_main.py:543
+msgid "[OK] Fichier copié: {path}"
+msgstr "[OK] File copied: {path}"
+
+#: 2_Applicator\Applicator_main.py:544
+msgid "Vous pouvez maintenant éditer ce fichier pour ajouter les traductions."
+msgstr "You can now edit this file to add translations."
+
+#: 2_Applicator\Applicator_main.py:546
+msgid "[ERREUR] Impossible de copier le fichier: {error}"
+msgstr "[ERROR] Cannot copy file: {error}"
+
+#: 2_Applicator\Applicator_main.py:548
+msgid "[OK] Fichier non copié"
+msgstr "[OK] File not copied"
+
+#: 2_Applicator\Applicator_main.py:550
+msgid "Pour créer un fichier de traduction:"
+msgstr "To create a translation file:"
+
+#: 2_Applicator\Applicator_main.py:551
+msgid "  1. Lancez l'Extractor sur le plugin"
+msgstr "  1. Run Extractor on the plugin"
+
+#: 2_Applicator\Applicator_main.py:552
+msgid "  2. Copiez le fichier TranslatedStrings_xx.txt généré à la racine du plugin"
+msgstr "  2. Copy the generated TranslatedStrings_xx.txt file to the plugin root"
+
+#: 2_Applicator\Applicator_main.py:553
+msgid "  3. Éditez le fichier pour ajouter vos traductions"
+msgstr "  3. Edit the file to add your translations"
+
+#: 2_Applicator\Applicator_main.py:570
+msgid "Application annulée"
+msgstr "Application cancelled"
+
+#: 2_Applicator\Applicator_menu.py:108
+#: 2_Applicator\Applicator_menu.py:110
+#: common\output_formatters.py:162
+msgid "Plugin"
+msgstr "Plugin"
+
+#: 2_Applicator\Applicator_menu.py:120
+msgid "replacements.json manquant"
+msgstr "replacements.json missing"
+
+#: 2_Applicator\Applicator_menu.py:123
+#: 2_Applicator\Applicator_menu.py:126
+#: 2_Applicator\Applicator_menu.py:128
+msgid "Extraction"
+msgstr "Extraction"
+
+#: 2_Applicator\Applicator_menu.py:132
+msgid "Oui (SIMULATION)"
+msgstr "Yes (SIMULATION)"
+
+#: 2_Applicator\Applicator_menu.py:134
+msgid "Non (modifications réelles)"
+msgstr "No (real modifications)"
+
+#: 2_Applicator\Applicator_menu.py:135
+msgid "Mode simulation"
+msgstr "Simulation mode"
+
+#: 2_Applicator\Applicator_menu.py:139
+msgid "Oui (recommandé)"
+msgstr "Yes (recommended)"
+
+#: 2_Applicator\Applicator_menu.py:157
+msgid "Lancer la SIMULATION"
+msgstr "Run SIMULATION"
+
+#: 2_Applicator\Applicator_menu.py:159
+msgid "Lancer l'application"
+msgstr "Run application"
+
+#: 2_Applicator\Applicator_menu.py:161
+msgid "Lancer (configurer plugin et extraction d'abord)"
+msgstr "Run (configure plugin and extraction first)"
+
+#: 2_Applicator\Applicator_menu.py:217
+msgid "Extraction auto-détectée: {name}"
+msgstr "Auto-detected extraction: {name}"
+
+#: 2_Applicator\Applicator_menu.py:232
+msgid "Fichiers manquants: {files}"
+msgstr "Missing files: {files}"
+
+#: 2_Applicator\Applicator_menu.py:233
+msgid "Ce n'est peut-être pas un dossier Extractor valide."
+msgstr "This may not be a valid Extractor folder."
+
+#: 2_Applicator\Applicator_menu.py:246
+msgid "Mode simulation (dry-run)"
+msgstr "Simulation mode (dry-run)"
+
+#: 2_Applicator\Applicator_menu.py:248
+msgid "Affiche les changements SANS modifier les fichiers"
+msgstr "Shows changes WITHOUT modifying files"
+
+#: 2_Applicator\Applicator_menu.py:249
+msgid "Applique les modifications (crée des backups)"
+msgstr "Applies modifications (creates backups)"
+
+#: 2_Applicator\Applicator_menu.py:253
+msgid "Mode simulation? [{current}]:"
+msgstr "Simulation mode? [{current}]:"
+
+#: 2_Applicator\Applicator_menu.py:257
+msgid "Mode SIMULATION activé"
+msgstr "SIMULATION mode enabled"
+
+#: 2_Applicator\Applicator_menu.py:260
+msgid "Mode MODIFICATION activé"
+msgstr "MODIFICATION mode enabled"
+
+#: 2_Applicator\Applicator_menu.py:262
+msgid "Modification"
+msgstr "Modification"
+
+#: 2_Applicator\Applicator_menu.py:262
+msgid "Simulation"
+msgstr "Simulation"
+
+#: 2_Applicator\Applicator_menu.py:270
+msgid "Crée des copies de sauvegarde avant modification."
+msgstr "Creates backup copies before modification."
+
+#: 2_Applicator\Applicator_menu.py:271
+msgid "Fortement recommandé pour pouvoir revenir en arrière."
+msgstr "Highly recommended to be able to revert."
+
+#: 2_Applicator\Applicator_menu.py:275
+msgid "(Non utilisé en mode simulation)"
+msgstr "(Not used in simulation mode)"
+
+#: 2_Applicator\Applicator_menu.py:280
+msgid "Créer des sauvegardes? [{current}]:"
+msgstr "Create backups? [{current}]:"
+
+#: 2_Applicator\Applicator_menu.py:284
+#: 2_Applicator\Applicator_menu.py:294
+msgid "Sauvegardes activées"
+msgstr "Backups enabled"
+
+#: 2_Applicator\Applicator_menu.py:287
+msgid "Êtes-vous sûr de NE PAS vouloir de sauvegardes?"
+msgstr "Are you sure you DON'T want backups?"
+
+#: 2_Applicator\Applicator_menu.py:288
+msgid "Confirmer [o/N]:"
+msgstr "Confirm [y/N]:"
+
+#: 2_Applicator\Applicator_menu.py:291
+msgid "Sauvegardes désactivées"
+msgstr "Backups disabled"
+
+#: 2_Applicator\Applicator_menu.py:323
+msgid "Lancement de la SIMULATION..."
+msgstr "Starting SIMULATION..."
+
+#: 2_Applicator\Applicator_menu.py:325
+msgid "Lancement de l'application..."
+msgstr "Starting application..."
+
+#: 2_Applicator\Applicator_menu.py:349
+msgid "Configurez d'abord le dossier d'extraction (option 2)"
+msgstr "Configure extraction folder first (option 2)"
+
+#: 2_Applicator\Applicator_menu.py:62
+msgid "APPLICATOR - Application des localisations"
+msgstr "APPLICATOR - Apply localizations"
+
+#: LocalisationToolKit.py:114
+msgid "Erreur sauvegarde config: {error}"
+msgstr "Config save error: {error}"
+
+#: LocalisationToolKit.py:129
+#: LocalisationToolKit.py:134
+#: LocalisationToolKit.py:679
+msgid "(non défini)"
+msgstr "(not set)"
+
+#: LocalisationToolKit.py:132
+msgid "Configuration actuelle:"
+msgstr "Current configuration:"
+
+#: LocalisationToolKit.py:134
+#: LocalisationToolKit.py:679
+msgid "Plugin path"
+msgstr "Plugin path"
+
+#: LocalisationToolKit.py:135
+#: LocalisationToolKit.py:680
+msgid "Dossier temporaire"
+msgstr "Temporary folder"
+
+#: LocalisationToolKit.py:136
+#: LocalisationToolKit.py:681
+msgid "Chemin complet"
+msgstr "Full path"
+
+#: LocalisationToolKit.py:138
+#: LocalisationToolKit.py:692
+#: LocalisationToolKit.py:758
+msgid "Langue par défaut"
+msgstr "Default language"
+
+#: LocalisationToolKit.py:147
+msgid "Exécutions récentes dans {dir}/:"
+msgstr "Recent executions in {dir}/:"
+
+#: LocalisationToolKit.py:158
+msgid "(aucune)"
+msgstr "(none)"
+
+#: LocalisationToolKit.py:227
+msgid "Dossier temporaire pour les outils de localisation"
+msgstr "Temporary folder for localization tools"
+
+#: LocalisationToolKit.py:230
+msgid "Ajouté '{line}' au .gitignore"
+msgstr "Added '{line}' to .gitignore"
+
+#: LocalisationToolKit.py:234
+msgid "Impossible d'ajouter au .gitignore: {error}"
+msgstr "Cannot add to .gitignore: {error}"
+
+#: LocalisationToolKit.py:287
+msgid "Le dossier temporaire '{dir}' n'est pas dans le .gitignore"
+msgstr "Temporary folder '{dir}' is not in .gitignore"
+
+#: LocalisationToolKit.py:288
+msgid "Voulez-vous l'ajouter automatiquement ?"
+msgstr "Do you want to add it automatically?"
+
+#: LocalisationToolKit.py:289
+msgid "Ligne à ajouter:"
+msgstr "Line to add:"
+
+#: LocalisationToolKit.py:291
+msgid "Ajouter au .gitignore? [O/n]:"
+msgstr "Add to .gitignore? [Y/n]:"
+
+#: LocalisationToolKit.py:321
+msgid "(pas de dépôt git)"
+msgstr "(no git repository)"
+
+#: LocalisationToolKit.py:335
+msgid "Absent"
+msgstr "Missing"
+
+#: LocalisationToolKit.py:353
+msgid "Exception .gitignore - sera ajouté"
+msgstr ".gitignore exception - will be added"
+
+#: LocalisationToolKit.py:355
+msgid "Exception .gitignore - manquant"
+msgstr ".gitignore exception - missing"
+
+#: LocalisationToolKit.py:357
+msgid "Erreur lecture"
+msgstr "Read error"
+
+#: LocalisationToolKit.py:392
+msgid "Script introuvable: {path}"
+msgstr "Script not found: {path}"
+
+#: LocalisationToolKit.py:402
+msgid "Lancement:"
+msgstr "Running:"
+
+#: LocalisationToolKit.py:403
+msgid "Répertoire:"
+msgstr "Directory:"
+
+#: LocalisationToolKit.py:414
+msgid "[ERREUR] Erreur exécution: {error}"
+msgstr "[ERROR] Execution error: {error}"
+
+#: LocalisationToolKit.py:459
+msgid "[ERREUR] Aucune extraction précédente. Lancez d'abord l'Extractor."
+msgstr "[ERROR] No previous extraction. Run Extractor first."
+
+#: LocalisationToolKit.py:484
+msgid "[ERREUR] Plugin non configuré."
+msgstr "[ERROR] Plugin not configured."
+
+#: LocalisationToolKit.py:564
+msgid "Plugin non configuré ou introuvable"
+msgstr "Plugin not configured or not found"
+
+#: LocalisationToolKit.py:570
+msgid "OUTILS DE LOCALISATION"
+msgstr "LOCALIZATION TOOLS"
+
+#: LocalisationToolKit.py:572
+msgid "Extractor      - Extraire les chaînes"
+msgstr "Extractor      - Extract strings"
+
+#: LocalisationToolKit.py:573
+msgid "Applicator     - Appliquer les localisations"
+msgstr "Applicator     - Apply localizations"
+
+#: LocalisationToolKit.py:574
+msgid "Translation    - Gérer les traductions"
+msgstr "Translation    - Manage translations"
+
+#: LocalisationToolKit.py:575
+msgid "Restore        - Restaurer les backups"
+msgstr "Restore        - Restore backups"
+
+#: LocalisationToolKit.py:576
+msgid "Nettoyer le dossier temporaire"
+msgstr "Clean temporary folder"
+
+#: LocalisationToolKit.py:576
+msgid "Supprimer"
+msgstr "Delete"
+
+#: LocalisationToolKit.py:578
+msgid "CONFIGURATION"
+msgstr "SETTINGS"
+
+#: LocalisationToolKit.py:580
+msgid "Configuration du plugin"
+msgstr "Plugin settings"
+
+#: LocalisationToolKit.py:588
+msgid "Configuration du chemin du plugin"
+msgstr "Plugin path configuration"
+
+#: LocalisationToolKit.py:601
+msgid "Nouveau chemin (ENTRÉE pour garder):"
+msgstr "New path (ENTER to keep):"
+
+#: LocalisationToolKit.py:620
+msgid "Plugin configuré: {path}"
+msgstr "Plugin configured: {path}"
+
+#: LocalisationToolKit.py:624
+msgid "Sorties dans:"
+msgstr "Output in:"
+
+#: LocalisationToolKit.py:631
+msgid "Configuration du dossier temporaire"
+msgstr "Temporary folder configuration"
+
+#: LocalisationToolKit.py:637
+msgid "Ce dossier est créé dans le plugin pour stocker les"
+msgstr "This folder is created in the plugin to store"
+
+#: LocalisationToolKit.py:638
+msgid "fichiers générés par les outils (extractions, backups, etc.)"
+msgstr "files generated by the tools (extractions, backups, etc.)"
+
+#: LocalisationToolKit.py:643
+msgid "Nouveau nom (ENTRÉE pour garder):"
+msgstr "New name (ENTER to keep):"
+
+#: LocalisationToolKit.py:649
+msgid "Caractères invalides dans le nom: {chars}"
+msgstr "Invalid characters in name: {chars}"
+
+#: LocalisationToolKit.py:653
+msgid "Dossier temporaire: {name}"
+msgstr "Temporary folder: {name}"
+
+#: LocalisationToolKit.py:657
+msgid "Nouveau chemin:"
+msgstr "New path:"
+
+#: LocalisationToolKit.py:659
+msgid "Nom inchangé"
+msgstr "Name unchanged"
+
+#: LocalisationToolKit.py:677
+msgid "Paramètres actuels:"
+msgstr "Current settings:"
+
+#: LocalisationToolKit.py:684
+#: LocalisationToolKit.py:727
+msgid "activé"
+msgstr "enabled"
+
+#: LocalisationToolKit.py:684
+#: LocalisationToolKit.py:727
+msgid "désactivé"
+msgstr "disabled"
+
+#: LocalisationToolKit.py:685
+msgid "Auto-ajout .gitignore"
+msgstr "Auto-add .gitignore"
+
+#: LocalisationToolKit.py:688
+#: LocalisationToolKit.py:740
+msgid "activée"
+msgstr "enabled"
+
+#: LocalisationToolKit.py:688
+#: LocalisationToolKit.py:740
+msgid "désactivée"
+msgstr "disabled"
+
+#: LocalisationToolKit.py:689
+msgid "Animation au démarrage"
+msgstr "Startup animation"
+
+#: LocalisationToolKit.py:710
+msgid "Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir"
+msgstr "Enter the number of a setting to modify, or 0 to go back"
+
+#: LocalisationToolKit.py:713
+#: LocalisationToolKit.py:780
+msgid "Votre choix (0-6):"
+msgstr "Your choice (0-6):"
+
+#: LocalisationToolKit.py:728
+msgid "Auto-ajout au .gitignore: {status}"
+msgstr "Auto-add to .gitignore: {status}"
+
+#: LocalisationToolKit.py:732
+msgid "Le dossier '{dir}' sera automatiquement ajouté au .gitignore du plugin"
+msgstr "Folder '{dir}' will be automatically added to the plugin's .gitignore"
+
+#: LocalisationToolKit.py:734
+msgid "Le dossier '{dir}' ne sera pas ajouté automatiquement au .gitignore"
+msgstr "Folder '{dir}' will not be automatically added to .gitignore"
+
+#: LocalisationToolKit.py:741
+msgid "Animation au démarrage: {status}"
+msgstr "Startup animation: {status}"
+
+#: LocalisationToolKit.py:745
+msgid "Préfixe de localisation"
+msgstr "Localization prefix"
+
+#: LocalisationToolKit.py:749
+msgid "Nouveau préfixe (ENTRÉE pour garder):"
+msgstr "New prefix (ENTER to keep):"
+
+#: LocalisationToolKit.py:754
+msgid "Préfixe inchangé"
+msgstr "Prefix unchanged"
+
+#: LocalisationToolKit.py:760
+msgid "Actuelle:"
+msgstr "Current:"
+
+#: LocalisationToolKit.py:764
+msgid "Nouvelle langue (ENTRÉE pour garder):"
+msgstr "New language (ENTER to keep):"
+
+#: LocalisationToolKit.py:769
+msgid "Langue inchangée"
+msgstr "Language unchanged"
+
+#: LocalisationToolKit.py:771
+#: LocalisationToolKit.py:795
+#: LocalisationToolKit.py:805
+#: LocalisationToolKit.py:812
+#: LocalisationToolKit.py:815
+#: LocalisationToolKit.py:818
+#: LocalisationToolKit.py:823
+msgid "Appuyez sur ENTRÉE pour continuer..."
+msgstr "Press ENTER to continue..."
+
+#: LocalisationToolKit.py:789
+#: LocalisationToolKit.py:799
+msgid "Plugin non configuré!"
+msgstr "Plugin not configured!"
+
+#: LocalisationToolKit.py:822
+#: common\menu_helpers.py:92
+#: common\menu_helpers.py:125
+msgid "Choix invalide"
+msgstr "Invalid choice"
+
+#: LocalisationToolKit.py:855
+msgid "Commande inconnue: {cmd}"
+msgstr "Unknown command: {cmd}"
+
+#: LocalisationToolKit.py:856
+msgid "Usage:"
+msgstr "Usage:"
+
+#: LocalisationToolKit.py:857
+msgid "Menu interactif"
+msgstr "Interactive menu"
+
+#: LocalisationToolKit.py:858
+msgid "Lancer Extractor"
+msgstr "Run Extractor"
+
+#: LocalisationToolKit.py:859
+msgid "Lancer Applicator"
+msgstr "Run Applicator"
+
+#: LocalisationToolKit.py:860
+msgid "Lancer Translator"
+msgstr "Run Translator"
+
+#: LocalisationToolKit.py:861
+msgid "Lancer Restore"
+msgstr "Run Restore"
+
+#: LocalisationToolKit.py:862
+msgid "Supprimer dossier temporaire"
+msgstr "Delete temporary folder"
+
+#: LocalisationToolKit.py:863
+msgid "Afficher config"
+msgstr "Show config"
+
+#: LocalisationToolKit.py:99
+msgid "Erreur lecture config: {error}"
+msgstr "Config read error: {error}"
+
+#: common\i18n.py:12
+msgid "Bonjour le monde"
+msgstr "Hello world"
+
+#: common\i18n.py:214
+msgid "Bonjour"
+msgstr "Hello"
+
+#: common\menu_helpers.py:100
+msgid "Utiliser ce dossier"
+msgstr "Use this folder"
+
+#: common\menu_helpers.py:130
+msgid "Aucun dossier {tool} trouvé"
+msgstr "No {tool} folder found"
+
+#: common\menu_helpers.py:132
+msgid "Chemin du répertoire (ENTRÉE pour annuler):"
+msgstr "Directory path (ENTER to cancel):"
+
+#: common\menu_helpers.py:45
+msgid "Dossier {tool}"
+msgstr "{tool} folder"
+
+#: common\menu_helpers.py:59
+msgid "Dossiers {tool} disponibles (du plus récent au plus ancien):"
+msgstr "Available {tool} folders (newest to oldest):"
+
+#: common\menu_helpers.py:63
+msgid "(dernier)"
+msgstr "(latest)"
+
+#: common\menu_helpers.py:67
+#: common\menu_helpers.py:101
+msgid "Saisir manuellement un autre répertoire"
+msgstr "Enter another directory manually"
+
+#: common\menu_helpers.py:68
+#: common\menu_helpers.py:102
+msgid "Annuler (garder actuel)"
+msgstr "Cancel (keep current)"
+
+#: common\menu_helpers.py:77
+#: common\menu_helpers.py:114
+msgid "Chemin du répertoire:"
+msgstr "Directory path:"
+
+#: common\menu_helpers.py:79
+#: common\menu_helpers.py:116
+#: common\menu_helpers.py:136
+msgid "Dossier: {path}"
+msgstr "Folder: {path}"
+
+#: common\menu_helpers.py:82
+#: common\menu_helpers.py:119
+#: common\menu_helpers.py:139
+msgid "Répertoire introuvable"
+msgstr "Directory not found"
+
+#: common\menu_helpers.py:85
+#: common\menu_helpers.py:122
+#: common\menu_helpers.py:142
+msgid "Annulé"
+msgstr "Cancelled"
+
+#: common\menu_helpers.py:89
+#: common\menu_helpers.py:111
+msgid "Dossier sélectionné: {name}"
+msgstr "Selected folder: {name}"
+
+#: common\menu_helpers.py:98
+msgid "Dossier auto-détecté:"
+msgstr "Auto-detected folder:"
+
+#: common\output_formatters.py:125
+msgid "FICHIERS GÉNÉRÉS"
+msgstr "GENERATED FILES"
+
+#: common\output_formatters.py:158
+msgid "RÉSUMÉ DE L'EXTRACTION"
+msgstr "EXTRACTION SUMMARY"
+
+#: common\output_formatters.py:163
+msgid "Dossier"
+msgstr "Folder"
+
+#: common\output_formatters.py:165
+msgid "Langue"
+msgstr "Language"
+
+#: common\output_formatters.py:171
+msgid "Clés LOC existantes"
+msgstr "Existing LOC keys"
+
+#: common\output_formatters.py:176
+msgid "Détails"
+msgstr "Details"

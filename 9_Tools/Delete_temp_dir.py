@@ -37,8 +37,8 @@ from typing import Optional, Tuple, List
 # Ajouter le répertoire parent au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
-
 from common.colors import Colors
+from common.i18n import _
 
 # Instance globale des couleurs
 c = Colors()

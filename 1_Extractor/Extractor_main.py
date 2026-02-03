@@ -39,6 +39,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_tool_output_path
 from common.output_formatters import OutputFormatter
+from common.i18n import _
 
 from Extractor_engine import LocalizableStringExtractor
 from Extractor_output import OutputGenerator
@@ -52,7 +53,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
 
     # Vérifier le chemin du plugin
     if not os.path.isdir(plugin_path):
-        print(f"❌ ERREUR: Répertoire introuvable: {plugin_path}")
+        print(_("ERREUR: Répertoire introuvable: {path}").format(path=plugin_path))
         sys.exit(1)
 
     # Déterminer le répertoire de sortie
@@ -66,8 +67,8 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         # Nouvelle structure dans le plugin
         timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
 
-    print(f"\nEXTRACTION - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Analyse de {os.path.basename(plugin_path)}...\n")
+    print(f"\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(_("Analyse de {plugin}...").format(plugin=os.path.basename(plugin_path)) + "\n")
 
     # Créer l'extracteur
     extractor = LocalizableStringExtractor(
@@ -105,18 +106,18 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
 
     # Statistiques principales
     main_stats = {
-        "Fichiers analysés": extractor.stats.files_processed,
-        "Fichiers avec chaînes": extractor.stats.files_with_strings,
-        "Total chaînes trouvées": extractor.stats.total_strings,
-        "Clés uniques": extractor.stats.unique_strings,
+        _("Fichiers analysés"): extractor.stats.files_processed,
+        _("Fichiers avec chaînes"): extractor.stats.files_with_strings,
+        _("Total chaînes trouvées"): extractor.stats.total_strings,
+        _("Clés uniques"): extractor.stats.unique_strings,
     }
 
     # Détails supplémentaires
     detail_stats = {
-        "Chaînes avec espaces": extractor.stats.strings_with_spacing,
-        "Chaînes avec suffixes": extractor.stats.strings_with_suffix,
-        "Lignes concaténées": extractor.stats.concatenated_lines,
-        "Membres de concaténation": extractor.stats.concat_members_total,
+        _("Chaînes avec espaces"): extractor.stats.strings_with_spacing,
+        _("Chaînes avec suffixes"): extractor.stats.strings_with_suffix,
+        _("Lignes concaténées"): extractor.stats.concatenated_lines,
+        _("Membres de concaténation"): extractor.stats.concat_members_total,
     }
 
     # Afficher le résumé formaté
@@ -132,10 +133,10 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
 
     # Afficher les fichiers générés
     files_generated = [
-        (f"TranslatedStrings_{lang}.txt", f"{extractor.stats.unique_strings} clés", "Fichier de chaînes"),
-        ("spacing_metadata.json", f"{len(extractor.spacing_metadata)} entrées", "Métadonnées d'espaces/suffixes"),
-        ("replacements.json", f"pour Applicator", "Remplacement des chaînes"),
-        ("extraction_report.txt", "rapport détaillé", "Analyse complète"),
+        (f"TranslatedStrings_{lang}.txt", _("{n} clés").format(n=extractor.stats.unique_strings), _("Fichier de chaînes")),
+        ("spacing_metadata.json", _("{n} entrées").format(n=len(extractor.spacing_metadata)), _("Métadonnées d'espaces/suffixes")),
+        ("replacements.json", _("pour Applicator"), _("Remplacement des chaînes")),
+        ("extraction_report.txt", _("rapport détaillé"), _("Analyse complète")),
     ]
 
     formatter.print_files_generated(files_generated, timestamped_output_dir)
@@ -155,7 +156,7 @@ def main():
         result = show_interactive_menu(default_plugin)
 
         if result is None:
-            print("\nExtraction annulée")
+            print("\n" + _("Extraction annulée"))
             sys.exit(1)
 
         plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log = result

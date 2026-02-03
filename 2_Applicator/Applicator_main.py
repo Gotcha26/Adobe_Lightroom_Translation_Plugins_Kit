@@ -50,6 +50,7 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter le répertoire parent au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_tool_output_path, find_latest_tool_output
+from common.i18n import _
 import glob
 import subprocess
 
@@ -165,22 +166,22 @@ def load_replacements_json(extraction_dir: str) -> Optional[Dict]:
     replacements_file = os.path.join(extraction_dir, "replacements.json")
 
     if not os.path.exists(replacements_file):
-        print(f"ERREUR: Fichier replacements.json introuvable dans {extraction_dir}")
+        print(_("ERREUR: Fichier replacements.json introuvable dans {dir}").format(dir=extraction_dir))
         return None
 
     try:
         with open(replacements_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            print(f"* replacements.json charge")
-            print(f"  - {len(data.get('files', {}))} fichiers avec remplacements")
+            print(_("* replacements.json chargé"))
+            print(_("  - {n} fichiers avec remplacements").format(n=len(data.get('files', {}))))
             total_replacements = sum(
                 f_data.get('total_replacements', 0)
                 for f_data in data.get('files', {}).values()
             )
-            print(f"  - {total_replacements} remplacements prevus")
+            print(_("  - {n} remplacements prévus").format(n=total_replacements))
             return data
     except Exception as e:
-        print(f"ERREUR lors du chargement de replacements.json: {e}")
+        print(_("ERREUR lors du chargement de replacements.json: {error}").format(error=e))
         return None
 
 
@@ -345,20 +346,20 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
     """Traite tous les fichiers Lua du plugin en utilisant replacements.json."""
 
     if not os.path.isdir(plugin_path):
-        print(f"ERREUR: Repertoire du plugin introuvable: {plugin_path}")
+        print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
         return False
 
     # Auto-détection du dossier d'extraction si non spécifié
     if not extraction_dir:
         extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not extraction_dir:
-            print("ERREUR: Aucune extraction trouvée dans __i18n_kit__/Extractor/")
-            print("        Lancez d'abord Extractor sur ce plugin.")
+            print(_("ERREUR: Aucune extraction trouvée dans __i18n_kit__/Extractor/"))
+            print(_("        Lancez d'abord Extractor sur ce plugin."))
             return False
-        print(f"* Auto-détection: {extraction_dir}")
+        print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
 
     if not os.path.isdir(extraction_dir):
-        print(f"ERREUR: Repertoire Extractor introuvable: {extraction_dir}")
+        print(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
         return False
 
     # Créer le dossier de sortie Applicator
@@ -366,26 +367,28 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
     backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
 
     print("\n" + "=" * 80)
-    print("LOCALISATION DU PLUGIN (v7.0 - structure __i18n_kit__)")
+    print(_("LOCALISATION DU PLUGIN"))
     print("=" * 80)
-    print(f"Repertoire du plugin   : {plugin_path}")
-    print(f"Dossier Extractor      : {extraction_dir}")
-    print(f"Sortie Applicator      : {applicator_output}")
-    print(f"Mode                   : {'DRY-RUN (simulation)' if dry_run else 'MODIFICATION REELLE'}")
-    print(f"Sauvegardes .bak       : {'OUI' if create_backup and not dry_run else 'NON'}")
+    print(_("Répertoire du plugin") + f"   : {plugin_path}")
+    print(_("Dossier Extractor") + f"      : {extraction_dir}")
+    print(_("Sortie Applicator") + f"      : {applicator_output}")
+    mode_str = _("DRY-RUN (simulation)") if dry_run else _("MODIFICATION RÉELLE")
+    print(_("Mode") + f"                   : {mode_str}")
+    backup_str = _("OUI") if create_backup and not dry_run else _("NON")
+    print(_("Sauvegardes .bak") + f"       : {backup_str}")
     print("=" * 80 + "\n")
 
     # Charger replacements.json
     replacements_data = load_replacements_json(extraction_dir)
 
     if not replacements_data:
-        print("ERREUR: Impossible de charger les remplacements")
+        print(_("ERREUR: Impossible de charger les remplacements"))
         return False
 
     files_data = replacements_data.get('files', {})
 
     if not files_data:
-        print("Aucun remplacement a effectuer")
+        print(_("Aucun remplacement à effectuer"))
         return True
 
     print()
@@ -395,18 +398,18 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
         file_path = os.path.join(plugin_path, file_rel_path)
 
         if os.path.exists(file_path):
-            print(f"Traitement de {file_rel_path}...")
+            print(_("Traitement de {file}...").format(file=file_rel_path))
             replacements_count = process_file_with_replacements(
                 file_path, file_replacements, report, dry_run, backup_dir, create_backup
             )
             report.stats['files_processed'] += 1
             if replacements_count > 0:
                 report.stats['files_modified'] += 1
-                print(f"  * {replacements_count} chaine(s) remplacee(s)")
+                print(_("  * {n} chaîne(s) remplacée(s)").format(n=replacements_count))
             else:
-                print(f"  - Aucun remplacement")
+                print(_("  - Aucun remplacement"))
         else:
-            print(f"  ! Fichier introuvable: {file_rel_path}")
+            print(_("  ! Fichier introuvable: {file}").format(file=file_rel_path))
             report.add_error(file_rel_path, 0, "Fichier introuvable")
 
     # Generer le rapport dans le dossier Applicator
@@ -414,24 +417,24 @@ def process_plugin_directory(plugin_path: str, extraction_dir: str = None, dry_r
     report.generate(report_path)
 
     print("\n" + "=" * 80)
-    print("RESUME")
+    print(_("RÉSUMÉ"))
     print("=" * 80)
-    print(f"Fichiers traites        : {report.stats['files_processed']}")
-    print(f"Fichiers modifies       : {report.stats['files_modified']}")
-    print(f"Lignes modifiees        : {report.stats['total_replacements']}")
-    print(f"Chaines remplacees      : {report.stats['strings_replaced']}")
-    print(f"Chaines ignorees        : {len(report.skipped)}")
-    print(f"\nSortie Applicator       : {applicator_output}")
+    print(_("Fichiers traités") + f"        : {report.stats['files_processed']}")
+    print(_("Fichiers modifiés") + f"       : {report.stats['files_modified']}")
+    print(_("Lignes modifiées") + f"        : {report.stats['total_replacements']}")
+    print(_("Chaînes remplacées") + f"      : {report.stats['strings_replaced']}")
+    print(_("Chaînes ignorées") + f"        : {len(report.skipped)}")
+    print("\n" + _("Sortie Applicator") + f"       : {applicator_output}")
     if not dry_run and report.stats['files_modified'] > 0 and create_backup:
-        print(f"Backups                 : {backup_dir}")
-    print(f"Rapport detaille        : {report_path}")
+        print(_("Backups") + f"                 : {backup_dir}")
+    print(_("Rapport détaillé") + f"        : {report_path}")
 
     if dry_run:
-        print("\n!!! MODE DRY-RUN: Aucun fichier n'a ete modifie")
+        print("\n!!! " + _("MODE DRY-RUN: Aucun fichier n'a été modifié"))
 
     print("\n" + "=" * 80)
-    print("IMPORTANT: Redemarrez Lightroom apres les modifications!")
-    print("           (le rechargement du plugin ne suffit pas)")
+    print(_("IMPORTANT: Redémarrez Lightroom après les modifications!"))
+    print(_("           (le rechargement du plugin ne suffit pas)"))
     print("=" * 80)
 
     return True
@@ -471,22 +474,22 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
     - Si TranslatedStrings_xx.txt existe: propose d'ouvrir Translator
     """
     print("\n" + "-" * 80)
-    print("GESTION DES TRADUCTIONS")
+    print(_("GESTION DES TRADUCTIONS"))
     print("-" * 80)
 
     existing_files = find_translation_files(plugin_path)
 
     if existing_files:
         # Fichier(s) de traduction existant(s)
-        print("\nFichier(s) de traduction trouvé(s) à la racine du plugin:")
+        print("\n" + _("Fichier(s) de traduction trouvé(s) à la racine du plugin:"))
         for f in existing_files:
             print(f"  - {os.path.basename(f)}")
 
-        print("\nVoulez-vous ouvrir le gestionnaire de traductions (Translator)?")
-        print("Cela permet de synchroniser les traductions avec les nouvelles cles.")
+        print("\n" + _("Voulez-vous ouvrir le gestionnaire de traductions (Translator)?"))
+        print(_("Cela permet de synchroniser les traductions avec les nouvelles clés."))
         print()
 
-        choice = input("Ouvrir Translator? [o/N]: ").strip().lower()
+        choice = input(_("Ouvrir Translator? [o/N]:") + " ").strip().lower()
 
         if choice in ['o', 'oui', 'y', 'yes']:
             # Lancer Translator
@@ -497,7 +500,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
             )
 
             if os.path.exists(tm_script):
-                print(f"\nLancement de Translator...")
+                print("\n" + _("Lancement de Translator..."))
                 try:
                     subprocess.run(
                         [sys.executable, tm_script],
@@ -505,15 +508,15 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
                         env={**os.environ, 'PYTHONIOENCODING': 'utf-8'}
                     )
                 except Exception as e:
-                    print(f"[ERREUR] Impossible de lancer Translator: {e}")
+                    print(_("[ERREUR] Impossible de lancer Translator: {error}").format(error=e))
             else:
-                print(f"[ERREUR] Translator introuvable: {tm_script}")
+                print(_("[ERREUR] Translator introuvable: {path}").format(path=tm_script))
         else:
-            print("[OK] Translator non lance")
+            print(_("[OK] Translator non lancé"))
     else:
         # Aucun fichier de traduction
-        print("\nAucun fichier TranslatedStrings_xx.txt trouve a la racine du plugin.")
-        print("Ce fichier est necessaire pour les traductions Lightroom.")
+        print("\n" + _("Aucun fichier TranslatedStrings_xx.txt trouvé à la racine du plugin."))
+        print(_("Ce fichier est nécessaire pour les traductions Lightroom."))
 
         # Chercher un template dans l'extraction
         if not extraction_dir:
@@ -525,29 +528,29 @@ def handle_translation_files(plugin_path: str, extraction_dir: str = None) -> No
             template_name = os.path.basename(template_file)
             dest_path = os.path.join(plugin_path, template_name)
 
-            print(f"\nUn fichier template a ete trouve dans l'extraction:")
+            print("\n" + _("Un fichier template a été trouvé dans l'extraction:"))
             print(f"  {template_file}")
             print()
-            print(f"Voulez-vous le copier à la racine du plugin?")
+            print(_("Voulez-vous le copier à la racine du plugin?"))
             print(f"  -> {dest_path}")
             print()
 
-            choice = input("Copier le fichier? [O/n]: ").strip().lower()
+            choice = input(_("Copier le fichier? [O/n]:") + " ").strip().lower()
 
             if choice in ['o', 'oui', 'y', 'yes', '']:
                 try:
                     shutil.copy2(template_file, dest_path)
-                    print(f"\n[OK] Fichier copie: {dest_path}")
-                    print("     Vous pouvez maintenant editer ce fichier pour ajouter les traductions.")
+                    print("\n" + _("[OK] Fichier copié: {path}").format(path=dest_path))
+                    print("     " + _("Vous pouvez maintenant éditer ce fichier pour ajouter les traductions."))
                 except Exception as e:
-                    print(f"\n[ERREUR] Impossible de copier le fichier: {e}")
+                    print("\n" + _("[ERREUR] Impossible de copier le fichier: {error}").format(error=e))
             else:
-                print("[OK] Fichier non copie")
+                print(_("[OK] Fichier non copié"))
         else:
-            print("\nPour creer un fichier de traduction:")
-            print("  1. Lancez l'Extractor sur le plugin")
-            print("  2. Copiez le fichier TranslatedStrings_xx.txt genere a la racine du plugin")
-            print("  3. Editez le fichier pour ajouter vos traductions")
+            print("\n" + _("Pour créer un fichier de traduction:"))
+            print(_("  1. Lancez l'Extractor sur le plugin"))
+            print(_("  2. Copiez le fichier TranslatedStrings_xx.txt généré à la racine du plugin"))
+            print(_("  3. Éditez le fichier pour ajouter vos traductions"))
 
 
 def main():
@@ -564,7 +567,7 @@ def main():
         result = show_interactive_menu(default_plugin)
 
         if result is None:
-            print("\nApplication annulee")
+            print("\n" + _("Application annulée"))
             sys.exit(1)
 
         plugin_path, extraction_dir, dry_run, create_backup = result

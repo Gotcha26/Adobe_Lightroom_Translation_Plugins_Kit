@@ -15,6 +15,7 @@ from typing import Dict, List, Set, Tuple, Optional
 # Ajouter le répertoire parent au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.colors import Colors
+from common.i18n import _
 
 from Extractor_config import (
     LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, ALL_STRINGS_PATTERN,
@@ -200,7 +201,7 @@ class LocalizableStringExtractor:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                 lines = f.readlines()
         except Exception as e:
-            print(f"Erreur lecture {file_path}: {e}")
+            print(_("Erreur lecture {path}: {error}").format(path=file_path, error=e))
             return
 
         file_has_strings = False

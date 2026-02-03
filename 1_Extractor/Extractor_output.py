@@ -6,10 +6,15 @@ Génération des fichiers de sortie: PluginStrings.txt, JSON, rapports, etc.
 """
 
 import os
+import sys
 import json
 from datetime import datetime
 from typing import Dict, List
 from collections import defaultdict
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.i18n import _
 
 from Extractor_models import ExtractedString, ExtractionStats
 
@@ -84,7 +89,7 @@ class OutputGenerator:
 
                 f.write("\n")
 
-        print(f"✓ PluginStrings généré: {output_path} ({len(unique_keys)} clés uniques)")
+        print(_("✓ PluginStrings généré: {path} ({n} clés uniques)").format(path=output_path, n=len(unique_keys)))
 
     def generate_spacing_metadata(self, spacing_metadata: Dict[str, Dict], text_to_key: Dict[str, str],
                                    output_path: str):
@@ -99,7 +104,7 @@ class OutputGenerator:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ Spacing metadata:     {output_path} ({len(spacing_metadata)} clés)")
+        print(_("✓ Spacing metadata: {path} ({n} clés)").format(path=output_path, n=len(spacing_metadata)))
 
     def generate_replacements_json(self, extracted: List[ExtractedString], output_path: str,
                                    text_to_key: Dict[str, str]):
@@ -199,7 +204,7 @@ class OutputGenerator:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
         total_replacements = sum(f['total_replacements'] for f in files_data.values())
-        print(f"✓ Replacements JSON:    {output_path} ({total_replacements} lignes à modifier)")
+        print(_("✓ Replacements JSON: {path} ({n} lignes à modifier)").format(path=output_path, n=total_replacements))
 
     def _build_loc_call(self, entry: ExtractedString) -> str:
         """

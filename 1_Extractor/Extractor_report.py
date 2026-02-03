@@ -6,9 +6,14 @@ Génération des rapports détaillés d'extraction et d'analyse.
 """
 
 import os
+import sys
 from datetime import datetime
 from typing import Dict, List
 from collections import defaultdict
+
+# Ajouter le répertoire parent au path pour importer common
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.i18n import _
 
 from Extractor_models import ExtractedString, ExtractionStats
 
@@ -176,7 +181,7 @@ class ReportGenerator:
                 # Utiliser base_text (sans suffixe) pour la valeur
                 f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
 
-        print(f"✓ Rapport:              {output_path}")
+        print(_("✓ Rapport: {path}").format(path=output_path))
 
     def _get_markers(self, entry: ExtractedString) -> str:
         """Retourne la chaîne de marqueurs (émojis) pour une entrée."""

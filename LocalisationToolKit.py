@@ -42,6 +42,7 @@ from common.paths import (
     validate_plugin_path, DEFAULT_I18N_DIR, TIMESTAMP_LENGTH
 )
 from common.colors import Colors
+from common.i18n import _
 
 # Instance couleurs
 c = Colors()
@@ -95,7 +96,7 @@ class ConfigManager:
                     # Fusionner avec defaults pour nouvelles clés
                     config = {**DEFAULT_CONFIG, **loaded}
             except Exception as e:
-                print(f"⚠️  Erreur lecture config: {e}")
+                print(_("Erreur lecture config: {error}").format(error=e))
 
         # Appliquer le nom du dossier temporaire
         temp_dir = config.get("temp_dir", DEFAULT_I18N_DIR)
@@ -110,7 +111,7 @@ class ConfigManager:
             with open(self.config_path, 'w', encoding='utf-8') as f:
                 json.dump(self.config, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"⚠️  Erreur sauvegarde config: {e}")
+            print(_("Erreur sauvegarde config: {error}").format(error=e))
 
     def get(self, key: str, default=None):
         """Récupère une valeur de configuration."""
@@ -125,16 +126,16 @@ class ConfigManager:
         """Affiche la configuration actuelle."""
         plugin_path = self.config.get('plugin_path', '')
         temp_dir = self.config.get('temp_dir', DEFAULT_I18N_DIR)
-        i18n_path = get_i18n_kit_path(plugin_path) if plugin_path else '(non defini)'
+        i18n_path = get_i18n_kit_path(plugin_path) if plugin_path else _('(non défini)')
 
         print()
-        print(c.title("Configuration actuelle:"))
+        print(c.title(_("Configuration actuelle:")))
         print()
-        print(c.config_line("Plugin path", plugin_path or f"{c.ERROR}(non défini){c.RESET}"))
-        print(c.config_line("Dossier temporaire", temp_dir))
-        print(c.config_line("Chemin complet", i18n_path))
-        print(c.config_line("Préfixe LOC", self.config.get('prefix', '$$$/Piwigo')))
-        print(c.config_line("Langue par défaut", self.config.get('lang', 'en')))
+        print(c.config_line(_("Plugin path"), plugin_path or f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}"))
+        print(c.config_line(_("Dossier temporaire"), temp_dir))
+        print(c.config_line(_("Chemin complet"), i18n_path))
+        print(c.config_line(_("Préfixe LOC"), self.config.get('prefix', '$$$/Piwigo')))
+        print(c.config_line(_("Langue par défaut"), self.config.get('lang', 'en')))
         print()
 
         # Afficher les exécutions récentes si le plugin est configuré
@@ -143,7 +144,7 @@ class ConfigManager:
 
     def _display_recent_executions(self, plugin_path: str):
         """Affiche les dernières exécutions de chaque outil."""
-        print(f"   {c.DIM}Exécutions récentes dans {get_i18n_dir()}/:{c.RESET}")
+        print(f"   {c.DIM}" + _("Exécutions récentes dans {dir}/:").format(dir=get_i18n_dir()) + f"{c.RESET}")
 
         tools = ["Extractor", "Applicator", "Translator"]
 
@@ -154,7 +155,7 @@ class ConfigManager:
                 formatted = self._format_timestamp(timestamp)
                 print(f"     {c.KEY}{tool:20}{c.RESET} : {c.VALUE}{formatted}{c.RESET}")
             else:
-                print(f"     {c.KEY}{tool:20}{c.RESET} : {c.DIM}(aucune){c.RESET}")
+                print(f"     {c.KEY}{tool:20}{c.RESET} : {c.DIM}" + _("(aucune)") + f"{c.RESET}")
 
         print()
 
@@ -223,14 +224,14 @@ class ConfigManager:
                 # Ajouter une ligne vide si le fichier n'est pas vide et ne se termine pas par une ligne vide
                 if existing_lines and existing_lines[-1].strip():
                     f.write('\n')
-                f.write(f"# Temporary folder for localisation tools\n")
+                f.write(f"# {_('Dossier temporaire pour les outils de localisation')}\n")
                 f.write(f"{ignore_line}\n")
 
-            print(f"     {c.OK}[OK]{c.RESET} Ajouté '{ignore_line}' au .gitignore")
+            print(f"     {c.OK}[OK]{c.RESET} " + _("Ajouté '{line}' au .gitignore").format(line=ignore_line))
             return True
 
         except Exception as e:
-            print(f"     {c.WARNING}[!]{c.RESET} Impossible d'ajouter au .gitignore: {e}")
+            print(f"     {c.WARNING}[!]{c.RESET} " + _("Impossible d'ajouter au .gitignore: {error}").format(error=e))
             return False
 
     def prompt_add_to_gitignore(self, plugin_path: str) -> bool:
@@ -283,11 +284,11 @@ class ConfigManager:
 
         # Demander à l'utilisateur
         print()
-        print(f"{c.WARNING}Le dossier temporaire '{temp_dir}' n'est pas dans le .gitignore{c.RESET}")
-        print(f"Voulez-vous l'ajouter automatiquement ?")
-        print(f"  Ligne à ajouter: {c.VALUE}{ignore_line}{c.RESET}")
+        print(f"{c.WARNING}" + _("Le dossier temporaire '{dir}' n'est pas dans le .gitignore").format(dir=temp_dir) + f"{c.RESET}")
+        print(_("Voulez-vous l'ajouter automatiquement ?"))
+        print(f"  " + _("Ligne à ajouter:") + f" {c.VALUE}{ignore_line}{c.RESET}")
         print()
-        response = input(f"{c.PROMPT}Ajouter au .gitignore? [O/n]: {c.RESET}").strip().lower()
+        response = input(f"{c.PROMPT}" + _("Ajouter au .gitignore? [O/n]:") + f" {c.RESET}").strip().lower()
 
         if response in ['', 'o', 'oui', 'y', 'yes']:
             return self.add_temp_dir_to_gitignore(plugin_path)
@@ -317,7 +318,7 @@ class ConfigManager:
             if os.path.exists(git_dir):
                 git_root = parent_dir
             else:
-                return f"  {c.DIM}.gitignore: N/A (pas de dépôt git){c.RESET}"
+                return f"  {c.DIM}.gitignore: N/A " + _("(pas de dépôt git)") + f"{c.RESET}"
 
         gitignore_path = os.path.join(git_root, ".gitignore")
         temp_dir = self.config.get("temp_dir", DEFAULT_I18N_DIR)
@@ -331,7 +332,7 @@ class ConfigManager:
 
         # Vérifier si le .gitignore existe
         if not os.path.exists(gitignore_path):
-            return f"  {c.WARNING}.gitignore: Absent{c.RESET}"
+            return f"  {c.WARNING}.gitignore: " + _("Absent") + f"{c.RESET}"
 
         # Vérifier si le dossier temporaire est dans le .gitignore
         try:
@@ -349,11 +350,11 @@ class ConfigManager:
             else:
                 auto_enabled = self.config.get("auto_add_gitignore", True)
                 if auto_enabled:
-                    return f"{c.ERROR}Exception .gitignore - sera ajouté{c.RESET}"
+                    return f"{c.ERROR}" + _("Exception .gitignore - sera ajouté") + f"{c.RESET}"
                 else:
-                    return f"{c.WARNING}Exception .gitignore - manquant{c.RESET}"
+                    return f"{c.WARNING}" + _("Exception .gitignore - manquant") + f"{c.RESET}"
         except Exception:
-            return f"  {c.ERROR}.gitignore: Erreur lecture{c.RESET}"
+            return f"  {c.ERROR}.gitignore: " + _("Erreur lecture") + f"{c.RESET}"
 
 
 # =============================================================================
@@ -388,7 +389,7 @@ class ToolLauncher:
                     cwd: str = None) -> bool:
         """Exécute un script Python."""
         if not script_path or not os.path.exists(script_path):
-            print(f"❌ Script introuvable: {script_path}")
+            print(_("Script introuvable: {path}").format(path=script_path))
             return False
 
         cmd = [sys.executable, script_path]
@@ -398,8 +399,8 @@ class ToolLauncher:
         working_dir = cwd or os.path.dirname(script_path)
 
         try:
-            print(f"\nLancement: {os.path.basename(script_path)}")
-            print(f"Repertoire: {working_dir}")
+            print(f"\n" + _("Lancement:") + f" {os.path.basename(script_path)}")
+            print(_("Répertoire:") + f" {working_dir}")
             print("-" * 60)
 
             result = subprocess.run(
@@ -410,7 +411,7 @@ class ToolLauncher:
 
             return result.returncode == 0
         except Exception as e:
-            print(f"[ERREUR] Erreur execution: {e}")
+            print(_("[ERREUR] Erreur exécution: {error}").format(error=e))
             return False
 
     def run_extractor(self, interactive: bool = True) -> bool:
@@ -455,7 +456,7 @@ class ToolLauncher:
             extraction_dir = self.config.get("last_extraction_dir")
 
             if not extraction_dir:
-                print("[ERREUR] Aucune extraction precedente. Lancez d'abord l'Extractor.")
+                print(_("[ERREUR] Aucune extraction précédente. Lancez d'abord l'Extractor."))
                 return False
 
             args = [
@@ -480,7 +481,7 @@ class ToolLauncher:
             # Mode CLI avec config
             plugin_path = self.config.get("plugin_path")
             if not plugin_path:
-                print("[ERREUR] Plugin non configuré.")
+                print(_("[ERREUR] Plugin non configuré."))
                 return False
 
             args = ["--plugin-path", plugin_path]
@@ -544,7 +545,7 @@ class MainMenu:
     def print_header(self):
         """Affiche l'en-tête."""
         print()
-        print(c.box_header("LIGHTROOM PLUGIN LOCALIZATION TOOLKIT v2.1"))
+        print(c.box_header("LIGHTROOM PLUGIN LOCALIZATION TOOLKIT"))
 
         # Afficher le plugin configuré
         plugin = self.config.get("plugin_path", "")
@@ -560,44 +561,44 @@ class MainMenu:
             else:
                 print(f"  Plugin: {c.VALUE}{plugin_name}{c.RESET} [{c.OK}OK{c.RESET}]")
         else:
-            print(f"  {c.WARNING}Plugin non configuré ou introuvable{c.RESET}")
+            print(f"  {c.WARNING}" + _("Plugin non configuré ou introuvable") + f"{c.RESET}")
 
         print()
 
     def print_menu(self):
         """Affiche le menu principal."""
-        print(c.title("OUTILS DE LOCALISATION"))
+        print(c.title(_("OUTILS DE LOCALISATION")))
         print(c.separator())
-        print(c.menu_option("1", "Extractor      - Extraire les chaînes"))
-        print(c.menu_option("2", "Applicator     - Appliquer les localisations"))
-        print(c.menu_option("3", "Translation    - Gérer les traductions"))
-        print(c.menu_option("4", "Restore        - Restaurer les backups"))
-        print(c.menu_option("5", f"{c.WARNING}Supprimer{c.RESET}      - Nettoyer le dossier temporaire"))
+        print(c.menu_option("1", _("Extractor      - Extraire les chaînes")))
+        print(c.menu_option("2", _("Applicator     - Appliquer les localisations")))
+        print(c.menu_option("3", _("Translation    - Gérer les traductions")))
+        print(c.menu_option("4", _("Restore        - Restaurer les backups")))
+        print(c.menu_option("5", f"{c.WARNING}" + _("Supprimer") + f"{c.RESET}      - " + _("Nettoyer le dossier temporaire")))
         print()
-        print(c.title("CONFIGURATION"))
+        print(c.title(_("CONFIGURATION")))
         print(c.separator())
-        print(c.menu_option("6", "Configuration du plugin"))
+        print(c.menu_option("6", _("Configuration du plugin")))
         print()
-        print(c.menu_option("0", "Quitter"))
+        print(c.menu_option("0", _("Quitter")))
         print()
 
     def input_plugin_path(self):
         """Configure le chemin du plugin."""
         print()
-        print(c.title("Configuration du chemin du plugin"))
+        print(c.title(_("Configuration du chemin du plugin")))
         print(c.separator())
 
         current = self.config.get("plugin_path", "")
         if current:
-            print(f"Actuel: {c.VALUE}{current}{c.RESET}")
+            print(_("Actuel:") + f" {c.VALUE}{current}{c.RESET}")
             print()
 
-        print("Exemples:")
+        print(_("Exemples:"))
         print(f"  {c.VALUE}D:\\Lightroom\\plugin.lrplugin{c.RESET}")
         print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
         print()
 
-        path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder): ")).strip()
+        path = input(c.prompt(_("Nouveau chemin (ENTRÉE pour garder):") + " ")).strip()
 
         if path:
             is_valid, normalized, warning = validate_plugin_path(path)
@@ -609,53 +610,53 @@ class MainMenu:
             # Avertissement si pas .lrplugin
             if warning:
                 print(c.warning(warning))
-                print("            Les plugins Lightroom doivent se terminer par .lrplugin")
-                confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+                print("            " + _("Les plugins Lightroom doivent se terminer par .lrplugin"))
+                confirm = input(c.prompt(_("Continuer quand même? [o/N]:") + " ")).strip().lower()
                 if confirm not in ['o', 'oui', 'y', 'yes']:
-                    print(c.error("Configuration annulée"))
+                    print(c.error(_("Configuration annulée")))
                     return
 
             self.config.set("plugin_path", normalized)
-            print(c.success(f"Plugin configuré: {normalized}"))
+            print(c.success(_("Plugin configuré: {path}").format(path=normalized)))
 
             # Afficher le chemin du dossier temporaire
             i18n_path = get_i18n_kit_path(normalized)
-            print(f"     Sorties dans: {c.VALUE}{i18n_path}{c.RESET}")
+            print(f"     " + _("Sorties dans:") + f" {c.VALUE}{i18n_path}{c.RESET}")
         else:
-            print(c.success("Chemin inchangé"))
+            print(c.success(_("Chemin inchangé")))
 
     def input_temp_dir(self):
         """Configure le nom du dossier temporaire."""
         print()
-        print(c.title("Configuration du dossier temporaire"))
+        print(c.title(_("Configuration du dossier temporaire")))
         print(c.separator())
 
         current = self.config.get("temp_dir", DEFAULT_I18N_DIR)
-        print(f"Actuel: {c.VALUE}{current}{c.RESET}")
+        print(_("Actuel:") + f" {c.VALUE}{current}{c.RESET}")
         print()
-        print("Ce dossier est créé dans le plugin pour stocker les")
-        print("fichiers générés par les outils (extractions, backups, etc.)")
+        print(_("Ce dossier est créé dans le plugin pour stocker les"))
+        print(_("fichiers générés par les outils (extractions, backups, etc.)"))
         print()
-        print(f"Exemples: {c.VALUE}__i18n_tmp__{c.RESET}, {c.VALUE}__i18n_kit__{c.RESET}, {c.VALUE}.i18n_work{c.RESET}")
+        print(_("Exemples:") + f" {c.VALUE}__i18n_tmp__{c.RESET}, {c.VALUE}__i18n_kit__{c.RESET}, {c.VALUE}.i18n_work{c.RESET}")
         print()
 
-        name = input(c.prompt("Nouveau nom (ENTRÉE pour garder): ")).strip()
+        name = input(c.prompt(_("Nouveau nom (ENTRÉE pour garder):") + " ")).strip()
 
         if name:
             # Valider le nom (pas de caractères invalides)
             invalid_chars = '<>:"/\\|?*'
             if any(char in name for char in invalid_chars):
-                print(c.error(f"Caractères invalides dans le nom: {invalid_chars}"))
+                print(c.error(_("Caractères invalides dans le nom: {chars}").format(chars=invalid_chars)))
             else:
                 self.config.set("temp_dir", name)
                 set_i18n_dir(name)
-                print(c.success(f"Dossier temporaire: {name}"))
+                print(c.success(_("Dossier temporaire: {name}").format(name=name)))
 
                 plugin_path = self.config.get("plugin_path", "")
                 if plugin_path:
-                    print(f"     Nouveau chemin: {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
+                    print(f"     " + _("Nouveau chemin:") + f" {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
         else:
-            print(c.success("Nom inchangé"))
+            print(c.success(_("Nom inchangé")))
 
     def configure_paths(self):
         """Menu de configuration avec affichage et édition des paramètres."""
@@ -673,22 +674,22 @@ class MainMenu:
         auto_gitignore = self.config.get("auto_add_gitignore", True)
         enable_flip = self.config.get("enable_flip_anim", True)
 
-        print(c.title("Paramètres actuels:"))
+        print(c.title(_("Paramètres actuels:")))
         print()
-        print(c.config_line("1. Plugin path", plugin_path or f"{c.ERROR}(non défini){c.RESET}"))
-        print(c.config_line("2. Dossier temporaire", temp_dir))
-        print(c.config_line("   Chemin complet", i18n_path))
+        print(c.config_line("1. " + _("Plugin path"), plugin_path or f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}"))
+        print(c.config_line("2. " + _("Dossier temporaire"), temp_dir))
+        print(c.config_line("   " + _("Chemin complet"), i18n_path))
 
         # Auto-ajout .gitignore
-        gitignore_status = f"{c.OK}activé{c.RESET}" if auto_gitignore else f"{c.DIM}désactivé{c.RESET}"
-        print(c.config_line("3. Auto-ajout .gitignore", gitignore_status))
+        gitignore_status = f"{c.OK}" + _("activé") + f"{c.RESET}" if auto_gitignore else f"{c.DIM}" + _("désactivé") + f"{c.RESET}"
+        print(c.config_line("3. " + _("Auto-ajout .gitignore"), gitignore_status))
 
         # Animation
-        flip_status = f"{c.OK}activée{c.RESET}" if enable_flip else f"{c.DIM}désactivée{c.RESET}"
-        print(c.config_line("4. Animation au démarrage", flip_status))
+        flip_status = f"{c.OK}" + _("activée") + f"{c.RESET}" if enable_flip else f"{c.DIM}" + _("désactivée") + f"{c.RESET}"
+        print(c.config_line("4. " + _("Animation au démarrage"), flip_status))
 
-        print(c.config_line("5. Préfixe LOC", prefix))
-        print(c.config_line("6. Langue par défaut", lang))
+        print(c.config_line("5. " + _("Préfixe LOC"), prefix))
+        print(c.config_line("6. " + _("Langue par défaut"), lang))
         print()
 
         # Afficher les exécutions récentes si le plugin est configuré
@@ -706,10 +707,10 @@ class MainMenu:
             print()
 
         print(c.separator())
-        print(f"{c.DIM}Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir{c.RESET}")
+        print(f"{c.DIM}" + _("Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir") + f"{c.RESET}")
         print()
 
-        choice = input(c.prompt("Votre choix (0-6): ")).strip()
+        choice = input(c.prompt(_("Votre choix (0-6):") + " ")).strip()
 
         if choice == '0':
             # Retour au menu principal sans validation
@@ -723,48 +724,51 @@ class MainMenu:
             current = self.config.get("auto_add_gitignore", True)
             new_value = not current
             self.config.set("auto_add_gitignore", new_value)
-            status = "activé" if new_value else "désactivé"
-            print(c.success(f"Auto-ajout au .gitignore: {status}"))
+            status = _("activé") if new_value else _("désactivé")
+            print(c.success(_("Auto-ajout au .gitignore: {status}").format(status=status)))
             print()
-            print(f"  Le dossier '{self.config.get('temp_dir', DEFAULT_I18N_DIR)}' sera")
-            print(f"  {'automatiquement ajouté' if new_value else 'ignoré dans'} au .gitignore du plugin")
+            temp_dir_name = self.config.get('temp_dir', DEFAULT_I18N_DIR)
+            if new_value:
+                print(_("Le dossier '{dir}' sera automatiquement ajouté au .gitignore du plugin").format(dir=temp_dir_name))
+            else:
+                print(_("Le dossier '{dir}' ne sera pas ajouté automatiquement au .gitignore").format(dir=temp_dir_name))
         elif choice == '4':
             # Toggle animation Flip-anim
             current = self.config.get("enable_flip_anim", True)
             new_value = not current
             self.config.set("enable_flip_anim", new_value)
-            status = "activée" if new_value else "désactivée"
-            print(c.success(f"Animation au démarrage: {status}"))
+            status = _("activée") if new_value else _("désactivée")
+            print(c.success(_("Animation au démarrage: {status}").format(status=status)))
         elif choice == '5':
             # Modifier le préfixe
             print()
-            print(c.title("Préfixe de localisation"))
+            print(c.title(_("Préfixe de localisation")))
             print(c.separator())
-            print(f"Actuel: {c.VALUE}{prefix}{c.RESET}")
+            print(_("Actuel:") + f" {c.VALUE}{prefix}{c.RESET}")
             print()
-            new_prefix = input(c.prompt("Nouveau préfixe (ENTRÉE pour garder): ")).strip()
+            new_prefix = input(c.prompt(_("Nouveau préfixe (ENTRÉE pour garder):") + " ")).strip()
             if new_prefix:
                 self.config.set("prefix", new_prefix)
-                print(c.success(f"Préfixe: {new_prefix}"))
+                print(c.success(_("Préfixe: {prefix}").format(prefix=new_prefix)))
             else:
-                print(c.success("Préfixe inchangé"))
+                print(c.success(_("Préfixe inchangé")))
         elif choice == '6':
             # Modifier la langue
             print()
-            print(c.title("Langue par défaut"))
+            print(c.title(_("Langue par défaut")))
             print(c.separator())
-            print(f"Actuelle: {c.VALUE}{lang}{c.RESET}")
+            print(_("Actuelle:") + f" {c.VALUE}{lang}{c.RESET}")
             print()
-            print(f"Exemples: {c.VALUE}en{c.RESET}, {c.VALUE}fr{c.RESET}, {c.VALUE}es{c.RESET}, {c.VALUE}de{c.RESET}")
+            print(_("Exemples:") + f" {c.VALUE}en{c.RESET}, {c.VALUE}fr{c.RESET}, {c.VALUE}es{c.RESET}, {c.VALUE}de{c.RESET}")
             print()
-            new_lang = input(c.prompt("Nouvelle langue (ENTRÉE pour garder): ")).strip()
+            new_lang = input(c.prompt(_("Nouvelle langue (ENTRÉE pour garder):") + " ")).strip()
             if new_lang:
                 self.config.set("lang", new_lang)
-                print(c.success(f"Langue: {new_lang}"))
+                print(c.success(_("Langue: {lang}").format(lang=new_lang)))
             else:
-                print(c.success("Langue inchangée"))
+                print(c.success(_("Langue inchangée")))
 
-        input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+        input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
 
     def run(self):
         """Boucle principale du menu."""
@@ -773,50 +777,50 @@ class MainMenu:
             self.print_header()
             self.print_menu()
 
-            choice = input(c.prompt("Votre choix (0-6): ")).strip()
+            choice = input(c.prompt(_("Votre choix (0-6):") + " ")).strip()
 
             if choice == '0':
-                print("\nAu revoir!")
+                print("\n" + _("Au revoir!"))
                 break
             elif choice == '1':
                 # Vérifier plugin
                 plugin = self.config.get("plugin_path")
                 if not plugin or not os.path.isdir(plugin):
-                    print(c.warning("Plugin non configuré!"))
+                    print(c.warning(_("Plugin non configuré!")))
                     self.input_plugin_path()
                 else:
                     # Demander d'ajouter au .gitignore si nécessaire
                     self.config.prompt_add_to_gitignore(plugin)
                     self.launcher.run_extractor()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '2':
                 plugin = self.config.get("plugin_path")
                 if not plugin or not os.path.isdir(plugin):
-                    print(c.warning("Plugin non configuré!"))
+                    print(c.warning(_("Plugin non configuré!")))
                     self.input_plugin_path()
                 else:
                     # Demander d'ajouter au .gitignore si nécessaire
                     self.config.prompt_add_to_gitignore(plugin)
                     self.launcher.run_applicator()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '3':
                 plugin = self.config.get("plugin_path")
                 # Demander d'ajouter au .gitignore si nécessaire
                 if plugin and os.path.isdir(plugin):
                     self.config.prompt_add_to_gitignore(plugin)
                 self.launcher.run_translation_manager()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '4':
                 self.launcher.run_restore_backup()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '5':
                 self.launcher.run_delete_temp_dir()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '6':
                 self.configure_paths()
             else:
-                print(c.error("Choix invalide"))
-                input(f"{c.DIM}Appuyez sur ENTRÉE pour continuer...{c.RESET}")
+                print(c.error(_("Choix invalide")))
+                input(f"{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
 
 
 # =============================================================================
@@ -848,15 +852,15 @@ def main():
             config.display()
             success = True
         else:
-            print(f"Commande inconnue: {cmd}")
-            print("\nUsage:")
-            print("  python LocalizationToolkit.py           # Menu interactif")
-            print("  python LocalizationToolkit.py extract   # Lancer Extractor")
-            print("  python LocalizationToolkit.py apply     # Lancer Applicator")
-            print("  python LocalizationToolkit.py translate # Lancer Translator")
-            print("  python LocalizationToolkit.py restore   # Lancer Restore")
-            print("  python LocalizationToolkit.py delete    # Supprimer dossier temporaire")
-            print("  python LocalizationToolkit.py --config  # Afficher config")
+            print(_("Commande inconnue: {cmd}").format(cmd=cmd))
+            print("\n" + _("Usage:"))
+            print("  python LocalizationToolkit.py           # " + _("Menu interactif"))
+            print("  python LocalizationToolkit.py extract   # " + _("Lancer Extractor"))
+            print("  python LocalizationToolkit.py apply     # " + _("Lancer Applicator"))
+            print("  python LocalizationToolkit.py translate # " + _("Lancer Translator"))
+            print("  python LocalizationToolkit.py restore   # " + _("Lancer Restore"))
+            print("  python LocalizationToolkit.py delete    # " + _("Supprimer dossier temporaire"))
+            print("  python LocalizationToolkit.py --config  # " + _("Afficher config"))
             success = False
 
         sys.exit(0 if success else 1)

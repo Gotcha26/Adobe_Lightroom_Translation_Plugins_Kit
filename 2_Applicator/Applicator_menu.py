@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import find_latest_tool_output, validate_plugin_path, get_i18n_dir
 from common.colors import Colors
 from common.menu_helpers import select_tool_output_dir
+from common.i18n import _
 
 # Instance couleurs
 c = Colors()
@@ -58,7 +59,7 @@ class ApplicatorMenu:
     def print_header(self):
         """Affiche l'en-tête du menu."""
         print()
-        print(c.box_header("APPLICATOR - Application des localisations"))
+        print(c.box_header(_("APPLICATOR - Application des localisations")))
         print()
 
     def is_ready(self) -> bool:
@@ -95,7 +96,7 @@ class ApplicatorMenu:
 
     def print_config(self):
         """Affiche la configuration actuelle."""
-        print(c.title("Configuration:"))
+        print(c.title(_("Configuration:")))
         print()
 
         # Plugin path
@@ -103,10 +104,10 @@ class ApplicatorMenu:
             if os.path.isdir(self.plugin_path):
                 status = f"{c.OK}OK{c.RESET}"
             else:
-                status = f"{c.ERROR}INTROUVABLE{c.RESET}"
-            print(c.config_line("1. Plugin", f"{self.plugin_path} [{status}]"))
+                status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
+            print(c.config_line("1. " + _("Plugin"), f"{self.plugin_path} [{status}]"))
         else:
-            print(c.config_line("1. Plugin", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
+            print(c.config_line("1. " + _("Plugin"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
         # Dossier extraction
         if self.extraction_dir:
@@ -116,34 +117,34 @@ class ApplicatorMenu:
                 if os.path.exists(replacements_file):
                     status = f"{c.OK}OK{c.RESET}"
                 else:
-                    status = f"{c.WARNING}replacements.json manquant{c.RESET}"
+                    status = f"{c.WARNING}" + _("replacements.json manquant") + f"{c.RESET}"
                 # Raccourcir le chemin affiché
                 display_path = self._shorten_extraction_path(self.extraction_dir)
-                print(c.config_line("2. Extraction", f"{display_path} [{status}]"))
+                print(c.config_line("2. " + _("Extraction"), f"{display_path} [{status}]"))
             else:
                 display_path = self._shorten_extraction_path(self.extraction_dir)
-                print(c.config_line("2. Extraction", f"{display_path} [{c.ERROR}INTROUVABLE{c.RESET}]"))
+                print(c.config_line("2. " + _("Extraction"), f"{display_path} [{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}]"))
         else:
-            print(c.config_line("2. Extraction", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
+            print(c.config_line("2. " + _("Extraction"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
         # Mode dry-run
         if self.dry_run:
-            dry_display = f"{c.WARNING}Oui (SIMULATION){c.RESET}"
+            dry_display = f"{c.WARNING}" + _("Oui (SIMULATION)") + f"{c.RESET}"
         else:
-            dry_display = f"{c.OK}Non (modifications réelles){c.RESET}"
-        print(c.config_line("3. Mode simulation", dry_display))
+            dry_display = f"{c.OK}" + _("Non (modifications réelles)") + f"{c.RESET}"
+        print(c.config_line("3. " + _("Mode simulation"), dry_display))
 
         # Sauvegardes
         if self.create_backup:
-            backup_display = f"{c.OK}Oui (recommandé){c.RESET}"
+            backup_display = f"{c.OK}" + _("Oui (recommandé)") + f"{c.RESET}"
         else:
-            backup_display = f"{c.WARNING}Non{c.RESET}"
-        print(c.config_line("4. Sauvegardes .bak", backup_display))
+            backup_display = f"{c.WARNING}" + _("Non") + f"{c.RESET}"
+        print(c.config_line("4. " + _("Sauvegardes .bak"), backup_display))
 
         # Sortie Applicator
         if self.plugin_path:
             output_path = f"<plugin>/{get_i18n_dir()}/Applicator/<timestamp>/"
-            print(c.config_line("   Sortie", f"{c.DIM}{output_path}{c.RESET}"))
+            print(c.config_line("   " + _("Sortie"), f"{c.DIM}{output_path}{c.RESET}"))
 
         print()
 
@@ -153,42 +154,42 @@ class ApplicatorMenu:
 
         if self.is_ready():
             if self.dry_run:
-                print(c.menu_option("ENTRÉE", f"{c.YELLOW}Lancer la SIMULATION{c.RESET}"))
+                print(c.menu_option(_("ENTRÉE"), f"{c.YELLOW}" + _("Lancer la SIMULATION") + f"{c.RESET}"))
             else:
-                print(c.menu_option("ENTRÉE", f"{c.GREEN}Lancer l'application{c.RESET}"))
+                print(c.menu_option(_("ENTRÉE"), f"{c.GREEN}" + _("Lancer l'application") + f"{c.RESET}"))
         else:
-            print(f"  {c.DIM}ENTRÉE  Lancer (configurer plugin et extraction d'abord){c.RESET}")
+            print(f"  {c.DIM}" + _("ENTRÉE") + "  " + _("Lancer (configurer plugin et extraction d'abord)") + f"{c.RESET}")
 
-        print(c.menu_option("1-4", "Modifier une option"))
-        print(c.menu_option("0", "Quitter"))
+        print(c.menu_option("1-4", _("Modifier une option")))
+        print(c.menu_option("0", _("Quitter")))
         print()
 
     def input_plugin_path(self) -> bool:
         """Demande le chemin du plugin."""
         print()
-        print(c.title("1. Chemin du plugin Lightroom"))
+        print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
-        print("Exemples:")
+        print(_("Exemples:"))
         print(f"  {c.VALUE}C:\\Users\\User\\Lightroom\\plugin.lrplugin{c.RESET}")
         print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
         print()
 
         if self.plugin_path:
-            print(f"Actuel: {c.VALUE}{self.plugin_path}{c.RESET}")
-            path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder, x pour annuler): ")).strip()
+            print(_("Actuel:") + f" {c.VALUE}{self.plugin_path}{c.RESET}")
+            path = input(c.prompt(_("Nouveau chemin (ENTRÉE pour garder, x pour annuler):") + " ")).strip()
             if path.lower() == 'x':
-                print(f"{c.DIM}Annulation{c.RESET}")
+                print(f"{c.DIM}" + _("Annulation") + f"{c.RESET}")
                 return True
             if not path:
-                print(c.success("Chemin inchangé"))
+                print(c.success(_("Chemin inchangé")))
                 return True
         else:
-            path = input(c.prompt("Chemin du plugin (x pour annuler): ")).strip()
+            path = input(c.prompt(_("Chemin du plugin (x pour annuler):") + " ")).strip()
             if path.lower() == 'x':
-                print(f"{c.DIM}Annulation{c.RESET}")
+                print(f"{c.DIM}" + _("Annulation") + f"{c.RESET}")
                 return True
             if not path:
-                print(c.error("Chemin requis!"))
+                print(c.error(_("Chemin requis!")))
                 return False
 
         is_valid, normalized_path, warning = validate_plugin_path(path)
@@ -199,21 +200,21 @@ class ApplicatorMenu:
 
         if warning:
             print(c.warning(warning))
-            print("            Les plugins Lightroom doivent se terminer par .lrplugin")
-            confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+            print("            " + _("Les plugins Lightroom doivent se terminer par .lrplugin"))
+            confirm = input(c.prompt(_("Continuer quand même? [o/N]:") + " ")).strip().lower()
             if confirm not in ['o', 'oui', 'y', 'yes']:
-                print(c.error("Configuration annulée"))
+                print(c.error(_("Configuration annulée")))
                 return False
 
         old_path = self.plugin_path
         self.plugin_path = normalized_path
-        print(c.success(f"Plugin: {normalized_path}"))
+        print(c.success(_("Plugin: {path}").format(path=normalized_path)))
 
         # Auto-détecter extraction si plugin change
         if old_path != normalized_path:
             self._auto_detect_extraction()
             if self.extraction_dir:
-                print(c.info(f"Extraction auto-détectée: {os.path.basename(self.extraction_dir)}"))
+                print(c.info(_("Extraction auto-détectée: {name}").format(name=os.path.basename(self.extraction_dir))))
 
         return True
 
@@ -228,9 +229,9 @@ class ApplicatorMenu:
 
             if missing:
                 print()
-                print(c.warning(f"Fichiers manquants: {', '.join(missing)}"))
-                print("         Ce n'est peut-être pas un dossier Extractor valide.")
-                confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+                print(c.warning(_("Fichiers manquants: {files}").format(files=', '.join(missing))))
+                print("         " + _("Ce n'est peut-être pas un dossier Extractor valide."))
+                confirm = input(c.prompt(_("Continuer quand même? [o/N]:") + " ")).strip().lower()
                 if confirm not in ['o', 'oui', 'y', 'yes']:
                     return False
 
@@ -242,56 +243,58 @@ class ApplicatorMenu:
     def input_dry_run(self):
         """Demande le mode dry-run."""
         print()
-        print(c.title("3. Mode simulation (dry-run)"))
+        print(c.title("3. " + _("Mode simulation (dry-run)")))
         print(c.separator())
-        print(f"  {c.VALUE}Oui{c.RESET} = Affiche les changements SANS modifier les fichiers")
-        print(f"  {c.VALUE}Non{c.RESET} = Applique les modifications (crée des backups)")
+        print(f"  {c.VALUE}" + _("Oui") + f"{c.RESET} = " + _("Affiche les changements SANS modifier les fichiers"))
+        print(f"  {c.VALUE}" + _("Non") + f"{c.RESET} = " + _("Applique les modifications (crée des backups)"))
         print()
 
         current = "O" if self.dry_run else "N"
-        response = input(c.prompt(f"Mode simulation? [{current}]: ")).strip().lower()
+        response = input(c.prompt(_("Mode simulation? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
             self.dry_run = True
-            print(c.success("Mode SIMULATION activé"))
+            print(c.success(_("Mode SIMULATION activé")))
         elif response in ['n', 'non', 'no']:
             self.dry_run = False
-            print(c.success("Mode MODIFICATION activé"))
+            print(c.success(_("Mode MODIFICATION activé")))
         else:
-            print(c.success(f"Option inchangée: {'Simulation' if self.dry_run else 'Modification'}"))
+            status = _("Simulation") if self.dry_run else _("Modification")
+            print(c.success(_("Option inchangée: {status}").format(status=status)))
 
     def input_backup(self):
         """Demande si créer des sauvegardes."""
         print()
-        print(c.title("4. Sauvegardes .bak"))
+        print(c.title("4. " + _("Sauvegardes .bak")))
         print(c.separator())
-        print("Crée des copies de sauvegarde avant modification.")
-        print(f"{c.WARNING}Fortement recommandé pour pouvoir revenir en arrière.{c.RESET}")
+        print(_("Crée des copies de sauvegarde avant modification."))
+        print(f"{c.WARNING}" + _("Fortement recommandé pour pouvoir revenir en arrière.") + f"{c.RESET}")
         print()
 
         if self.dry_run:
-            print(f"{c.DIM}(Non utilisé en mode simulation){c.RESET}")
-            input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+            print(f"{c.DIM}" + _("(Non utilisé en mode simulation)") + f"{c.RESET}")
+            input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
             return
 
         current = "O" if self.create_backup else "N"
-        response = input(c.prompt(f"Créer des sauvegardes? [{current}]: ")).strip().lower()
+        response = input(c.prompt(_("Créer des sauvegardes? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes', '']:
             self.create_backup = True
-            print(c.success("Sauvegardes activées"))
+            print(c.success(_("Sauvegardes activées")))
         elif response in ['n', 'non', 'no']:
             # Double confirmation
-            print(c.warning("Êtes-vous sûr de NE PAS vouloir de sauvegardes?"))
-            confirm = input(c.prompt("Confirmer [o/N]: ")).strip().lower()
+            print(c.warning(_("Êtes-vous sûr de NE PAS vouloir de sauvegardes?")))
+            confirm = input(c.prompt(_("Confirmer [o/N]:") + " ")).strip().lower()
             if confirm in ['o', 'oui', 'y', 'yes']:
                 self.create_backup = False
-                print(c.success("Sauvegardes désactivées"))
+                print(c.success(_("Sauvegardes désactivées")))
             else:
                 self.create_backup = True
-                print(c.success("Sauvegardes activées"))
+                print(c.success(_("Sauvegardes activées")))
         else:
-            print(c.success(f"Option inchangée: {'Oui' if self.create_backup else 'Non'}"))
+            status = _("Oui") if self.create_backup else _("Non")
+            print(c.success(_("Option inchangée: {status}").format(status=status)))
 
     def run(self) -> bool:
         """
@@ -306,33 +309,33 @@ class ApplicatorMenu:
             self.print_config()
             self.print_menu()
 
-            choice = input(c.prompt("Votre choix: ")).strip()
+            choice = input(c.prompt(_("Votre choix:") + " ")).strip()
 
             if choice == '0':
                 print()
-                print("Au revoir!")
+                print(_("Au revoir!"))
                 return False
 
             elif choice == '' and self.is_ready():
                 # Lancer directement
                 print()
                 if self.dry_run:
-                    print(c.success("Lancement de la SIMULATION..."))
+                    print(c.success(_("Lancement de la SIMULATION...")))
                 else:
-                    print(c.success("Lancement de l'application..."))
+                    print(c.success(_("Lancement de l'application...")))
                 return True
 
             elif choice == '1':
                 self.input_plugin_path()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '2':
                 self.input_extraction_dir()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '3':
                 self.input_dry_run()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '4':
                 self.input_backup()
@@ -341,15 +344,15 @@ class ApplicatorMenu:
                 # ENTRÉE mais pas prêt
                 print()
                 if not self.plugin_path or not os.path.isdir(self.plugin_path):
-                    print(c.error("Configurez d'abord le chemin du plugin (option 1)"))
+                    print(c.error(_("Configurez d'abord le chemin du plugin (option 1)")))
                 else:
-                    print(c.error("Configurez d'abord le dossier d'extraction (option 2)"))
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                    print(c.error(_("Configurez d'abord le dossier d'extraction (option 2)")))
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             else:
                 print()
-                print(c.error(f"Choix invalide : \"{choice}\""))
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                print(c.error(_("Choix invalide: \"{choice}\"").format(choice=choice)))
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
     def to_args(self) -> Tuple[str, str, bool, bool]:
         """Retourne les arguments sous forme de tuple."""

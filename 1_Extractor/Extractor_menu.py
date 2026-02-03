@@ -15,6 +15,7 @@ from typing import Tuple, List, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import validate_plugin_path, get_i18n_dir
 from common.colors import Colors
+from common.i18n import _
 
 # Instance couleurs
 c = Colors()
@@ -51,7 +52,7 @@ class InteractiveMenu:
     def print_header(self):
         """Affiche l'en-tête du menu."""
         print()
-        print(c.box_header("EXTRACTOR - Extraction des chaînes localisables"))
+        print(c.box_header(_("EXTRACTOR - Extraction des chaînes localisables")))
         print()
 
     def is_ready(self) -> bool:
@@ -60,7 +61,7 @@ class InteractiveMenu:
 
     def print_config(self):
         """Affiche la configuration actuelle."""
-        print(c.title("Configuration:"))
+        print(c.title(_("Configuration:")))
         print()
 
         # Plugin path avec indicateur de validité
@@ -68,29 +69,29 @@ class InteractiveMenu:
             if os.path.isdir(self.plugin_path):
                 status = f"{c.OK}OK{c.RESET}"
             else:
-                status = f"{c.ERROR}INTROUVABLE{c.RESET}"
-            print(c.config_line("1. Plugin ciblé", f"{self.plugin_path} [{status}]"))
+                status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
+            print(c.config_line("1. " + _("Plugin ciblé"), f"{self.plugin_path} [{status}]"))
         else:
-            print(c.config_line("1. Plugin ciblé", f"{c.ERROR}(non défini - REQUIS){c.RESET}"))
+            print(c.config_line("1. " + _("Plugin ciblé"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
         # Répertoire de sortie
         if self.output_dir:
-            print(c.config_line("2. Sortie", self.output_dir))
+            print(c.config_line("2. " + _("Sortie"), self.output_dir))
         else:
             default_output = f"<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/"
-            print(c.config_line("2. Sortie", f"{default_output} {c.DIM}(auto){c.RESET}"))
+            print(c.config_line("2. " + _("Sortie"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
 
         # Autres options
-        print(c.config_line("3. Préfixe LOC", self.prefix))
-        print(c.config_line("4. Langue extraite", self.lang))
+        print(c.config_line("3. " + _("Préfixe LOC"), self.prefix))
+        print(c.config_line("4. " + _("Langue extraite"), self.lang))
 
-        exclude_display = ', '.join(self.exclude_files) if self.exclude_files else "(aucun)"
-        print(c.config_line("5. Exclusions", exclude_display))
+        exclude_display = ', '.join(self.exclude_files) if self.exclude_files else _("(aucun)")
+        print(c.config_line("5. " + _("Exclusions"), exclude_display))
 
-        print(c.config_line("6. Long. min chaînes", str(self.min_length)))
+        print(c.config_line("6. " + _("Long. min chaînes"), str(self.min_length)))
 
-        ignore_display = f"{c.OK}Oui{c.RESET}" if self.ignore_log else f"{c.WARNING}Non{c.RESET}"
-        print(c.config_line("7. Ignorer logs", ignore_display))
+        ignore_display = f"{c.OK}" + _("Oui") + f"{c.RESET}" if self.ignore_log else f"{c.WARNING}" + _("Non") + f"{c.RESET}"
+        print(c.config_line("7. " + _("Ignorer logs"), ignore_display))
 
         print()
 
@@ -99,40 +100,40 @@ class InteractiveMenu:
         print(c.separator("─"))
 
         if self.is_ready():
-            print(c.menu_option("ENTRÉE", f"{c.GREEN}Lancer l'extraction{c.RESET}"))
+            print(c.menu_option(_("ENTRÉE"), f"{c.GREEN}" + _("Lancer l'extraction") + f"{c.RESET}"))
         else:
-            print(f"  {c.DIM}ENTRÉE  Lancer l'extraction (configurer le plugin d'abord){c.RESET}")
+            print(f"  {c.DIM}" + _("ENTRÉE") + "  " + _("Lancer l'extraction (configurer le plugin d'abord)") + f"{c.RESET}")
 
-        print(c.menu_option("1-7", "Modifier une option"))
-        print(c.menu_option("0", "Quitter"))
+        print(c.menu_option("1-7", _("Modifier une option")))
+        print(c.menu_option("0", _("Quitter")))
         print()
 
     def input_plugin_path(self) -> bool:
         """Demande le chemin du plugin."""
         print()
-        print(c.title("1. Chemin du plugin Lightroom"))
+        print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
-        print("Exemples:")
+        print(_("Exemples:"))
         print(f"  {c.VALUE}C:\\Users\\User\\Lightroom\\plugin.lrplugin{c.RESET}")
         print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
         print()
 
         if self.plugin_path:
-            print(f"Actuel: {c.VALUE}{self.plugin_path}{c.RESET}")
-            path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder, x pour annuler): ")).strip()
+            print(_("Actuel:") + f" {c.VALUE}{self.plugin_path}{c.RESET}")
+            path = input(c.prompt(_("Nouveau chemin (ENTRÉE pour garder, x pour annuler):") + " ")).strip()
             if path.lower() == 'x':
-                print(f"{c.DIM}Annulation{c.RESET}")
+                print(f"{c.DIM}" + _("Annulation") + f"{c.RESET}")
                 return True  # Retour au menu
             if not path:
-                print(c.success("Chemin inchangé"))
+                print(c.success(_("Chemin inchangé")))
                 return True
         else:
-            path = input(c.prompt("Chemin du plugin (x pour annuler): ")).strip()
+            path = input(c.prompt(_("Chemin du plugin (x pour annuler):") + " ")).strip()
             if path.lower() == 'x':
-                print(f"{c.DIM}Annulation{c.RESET}")
+                print(f"{c.DIM}" + _("Annulation") + f"{c.RESET}")
                 return True  # Retour au menu
             if not path:
-                print(c.error("Chemin requis!"))
+                print(c.error(_("Chemin requis!")))
                 return False
 
         is_valid, normalized_path, warning = validate_plugin_path(path)
@@ -143,138 +144,139 @@ class InteractiveMenu:
 
         if warning:
             print(c.warning(warning))
-            print("            Les plugins Lightroom doivent se terminer par .lrplugin")
-            confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+            print("            " + _("Les plugins Lightroom doivent se terminer par .lrplugin"))
+            confirm = input(c.prompt(_("Continuer quand même? [o/N]:") + " ")).strip().lower()
             if confirm not in ['o', 'oui', 'y', 'yes']:
-                print(c.error("Configuration annulée"))
+                print(c.error(_("Configuration annulée")))
                 return False
 
         self.plugin_path = normalized_path
-        print(c.success(f"Plugin: {normalized_path}"))
+        print(c.success(_("Plugin: {path}").format(path=normalized_path)))
         return True
 
     def input_output_dir(self):
         """Demande le répertoire de sortie (override optionnel)."""
         print()
-        print(c.title("2. Répertoire de sortie"))
+        print(c.title("2. " + _("Répertoire de sortie")))
         print(c.separator())
-        print(f"Par défaut: {c.VALUE}<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/{c.RESET}")
+        print(_("Par défaut:") + f" {c.VALUE}<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/{c.RESET}")
         print()
-        print("Pour forcer un autre emplacement, entrez un chemin.")
-        print(f"Sinon, appuyez sur {c.YELLOW}ENTRÉE{c.RESET} pour utiliser le défaut.")
+        print(_("Pour forcer un autre emplacement, entrez un chemin."))
+        print(_("Sinon, appuyez sur ENTRÉE pour utiliser le défaut."))
         print()
 
         if self.output_dir:
-            print(f"Override actuel: {c.VALUE}{self.output_dir}{c.RESET}")
+            print(_("Override actuel:") + f" {c.VALUE}{self.output_dir}{c.RESET}")
 
-        path = input(c.prompt("Répertoire (ENTRÉE pour défaut): ")).strip()
+        path = input(c.prompt(_("Répertoire (ENTRÉE pour défaut):") + " ")).strip()
 
         if path:
             normalized_path = os.path.normpath(path)
             os.makedirs(normalized_path, exist_ok=True)
             self.output_dir = normalized_path
-            print(c.success(f"Override: {normalized_path}"))
+            print(c.success(_("Override: {path}").format(path=normalized_path)))
         else:
             self.output_dir = ""
-            print(c.success(f"Utilisera: <plugin>/{get_i18n_dir()}/Extractor/<timestamp>/"))
+            print(c.success(_("Utilisera: <plugin>/{dir}/Extractor/<timestamp>/").format(dir=get_i18n_dir())))
 
     def input_prefix(self):
         """Demande le préfixe LOC."""
         print()
-        print(c.title("3. Préfixe des clés LOC"))
+        print(c.title("3. " + _("Préfixe des clés LOC")))
         print(c.separator())
-        print(f"Exemples: {c.VALUE}$$$/Piwigo{c.RESET}, {c.VALUE}$$$/MyApp{c.RESET}")
+        print(_("Exemples:") + f" {c.VALUE}$$$/Piwigo{c.RESET}, {c.VALUE}$$$/MyApp{c.RESET}")
         print()
 
-        prefix = input(c.prompt(f"Préfixe [{self.prefix}]: ")).strip()
+        prefix = input(c.prompt(_("Préfixe [{prefix}]:").format(prefix=self.prefix) + " ")).strip()
 
         if prefix:
             self.prefix = prefix
-            print(c.success(f"Préfixe: {self.prefix}"))
+            print(c.success(_("Préfixe: {prefix}").format(prefix=self.prefix)))
         else:
-            print(c.success(f"Préfixe inchangé: {self.prefix}"))
+            print(c.success(_("Préfixe inchangé: {prefix}").format(prefix=self.prefix)))
 
     def input_lang(self):
         """Demande le code langue."""
         print()
-        print(c.title("4. Code langue"))
+        print(c.title("4. " + _("Code langue")))
         print(c.separator())
-        print(f"Exemples: {c.VALUE}en{c.RESET} (anglais), {c.VALUE}fr{c.RESET} (français), {c.VALUE}de{c.RESET} (allemand)")
+        print(_("Exemples:") + f" {c.VALUE}en{c.RESET} " + _("(anglais)") + f", {c.VALUE}fr{c.RESET} " + _("(français)") + f", {c.VALUE}de{c.RESET} " + _("(allemand)"))
         print()
 
-        lang = input(c.prompt(f"Langue [{self.lang}]: ")).strip().lower()
+        lang = input(c.prompt(_("Langue [{lang}]:").format(lang=self.lang) + " ")).strip().lower()
 
         if lang and len(lang) == 2:
             self.lang = lang
-            print(c.success(f"Langue: {self.lang}"))
+            print(c.success(_("Langue: {lang}").format(lang=self.lang)))
         elif lang:
-            print(c.warning("Code invalide (2 caractères requis), valeur inchangée"))
+            print(c.warning(_("Code invalide (2 caractères requis), valeur inchangée")))
         else:
-            print(c.success(f"Langue inchangée: {self.lang}"))
+            print(c.success(_("Langue inchangée: {lang}").format(lang=self.lang)))
 
     def input_exclude_files(self):
         """Demande les fichiers à exclure."""
         print()
-        print(c.title("5. Fichiers à exclure"))
+        print(c.title("5. " + _("Fichiers à exclure")))
         print(c.separator())
-        print(f"Exemples: {c.VALUE}JSON.lua, test.lua{c.RESET}")
+        print(_("Exemples:") + f" {c.VALUE}JSON.lua, test.lua{c.RESET}")
         print()
 
         if self.exclude_files:
-            print(f"Actuels: {c.VALUE}{', '.join(self.exclude_files)}{c.RESET}")
+            print(_("Actuels:") + f" {c.VALUE}{', '.join(self.exclude_files)}{c.RESET}")
 
-        files = input(c.prompt("Fichiers à exclure (virgule pour séparer): ")).strip()
+        files = input(c.prompt(_("Fichiers à exclure (virgule pour séparer):") + " ")).strip()
 
         if files:
             self.exclude_files = [f.strip() for f in files.split(',') if f.strip()]
-            print(c.success(f"Exclusions: {', '.join(self.exclude_files)}"))
+            print(c.success(_("Exclusions: {files}").format(files=', '.join(self.exclude_files))))
         else:
             self.exclude_files = []
-            print(c.success("Aucun fichier exclu"))
+            print(c.success(_("Aucun fichier exclu")))
 
     def input_min_length(self):
         """Demande la longueur minimale des chaînes."""
         print()
-        print(c.title("6. Longueur minimale des chaînes"))
+        print(c.title("6. " + _("Longueur minimale des chaînes")))
         print(c.separator())
-        print("Les chaînes plus courtes seront ignorées.")
+        print(_("Les chaînes plus courtes seront ignorées."))
         print()
 
-        length = input(c.prompt(f"Longueur minimale [{self.min_length}]: ")).strip()
+        length = input(c.prompt(_("Longueur minimale [{n}]:").format(n=self.min_length) + " ")).strip()
 
         if not length:
-            print(c.success(f"Longueur inchangée: {self.min_length}"))
+            print(c.success(_("Longueur inchangée: {n}").format(n=self.min_length)))
             return
 
         try:
             length_int = int(length)
             if length_int >= 1:
                 self.min_length = length_int
-                print(c.success(f"Longueur minimale: {self.min_length}"))
+                print(c.success(_("Longueur minimale: {n}").format(n=self.min_length)))
             else:
-                print(c.error("Doit être >= 1"))
+                print(c.error(_("Doit être >= 1")))
         except ValueError:
-            print(c.error("Valeur invalide"))
+            print(c.error(_("Valeur invalide")))
 
     def input_ignore_log(self):
         """Demande si les logs doivent être ignorés."""
         print()
-        print(c.title("7. Ignorer les lignes de log"))
+        print(c.title("7. " + _("Ignorer les lignes de log")))
         print(c.separator())
-        print("Ignore les lignes contenant log(), warn(), etc.")
+        print(_("Ignore les lignes contenant log(), warn(), etc."))
         print()
 
         current = "O" if self.ignore_log else "N"
-        response = input(c.prompt(f"Ignorer les logs? [{current}]: ")).strip().lower()
+        response = input(c.prompt(_("Ignorer les logs? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
             self.ignore_log = True
-            print(c.success("Logs ignorés"))
+            print(c.success(_("Logs ignorés")))
         elif response in ['n', 'non', 'no']:
             self.ignore_log = False
-            print(c.success("Logs inclus"))
+            print(c.success(_("Logs inclus")))
         else:
-            print(c.success(f"Option inchangée: {'Oui' if self.ignore_log else 'Non'}"))
+            status = _("Oui") if self.ignore_log else _("Non")
+            print(c.success(_("Option inchangée: {status}").format(status=status)))
 
     def run(self) -> bool:
         """
@@ -289,57 +291,57 @@ class InteractiveMenu:
             self.print_config()
             self.print_menu()
 
-            choice = input(c.prompt("Votre choix: ")).strip()
+            choice = input(c.prompt(_("Votre choix:") + " ")).strip()
 
             if choice == '0':
                 print()
-                print("Au revoir!")
+                print(_("Au revoir!"))
                 return False
 
             elif choice == '' and self.is_ready():
                 # Lancer directement
                 print()
-                print(c.success("Lancement de l'extraction..."))
+                print(c.success(_("Lancement de l'extraction...")))
                 return True
 
             elif choice == '1':
                 self.input_plugin_path()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '2':
                 self.input_output_dir()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '3':
                 self.input_prefix()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '4':
                 self.input_lang()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '5':
                 self.input_exclude_files()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '6':
                 self.input_min_length()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '7':
                 self.input_ignore_log()
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             elif choice == '':
                 # ENTRÉE mais pas prêt
                 print()
-                print(c.error("Configurez d'abord le chemin du plugin (option 1)"))
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                print(c.error(_("Configurez d'abord le chemin du plugin (option 1)")))
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
             else:
                 print()
-                print(c.error(f"Choix invalide : \"{choice}\""))
-                input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
+                print(c.error(_("Choix invalide: \"{choice}\"").format(choice=choice)))
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
 
     def to_args(self) -> Tuple[str, str, str, str, List[str], int, bool]:
         """Retourne les arguments sous forme de tuple."""
