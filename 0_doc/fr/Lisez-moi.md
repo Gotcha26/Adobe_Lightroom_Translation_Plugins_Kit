@@ -106,6 +106,9 @@ Synchronise automatiquement toutes les langues présentes :
 
 **C'est la commande à utiliser 99% du temps.**
 
+#### COMPARE-LANGS (audit de cohérence)
+Compare deux fichiers de traduction pour identifier les clés manquantes, les oublis de traduction et les incohérences entre langues.
+
 #### Commandes avancées
 Pour des besoins spécifiques, consultez la [documentation détaillée de Translator](../../3_Translator/__doc/fr/Lisez-moi.md).
 
@@ -233,6 +236,8 @@ plugin.lrplugin/
             ├── sync_report.txt
             ├── TRANSLATE_fr.txt
             ├── UPDATE_en.json
+            ├── COMPARE_LANGS_data.json
+            ├── COMPARE_LANGS_report.txt
 ```
 
 **À propos du dossier temporaire `__i18n_tmp__/` :**

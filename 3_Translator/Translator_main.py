@@ -8,10 +8,11 @@ Gestionnaire de traductions multilingues pour plugins Adobe Lightroom Classic.
 COMMANDES
 ================================================================================
 
-  compare   Compare 2 versions EN → UPDATE_en.json + CHANGELOG.txt
-  extract   Génère mini fichiers TRANSLATE_xx.txt pour traduction
-  inject    Réinjecte les traductions (valeur EN par défaut si non traduit)
-  sync      Met à jour les langues avec EN
+  compare        Compare 2 versions EN → UPDATE_en.json + CHANGELOG.txt
+  compare-langs  Compare 2 fichiers de langues (FR vs DE, FR vs EN, etc.)
+  extract        Génère mini fichiers TRANSLATE_xx.txt pour traduction
+  inject         Réinjecte les traductions (valeur EN par défaut si non traduit)
+  sync           Met à jour les langues avec EN
 
 ================================================================================
 WORKFLOW
@@ -73,6 +74,7 @@ from common.colors import Colors
 
 from TM_common import clear_screen, print_header
 from TM_compare import run_compare, menu_compare
+from TM_compare_langs import run_compare_langs, menu_compare_langs
 from TM_extract import run_extract, run_extract_all, menu_extract
 from TM_inject import run_inject, run_inject_from_dir, menu_inject
 from TM_sync import run_sync, generate_sync_report, menu_sync
@@ -106,29 +108,33 @@ def advanced_menu(plugin_path: str):
 
         print(f"\n{c.TITLE}  Commandes:{c.RESET}")
         print(c.separator())
-        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}COMPARE{c.RESET}  - Comparer 2 versions EN")
-        print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}EXTRACT{c.RESET}  - Extraire les clés à traduire")
-        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}INJECT{c.RESET}   - Réinjecter les traductions")
-        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}SYNC{c.RESET}     - Synchroniser les langues avec EN")
+        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}COMPARE{c.RESET}       - Comparer 2 versions EN")
+        print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}COMPARE-LANGS{c.RESET} - Comparer 2 fichiers de langues")
+        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}EXTRACT{c.RESET}       - Extraire les clés à traduire")
+        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}INJECT{c.RESET}        - Réinjecter les traductions")
+        print(f"  {c.YELLOW}5{c.RESET}. {c.INFO}SYNC{c.RESET}          - Synchroniser les langues avec EN")
         print()
         print(c.separator())
-        print(f"  {c.YELLOW}5{c.RESET}. {c.CYAN}Aide{c.RESET}     - Documentation complète")
+        print(f"  {c.YELLOW}8{c.RESET}. {c.CYAN}Aide{c.RESET}          - Documentation complète")
         print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour au menu principal{c.RESET}")
         print(c.separator())
 
-        choice = input(f"\n{c.PROMPT}  Votre choix (0-5): {c.RESET}").strip()
+        choice = input(f"\n{c.PROMPT}  Votre choix (0-8): {c.RESET}").strip()
 
         if choice == '1':
             menu_compare(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '2':
-            menu_extract(plugin_path)
+            menu_compare_langs(plugin_path)
             input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
-            menu_inject(plugin_path)
+            menu_extract(plugin_path)
+            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '4':
-            menu_sync(plugin_path)
+            menu_inject(plugin_path)
         elif choice == '5':
+            menu_sync(plugin_path)
+        elif choice == '8':
             clear_screen()
             print(__doc__)
             input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
@@ -263,11 +269,13 @@ Exemples:
 
   # Avec --plugin-path (structure __i18n_tmp__):
   python Translator_main.py compare --old ./old/en.txt --new ./new/en.txt --plugin-path ./plugin.lrplugin
+  python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin --plugin-path ./plugin.lrplugin
   python Translator_main.py extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
   python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
   # Mode legacy (sans plugin-path):
   python Translator_main.py compare --old ./v1/en.txt --new ./v2/en.txt
+  python Translator_main.py compare-langs --file1 ./Locales/fr.txt --file2 ./Locales/de.txt
   python Translator_main.py extract --update ./20260128_143000 --locales ./Locales
   python Translator_main.py sync --update ./20260128_143000 --locales ./Locales
         """
@@ -281,6 +289,16 @@ Exemples:
     compare_parser.add_argument('--new', required=True, help='Nouveau fichier EN')
     compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/3_Translator/)')
     compare_parser.add_argument('--output', help='Override repertoire de sortie')
+
+    # compare-langs
+    compare_langs_parser = subparsers.add_parser('compare-langs', help='Compare deux fichiers de langues')
+    compare_langs_parser.add_argument('--file1', help='Premier fichier (ou repertoire)')
+    compare_langs_parser.add_argument('--file2', help='Second fichier (ou repertoire)')
+    compare_langs_parser.add_argument('--lang1', help='Code langue 1 (ex: fr) - cherche dans --locales')
+    compare_langs_parser.add_argument('--lang2', help='Code langue 2 (ex: de) - cherche dans --locales')
+    compare_langs_parser.add_argument('--locales', help='Repertoire des traductions (requis avec --lang1/--lang2)')
+    compare_langs_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/3_Translator/)')
+    compare_langs_parser.add_argument('--output', help='Override repertoire de sortie')
 
     # extract
     extract_parser = subparsers.add_parser('extract', help='Genere fichiers TRANSLATE_*.txt')
@@ -336,6 +354,89 @@ Exemples:
 
         except Exception as e:
             print(c.error(f"Erreur: {e}"))
+            sys.exit(1)
+
+    elif args.command == 'compare-langs':
+        try:
+            import json
+            print(f"{c.INFO}[INFO]{c.RESET} Comparaison de langues...")
+
+            # Déterminer les fichiers à comparer
+            file1 = None
+            file2 = None
+            lang1_name = None
+            lang2_name = None
+
+            # Mode 1: Par codes langue (--lang1 --lang2 --locales)
+            if args.lang1 and args.lang2:
+                if not args.locales:
+                    print(c.error("--locales requis avec --lang1 et --lang2"))
+                    sys.exit(1)
+
+                file1 = os.path.join(args.locales, f'TranslatedStrings_{args.lang1}.txt')
+                file2 = os.path.join(args.locales, f'TranslatedStrings_{args.lang2}.txt')
+                lang1_name = args.lang1
+                lang2_name = args.lang2
+
+                if not os.path.isfile(file1):
+                    print(c.error(f"Fichier non trouvé: {file1}"))
+                    sys.exit(1)
+                if not os.path.isfile(file2):
+                    print(c.error(f"Fichier non trouvé: {file2}"))
+                    sys.exit(1)
+
+            # Mode 2: Par chemins de fichiers (--file1 --file2)
+            elif args.file1 and args.file2:
+                file1 = args.file1
+                file2 = args.file2
+                # lang1_name et lang2_name seront auto-détectés
+
+            else:
+                print(c.error("Spécifiez soit --lang1 + --lang2 + --locales, soit --file1 + --file2"))
+                sys.exit(1)
+
+            # Déterminer le répertoire de sortie
+            if args.output:
+                output_dir = args.output
+            elif hasattr(args, 'plugin_path') and args.plugin_path:
+                output_dir = get_tool_output_path(args.plugin_path, "Translator", create=True)
+            else:
+                output_dir = None  # run_compare_langs créera un dossier timestampé local
+
+            # Exécuter la comparaison
+            output_dir = run_compare_langs(file1, file2, lang1_name, lang2_name, output_dir)
+
+            # Charger et afficher le résultat
+            with open(os.path.join(output_dir, 'COMPARE_LANGS_data.json'), 'r', encoding='utf-8') as f:
+                result = json.load(f)
+
+            stats = result['statistics']
+            l1 = result['lang1_name']
+            l2 = result['lang2_name']
+
+            print(f"\n{c.HEADER}{'=' * 60}{c.RESET}")
+            print(f"{c.TITLE}RÉSUMÉ - COMPARAISON DE LANGUES{c.RESET}")
+            print(f"{c.HEADER}{'=' * 60}{c.RESET}")
+            print(f"{c.KEY}Langue 1{c.RESET}: {c.CYAN}{l1}{c.RESET} ({stats['keys_in_lang1']} clés)")
+            print(f"{c.KEY}Langue 2{c.RESET}: {c.CYAN}{l2}{c.RESET} ({stats['keys_in_lang2']} clés)")
+            print()
+            print(f"{c.KEY}Clés totales uniques    {c.RESET}: {c.VALUE}{stats['total_unique_keys']}{c.RESET}")
+            print(f"{c.KEY}Clés dans les deux      {c.RESET}: {c.GREEN}{stats['keys_in_both']}{c.RESET}")
+            print(f"{c.KEY}Seulement dans {l1:<7s}{c.RESET}: {c.YELLOW}{stats['only_lang1']}{c.RESET}")
+            print(f"{c.KEY}Seulement dans {l2:<7s}{c.RESET}: {c.YELLOW}{stats['only_lang2']}{c.RESET}")
+            print()
+            print(f"{c.KEY}Valeurs identiques      {c.RESET}: {c.DIM}{stats['identical_values_count']}{c.RESET}")
+            print(f"{c.KEY}Valeurs différentes     {c.RESET}: {c.VALUE}{stats['different_values_count']}{c.RESET}")
+
+            if stats['identical_values_count'] > 0 and (l1 == 'EN' or l2 == 'EN'):
+                print(f"\n{c.WARNING}⚠️  {stats['identical_values_count']} traduction(s) identique(s) à EN détectée(s)!{c.RESET}")
+
+            print(c.success(f"\nFichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+
+        except Exception as e:
+            print(c.error(f"Erreur: {e}"))
+            import traceback
+            traceback.print_exc()
             sys.exit(1)
 
     elif args.command == 'extract':

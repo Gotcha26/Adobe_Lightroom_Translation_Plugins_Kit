@@ -223,7 +223,7 @@ class ConfigManager:
                 # Ajouter une ligne vide si le fichier n'est pas vide et ne se termine pas par une ligne vide
                 if existing_lines and existing_lines[-1].strip():
                     f.write('\n')
-                f.write(f"# Dossier temporaire des outils de localisation\n")
+                f.write(f"# Temporary folder for localisation tools\n")
                 f.write(f"{ignore_line}\n")
 
             print(f"     {c.OK}[OK]{c.RESET} Ajouté '{ignore_line}' au .gitignore")

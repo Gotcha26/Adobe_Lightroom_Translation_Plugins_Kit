@@ -12,7 +12,7 @@ Ce document présente ***Translator***, le gestionnaire de traductions multiling
 2. [Installation et prérequis](#-installation-et-prérequis) — Ce qu'il faut pour démarrer
 3. [Architecture](#-architecture) — Structure modulaire
 4. [Commandes principales](#-commandes-principales) — INSTALL et AUTO-SYNC
-5. [Commandes avancées](#-commandes-avancées) — COMPARE, EXTRACT, INJECT, SYNC
+5. [Commandes avancées](#-commandes-avancées) — COMPARE, COMPARE-LANGS, EXTRACT, INJECT, SYNC
 6. [Workflows recommandés](#-workflows-recommandés) — Cas d'usage typiques
 7. [Format des fichiers](#-format-des-fichiers) — Structure et conventions
 8. [Utilisation CLI](#-utilisation-cli) — Ligne de commande
@@ -65,6 +65,7 @@ Lors du développement d'un plugin, les textes évoluent :
 ├── TM_autosync.py          ← Commande AUTO-SYNC ⭐
 ├── TM_addlang.py           ← Commande ADD LANGUAGE
 ├── TM_compare.py           ← Commande COMPARE (avancé)
+├── TM_compare_langs.py     ← Commande COMPARE-LANGS (avancé)
 ├── TM_extract.py           ← Commande EXTRACT (avancé)
 ├── TM_inject.py            ← Commande INJECT (avancé)
 ├── TM_sync.py              ← Commande SYNC (avancé)
@@ -76,6 +77,7 @@ Lors du développement d'un plugin, les textes évoluent :
             ├── AUTOSYNC.md
             ├── ADDLANG.md
             ├── COMPARE.md
+            ├── COMPARE-LANGS.md
             ├── EXTRACT.md
             ├── INJECT.md
             └── SYNC.md
@@ -134,6 +136,7 @@ flowchart TB
 
     subgraph Advanced["🔧 Modules avancés"]
         CO["TM_compare.py"]
+        CL["TM_compare_langs.py"]
         EX["TM_extract.py"]
         IN["TM_inject.py"]
         SY["TM_sync.py"]
@@ -249,6 +252,7 @@ Ces commandes offrent un contrôle fin pour des cas d'usage spécifiques (traduc
 | Commande | Documentation | Rôle |
 |----------|---------------|------|
 | **COMPARE** | [COMPARE.md](commandes/COMPARE.md) | Compare 2 versions EN → génère `UPDATE_en.json` |
+| **COMPARE-LANGS** | [COMPARE-LANGS.md](commandes/COMPARE-LANGS.md) | Compare 2 fichiers de langues (audit, cohérence) |
 | **EXTRACT** | [EXTRACT.md](commandes/EXTRACT.md) | Génère fichiers partiels `TRANSLATE_xx.txt` |
 | **INJECT** | [INJECT.md](commandes/INJECT.md) | Réinjecte les traductions dans les fichiers complets |
 | **SYNC** | [SYNC.md](commandes/SYNC.md) | Synchronise un fichier de langue avec EN |
@@ -418,6 +422,12 @@ python Translator_main.py autosync --plugin-path ./plugin.lrplugin
 # COMPARE
 python Translator_main.py compare --old ./old/en.txt --new ./new/en.txt
 
+# COMPARE-LANGS (par codes langue)
+python Translator_main.py compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
+
+# COMPARE-LANGS (par fichiers)
+python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
+
 # EXTRACT
 python Translator_main.py extract --plugin-path ./plugin.lrplugin
 
@@ -447,6 +457,7 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 
 | Version | Date | Modifications |
 |---------|------|---------------|
+| 7.2 | 2026-02-03 | Ajout commande COMPARE-LANGS (audit de cohérence entre langues) |
 | 7.0 | 2026-01-31 | Ajout INSTALL et AUTO-SYNC, refonte documentation |
 | 6.0 | 2026-01-30 | Ajout couleurs terminal, structure `__i18n_tmp__` |
 | 5.0 | 2026-01-29 | Architecture modulaire TM_*.py |
@@ -469,7 +480,7 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
-| **Nom** | *Lisez-moi.md* | **Version** | 7.1 |
+| **Nom** | *Lisez-moi.md* | **Version** | 7.2 |
 | **Type** | Guide utilisateur TRANSLATOR - Avancé | **Langue** | FR - *[EN](../../en/README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **Licence** | Open source | | |
