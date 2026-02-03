@@ -138,7 +138,7 @@ python Restore_backup.py --default-plugin /path/to/plugin.lrplugin
 
 ```
 ══════════════════════════════════════════════════════════════════════
-  RESTAURATION DES FICHIERS .bak (v3.0)
+  RESTAURATION DES FICHIERS .bak
 ══════════════════════════════════════════════════════════════════════
 
 [OK] Plugin: piwigoPublish.lrplugin

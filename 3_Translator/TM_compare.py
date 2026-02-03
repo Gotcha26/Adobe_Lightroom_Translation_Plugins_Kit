@@ -1,9 +1,26 @@
 #!/usr/bin/env python3
 """
-TM_compare.py
+Nom du fichier : TM_compare.py
 
+Dépendances : TM_common
+
+Description :
 Module COMPARE pour Translator.
 Compare deux versions du fichier EN et génère UPDATE_en.json + CHANGELOG.txt
+
+Analyse les différences entre deux versions :
+  - Détecte les clés ajoutées, modifiées ou supprimées
+  - Génère UPDATE_en.json pour tracer les changements
+  - Crée CHANGELOG.txt lisible pour le suivi des modifications
+  - Aide à synchroniser les fichiers de langue avec les changements
+
+Usage CLI :
+Non fourni
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

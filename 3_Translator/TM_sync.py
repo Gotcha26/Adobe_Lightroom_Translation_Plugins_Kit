@@ -1,9 +1,27 @@
 #!/usr/bin/env python3
 """
-TM_sync.py
+Nom du fichier : TM_sync.py
 
+Dépendances : TM_common
+
+Description :
 Module SYNC pour Translator.
 Synchronise les langues étrangères avec le fichier EN de référence.
+
+Fonctionne en deux modes :
+  - Mode sans UPDATE: Fusion simple des fichiers de langue avec EN
+  - Mode avec UPDATE: Utilise UPDATE_en.json pour marquer les changements
+
+Permet de garder les fichiers de langue synchronisés avec la version anglaise
+de référence lorsqu'il y a des modifications du code.
+
+Usage CLI :
+Non fourni
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

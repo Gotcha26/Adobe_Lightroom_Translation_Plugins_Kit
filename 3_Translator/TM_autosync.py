@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-TM_autosync.py
+Nom du fichier : TM_autosync.py
 
+Dépendances : TM_sync, common.paths, common.colors
+
+Description :
 Synchronisation automatique intelligente des fichiers de traduction.
 
 Cette commande détecte automatiquement la dernière extraction et synchronise
@@ -11,11 +14,16 @@ C'est le raccourci idéal pour la maintenance courante :
   - Détecte la dernière extraction
   - Trouve automatiquement tous les fichiers de langue existants
   - Synchronise tout d'un coup
-  - Génère un rapport
+  - Génère un rapport détaillé
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-01-31
-Version: 1.0
+Usage CLI :
+    python TM_autosync.py                    # Menu interactif
+    python TM_autosync.py /path/to/plugin    # Chemin direct du plugin
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

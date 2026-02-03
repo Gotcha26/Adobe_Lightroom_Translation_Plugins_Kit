@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Delete_temp_dir.py
+Nom du fichier : Delete_temp_dir.py
 
+Dépendances : common.paths, common.colors
+
+Description :
 Script pour supprimer le dossier temporaire i18n d'un plugin Lightroom.
 
 Le dossier temporaire (par défaut __i18n_tmp__) contient:
@@ -16,13 +19,14 @@ Options:
   - Supprimer uniquement les backups (Applicator/)
   - Supprimer tout le dossier temporaire
 
-Usage:
+Usage CLI :
     python Delete_temp_dir.py                           # Menu interactif
     python Delete_temp_dir.py --default-plugin <path>   # Avec plugin pré-configuré
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-02-01
-Version : 2.0 - Intégration menu_generator + suppression sélective
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os
@@ -34,21 +38,7 @@ from typing import Optional, Tuple, List
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
 
-# Ajouter le chemin du skill menu_generator
-MENU_GENERATOR_PATH = r"C:\Users\Gotcha\.claude\skills\menu_generator.py"
-if os.path.exists(MENU_GENERATOR_PATH):
-    skill_dir = os.path.dirname(MENU_GENERATOR_PATH)
-    if skill_dir not in sys.path:
-        sys.path.insert(0, skill_dir)
-    from menu_generator import MenuGenerator, Colors
-else:
-    # Fallback si menu_generator n'est pas disponible
-    from common.colors import Colors
-
-    class MenuGenerator:
-        def __init__(self, title="", enable_colors=None):
-            self.c = Colors()
-        def clear_screen(self): os.system('cls' if os.name == 'nt' else 'clear')
+from common.colors import Colors
 
 # Instance globale des couleurs
 c = Colors()
@@ -420,8 +410,7 @@ def main():
         if idx + 1 < len(args):
             default_plugin = args[idx + 1]
 
-    gen = MenuGenerator("NETTOYAGE DU DOSSIER TEMPORAIRE", enable_colors=True)
-    gen.clear_screen()
+    os.system('cls' if os.name == 'nt' else 'clear')
 
     print()
     print(c.box_header("NETTOYAGE DU DOSSIER TEMPORAIRE (v2.0)"))

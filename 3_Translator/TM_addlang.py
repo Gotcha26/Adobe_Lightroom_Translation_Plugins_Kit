@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
 """
-TM_addlang.py
+Nom du fichier : TM_addlang.py
 
+Dépendances : common.paths, common.colors
+
+Description :
 Ajoute ou réinstalle un fichier de langue spécifique dans le plugin.
 
 Cette commande permet d'installer une langue individuellement, soit depuis
 une extraction Extractor existante, soit en créant un nouveau fichier basé
 sur le fichier EN de référence.
 
-Cas d'usage:
+Cas d'usage :
   1. Installation différée: installer une langue non installée initialement
   2. Ajout de nouvelles langues: préparer de nouveaux fichiers pour traduction
   3. Réinstallation: remplacer un fichier de langue corrompu ou supprimé
 
-Modes disponibles:
-  Mode A: Installer depuis Extractor
-    → Copie un fichier TranslatedStrings_xx.txt existant depuis la dernière extraction
-    → Utile si le fichier existe déjà dans l'extraction
+Modes disponibles :
+  Mode A: Installer depuis Extractor (copie d'un fichier existant)
+  Mode B: Créer un nouveau fichier (basé sur le fichier EN de référence)
 
-  Mode B: Créer un nouveau fichier
-    → Génère un nouveau TranslatedStrings_xx.txt basé sur le fichier EN de référence
-    → Toutes les clés avec valeurs EN par défaut
-    → Utile pour préparer une nouvelle langue à traduire
+Usage CLI :
+    python TM_addlang.py                    # Menu interactif
+    python TM_addlang.py /path/to/plugin    # Chemin direct du plugin
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-02
-Version: 1.0
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

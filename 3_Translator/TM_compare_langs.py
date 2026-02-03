@@ -1,67 +1,32 @@
 #!/usr/bin/env python3
 """
-TM_compare_langs.py
+Nom du fichier : TM_compare_langs.py
 
+Dépendances : TM_common
+
+Description :
 Module COMPARE-LANGS pour Translator.
 Compare deux fichiers TranslatedStrings de langues différentes.
 
-================================================================================
-DESCRIPTION
-================================================================================
+Permet de comparer deux fichiers de traduction pour :
+  - Identifier les clés présentes dans un fichier mais absentes de l'autre
+  - Détecter les traductions identiques (possibles oublis de traduction)
+  - Comparer deux versions d'une même langue (avant/après révision)
+  - Générer des rapports de complétude et de cohérence
 
-Ce module permet de comparer deux fichiers de traduction (TranslatedStrings)
-de langues différentes ou identiques pour :
+Cas d'usage :
+  1. Vérifier la cohérence entre langues (FR vs EN, DE vs FR, etc.)
+  2. Audit qualité (identifier traductions non faites)
+  3. Suivi de versions (comparer avant/après révision)
 
-1. Identifier les clés présentes dans un fichier mais absentes de l'autre
-2. Détecter les traductions identiques (possibles oublis de traduction)
-3. Comparer deux versions d'une même langue (avant/après révision)
-4. Générer des rapports de complétude et de cohérence
-
-================================================================================
-CAS D'USAGE
-================================================================================
-
-1. Vérifier la cohérence entre langues
-   - Comparer FR vs EN pour voir les clés manquantes en français
-   - Comparer DE vs FR pour harmoniser deux traductions
-
-2. Audit qualité
-   - Identifier les traductions non faites (valeurs identiques à l'anglais)
-   - Vérifier qu'une langue a bien toutes les clés d'une autre
-
-3. Suivi de versions
-   - Comparer ancienne version FR vs nouvelle version FR
-   - Voir l'évolution des traductions
-
-================================================================================
-SORTIES GÉNÉRÉES
-================================================================================
-
-Le module génère dans le répertoire de sortie :
-
-1. COMPARE_LANGS_report.txt
-   - Rapport détaillé lisible avec toutes les différences
-   - Statistiques complètes
-   - Recommandations
-
-2. COMPARE_LANGS_data.json
-   - Données structurées pour traitement automatique
-   - Listes des clés par catégorie
-
-================================================================================
-USAGE
-================================================================================
-
-Mode interactif (recommandé):
-    Menu principal > Options avancées > COMPARE-LANGS
-
-Mode CLI:
+Usage CLI :
     python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
     python Translator_main.py compare-langs --file1 ./v1/fr.txt --file2 ./v2/fr.txt
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-02
-Version: 1.0 - Création initiale
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

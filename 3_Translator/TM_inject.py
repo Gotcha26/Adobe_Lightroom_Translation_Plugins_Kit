@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 """
-TM_inject.py
+Nom du fichier : TM_inject.py
 
+Dépendances : TM_common
+
+Description :
 Module INJECT pour Translator.
 Réinjecte les traductions depuis TRANSLATE_xx.txt dans les fichiers de langue.
 
-IMPORTANT: Les clés non traduites (→ vide) reçoivent la valeur EN par défaut.
+Important :
+  - Les clés non traduites (valeur vide) reçoivent la valeur EN par défaut
+  - Fusionne les traductions complétées avec les fichiers de langue existants
+  - Gère les metadonnées de traduction et les changements
+
+Usage CLI :
+Non fourni
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

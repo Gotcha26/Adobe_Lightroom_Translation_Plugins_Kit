@@ -1,64 +1,38 @@
 #!/usr/bin/env python3
 """
-Translator_main.py
+Nom du fichier : Translator_main.py
 
+Dépendances : TM_common, TM_compare, TM_compare_langs, TM_extract, TM_inject, TM_sync, TM_install, TM_autosync, TM_addlang, common.paths, common.colors
+
+Description :
 Gestionnaire de traductions multilingues pour plugins Adobe Lightroom Classic.
 
-================================================================================
-COMMANDES
-================================================================================
+Orchestre le workflow complet de gestion des traductions :
+  1. COMPARE: Compare 2 versions EN et génère UPDATE_en.json + CHANGELOG.txt
+  2. EXTRACT: Génère fichiers TRANSLATE_xx.txt pour traduction
+  3. INJECT: Réinjecte les traductions (valeur EN par défaut si non traduit)
+  4. SYNC: Met à jour les langues avec EN
+  5. INSTALL: Installe les fichiers dans le plugin
+  6. AUTOSYNC: Synchronisation automatique
+  7. ADDLANG: Ajoute une nouvelle langue
 
-  compare        Compare 2 versions EN → UPDATE_en.json + CHANGELOG.txt
-  compare-langs  Compare 2 fichiers de langues (FR vs DE, FR vs EN, etc.)
-  extract        Génère mini fichiers TRANSLATE_xx.txt pour traduction
-  inject         Réinjecte les traductions (valeur EN par défaut si non traduit)
-  sync           Met à jour les langues avec EN
+Modes :
+  - Interactif: Menu complet avec workflow guidé
+  - CLI: Commandes directes avec paramètres
+  - Avancé: Options step-by-step pour la maintenance
 
-================================================================================
-WORKFLOW
-================================================================================
-
-  Code LUA modifié
-        │
-        ▼
-  Extractor → TranslatedStrings_en.txt (nouveau)
-        │
-        ▼
-  1. COMPARE: ancien EN vs nouveau EN
-        │
-        ▼
-  2. EXTRACT: génère TRANSLATE_xx.txt (optionnel)
-        │
-        ▼
-  3. INJECT: fusionne les traductions (optionnel)
-        │
-        ▼
-  4. SYNC: finalise les fichiers
-
-================================================================================
-USAGE
-================================================================================
-
-Mode interactif:
-    python Translator_main.py
-
-Mode CLI (avec --plugin-path pour structure __i18n_tmp__):
-    python Translator_main.py compare --old ancien.txt --new nouveau.txt --plugin-path ./plugin.lrplugin
+Usage CLI :
+    python Translator_main.py                           # Mode interactif
+    python Translator_main.py compare --old old.txt --new new.txt --plugin-path ./plugin.lrplugin
     python Translator_main.py extract --plugin-path ./plugin.lrplugin --locales ./Locales
     python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./Locales
     python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./Locales
+    python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
 
-Mode CLI (legacy):
-    python Translator_main.py compare --old ancien.txt --new nouveau.txt
-    python Translator_main.py extract --update ./20260128_143000 --locales ./Locales
-    python Translator_main.py inject --translate-dir ./20260128_143000 --locales ./Locales
-    python Translator_main.py sync --update ./20260128_143000 --locales ./Locales
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
-Sorties generees dans: <plugin>/__i18n_tmp__/3_Translator/<timestamp>/
-
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-01-30
-Version: 6.0 - Ajout des couleurs + Structure __i18n_tmp__
 """
 
 import os
@@ -141,7 +115,7 @@ def advanced_menu(plugin_path: str):
         elif choice == '0':
             return  # Retour au menu principal
         else:
-            print(c.error("Choix invalide"))
+            print(c.error(f"Choix invalide : \"{choice}\""))
             input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
 
 
@@ -159,10 +133,13 @@ def main_menu(default_plugin_path: str = ""):
         print_header()
         print(f"\n{c.INFO}Configuration initiale{c.RESET}")
         print(c.separator())
-        print(f"\n{c.KEY}Chemin du plugin{c.RESET} (.lrplugin):")
+        print(f"\n{c.KEY}Chemin du plugin{c.RESET} (.lrplugin) {c.DIM}(x pour annuler){c.RESET}:")
         print(f"{c.DIM}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){c.RESET}")
         print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
         plugin_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
+        if plugin_path.lower() == 'x':
+            print(f"\n{c.DIM}Annulation{c.RESET}")
+            sys.exit(0)
 
     # Valider le chemin du plugin si fourni
     if plugin_path:
@@ -217,9 +194,12 @@ def main_menu(default_plugin_path: str = ""):
             print_header()
             print(f"\n{c.INFO}Changement de plugin{c.RESET}")
             print(c.separator())
-            print(f"\n{c.KEY}Nouveau chemin du plugin{c.RESET} (.lrplugin):")
+            print(f"\n{c.KEY}Nouveau chemin du plugin{c.RESET} (.lrplugin) {c.DIM}(x pour annuler){c.RESET}:")
             print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
             new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
+
+            if new_path.lower() == 'x':
+                continue  # Annulation immédiate, retour au menu
 
             if new_path:
                 from common.paths import validate_plugin_path
@@ -238,7 +218,7 @@ def main_menu(default_plugin_path: str = ""):
             print(f"\n{c.SUCCESS}  Au revoir!{c.RESET}")
             break
         else:
-            print(c.error("Choix invalide."))
+            print(c.error(f"Choix invalide : \"{choice}\""))
             input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
 
 

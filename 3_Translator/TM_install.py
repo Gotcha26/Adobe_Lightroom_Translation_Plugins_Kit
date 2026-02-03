@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 """
-TM_install.py
+Nom du fichier : TM_install.py
 
+Dépendances : common.paths, common.colors
+
+Description :
 Installe les fichiers TranslatedStrings_xx.txt depuis la dernière extraction
 vers la racine du plugin.
 
 Cette commande est utile lors de la première initialisation du plugin multilingue.
 Elle copie les fichiers générés par Extractor vers le plugin pour les rendre actifs.
+Permet de déployer les fichiers de traduction dans le plugin.
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-01-31
-Version: 1.0
+Usage CLI :
+    python TM_install.py                    # Menu interactif
+    python TM_install.py /path/to/plugin    # Chemin direct du plugin
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """
-Restore_backup.py
+Nom du fichier : Restore_backup.py
 
+Dépendances : common.paths, common.colors
+
+Description :
 Script pour restaurer les fichiers .lua à partir de leurs sauvegardes .bak
 générées par Applicator.
 
 Les backups sont stockés dans: <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/backups/
 
-Usage:
+Usage CLI :
     python Restore_backup.py                    # Menu interactif
     python Restore_backup.py /path/to/plugin    # Chemin direct
     python Restore_backup.py --dry-run /path    # Simulation
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-02-01
-Version : 3.0 - Intégration menu_generator + chemins LocalisationToolKit
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os
@@ -27,30 +31,7 @@ from typing import List, Tuple, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
 
-# Ajouter le chemin du skill menu_generator
-MENU_GENERATOR_PATH = r"C:\Users\Gotcha\.claude\skills\menu_generator.py"
-if os.path.exists(MENU_GENERATOR_PATH):
-    skill_dir = os.path.dirname(MENU_GENERATOR_PATH)
-    if skill_dir not in sys.path:
-        sys.path.insert(0, skill_dir)
-    from menu_generator import MenuGenerator, Colors
-else:
-    # Fallback si menu_generator n'est pas disponible
-    class Colors:
-        def __init__(self): pass
-        RESET = OK = ERROR = WARNING = INFO = VALUE = KEY = PROMPT = DIM = YELLOW = ''
-        def success(self, t): return f"[OK] {t}"
-        def error(self, t): return f"[ERREUR] {t}"
-        def warning(self, t): return f"[ATTENTION] {t}"
-        def info(self, t): return f"[INFO] {t}"
-        def separator(self, c="-", w=60): return c * w
-        def title(self, t): return t
-        def box_header(self, t, w=70): return "=" * w + f"\n  {t}\n" + "=" * w
-
-    class MenuGenerator:
-        def __init__(self, title="", enable_colors=None):
-            self.c = Colors()
-        def clear_screen(self): os.system('cls' if os.name == 'nt' else 'clear')
+from common.colors import Colors
 
 # Instance globale des couleurs
 c = Colors()
@@ -281,9 +262,8 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str],
     Returns:
         (chemin_plugin, backup_dir ou None, dry_run)
     """
-    gen = MenuGenerator("RESTAURATION DES FICHIERS .bak (v3.0)", enable_colors=True)
-    gen.clear_screen()
-    print(c.box_header("RESTAURATION DES FICHIERS .bak (v3.0)"))
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(c.box_header("RESTAURATION DES FICHIERS .bak"))
     print()
 
     # Si un plugin par défaut est fourni et valide, l'utiliser directement

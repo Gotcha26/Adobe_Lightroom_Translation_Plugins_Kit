@@ -1,9 +1,25 @@
 #!/usr/bin/env python3
 """
-TM_extract.py
+Nom du fichier : TM_extract.py
 
+Dépendances : TM_common
+
+Description :
 Module EXTRACT pour Translator.
 Génère les fichiers TRANSLATE_xx.txt pour faciliter la traduction.
+
+Produit des fichiers de traduction contenant :
+  - Les clés nouvelles ou modifiées depuis la dernière version
+  - Les clés à traduire pour une langue spécifique
+  - Format simple pour traduction manuelle ou semi-automatique
+
+Usage CLI :
+Non fourni
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

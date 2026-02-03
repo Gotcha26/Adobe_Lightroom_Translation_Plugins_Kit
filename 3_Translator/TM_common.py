@@ -1,9 +1,27 @@
 #!/usr/bin/env python3
 """
-TM_common.py
+Nom du fichier : TM_common.py
 
+Dépendances : common.colors
+
+Description :
 Module commun pour Translator.
-Contient les fonctions de parsing, écriture et utilitaires.
+Contient les fonctions de parsing, écriture et utilitaires partagées
+par tous les modules de traduction (EXTRACT, INJECT, SYNC, COMPARE).
+
+Fournit :
+  - Parseurs pour fichiers TranslatedStrings_xx.txt
+  - Outils de gestion de chemins et fichiers
+  - Utilitaires pour la manipulation des traductions
+  - Gestion des logs et des couleurs
+
+Usage CLI :
+Non fourni
+
+Date : 2026-02-03
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

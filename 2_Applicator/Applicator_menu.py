@@ -175,12 +175,18 @@ class ApplicatorMenu:
 
         if self.plugin_path:
             print(f"Actuel: {c.VALUE}{self.plugin_path}{c.RESET}")
-            path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder): ")).strip()
+            path = input(c.prompt("Nouveau chemin (ENTRÉE pour garder, x pour annuler): ")).strip()
+            if path.lower() == 'x':
+                print(f"{c.DIM}Annulation{c.RESET}")
+                return True
             if not path:
                 print(c.success("Chemin inchangé"))
                 return True
         else:
-            path = input(c.prompt("Chemin du plugin: ")).strip()
+            path = input(c.prompt("Chemin du plugin (x pour annuler): ")).strip()
+            if path.lower() == 'x':
+                print(f"{c.DIM}Annulation{c.RESET}")
+                return True
             if not path:
                 print(c.error("Chemin requis!"))
                 return False
@@ -342,7 +348,7 @@ class ApplicatorMenu:
 
             else:
                 print()
-                print(c.error("Choix invalide"))
+                print(c.error(f"Choix invalide : \"{choice}\""))
                 input(f"\n{c.DIM}Appuyez sur ENTRÉE...{c.RESET}")
 
     def to_args(self) -> Tuple[str, str, bool, bool]:
