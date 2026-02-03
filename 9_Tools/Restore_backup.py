@@ -13,7 +13,6 @@ Les backups sont stockés dans: <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/b
 Usage CLI :
     python Restore_backup.py                    # Menu interactif
     python Restore_backup.py /path/to/plugin    # Chemin direct
-    python Restore_backup.py --dry-run /path    # Simulation
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
@@ -141,7 +140,7 @@ def find_backup_pairs_legacy(directory: str) -> List[Tuple[str, str]]:
     return sorted(pairs, key=lambda x: x[0])
 
 
-def restore_files(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
+def restore_files(pairs: List[Tuple[str, str]]) -> int:
     """
     Restaure les fichiers .lua depuis leurs .bak.
 
@@ -153,20 +152,17 @@ def restore_files(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
     for lua_path, bak_path in pairs:
         rel_path = os.path.basename(lua_path)
 
-        if dry_run:
-            print(f"  {c.INFO}[SIMULATION]{c.RESET} {rel_path}")
-        else:
-            try:
-                shutil.copy2(bak_path, lua_path)
-                print(f"  {c.OK}[OK]{c.RESET} {rel_path}")
-                restored += 1
-            except Exception as e:
-                print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
+        try:
+            shutil.copy2(bak_path, lua_path)
+            print(f"  {c.OK}[OK]{c.RESET} {rel_path}")
+            restored += 1
+        except Exception as e:
+            print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
 
     return restored
 
 
-def delete_backups(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
+def delete_backups(pairs: List[Tuple[str, str]]) -> int:
     """
     Supprime les fichiers .bak après restauration.
 
@@ -178,15 +174,12 @@ def delete_backups(pairs: List[Tuple[str, str]], dry_run: bool = False) -> int:
     for lua_path, bak_path in pairs:
         rel_path = os.path.basename(bak_path)
 
-        if dry_run:
-            print(f"  {c.INFO}[SIMULATION]{c.RESET} Suppression: {rel_path}")
-        else:
-            try:
-                os.remove(bak_path)
-                print(f"  {c.OK}[OK]{c.RESET} Supprimé: {rel_path}")
-                deleted += 1
-            except Exception as e:
-                print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
+        try:
+            os.remove(bak_path)
+            print(f"  {c.OK}[OK]{c.RESET} Supprimé: {rel_path}")
+            deleted += 1
+        except Exception as e:
+            print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
 
     return deleted
 
@@ -252,7 +245,7 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
             print(c.error("Entrez un nombre valide"))
 
 
-def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str], bool]:
+def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]:
     """
     Menu interactif pour configurer la restauration.
 
@@ -260,7 +253,7 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str],
         default_plugin_path: Chemin du plugin pré-configuré (optionnel)
 
     Returns:
-        (chemin_plugin, backup_dir ou None, dry_run)
+        (chemin_plugin, backup_dir ou None)
     """
     os.system('cls' if os.name == 'nt' else 'clear')
     print(c.box_header("RESTAURATION DES FICHIERS .bak"))
@@ -343,34 +336,13 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str],
         print(c.warning(f"Aucune session Applicator trouvée dans {get_i18n_dir()}/"))
         print(f"{c.DIM}Recherche des backups legacy (.lua.bak à côté des fichiers)...{c.RESET}")
 
-    # Mode dry-run ?
-    print()
-    print(c.separator())
-    while True:
-        response = input(f"{c.PROMPT}Mode simulation (dry-run) ? [{c.OK}O{c.RESET}{c.PROMPT}/n]: {c.RESET}").strip().lower()
-
-        if response in ['o', 'y', '', 'oui', 'yes']:
-            dry_run = True
-            print(c.info("Mode simulation activé"))
-            print()
-            break
-        elif response in ['n', 'non', 'no']:
-            dry_run = False
-            print(c.warning("Mode réel - Les fichiers seront modifiés"))
-            print()
-            break
-        else:
-            print(c.error("Entrez 'o' ou 'n'"))
-            print()
-
-    return normalized, backup_dir, dry_run
+    return normalized, backup_dir
 
 
 def main():
     """Point d'entrée principal."""
 
     # Parser les arguments
-    dry_run = False
     directory = None
     backup_dir = None
     default_plugin = ""
@@ -380,10 +352,6 @@ def main():
     if '--help' in args or '-h' in args:
         print(__doc__)
         sys.exit(0)
-
-    if '--dry-run' in args:
-        dry_run = True
-        args.remove('--dry-run')
 
     # Vérifier si --default-plugin est fourni (depuis LocalisationToolKit.py)
     if '--default-plugin' in args:
@@ -407,7 +375,7 @@ def main():
             print(c.success(f"Session Applicator trouvée: {c.VALUE}{format_timestamp(timestamp)}{c.RESET}"))
     else:
         # Menu interactif (avec plugin par défaut si fourni)
-        directory, backup_dir, dry_run = interactive_menu(default_plugin)
+        directory, backup_dir = interactive_menu(default_plugin)
 
     # Rechercher les paires
     print(c.separator("=", 60))
@@ -444,27 +412,23 @@ def main():
 
     # Confirmation
     print()
-    if not dry_run:
-        confirm = input(f"{c.PROMPT}Restaurer ces {len(pairs)} fichier(s) ? [o/N]: {c.RESET}").strip().lower()
-        if confirm not in ['o', 'oui', 'yes', 'y']:
-            print()
-            print(c.warning("Restauration annulée"))
-            sys.exit(0)
+    confirm = input(f"{c.PROMPT}Restaurer ces {len(pairs)} fichier(s) ? [o/N]: {c.RESET}").strip().lower()
+    if confirm not in ['o', 'oui', 'yes', 'y']:
+        print()
+        print(c.warning("Restauration annulée"))
+        sys.exit(0)
 
     # Restaurer
     print()
     print(c.separator("=", 60))
-    if dry_run:
-        print(c.title("RESTAURATION (SIMULATION)"))
-    else:
-        print(c.title("RESTAURATION"))
+    print(c.title("RESTAURATION"))
     print(c.separator("=", 60))
     print()
 
-    restored = restore_files(pairs, dry_run)
+    restored = restore_files(pairs)
 
     # Demander si on supprime les .bak
-    if not dry_run and restored > 0:
+    if restored > 0:
         print()
         delete_confirm = input(f"{c.PROMPT}Supprimer les fichiers .bak ? [o/N]: {c.RESET}").strip().lower()
 
@@ -472,7 +436,7 @@ def main():
             print()
             print(c.info("Suppression des .bak"))
             print()
-            deleted = delete_backups(pairs, dry_run)
+            deleted = delete_backups(pairs)
             print()
             print(c.success(f"{deleted} fichier(s) .bak supprimé(s)"))
 
@@ -482,12 +446,7 @@ def main():
     print(c.title("RÉSUMÉ"))
     print(c.separator("=", 60))
 
-    if dry_run:
-        print(f"{c.KEY}Fichiers qui seraient restaurés{c.RESET}: {c.VALUE}{len(pairs)}{c.RESET}")
-        print()
-        print(c.warning("MODE SIMULATION - Aucun fichier modifié"))
-    else:
-        print(f"{c.KEY}Fichiers restaurés{c.RESET}: {c.VALUE}{restored}{c.RESET}")
+    print(f"{c.KEY}Fichiers restaurés{c.RESET}: {c.VALUE}{restored}{c.RESET}")
 
     print()
     print(c.success("Terminé!"))

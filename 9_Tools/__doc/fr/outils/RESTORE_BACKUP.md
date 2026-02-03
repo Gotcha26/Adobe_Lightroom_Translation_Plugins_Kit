@@ -8,8 +8,6 @@
 
 ***Restore_backup*** restaure les fichiers `.lua` du plugin depuis leurs sauvegardes `.bak` générées par ***Applicator***. Cet outil permet de revenir à l'état précédent après une application incorrecte des localisations.
 
-> **Conseil** : Utilisez le mode **dry-run** (simulation) pour vérifier les fichiers qui seront restaurés avant d'effectuer l'opération réelle.
-
 ---
 
 ## 📥 Entrées / 📤 Sorties
@@ -68,15 +66,12 @@ flowchart TD
 
     F --> I
 
-    I --> J{"Mode dry-run ?"}
-    J -->|Oui| K["Afficher simulation"]
-    J -->|Non| L["Demander confirmation"]
+    I --> L["Demander confirmation"]
     L --> M["Copier .bak → .lua"]
     M --> N{"Supprimer .bak ?"}
     N -->|Oui| O["Supprimer fichiers .bak"]
     N -->|Non| P["Conserver .bak"]
 
-    K --> Q["✅ Simulation terminée"]
     O --> R["✅ Restauration terminée"]
     P --> R
 
@@ -87,9 +82,8 @@ flowchart TD
 
 | Mode | Description | Fichiers modifiés |
 |------|-------------|-------------------|
-| **Dry-run** | Simulation sans modification | Aucun |
-| **Réel** | Restauration effective | `.lua` écrasés par `.bak` |
-| **Réel + suppression** | Restauration + nettoyage | `.lua` écrasés, `.bak` supprimés |
+| **Restauration** | Restauration effective | `.lua` écrasés par `.bak` |
+| **Restauration + suppression** | Restauration + nettoyage | `.lua` écrasés, `.bak` supprimés |
 
 ---
 
@@ -104,18 +98,14 @@ python Restore_backup.py
 Le menu interactif guide l'utilisateur à travers :
 1. Sélection du plugin
 2. Choix de la session de backup
-3. Mode dry-run ou réel
-4. Confirmation de restauration
-5. Suppression optionnelle des `.bak`
+3. Confirmation de restauration
+4. Suppression optionnelle des `.bak`
 
 ### Mode CLI direct
 
 ```bash
 # Restauration de la dernière session
 python Restore_backup.py /path/to/plugin.lrplugin
-
-# Mode simulation
-python Restore_backup.py --dry-run /path/to/plugin.lrplugin
 
 # Avec plugin pré-configuré (via LocalisationToolKit)
 python Restore_backup.py --default-plugin /path/to/plugin.lrplugin
@@ -126,7 +116,6 @@ python Restore_backup.py --default-plugin /path/to/plugin.lrplugin
 | Option | Description |
 |--------|-------------|
 | `<path>` | Chemin du plugin (mode CLI direct) |
-| `--dry-run` | Mode simulation (aucune modification) |
 | `--default-plugin <path>` | Plugin pré-configuré |
 | `--help`, `-h` | Afficher l'aide |
 
@@ -246,20 +235,17 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["restore_files(pairs, dry_run)"] --> B["Pour chaque paire"]
-    B --> C{"dry_run ?"}
-    C -->|Oui| D["Afficher [SIMULATION]"]
-    C -->|Non| E["shutil.copy2(bak → lua)"]
-    E --> F{"Succès ?"}
-    F -->|Oui| G["Afficher [OK]"]
-    F -->|Non| H["Afficher [FAIL] + erreur"]
-    G --> I["Incrémenter compteur"]
-    D --> J["Continuer"]
-    I --> J
-    H --> J
-    J --> K{"Autres paires ?"}
-    K -->|Oui| B
-    K -->|Non| L["Retourner nb restaurés"]
+    A["restore_files(pairs)"] --> B["Pour chaque paire"]
+    B --> C["shutil.copy2(bak → lua)"]
+    C --> D{"Succès ?"}
+    D -->|Oui| E["Afficher [OK]"]
+    D -->|Non| F["Afficher [FAIL] + erreur"]
+    E --> G["Incrémenter compteur"]
+    G --> H["Continuer"]
+    F --> H
+    H --> I{"Autres paires ?"}
+    I -->|Oui| B
+    I -->|Non| J["Retourner nb restaurés"]
 ```
 
 ---
@@ -343,7 +329,7 @@ flowchart LR
 
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
-| **Nom** | *RESTORE_BACKUP.md* | **Version** | 3.0 |
+| **Nom** | *RESTORE_BACKUP.md* | **Version** | 3.1 |
 | **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../../en/RESTORE_BACKUP.md)* |
-| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-03 |
 | **Licence** | Open source | | |
