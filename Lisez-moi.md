@@ -189,7 +189,7 @@ Ce projet est né d'un besoin personnel : rendre mon propre plugin Lightroom mul
 
 Les retours, suggestions et contributions sont chaleureusement encouragés !
 
-*Fais avec amour et le soleil du sud de la Drôme, entre Mistral et lavandes.*
+*Fait en France 🇫🇷 avec amour et le soleil du sud de la Drôme provençale, entre Mistral et lavandes.*
 
 ---
 

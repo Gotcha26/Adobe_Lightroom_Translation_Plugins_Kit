@@ -296,4 +296,4 @@ git checkout HEAD -- plugin.lrplugin/*.lua
 | **Nom** | *Lisez-moi.md* | **Version** | 3.1 |
 | **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../../LICENSE) | | |

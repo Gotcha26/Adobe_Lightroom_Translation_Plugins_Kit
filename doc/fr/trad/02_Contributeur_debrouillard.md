@@ -214,4 +214,4 @@ Ne traduisez pas tout d'un coup. Traduisez par sections et testez au fur et à m
 | **Nom** | *02_Contributeur_debrouillard.md* | **Version** | 1.0 |
 | **Type** | Guide traducteurs - Intermidaire | **Langue** | FR - *[EN](../../en/trad/02_Resourceful_Contributor.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../LICENSE) | | |

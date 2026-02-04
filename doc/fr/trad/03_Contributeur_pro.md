@@ -257,4 +257,4 @@ Cordialement,
 | **Nom** | *03_Contributeur_pro.md* | **Version** | 1.0 |
 | **Type** | Guide traducteurs - Avancé | **Langue** | FR - *[EN](../../en/trad/03_Professional_Contributor.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../LICENSE) | | |

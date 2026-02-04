@@ -691,4 +691,4 @@ Non, le format `LOC "$$$/Key=Default"` est imposé par le SDK Lightroom.
 | **Nom** | *Lisez-moi.md* | **Version** | 7.2 |
 | **Type** | Guide utilisateur APPLICATOR - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-03 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../../LICENSE) | | |

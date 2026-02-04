@@ -189,7 +189,7 @@ This project was born from a personal need: making my own Lightroom plugin multi
 
 Feedback, suggestions, and contributions are warmly encouraged!
 
-*Made with love and the southern French sunshine of Drôme, between Mistral winds and lavender fields.*
+*Made in France 🇫🇷 with love and sunshine in the south of Drôme Provençale, between Mistral and lavender.*
 
 ---
 

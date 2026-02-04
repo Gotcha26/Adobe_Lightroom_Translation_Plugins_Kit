@@ -332,4 +332,4 @@ flowchart LR
 | **Nom** | *RESTORE_BACKUP.md* | **Version** | 3.1 |
 | **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../../en/RESTORE_BACKUP.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-03 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../../../LICENSE) | | |

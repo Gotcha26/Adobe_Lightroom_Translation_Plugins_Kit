@@ -851,4 +851,4 @@ Ajoutez `__i18n_tmp__/` à votre `.gitignore`.
 | **Nom** | *Lisez-moi.md* | **Version** | 5.2 |
 | **Type** | Guide utilisateur EXTRACTOR - Avancé | **Langue** | FR - *[EN](../en/README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../../LICENSE) | | |

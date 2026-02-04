@@ -191,4 +191,4 @@ Envoyez les fichiers à des contributeurs. Consultez le guide [Contributeur simp
 | **Nom** | *02_Dev_Installation.md* | **Version** | 1.0 |
 | **Type** | Guide développeurs - Installation | **Langue** | FR - *[EN](../../en/trad/01_Dev_Installation.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../LICENSE) | | |

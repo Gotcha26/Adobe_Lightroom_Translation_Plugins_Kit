@@ -212,4 +212,4 @@ Demandez au développeur ! Il peut vous fournir des captures d'écran ou des exp
 | **Nom** | *01_Contributeur_simple.md* | **Version** | 1.0 |
 | **Type** | Guide traducteurs - Simple | **Langue** | FR - *[EN](../../en/trad/01_Contributeur_simple.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../LICENSE) | | |

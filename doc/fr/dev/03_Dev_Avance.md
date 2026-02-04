@@ -244,4 +244,4 @@ python LocalisationToolKit.py
 | **Nom** | *03_Dev_Avance.md* | **Version** | 1.0 |
 | **Type** | Guide développeurs - Avancé | **Langue** | FR - *[EN](../../en/trad/03_Dev_Avanced.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../LICENSE) | | |

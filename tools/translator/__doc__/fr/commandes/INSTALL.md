@@ -193,4 +193,4 @@ Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt
 | **Nom** | *INSTALL.md* | **Version** | 1.0 |
 | **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/INSTALL.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](../../../../../LICENSE) | | |
