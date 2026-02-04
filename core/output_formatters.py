@@ -115,25 +115,34 @@ class OutputFormatter:
         for key, value in details.items():
             print(f"  {c.KEY}{key:<{max_key_len}}{c.RESET} : {c.VALUE}{value}{c.RESET}")
 
-    def print_files_generated(self, files: List[Tuple[str, str, str]], output_dir: str) -> None:
+    def print_files_generated(self, files: List[Tuple[str, str, str]], output_dir: str, plugin_path: str = "") -> None:
         """
         Affiche les fichiers générés de manière structurée.
 
         Args:
-            files: Liste de tuples (name, relative_path, description)
-            output_dir: Répertoire de sortie (pour affichage du contexte)
+            files: Liste de tuples (name, count, description)
+            output_dir: Répertoire de sortie (chemin complet)
+            plugin_path: Chemin du plugin (optionnel, pour affichage relatif)
 
         Example:
             files = [
                 ("TranslatedStrings_en.txt", "272 clés", "Fichier de chaînes"),
                 ("spacing_metadata.json", "82 entrées", "Métadonnées"),
             ]
-            formatter.print_files_generated(files, "/path/to/output")
+            formatter.print_files_generated(files, "/full/path/output", "/full/path/plugin.lrplugin")
         """
         self.print_section_header(_("FICHIERS GÉNÉRÉS"))
 
-        # Afficher le dossier de sortie
-        print(f"\n  [" + _("Sortie") + f"] {c.VALUE}{output_dir}{c.RESET}\n")
+        # Afficher le dossier de sortie (raccourci si possible)
+        display_path = output_dir
+        if plugin_path and plugin_path in output_dir:
+            # Afficher le chemin relatif au plugin
+            relative = output_dir.replace(plugin_path, "").lstrip(os.sep)
+            # Normaliser les slashes en forward slashes
+            relative = relative.replace("\\", "/")
+            display_path = f"<plugin>/{relative}"
+
+        print(f"\n  [" + _("Sortie") + f"] {c.VALUE}{display_path}{c.RESET}\n")
 
         # Afficher la liste des fichiers
         if files:
@@ -205,6 +214,8 @@ class OutputFormatter:
         if plugin_path in full_path:
             # Obtenir le chemin relatif après le plugin
             relative = full_path.replace(plugin_path, "").lstrip(os.sep)
+            # Normaliser les slashes en forward slashes
+            relative = relative.replace("\\", "/")
             return relative
         return full_path
 

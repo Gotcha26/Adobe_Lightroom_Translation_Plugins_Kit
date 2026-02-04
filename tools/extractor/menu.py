@@ -75,34 +75,38 @@ class InteractiveMenu:
         print(c.title(_("Configuration:")))
         print()
 
-        # Plugin path avec indicateur de validité
+        # Plugin path avec indicateur de validité et chemin raccourci
         if self.plugin_path:
             if os.path.isdir(self.plugin_path):
                 status = f"{c.OK}OK{c.RESET}"
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
-            print(c.config_line("1. " + _("Plugin ciblé"), f"{self.plugin_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
+            # Afficher seulement le dernier niveau du chemin
+            short_path = os.path.basename(self.plugin_path)
+            print(c.config_line("1. " + _("Plugin ciblé"), f".../{short_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
         else:
             print(c.config_line("1. " + _("Plugin ciblé"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
         # Répertoire de sortie
         if self.output_dir:
-            print(c.config_line("2. " + _("Sortie"), self.output_dir))
+            print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
-            default_output = f"<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/"
-            print(c.config_line("2. " + _("Sortie"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
+            default_output = f"<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
+            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
 
         # Autres options
         print(c.config_line("3. " + _("Préfixe LOC"), self.prefix))
-        print(c.config_line("4. " + _("Langue extraite"), self.lang))
+        print(c.config_line("4. " + _("Langue du plugin"), self.lang))
 
         exclude_display = ', '.join(self.exclude_files) if self.exclude_files else _("(aucun)")
-        print(c.config_line("5. " + _("Exclusions"), exclude_display))
+        print(c.config_line("5. " + _("Fichiers à exclure"), exclude_display))
 
         print(c.config_line("6. " + _("Long. min chaînes"), str(self.min_length)))
 
-        ignore_display = f"{c.OK}" + _("Oui") + f"{c.RESET}" if self.ignore_log else f"{c.WARNING}" + _("Non") + f"{c.RESET}"
-        print(c.config_line("7. " + _("Ignorer logs"), ignore_display))
+        # ignore_log=True signifie les logs sont ignorés (donc non inclus -> Non en vert)
+        # ignore_log=False signifie les logs sont inclus (donc Oui en rouge pour éviter par défaut)
+        include_logs_display = f"{c.OK}" + _("Non") + f"{c.RESET}" if self.ignore_log else f"{c.WARNING}" + _("Oui") + f"{c.RESET}"
+        print(c.config_line("7. " + _("Inclure msg. logs"), include_logs_display))
 
         print()
 
@@ -125,7 +129,7 @@ class InteractiveMenu:
         print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
         print(_("Exemples:"))
-        print(f"  {c.VALUE}C:\\Users\\User\\Lightroom\\plugin.lrplugin{c.RESET}")
+        print(f"  {c.VALUE}C:/Users/User/Lightroom/plugin.lrplugin{c.RESET}")
         print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
         print()
 
@@ -168,9 +172,9 @@ class InteractiveMenu:
     def input_output_dir(self):
         """Demande le répertoire de sortie (override optionnel)."""
         print()
-        print(c.title("2. " + _("Répertoire de sortie")))
+        print(c.title("2. " + _("Dossier temporaire")))
         print(c.separator())
-        print(_("Par défaut:") + f" {c.VALUE}<plugin>/{get_i18n_dir()}/Extractor/<timestamp>/{c.RESET}")
+        print(_("Par défaut:") + f" {c.VALUE}<plugin>/__i18n_tmp__/Extractor/<timestamp>/{c.RESET}")
         print()
         print(_("Pour forcer un autre emplacement, entrez un chemin."))
         print(_("Sinon, appuyez sur ENTRÉE pour utiliser le défaut."))
@@ -188,7 +192,7 @@ class InteractiveMenu:
             print(c.success(_("Override: {path}").format(path=normalized_path)))
         else:
             self.output_dir = ""
-            print(c.success(_("Utilisera: <plugin>/{dir}/Extractor/<timestamp>/").format(dir=get_i18n_dir())))
+            print(c.success(_("Utilisera: <plugin>/__i18n_tmp__/Extractor/<timestamp>/")))
 
     def input_prefix(self):
         """Demande le préfixe LOC."""
@@ -209,7 +213,7 @@ class InteractiveMenu:
     def input_lang(self):
         """Demande le code langue."""
         print()
-        print(c.title("4. " + _("Code langue")))
+        print(c.title("4. " + _("Langue du plugin")))
         print(c.separator())
         print(_("Exemples:") + f" {c.VALUE}en{c.RESET} " + _("(anglais)") + f", {c.VALUE}fr{c.RESET} " + _("(français)") + f", {c.VALUE}de{c.RESET} " + _("(allemand)"))
         print()
@@ -239,10 +243,10 @@ class InteractiveMenu:
 
         if files:
             self.exclude_files = [f.strip() for f in files.split(',') if f.strip()]
-            print(c.success(_("Exclusions: {files}").format(files=', '.join(self.exclude_files))))
+            print(c.success(_("Fichiers à exclure: {files}").format(files=', '.join(self.exclude_files))))
         else:
             self.exclude_files = []
-            print(c.success(_("Aucun fichier exclu")))
+            print(c.success(_("Aucun fichier à exclure")))
 
     def input_min_length(self):
         """Demande la longueur minimale des chaînes."""
@@ -269,24 +273,26 @@ class InteractiveMenu:
             print(c.error(_("Valeur invalide")))
 
     def input_ignore_log(self):
-        """Demande si les logs doivent être ignorés."""
+        """Demande si les messages de log doivent être inclus."""
         print()
-        print(c.title("7. " + _("Ignorer les lignes de log")))
+        print(c.title("7. " + _("Inclure les messages de log")))
         print(c.separator())
-        print(_("Ignore les lignes contenant log(), warn(), etc."))
+        print(_("Inclut les lignes contenant log(), warn(), etc."))
         print()
 
-        current = "O" if self.ignore_log else "N"
-        response = input(c.prompt(_("Ignorer les logs? [{current}]:").format(current=current) + " ")).strip().lower()
+        # ignore_log=True signifie "ignorer les logs" (donc ne pas les inclure)
+        # current affiche si les logs sont inclus (inverse de ignore_log)
+        current = "N" if self.ignore_log else "O"
+        response = input(c.prompt(_("Inclure les messages de log? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
-            self.ignore_log = True
-            print(c.success(_("Logs ignorés")))
+            self.ignore_log = False  # Inclure = ne pas ignorer
+            print(c.success(_("Messages de log inclus")))
         elif response in ['n', 'non', 'no']:
-            self.ignore_log = False
-            print(c.success(_("Logs inclus")))
+            self.ignore_log = True   # Ne pas inclure = ignorer
+            print(c.success(_("Messages de log ignorés")))
         else:
-            status = _("Oui") if self.ignore_log else _("Non")
+            status = _("Non") if self.ignore_log else _("Oui")
             print(c.success(_("Option inchangée: {status}").format(status=status)))
 
     def run(self) -> bool:

@@ -567,7 +567,7 @@ class ToolLauncher:
         return self._run_script(script)
 
     def find_latest_extraction(self) -> Optional[str]:
-        """Trouve le dossier d'extraction le plus récent dans __i18n_kit__."""
+        """Trouve le dossier d'extraction le plus récent dans __i18n_tmp__."""
         plugin_path = self.config.get("plugin_path")
         if not plugin_path or not os.path.isdir(plugin_path):
             return None

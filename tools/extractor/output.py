@@ -66,6 +66,16 @@ class OutputGenerator:
         self.plugin_path = plugin_path
         self.prefix = prefix
 
+    @staticmethod
+    def _shorten_path(full_path: str, plugin_path: str) -> str:
+        """Raccourcit le chemin en chemin relatif au plugin."""
+        if plugin_path and plugin_path in full_path:
+            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
+            # Normaliser les slashes en forward slashes
+            relative = relative.replace("\\", "/")
+            return f"<plugin>/{relative}"
+        return full_path
+
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
         """Génère le fichier PluginStrings.txt avec les clés uniques (fichier de référence)."""
         # Construire un dictionnaire clé → entry (première occurrence)
@@ -102,7 +112,8 @@ class OutputGenerator:
 
                 f.write("\n")
 
-        print(_("✓ PluginStrings généré: {path} ({n} clés uniques)").format(path=output_path, n=len(unique_keys)))
+        short_path = self._shorten_path(output_path, self.plugin_path)
+        print(_("✓ PluginStrings généré  : {path} ({n} clés uniques)").format(path=short_path, n=len(unique_keys)))
 
     def generate_spacing_metadata(self, spacing_metadata: Dict[str, Dict], text_to_key: Dict[str, str],
                                    output_path: str):
@@ -117,7 +128,8 @@ class OutputGenerator:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        print(_("✓ Spacing metadata: {path} ({n} clés)").format(path=output_path, n=len(spacing_metadata)))
+        short_path = self._shorten_path(output_path, self.plugin_path)
+        print(_("✓ Spacing metadata      : {path} ({n} clés)").format(path=short_path, n=len(spacing_metadata)))
 
     def generate_replacements_json(self, extracted: List[ExtractedString], output_path: str,
                                    text_to_key: Dict[str, str]):
@@ -217,7 +229,8 @@ class OutputGenerator:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
         total_replacements = sum(f['total_replacements'] for f in files_data.values())
-        print(_("✓ Replacements JSON: {path} ({n} lignes à modifier)").format(path=output_path, n=total_replacements))
+        short_path = self._shorten_path(output_path, self.plugin_path)
+        print(_("✓ Replacements JSON     : {path} ({n} lignes à modifier)").format(path=short_path, n=total_replacements))
 
     def _build_loc_call(self, entry: ExtractedString) -> str:
         """

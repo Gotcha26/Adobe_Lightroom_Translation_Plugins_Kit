@@ -54,7 +54,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         sys.exit(1)
 
     # Déterminer le répertoire de sortie
-    # Nouvelle structure: <plugin>/__i18n_kit__/1_Extractor/<timestamp>/
+    # Nouvelle structure: <plugin>/__i18n_tmp__/Extractor/<timestamp>/
     if output_dir:
         # Override manuel (rétrocompatibilité)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -136,7 +136,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         ("extraction_report.txt", _("rapport détaillé"), _("Analyse complète")),
     ]
 
-    formatter.print_files_generated(files_generated, timestamped_output_dir)
+    formatter.print_files_generated(files_generated, timestamped_output_dir, plugin_path)
 
 
 def main():
@@ -186,7 +186,7 @@ Exemples:
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
         parser.add_argument('--output-dir', default=None,
-                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_kit__/1_Extractor/)')
+                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
         parser.add_argument('--prefix', default='$$$/Piwigo',
                             help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
         parser.add_argument('--lang', default='en',

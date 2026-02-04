@@ -39,6 +39,16 @@ class ReportGenerator:
         self.prefix = prefix
         self.stats = stats
 
+    @staticmethod
+    def _shorten_path(full_path: str, plugin_path: str) -> str:
+        """Raccourcit le chemin en chemin relatif au plugin."""
+        if plugin_path and plugin_path in full_path:
+            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
+            # Normaliser les slashes en forward slashes
+            relative = relative.replace("\\", "/")
+            return f"<plugin>/{relative}"
+        return full_path
+
     def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict],
                        output_path: str):
         """Génère le rapport détaillé pour remplacement."""
@@ -194,7 +204,8 @@ class ReportGenerator:
                 # Utiliser base_text (sans suffixe) pour la valeur
                 f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
 
-        print(_("✓ Rapport: {path}").format(path=output_path))
+        short_path = self._shorten_path(output_path, self.plugin_path)
+        print(_("✓ Rapport               : {path}").format(path=short_path))
 
     def _get_markers(self, entry: ExtractedString) -> str:
         """Retourne la chaîne de marqueurs (émojis) pour une entrée."""

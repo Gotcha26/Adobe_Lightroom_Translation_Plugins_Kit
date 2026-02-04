@@ -6,7 +6,7 @@ Dépendances : Aucune
 
 Description :
 Gère les chemins et répertoires pour les outils i18n du plugin Lightroom. Fournit des fonctions
-pour créer, naviguer et gérer les dossiers horodatés __i18n_kit__ où sont stockées les sorties
+pour créer, naviguer et gérer les dossiers horodatés __i18n_tmp__ où sont stockées les sorties
 des outils (Extractor, Applicator, Translator, Tools).
 
 Usage CLI :
@@ -197,7 +197,7 @@ def find_all_tool_outputs(plugin_path: str, tool_name: str) -> List[str]:
     tool_dir = None
     normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
 
-    # Lister tous les dossiers dans __i18n_kit__
+    # Lister tous les dossiers dans __i18n_tmp__
     for dir_name in os.listdir(i18n_kit):
         dir_path = os.path.join(i18n_kit, dir_name)
         if not os.path.isdir(dir_path):

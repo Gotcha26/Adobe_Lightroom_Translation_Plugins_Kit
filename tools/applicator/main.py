@@ -363,7 +363,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     if not extraction_dir:
         extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not extraction_dir:
-            print(_("ERREUR: Aucune extraction trouvée dans __i18n_kit__/Extractor/"))
+            print(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"))
             print(_("        Lancez d'abord Extractor sur ce plugin."))
             return False
         print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
@@ -746,14 +746,14 @@ Exemples:
   python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
 
   # Mode CLI avec extraction specifique
-  python Applicator_main.py --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_kit__/Extractor/20260127_091234
+  python Applicator_main.py --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
             """
         )
 
         parser.add_argument('--plugin-path', required=True,
                             help='Chemin vers le repertoire du plugin (OBLIGATOIRE)')
         parser.add_argument('--extraction-dir', default=None,
-                            help='Repertoire Extractor (defaut: auto-detection __i18n_kit__/Extractor/)')
+                            help='Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)')
         parser.add_argument('--dry-run', action='store_true',
                             help='Mode simulation (affiche sans modifier)')
         parser.add_argument('--no-backup', action='store_true',
