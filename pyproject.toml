@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adobe-lightroom-translation-toolkit"
+version = "1.0.0"
+description = "Python CLI toolkit for internationalizing Adobe Lightroom Classic plugins"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.7"
+authors = [
+    {name = "Julien Moreau", email = "gotcha26@users.noreply.github.com"}
+]
+keywords = [
+    "lightroom",
+    "adobe",
+    "plugin",
+    "localization",
+    "internationalization",
+    "i18n",
+    "l10n",
+    "translation",
+    "lua"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Internationalization",
+    "Topic :: Software Development :: Localization",
+    "Topic :: Utilities"
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit"
+Documentation = "https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit#readme"
+Repository = "https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit.git"
+Issues = "https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit/issues"
+Changelog = "https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit/blob/main/CHANGELOG.md"
+
+[project.scripts]
+lightroom-toolkit = "LocalizationToolKit:main"
+
+[tool.setuptools]
+py-modules = ["LocalizationToolKit"]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["core*", "tools*", "assets*"]
+
+[tool.setuptools.package-data]
+"*" = ["locale/**/*.mo", "locale/**/*.po", "locale/*.pot"]

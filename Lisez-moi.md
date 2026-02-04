@@ -147,26 +147,26 @@ python LocalisationToolKit.py
 
 ### Pour aller plus loin
 
-- [Présentation du toolkit - vue globale](0_doc/fr/Lisez-moi.md)
+- [Présentation du toolkit - vue globale](doc/fr/Lisez-moi.md)
 
 ### Guides par profil
 
 | Vous êtes... | Commencez par... |
 |--------------|------------------|
-| Développeur d'un plugin LrC | [Guide Installation](0_doc/fr/Developpeur/01_Installation.md) |
-| Développeur en maintenance | [Guide Maintenance](0_doc/fr/Developpeur/02_Maintenance.md) |
-| Développeur avancé | [Workflows avancés](0_doc/fr/Developpeur/03_Avance.md) |
-| Traducteur débutant | [Contributeur simple](0_doc/fr/Traducteur/01_Contributeur_simple.md) |
-| Traducteur autonome | [Contributeur débrouillard](0_doc/fr/Traducteur/02_Contributeur_debrouillard.md) |
-| Traducteur professionnel | [Contributeur pro](0_doc/fr/Traducteur/03_Contributeur_pro.md) |
+| Développeur d'un plugin LrC | [Guide Installation](doc/fr/dev/01_Dev_Installation.md) |
+| Développeur en maintenance | [Guide Maintenance](doc/fr/dev/02_Dev_Maintenance.md) |
+| Développeur avancé | [Workflows avancés](doc/fr/dev/03_Dev_Avance.md) |
+| Traducteur débutant | [Contributeur simple](doc/fr/trad/01_Contributeur_simple.md) |
+| Traducteur autonome | [Contributeur débrouillard](doc/fr/trad/02_Contributeur_debrouillard.md) |
+| Traducteur professionnel | [Contributeur pro](doc/fr/trad/03_Contributeur_pro.md) |
 
 ### Documentation technique des outils
 
 Chaque outil dispose de sa propre documentation détaillée :
-- [Extractor](1_Extractor/__doc/fr/Lisez-moi.md) — Extraction des chaînes
-- [Applicator](2_Applicator/__doc/fr/Lisez-moi.md) — Application des clés LOC()
-- [Translator](3_Translator/__doc/fr/Lisez-moi.md) — Gestion des traductions
-- [Tools](9_Tools/__doc/fr/Lisez-moi.md) — Utilitaires (restauration, nettoyage)
+- [Extractor](tools/extractor/__doc__/fr/Lisez-moi.md) — Extraction des chaînes
+- [Applicator](tools/applicator/__doc__/fr/Lisez-moi.md) — Application des clés LOC()
+- [Translator](tools/translator/__doc__/fr/Lisez-moi.md) — Gestion des traductions
+- [Toolbox](tools/toolbox/__doc__/fr/Lisez-moi.md) — Utilitaires (restauration, nettoyage)
 
 ---
 
@@ -198,4 +198,4 @@ Les retours, suggestions et contributions sont chaleureusement encouragés !
 | **Nom** | *Lisez-moi.md* | **Version** | 1.0 |
 | **Type** | Présentation - Auto-promotion | **Langue** | FR - *[EN](README.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | Open source | | |
+| **Licence** | [MIT](LICENSE) | | |

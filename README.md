@@ -147,26 +147,26 @@ python LocalisationToolKit.py
 
 ### To go further
 
-- [Toolkit overview - general view](0_doc/en/README.md)
+- [Toolkit overview - general view](doc/en/README.md)
 
 ### Guides by Profile
 
 | You are... | Start here... |
 |------------|---------------|
-| Lightroom plugin developer | [Installation Guide](0_doc/en/Developer/01_Installation.md) |
-| Developer in maintenance mode | [Maintenance Guide](0_doc/en/Developer/02_Maintenance.md) |
-| Advanced developer | [Advanced Workflows](0_doc/en/Developer/03_Advanced.md) |
-| Beginner translator | [Simple Contributor](0_doc/en/Translator/01_Simple_Contributor.md) |
-| Self-taught translator | [Independent Contributor](0_doc/en/Translator/02_Independent_Contributor.md) |
-| Professional translator | [Professional Contributor](0_doc/en/Translator/03_Professional_Contributor.md) |
+| Lightroom plugin developer | [Installation Guide](doc/en/dev/01_Dev_Installation.md) |
+| Developer in maintenance mode | [Maintenance Guide](doc/en/dev/02_Dev_Maintenance.md) |
+| Advanced developer | [Advanced Workflows](doc/en/dev/03_Dev_Advanced.md) |
+| Beginner translator | [Simple Contributor](doc/en/trad/01_Simple_Contributor.md) |
+| Self-taught translator | [Resourceful Contributor](doc/en/trad/02_Resourceful_Contributor.md) |
+| Professional translator | [Professional Contributor](doc/en/trad/03_Professional_Contributor.md) |
 
 ### Technical Documentation of Tools
 
 Each tool has its own detailed documentation:
-- [Extractor](1_Extractor/__doc/en/README.md) — String extraction
-- [Applicator](2_Applicator/__doc/en/README.md) — Application of LOC() keys
-- [Translator](3_Translator/__doc/en/README.md) — Translation management
-- [Tools](9_Tools/__doc/en/README.md) — Utilities (restore, cleanup)
+- [Extractor](tools/extractor/__doc__/en/README.md) — String extraction
+- [Applicator](tools/applicator/__doc__/en/README.md) — Application of LOC() keys
+- [Translator](tools/translator/__doc__/en/README.md) — Translation management
+- [Toolbox](tools/toolbox/__doc__/en/README.md) — Utilities (restore, cleanup)
 
 ---
 
@@ -198,4 +198,4 @@ Feedback, suggestions, and contributions are warmly encouraged!
 | **Name** | *README.md* | **Version** | 1.0 |
 | **Type** | Presentation - Self-promotion | **Language** | EN - *[FR](Lisez-moi.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **License** | Open source | | |
+| **License** | [MIT](LICENSE) | | |
