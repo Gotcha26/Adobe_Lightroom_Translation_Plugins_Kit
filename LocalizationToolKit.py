@@ -64,7 +64,8 @@ c = Colors()
 # CONFIGURATION
 # =============================================================================
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE       = "config.json"
+CONFIG_LOCAL_FILE = "config.local.json"   # Surcharge locale, ignorée par git
 
 DEFAULT_CONFIG = {
     "plugin_path": r"D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin",
@@ -95,24 +96,39 @@ class ConfigManager:
 
     def __init__(self, base_dir: str):
         self.base_dir = base_dir
-        self.config_path = os.path.join(base_dir, CONFIG_FILE)
+        self.config_path       = os.path.join(base_dir, CONFIG_FILE)
+        self.config_local_path = os.path.join(base_dir, CONFIG_LOCAL_FILE)
         self.config = self._load()
 
+    # ------------------------------------------------------------------
+    # Ordre de priorité :  DEFAULT_CONFIG  <  config.json  <  config.local.json
+    # ------------------------------------------------------------------
     def _load(self) -> Dict:
-        """Charge la configuration depuis le fichier JSON."""
+        """Charge la configuration depuis le fichier JSON.
+
+        config.local.json (si présent) écrase les valeurs de config.json.
+        Ce fichier est ignoré par git : utilisez-le pour des surcharges locales.
+        """
         config = DEFAULT_CONFIG.copy()
+
+        # 1) Charger config.json (base partagée)
         if os.path.exists(self.config_path):
             try:
                 with open(self.config_path, 'r', encoding='utf-8') as f:
-                    loaded = json.load(f)
-                    # Fusionner avec defaults pour nouvelles clés
-                    config = {**DEFAULT_CONFIG, **loaded}
+                    config = {**config, **json.load(f)}
             except Exception as e:
                 print(_("Erreur lecture config: {error}").format(error=e))
 
+        # 2) Surcharger avec config.local.json (local, non versionnée)
+        if os.path.exists(self.config_local_path):
+            try:
+                with open(self.config_local_path, 'r', encoding='utf-8') as f:
+                    config = {**config, **json.load(f)}
+            except Exception as e:
+                print(_("Erreur lecture config locale: {error}").format(error=e))
+
         # Appliquer le nom du dossier temporaire
-        temp_dir = config.get("temp_dir", DEFAULT_I18N_DIR)
-        set_i18n_dir(temp_dir)
+        set_i18n_dir(config.get("temp_dir", DEFAULT_I18N_DIR))
 
         return config
 

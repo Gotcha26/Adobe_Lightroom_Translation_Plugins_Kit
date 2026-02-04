@@ -1,11 +1,11 @@
 {
-  "plugin_path": "D:\\Gotcha\\Documents\\DIY\\GitHub\\LrC-PublishService\\PiwigoPublish-lrc-plugin\\piwigoPublish.lrplugin",
+  "plugin_path": "",
   "output_base_dir": "",
   "prefix": "$$$/Piwigo",
   "lang": "en",
   "temp_dir": "__i18n_tmp__",
   "last_extraction_dir": "",
-  "last_used": "2026-02-03T23:22:53.835783",
+  "last_used": "",
   "enable_flip_anim": false,
   "auto_add_gitignore": true
 }
