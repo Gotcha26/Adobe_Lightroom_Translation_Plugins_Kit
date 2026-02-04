@@ -36,6 +36,57 @@ Et c'est 100% comforme au SDK Adobe.
 
 ---
 
+## 💎 La promesse : La simplicité absolue
+
+Oubliez les fichiers `.pot`, `.mo`, `.po` et les éditeurs compliqués comme POEdit avec compilation obligatoire. Oubliez aussi les resynchronisations fastidieuses du mainteneur.
+
+**Voici ce que vous obtenez vraiment :**
+
+### Une interface guidée, zéro danger
+
+Tout se passe dans **une fenêtre de terminal simple** (Windows, macOS, Linux). Pas d'interface obscure, pas de ligne de commande à mémoriser, des noms pour les outils et les actions très explicites.
+
+```
+┌────────────────────────────────────┐
+│ LocalizationToolKit Menu           │
+├────────────────────────────────────┤
+│ 1. Extractor                       │
+│ 2. Applicator                      │
+│ 3. Translator                      │
+│ 4. AUTOSYNC                        │
+│ 5. Tools & Utilities               │
+│ Q. Quit                            │
+│                                    │
+│ Choose an option: █                │
+└────────────────────────────────────┘
+```
+
+**Chaque étape est guidée.** Le toolkit vous explique exactement ce qui va se passer, demande confirmation si nécessaire, et vous prévient avant toute action. Aucune manipulation hasardeuse, aucun risque de casser quelque chose.
+
+### Le flux réel
+
+- **1ère utilisation : 2 clics**
+  - Clic 1 : *Extractor* → analyse votre code et extrait les textes.
+  - Clic 2 : *Applicator* → mise en place des clés [appels `loc()`] tout en **conservant** les chaînes de texte.
+
+  **Et c'est fini.** Votre plugin est prêt à traduire, 100% fonctionnel, sortie de la boîte. Aucune compilation, aucun outil supplémentaire.
+
+- **Mise à jour du code : 1 clic**
+  - Clic : *AUTOSYNC* → synchronise automatiquement les traductions existantes avec les nouveautés du plugin.
+
+  C'est tout. Si vous avez modifié du texte dans votre code, les traducteurs sont avertis. Sinon, rien à faire.
+
+- **Format simple**
+  - Pas de configuration d'outils obscurs
+  - Respect strict du SDK Adobe — aucune dépendance exotique
+  - Configuration préservée automatiquement
+
+**Résultat : moins de temps à bricoler, plus de temps à créer.**
+
+En un mot : **EN-FAN-TIN !**
+
+---
+
 ## 👥 Pour qui ?
 
 ### Développeurs de plugins Lightroom

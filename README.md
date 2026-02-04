@@ -36,6 +36,57 @@ And it's 100% compliant with the Adobe SDK.
 
 ---
 
+## 💎 The Promise: Absolute Simplicity
+
+Forget about `.pot`, `.mo`, `.po` files and complicated editors like POEdit with mandatory compilation. Say goodbye to tedious resynchronization hassles.
+
+**Here's what you really get:**
+
+### A Guided Interface, Zero Risk
+
+Everything happens in **a simple terminal window** (Windows, macOS, Linux). No obscure interface, no command-line syntax to memorize, very explicit names for tools and actions.
+
+```
+┌────────────────────────────────────┐
+│ LocalizationToolKit Menu           │
+├────────────────────────────────────┤
+│ 1. Extractor                       │
+│ 2. Applicator                      │
+│ 3. Translator                      │
+│ 4. AUTOSYNC                        │
+│ 5. Tools & Utilities               │
+│ Q. Quit                            │
+│                                    │
+│ Choose an option: █                │
+└────────────────────────────────────┘
+```
+
+**Every step is guided.** The toolkit explains exactly what will happen, asks for confirmation if needed, and warns you before any action. No risky manipulations, no risk of breaking anything.
+
+### The Real Workflow
+
+- **First time: 2 clicks**
+  - Click 1: *Extractor* → analyzes your code and extracts text.
+  - Click 2: *Applicator* → set up keys [`loc()` calls] while **retaining** text strings.
+
+  **That's it.** Your plugin is ready for translation, 100% functional, straight out of the box. No compilation, no additional tools needed.
+
+- **Code update: 1 click**
+  - Click: *AUTOSYNC* → automatically synchronizes existing translations
+
+  That's all. If you modified text in your code, translators are notified. If not, nothing to do.
+
+- **Simple format**
+  - No obscure tool configuration
+  - Strict Adobe SDK compliance — no exotic dependencies
+  - Configuration preserved automatically
+
+**Result: less time tinkering, more time creating.**
+
+In short: **ELEGANT AND EFFORTLESS!**
+
+---
+
 ## 👥 Who Is This For?
 
 ### Lightroom Plugin Developers
