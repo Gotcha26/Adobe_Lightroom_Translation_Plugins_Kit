@@ -583,6 +583,22 @@ class ToolLauncher:
         script = os.path.join(self.base_dir, "assets", "flip_anim.py")
         return self._run_script(script)
 
+    def run_autosync(self) -> bool:
+        """Lance la commande AUTOSYNC du Translator."""
+        script = self._get_tool_path("translator", "main.py")
+
+        if not script:
+            print(_("Erreur: Script Translator introuvable"))
+            return False
+
+        plugin_path = self.config.get("plugin_path", "")
+        if not plugin_path or not os.path.isdir(plugin_path):
+            print(_("Plugin non configuré!"))
+            return False
+
+        args = ["--plugin-path", plugin_path, "--autosync"]
+        return self._run_script(script, args)
+
 
 # =============================================================================
 # MENU PRINCIPAL
@@ -599,6 +615,26 @@ class MainMenu:
     def clear_screen(self):
         """Efface l'écran."""
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    def has_translated_strings(self) -> bool:
+        """Détecte si le plugin contient au moins un fichier TranslatedStrings_xx.txt."""
+        plugin = self.config.get("plugin_path", "")
+        if not plugin or not os.path.isdir(plugin):
+            return False
+
+        temp_dir = self.config.get("temp_dir") or DEFAULT_I18N_DIR
+        i18n_path = os.path.join(plugin, temp_dir)
+
+        if not os.path.isdir(i18n_path):
+            return False
+
+        # Chercher les fichiers TranslatedStrings_xx.txt récursivement
+        for root, _, files in os.walk(i18n_path):
+            for file in files:
+                if file.startswith("TranslatedStrings_") and file.endswith(".txt"):
+                    return True
+
+        return False
 
     def print_header(self):
         """Affiche l'en-tête."""
@@ -632,10 +668,24 @@ class MainMenu:
         print(c.menu_option("3", _("Translation    - Gérer les traductions")))
         print(c.menu_option("4", _("Restore        - Restaurer les backups")))
         print(c.menu_option("5", f"{c.WARNING}" + _("Supprimer") + f"{c.RESET}      - " + _("Nettoyer le dossier temporaire")))
-        print()
-        print(c.title(_("CONFIGURATION")))
-        print(c.separator())
-        print(c.menu_option("6", _("Configuration du plugin")))
+
+        # Option AUTOSYNC conditionnée - n'apparaît que si des fichiers TranslatedStrings_xx.txt existent
+        if self.has_translated_strings():
+            print()
+            print(c.title(_("MISE A JOUR EXPRESS")))
+            print(c.separator())
+            print(c.menu_option("6", _("AUTO-SYNC ⭐    - Maintenir à jour")))
+            print(f"                       {_('(code lua + traductions)')}")
+            print()
+            print(c.title(_("CONFIGURATION")))
+            print(c.separator())
+            print(c.menu_option("7", _("Configuration du plugin")))
+        else:
+            print()
+            print(c.title(_("CONFIGURATION")))
+            print(c.separator())
+            print(c.menu_option("6", _("Configuration du plugin")))
+
         print()
         print(c.menu_option("0", _("Quitter")))
         print()
@@ -835,7 +885,9 @@ class MainMenu:
             self.print_header()
             self.print_menu()
 
-            choice = input(c.prompt(_("Votre choix (0-6):") + " ")).strip()
+            # Adapter le message de prompt en fonction de la présence d'AUTOSYNC
+            max_choice = "7" if self.has_translated_strings() else "6"
+            choice = input(c.prompt(_("Votre choix (0-{max}):").format(max=max_choice) + " ")).strip()
 
             if choice == '0':
                 print("\n" + _("Au revoir!"))
@@ -875,7 +927,21 @@ class MainMenu:
                 self.launcher.run_delete_temp_dir()
                 input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '6':
-                self.configure_paths()
+                # Option 6 peut être AUTOSYNC ou Configuration selon la détection
+                if self.has_translated_strings():
+                    # C'est AUTOSYNC
+                    self.launcher.run_autosync()
+                    input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
+                else:
+                    # C'est Configuration
+                    self.configure_paths()
+            elif choice == '7':
+                # Option 7 n'existe que s'il y a des TranslatedString
+                if self.has_translated_strings():
+                    self.configure_paths()
+                else:
+                    print(c.error(_("Choix invalide")))
+                    input(f"{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             else:
                 print(c.error(_("Choix invalide")))
                 input(f"{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
@@ -906,6 +972,8 @@ def main():
             success = launcher.run_restore_backup()
         elif cmd in ['delete', 'clean', '5']:
             success = launcher.run_delete_temp_dir()
+        elif cmd in ['autosync', '6']:
+            success = launcher.run_autosync()
         elif cmd == '--config':
             config.display()
             success = True
@@ -918,6 +986,7 @@ def main():
             print("  python LocalizationToolkit.py translate # " + _("Lancer Translator"))
             print("  python LocalizationToolkit.py restore   # " + _("Lancer Restore"))
             print("  python LocalizationToolkit.py delete    # " + _("Supprimer dossier temporaire"))
+            print("  python LocalizationToolkit.py autosync  # " + _("Mettre à jour plugin + langues (AUTOSYNC)"))
             print("  python LocalizationToolkit.py --config  # " + _("Afficher config"))
             success = False
 
