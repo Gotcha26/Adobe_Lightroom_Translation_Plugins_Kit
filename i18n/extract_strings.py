@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 """
-extract_strings.py - Extrait les chaînes traduisibles vers un fichier .pot
+Nom du fichier : extract_strings.py
 
-Ce script parcourt tous les fichiers Python du projet et extrait les chaînes
-marquées avec _() pour créer un fichier template de traduction (.pot).
+Dépendances : core.colors
 
-Usage:
-    python scripts/extract_strings.py
+Description :
+Extrait les chaînes traduisibles marquées avec _() de tous les fichiers Python
+du projet et génère un fichier template de traduction (.pot).
+Parcourt récursivement les répertoires configurés en ignorant les dossiers spécifiés.
 
-Le fichier généré sera: locale/messages.pot
+Usage CLI :
+    python i18n/extract_strings.py
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-03
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

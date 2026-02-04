@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 """
-common/colors.py
+Nom du fichier : colors.py
 
-Module pour gérer les couleurs dans le terminal.
-Compatible Windows (Git Bash, PowerShell, CMD) et Linux/Mac.
+Dépendances : Aucune
 
-Usage:
-    from common.colors import Colors, c
+Description :
+Gère les codes couleur ANSI pour l'affichage terminal. Auto-détecte le support couleur et
+propose des méthodes de formatage cohérentes (succès, erreur, avertissement, info, etc.).
+Compatible avec Windows (Git Bash, PowerShell, Terminal, etc.), Linux et Mac.
 
-    print(c.OK + "Succès!" + c.RESET)
-    print(c.error("Erreur!"))
-    print(c.success("OK!"))
-    print(c.warning("Attention!"))
-    print(c.info("Info"))
-    print(c.header("=== TITRE ==="))
+Usage CLI :
+    Non pourvu
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-30
-Version : 1.0
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

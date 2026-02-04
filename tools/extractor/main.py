@@ -1,33 +1,29 @@
 #!/usr/bin/env python3
 """
-Extractor_main.py
+Nom du fichier : main.py
 
-Script d'extraction des chaînes localisables pour plugins Adobe Lightroom Classic.
-Analyse les fichiers Lua et extrait toutes les chaînes hardcodées qui devraient
-être localisées via le système LOC "$$$/.../".
+Dépendances : .engine, .output, .report, .menu
 
-Basé sur le skill: lightroom-localization-extraction
+Description :
+Point d'entrée principal pour l'extraction des chaînes localisables d'un plugin Adobe Lightroom Classic.
+Gère le mode CLI et le mode menu interactif. Lance l'extracteur, génère les fichiers de sortie et les rapports.
 
-Usage (CLI):
-    python Extractor_main.py --plugin-path /path/to/plugin.lrplugin [options]
+Usage CLI :
+    python -m tools.extractor.main --plugin-path /path/to/plugin.lrplugin [options]
 
-Usage (Menu interactif):
-    python Extractor_main.py
+    Options:
+        --plugin-path PATH    Chemin du plugin (OBLIGATOIRE)
+        --output-dir PATH     Override du répertoire de sortie
+        --prefix PREFIX       Préfixe LOC (défaut: $$$/Piwigo)
+        --lang LANG           Code langue (défaut: en)
+        --exclude FILE        Fichiers à exclure (répétable)
+        --min-length N        Longueur minimale (défaut: 3)
+        --no-ignore-log       NE PAS ignorer les logs
 
-Options (CLI):
-    --plugin-path PATH    Chemin vers le plugin (OBLIGATOIRE)
-    --output-dir PATH     Override répertoire de sortie (défaut: __i18n_kit__/)
-    --prefix PREFIX       Préfixe des clés LOC (défaut: $$$/Piwigo)
-    --lang LANG           Code langue (défaut: en)
-    --exclude FILE        Fichiers à exclure (répétable)
-    --min-length N        Longueur minimale des chaînes (défaut: 3)
-    --no-ignore-log       NE PAS ignorer les lignes de log
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
-Les fichiers sont générés dans: <plugin>/__i18n_kit__/1_Extractor/<timestamp>/
-
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-27
-Version : 5.1 - Avec menu interactif et centralisation des outputs
 """
 
 import os

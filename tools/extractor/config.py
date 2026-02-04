@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_config.py
+Nom du fichier : config.py
 
-Configuration et constantes pour l'extraction des chaînes localisables.
-Basé sur le skill: lightroom-localization-extraction
+Dépendances : Aucune
+
+Description :
+Configuration et constantes pour l'extraction des chaînes localisables des plugins Lightroom.
+Définit les patterns regex, suffixes, contextes UI, listes d'exclusion, patterns techniques, etc.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import re

@@ -1,30 +1,42 @@
 #!/usr/bin/env python3
 """
-LocalizationToolkit.py
+Nom du fichier : LocalizationToolKit.py
 
+Dépendances : core.paths, core.colors, core.i18n, subprocess
+
+Description :
 Script principal pour gérer tous les outils de localisation du plugin Lightroom.
-Centralise la configuration (chemins) et permet de lancer les différents outils
-depuis une interface unifiée.
+Centralise la configuration (chemins), la persistance des paramètres et lance les
+différents outils (Extractor, Applicator, Translator, Restore, Delete) depuis
+une interface unifiée. Gère également la configuration du plugin et du dossier
+temporaire (__i18n_tmp__ par défaut, configurable).
 
 Structure attendue:
-    LocalizationToolkit.py      (ce fichier)
+    LocalizationToolKit.py      (ce fichier)
     config.json                 (configuration persistante)
-    common/                    (module commun paths.py)
-    1_Extractor/               (scripts d'extraction)
-    2_Applicator/              (scripts d'application)
-    3_Translator/              (scripts de gestion traductions)
-    9_Tools/                   (utilitaires)
+    core/                       (modules communs)
+    tools/
+        ├── extractor/
+        ├── applicator/
+        ├── translator/
+        └── toolbox/
 
-Les outils generent leurs sorties dans:
+Les outils génèrent leurs sorties dans:
     <plugin>/<temp_dir>/<Outil>/<timestamp_YYYYMMDD_HHMMSS>/
-    (temp_dir configurable, defaut: __i18n_tmp__)
 
-Usage:
-    python LocalizationToolkit.py
+Usage CLI :
+    python LocalizationToolkit.py               # Menu interactif
+    python LocalizationToolkit.py extract       # Lancer Extractor
+    python LocalizationToolkit.py apply         # Lancer Applicator
+    python LocalizationToolkit.py translate     # Lancer Translator
+    python LocalizationToolkit.py restore       # Lancer Restore
+    python LocalizationToolkit.py delete        # Nettoyer dossier temporaire
+    python LocalizationToolkit.py --config      # Afficher configuration
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-30
-Version : 2.1 - Dossier temporaire configurable (__i18n_tmp__ par defaut)
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os
@@ -724,7 +736,7 @@ class MainMenu:
 
         # Afficher les exécutions récentes si le plugin est configuré
         if plugin_path and os.path.isdir(plugin_path):
-            print(f"   {c.DIM}Exécutions récentes dans {get_i18n_dir()}/:{c.RESET}")
+            print(f"   {c.DIM}" + _("Exécutions récentes dans {dir}/:").format(dir=get_i18n_dir()) + f"{c.RESET}")
             tools = ["Extractor", "Applicator", "Translator"]
             for tool in tools:
                 latest = find_latest_tool_output(plugin_path, tool)

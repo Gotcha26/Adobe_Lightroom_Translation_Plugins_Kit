@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """
-compile_po.py - Compile les fichiers .po en fichiers .mo
+Nom du fichier : compile_po.py
 
-Les fichiers .mo sont les fichiers binaires utilisés par gettext
-pour la traduction à l'exécution.
+Dépendances : core.colors
 
-Usage:
-    python scripts/compile_po.py           # Compile toutes les langues
-    python scripts/compile_po.py en        # Compile uniquement l'anglais
+Description :
+Compile les fichiers .po en fichiers .mo binaires utilisés par gettext
+pour la traduction à l'exécution. Génère le format MO avec les tables
+de hachage et les chaînes encodées en UTF-8.
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-03
+Usage CLI :
+    python i18n/compile_po.py           # Compile toutes les langues
+    python i18n/compile_po.py en        # Compile uniquement l'anglais
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

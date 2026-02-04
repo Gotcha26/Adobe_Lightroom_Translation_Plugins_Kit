@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_report.py
+Nom du fichier : report.py
 
-Génération des rapports détaillés d'extraction et d'analyse.
+Dépendances : .models
+
+Description :
+Génération des rapports détaillés d'extraction. Classe ReportGenerator pour créer des rapports
+texte avec statistiques, légende des émojis, détails par fichier et chaînes avec espaces/suffixes.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """
-update_po.py - Met à jour les fichiers .po avec les nouvelles chaînes du .pot
+Nom du fichier : update_po.py
 
-Ce script fusionne le template .pot avec les fichiers .po existants,
-préservant les traductions existantes tout en ajoutant les nouvelles chaînes.
+Dépendances : core.colors
 
-Usage:
-    python scripts/update_po.py           # Met à jour toutes les langues
-    python scripts/update_po.py en        # Met à jour uniquement l'anglais
+Description :
+Met à jour les fichiers .po avec les nouvelles chaînes du template .pot.
+Fusionne le template avec les fichiers .po existants en préservant les traductions
+existantes et en marquant les nouvelles chaînes comme fuzzy. Crée des backups
+avant de modifier les fichiers.
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-03
+Usage CLI :
+    python i18n/update_po.py           # Met à jour toutes les langues
+    python i18n/update_po.py en        # Met à jour uniquement l'anglais
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

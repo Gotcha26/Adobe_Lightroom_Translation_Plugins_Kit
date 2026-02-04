@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 """
-check_translations.py - Vérifier rapidement l'état des traductions
+Nom du fichier : check_translations.py
 
-Affiche:
-- Nombre de chaînes traduites vs non traduites
-- Liste des chaînes non traduites (msgstr vide)
-- Chaînes marquées fuzzy (à revoir)
-- Statistiques par langue
+Dépendances : core.colors
 
-Usage:
+Description :
+Affiche un rapport détaillé sur l'état des traductions pour une ou plusieurs langues.
+Calcule le pourcentage de chaînes traduites, identifie les chaînes non traduites
+et celles marquées fuzzy (à revoir). Affiche des statistiques par langue et globales.
+
+Usage CLI :
     python i18n/check_translations.py           # Toutes les langues
-    python i18n/check_translations.py en        # Anglais
-    python i18n/check_translations.py fr        # Français
-    python i18n/check_translations.py fr -v     # Verbose (affiche les détails)
+    python i18n/check_translations.py en        # Anglais uniquement
+    python i18n/check_translations.py fr -v     # Français avec détails verbose
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-04
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

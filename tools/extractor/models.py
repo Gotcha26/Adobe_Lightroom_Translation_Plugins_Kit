@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_models.py
+Nom du fichier : models.py
 
-Classes de données pour la représentation des chaînes extraites et des statistiques.
+Dépendances : Aucune
+
+Description :
+Classes de données (dataclasses) pour la représentation des chaînes extraites et des statistiques d'extraction.
+Fournit les modèles: StringMember, ExtractedLine, ExtractedString, ExtractionStats.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 from dataclasses import dataclass, field

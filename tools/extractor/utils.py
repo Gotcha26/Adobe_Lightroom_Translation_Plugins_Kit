@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_utils.py
+Nom du fichier : utils.py
 
+Dépendances : .config
+
+Description :
 Fonctions utilitaires pour l'extraction des chaînes localisables.
-Traitement du texte, détection des suffixes, génération des clés LOC.
+Traitement du texte, extraction d'espaces/suffixes, détection des chaînes techniques, génération des clés LOC.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import re

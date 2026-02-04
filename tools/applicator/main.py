@@ -1,41 +1,38 @@
 #!/usr/bin/env python3
 """
-Applicator_main.py
+Nom du fichier : main.py
 
-Script pour remplacer les chaines hardcodees en anglais dans le plugin Lightroom
-par des appels LOC "$$$/Piwigo/...=Default Value" en utilisant les fichiers generes
-par Extractor.
+Dépendances : core.paths, core.colors, core.i18n, .menu
 
-Usage (Menu interactif):
-    python Applicator_main.py
+Description :
+Script d'application des localisations aux plugins Lightroom. Remplace les chaînes
+en anglais hardcodées par des appels LOC au format "$$$/Key=Default Value" en
+utilisant les fichiers générés par Extractor. Supporte le mode interactif (menu)
+et le mode CLI avec arguments.
 
-Usage (CLI):
-    python Applicator_main.py --plugin-path /path/to/plugin [--extraction-dir /path/to/extraction] [--dry-run] [--no-backup]
+Usage CLI :
+    python -m tools.applicator.main
 
-Options CLI:
-    --plugin-path PATH     Chemin vers le repertoire du plugin (OBLIGATOIRE)
-    --extraction-dir PATH  Repertoire Extractor (defaut: auto-detection __i18n_kit__/Extractor/)
-    --dry-run              Mode simulation (affiche sans modifier)
-    --no-backup            Ne pas creer de fichiers de sauvegarde .bak (defaut: backup active)
+    Mode interactif (menu):
+        python -m tools.applicator.main
 
-Sorties générées dans: <plugin>/__i18n_kit__/2_Applicator/<timestamp>/
-  - application_report.txt (rapport détaillé)
-  - backups/ (sauvegardes .bak des fichiers modifiés)
+    Mode CLI avec auto-détection:
+        python -m tools.applicator.main --plugin-path /path/to/plugin
+        python -m tools.applicator.main --plugin-path /path/to/plugin --dry-run
 
-Le script :
-1. Détecte automatiquement la dernière extraction (__i18n_kit__/Extractor/)
-2. Lit le fichier replacements.json genere par Extractor
-3. Cree des sauvegardes dans __i18n_kit__/2_Applicator/<timestamp>/backups/
-4. Remplace les chaines hardcodees par des appels LOC avec valeur par defaut
-5. Genere un rapport detaille des changements
+    Mode CLI avec extraction spécifique:
+        python -m tools.applicator.main --plugin-path /path/to/plugin --extraction-dir /path/to/extraction
 
-IMPORTANT: Le format LOC du SDK Lightroom est:
-    LOC "$$$/Key=Default Value"
-La valeur par defaut est OBLIGATOIRE sinon Lightroom affiche la cle brute.
+    Options:
+        --plugin-path PATH          Chemin du plugin (OBLIGATOIRE en CLI)
+        --extraction-dir PATH       Dossier Extractor (défaut : auto-détection)
+        --dry-run                   Mode simulation (affichage sans modification)
+        --no-backup                 Ne pas créer de .bak (défaut : backups activées)
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-29
-Version : 7.0 - Structure __i18n_kit__ avec auto-detection Extractor
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

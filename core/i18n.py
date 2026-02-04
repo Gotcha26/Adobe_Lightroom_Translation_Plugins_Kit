@@ -1,33 +1,21 @@
 #!/usr/bin/env python3
 """
-i18n.py - Module d'internationalisation pour LocalisationToolKit
+Nom du fichier : i18n.py
 
-Ce module fournit le support gettext pour traduire l'interface utilisateur.
-La langue source est le français, les traductions sont dans locale/<lang>/LC_MESSAGES/
+Dépendances : Aucune
 
-Usage:
-    from core.i18n import _, set_language, get_current_language
+Description :
+Module d'internationalisation (i18n) pour le toolkit. Fournit le support gettext pour traduire
+l'interface utilisateur. La langue source est le français. Les traductions sont stockées dans
+locale/<lang>/LC_MESSAGES/ et chargées dynamiquement selon la langue sélectionnée.
 
-    # Dans le code:
-    print(_("Bonjour le monde"))
+Usage CLI :
+    Non pourvu
 
-    # Changer de langue:
-    set_language("en")
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
-Structure des fichiers de traduction:
-    locale/
-    ├── messages.pot          # Template (chaînes françaises extraites)
-    ├── en/
-    │   └── LC_MESSAGES/
-    │       ├── messages.po   # Traductions anglaises (éditable)
-    │       └── messages.mo   # Fichier compilé (utilisé par gettext)
-    └── es/
-        └── LC_MESSAGES/
-            ├── messages.po
-            └── messages.mo
-
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-03
 """
 
 import gettext

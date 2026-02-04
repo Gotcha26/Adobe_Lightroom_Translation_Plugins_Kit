@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
 """
-Applicator_menu.py
+Nom du fichier : menu.py
 
-Interface menu interactive pour Applicator.
-Approche "Ready to go" : affiche la configuration complète d'entrée
-et permet de lancer directement ou d'éditer des options spécifiques.
+Dépendances : core.paths, core.colors, core.menu_helpers, core.i18n
+
+Description :
+Interface menu interactive pour Applicator. Approche "Ready to go" : affiche
+la configuration complète et permet de lancer directement ou d'éditer des
+options spécifiques (chemin du plugin, dossier extraction, mode simulation,
+sauvegardes).
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

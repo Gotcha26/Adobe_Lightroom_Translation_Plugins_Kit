@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """
-init_language.py - Initialise une nouvelle langue de traduction
+Nom du fichier : init_language.py
 
-Ce script crée la structure de dossiers et le fichier .po initial
-pour une nouvelle langue à partir du template .pot.
+Dépendances : core.colors
 
-Usage:
-    python scripts/init_language.py <code_langue>
+Description :
+Initialise une nouvelle langue de traduction en créant la structure de dossiers
+et le fichier .po initial pour une langue à partir du template .pot.
+Met à jour les métadonnées du fichier .po avec les informations de la langue.
 
-Exemples:
-    python scripts/init_language.py en    # Anglais
-    python scripts/init_language.py es    # Espagnol
-    python scripts/init_language.py de    # Allemand
+Usage CLI :
+    python i18n/init_language.py <code_langue>
+    python i18n/init_language.py en    # Anglais
+    python i18n/init_language.py es    # Espagnol
+    python i18n/init_language.py de    # Allemand
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-03
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

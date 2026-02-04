@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 """
-common/output_formatters.py
+Nom du fichier : output_formatters.py
 
-Formatage unifié pour tous les outils (Extractor, Applicator, etc.).
-Assure un affichage cohérent et aligné des informations.
+Dépendances : core.colors, core.i18n
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-02-01
-Version : 1.0
+Description :
+Formatage unifié des sorties pour tous les outils (Extractor, Applicator, Translator, etc.).
+Fournit une classe OutputFormatter avec méthodes pour afficher des en-têtes, des statistiques,
+des fichiers générés et des résumés avec alignement et mise en forme cohérents.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-common/paths.py
+Nom du fichier : paths.py
 
-Module commun pour gérer les chemins __i18n_kit__
+Dépendances : Aucune
 
-Toutes les sorties des outils doivent être écrites dans :
-    <plugin_lightroom>/__i18n_kit__/<Outil>/<timestamp_YYYYMMDD_HHMMSS>/
+Description :
+Gère les chemins et répertoires pour les outils i18n du plugin Lightroom. Fournit des fonctions
+pour créer, naviguer et gérer les dossiers horodatés __i18n_kit__ où sont stockées les sorties
+des outils (Extractor, Applicator, Translator, Tools).
 
-Fonctions :
-    - get_i18n_kit_path(plugin_path) : Retourne le chemin __i18n_kit__
-    - get_tool_output_path(plugin_path, tool_name, create=True) : Crée et retourne le dossier de sortie
-    - find_latest_tool_output(plugin_path, tool_name) : Trouve le dernier dossier d'un outil
-    - normalize_path(path) : Normalise un chemin (Windows/Linux)
+Usage CLI :
+    Non pourvu
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-29
-Version : 1.0
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

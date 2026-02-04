@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
-common/menu_helpers.py
+Nom du fichier : menu_helpers.py
 
-Fonctions helper réutilisables pour les menus interactifs.
+Dépendances : core.paths, core.colors, core.i18n
 
-Auteur : Claude (Anthropic) pour Julien Moreau
-Date : 2026-01-31
-Version : 1.0
+Description :
+Fonctions helper réutilisables pour construire des menus interactifs dans le terminal. Offre
+la sélection de répertoires, menus avec options numérotées, et validations d'entrée utilisateur.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

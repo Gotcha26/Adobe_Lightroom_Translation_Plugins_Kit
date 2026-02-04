@@ -1,3 +1,26 @@
+"""
+Nom du fichier : flip_anim.py
+
+Dépendances : Aucune
+
+Description :
+Animation de style panneau aéroport avec flip progressif des caractères. Affiche un texte
+avec un effet de révélation progressif et une extinction finale en style "airport flip clock".
+Supporte les couleurs ANSI et les fonds personnalisés.
+
+Usage CLI :
+    python flip_anim.py
+
+    Exemples d'exécution directe (à partir de ce fichier):
+    - Éditer les paramètres TEXT, DURATION, FADE_DURATION, etc. en haut du fichier
+    - Lancer le script pour voir l'animation
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
+"""
+
 import time
 import random
 import sys

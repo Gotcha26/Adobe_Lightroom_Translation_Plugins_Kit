@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_output.py
+Nom du fichier : output.py
 
-Génération des fichiers de sortie: PluginStrings.txt, JSON, rapports, etc.
+Dépendances : .models
+
+Description :
+Génération des fichiers de sortie d'extraction: PluginStrings.txt, JSON de remplacement,
+métadonnées d'espaces/suffixes. Classe OutputGenerator pour gérer la sérialisation des résultats.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

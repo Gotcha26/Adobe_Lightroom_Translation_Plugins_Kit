@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 """
-sync_translations.py - Lance automatiquement les 3 étapes de synchronisation i18n
+Nom du fichier : sync_translations.py
 
-Une seule commande pour :
-1. Extraire les chaînes du code
-2. Mettre à jour les fichiers de traduction
-3. Compiler en fichiers binaires
+Dépendances : core.colors
 
-Usage:
-    python i18n/sync_translations.py
-    python i18n/sync_translations.py en    # Mettre à jour uniquement l'anglais
-    python i18n/sync_translations.py fr    # Mettre à jour uniquement le français
+Description :
+Orchestrateur de la synchronisation complète des traductions.
+Lance automatiquement les trois étapes successives : extraction des chaînes,
+mise à jour des fichiers .po, et compilation en fichiers .mo binaires.
+Peut cibler une langue spécifique ou traiter toutes les langues.
 
-Auteur: Claude (Anthropic) pour Julien Moreau
-Date: 2026-02-04
+Usage CLI :
+    python i18n/sync_translations.py              # Toutes les langues
+    python i18n/sync_translations.py en           # Anglais uniquement
+    python i18n/sync_translations.py fr           # Français uniquement
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os

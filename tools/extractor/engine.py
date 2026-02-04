@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 """
-Extractor_engine.py
+Nom du fichier : engine.py
 
-Moteur principal d'extraction des chaînes localisables.
-Analyse les fichiers Lua et extrait les chaînes UI.
+Dépendances : .config, .models, .utils
+
+Description :
+Moteur principal d'extraction des chaînes localisables. Classe LocalizableStringExtractor
+qui analyse les fichiers Lua, gère les contextes multi-lignes, les concaténations, les suffixes et espaces.
+
+Usage CLI :
+    Non pourvu
+
+Date : 2026-02-04
+GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
+Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
+
 """
 
 import os
