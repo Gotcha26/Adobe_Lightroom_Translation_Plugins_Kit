@@ -615,7 +615,22 @@ def _propose_additional_langs(template_file: str, plugin_path: str, installed_la
             continue
 
         try:
-            shutil.copy2(template_file, dest_path)
+            # Lire le template, modifier la ligne 2 pour refléter la nouvelle langue
+            with open(template_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+
+            # Ligne 2 : "-- Plugin Localization - XX" → remplacer XX par le nouveau code
+            if len(lines) >= 2:
+                lines[1] = re.sub(
+                    r'^(-- Plugin Localization - )\w+',
+                    rf'\g<1>{lang_code.upper()}',
+                    lines[1]
+                )
+
+            # Écrire le fichier modifié
+            with open(dest_path, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
+
             print(c.success(_("  {name} — créé").format(name=new_name)))
         except Exception as e:
             print(c.error(_("  {name} — erreur : {error}").format(name=new_name, error=e)))
