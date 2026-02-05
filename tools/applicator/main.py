@@ -511,6 +511,118 @@ def _launch_autosync(plugin_path: str) -> None:
         print(c.error(_("Erreur lors du lancement de AUTOSYNC: {error}").format(error=e)))
 
 
+
+# Langues proposées par défaut (sans celle du template)
+_COMMON_LANGS = {
+    'fr': 'Français',
+    'de': 'Deutsch',
+    'it': 'Italiano',
+    'es': 'Español',
+    'pt': 'Português',
+    'nl': 'Nederlands',
+    'en': 'English',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'zh': 'Chinese',
+    'ru': 'Русский',
+    'pl': 'Polski',
+    'cs': 'Čeština',
+    'sv': 'Svenska',
+    'da': 'Dansk',
+    'fi': 'Suomi',
+    'no': 'Norsk',
+    'ca': 'Català',
+    'ro': 'Română',
+    'hu': 'Magyar',
+    'el': 'Ελληνικά',
+    'tr': 'Türkçe',
+    'ar': 'العربية',
+    'th': 'Thai',
+}
+
+
+def _propose_additional_langs(template_file: str, plugin_path: str, installed_lang: str) -> None:
+    """
+    Après installation d'un premier fichier de traduction, propose d'en créer
+    d'autres pour d'autres langues.
+
+    Ces fichiers sont des copies vides du template : aucune traduction n'est
+    effectuée ici. Leur présence permet aux traducteurs de se l'approprient
+    directement, sans avoir à créer le fichier depuis zéro.
+    """
+    # Langues disponibles : les langues communes moins celle déjà installée
+    available = {code: name for code, name in _COMMON_LANGS.items() if code != installed_lang}
+
+    print()
+    print(c.separator("─", 70))
+    print(c.title(_("Préparer d'autres langues ?")))
+    print(c.separator("─", 70))
+    print()
+    print(_("Le fichier qui vient d'être installé ne contient aucune traduction :"))
+    print(_("il sert de base pour que des traducteurs puissent le remplir."))
+    print(_("On peut en créer un par langue supplémentaire, pour leur simplifier la vie."))
+    print()
+    print(_("Langues proposées :"))
+    # Afficher en colonnes de 3
+    items = sorted(available.items())
+    cols = 3
+    for i in range(0, len(items), cols):
+        row = items[i:i + cols]
+        line = "  "
+        for code, name in row:
+            line += f"{c.VALUE}{code}{c.RESET} ({name})".ljust(28)
+        print(line)
+    print()
+    print(_("Entrez les codes séparés par des virgules, ou ENTRÉE pour passer :"))
+    print(f"  {c.DIM}" + _("Exemple : de, it, es") + f"{c.RESET}")
+    print()
+
+    raw = input(c.prompt(_("Langues :") + " ")).strip()
+    if not raw:
+        return
+
+    # Parser et valider les codes
+    requested = [code.strip().lower() for code in raw.split(',') if code.strip()]
+    if not requested:
+        return
+
+    valid   = []
+    ignored = []
+    for code in requested:
+        if code == installed_lang:
+            ignored.append(code)   # déjà installée
+        elif len(code) == 2 and code.isalpha():
+            valid.append(code)
+        else:
+            ignored.append(code)
+
+    if ignored:
+        print(c.warning(_("Ignoré(s) : {codes}").format(codes=', '.join(ignored))))
+
+    if not valid:
+        return
+
+    # Copier le template pour chaque langue valide
+    print()
+    for lang_code in valid:
+        # Dériver le nom de fichier depuis le template
+        base_name = os.path.basename(template_file)
+        new_name  = re.sub(r'_\w+\.txt$', f'_{lang_code}.txt', base_name)
+        dest_path = os.path.join(plugin_path, new_name)
+
+        if os.path.exists(dest_path):
+            print(c.warning(_("  {name} existe déjà — ignoré").format(name=new_name)))
+            continue
+
+        try:
+            shutil.copy2(template_file, dest_path)
+            print(c.success(_("  {name} — créé").format(name=new_name)))
+        except Exception as e:
+            print(c.error(_("  {name} — erreur : {error}").format(name=new_name, error=e)))
+
+    print()
+
+
 def _copy_template_to_plugin(template_file: str, plugin_path: str) -> None:
     """Copie un fichier template vers la racine du plugin."""
     template_name = os.path.basename(template_file)
@@ -645,6 +757,9 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
 
         if choice in ['o', 'oui', 'y', 'yes', '']:
             _copy_template_to_plugin(template_file, plugin_path)
+            installed_lang = _extract_lang_code(template_file)
+            if installed_lang:
+                _propose_additional_langs(template_file, plugin_path, installed_lang)
         else:
             _select_and_copy_template(plugin_path, extraction_dir)
         return
@@ -691,6 +806,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
             try:
                 shutil.copy2(template_file, existing_langs[template_lang])
                 print("\n" + c.success(_("Fichier remplacé : {name}").format(name=existing_name)))
+                _propose_additional_langs(template_file, plugin_path, template_lang)
             except Exception as e:
                 print("\n" + c.error(_("Impossible de remplacer le fichier: {error}").format(error=e)))
         else:

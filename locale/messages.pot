@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalisationToolKit 2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-05 17:15\n"
+"POT-Creation-Date: 2026-02-05 17:56\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -253,7 +253,7 @@ msgid "Configuration du plugin"
 msgstr ""
 
 #: LocalizationToolKit.py:691
-#: tools\applicator\menu.py:177
+#: tools\applicator\menu.py:178
 #: tools\extractor\menu.py:122
 msgid "Quitter"
 msgstr ""
@@ -266,7 +266,7 @@ msgstr ""
 #: LocalizationToolKit.py:744
 #: LocalizationToolKit.py:862
 #: core\menu_helpers.py:57
-#: tools\applicator\menu.py:191
+#: tools\applicator\menu.py:192
 #: tools\extractor\menu.py:136
 msgid "Actuel:"
 msgstr ""
@@ -274,7 +274,7 @@ msgstr ""
 #: LocalizationToolKit.py:705
 #: LocalizationToolKit.py:749
 #: LocalizationToolKit.py:877
-#: tools\applicator\menu.py:185
+#: tools\applicator\menu.py:186
 #: tools\extractor\menu.py:130
 #: tools\extractor\menu.py:201
 #: tools\extractor\menu.py:217
@@ -287,20 +287,20 @@ msgid "Nouveau chemin (ENTRÉE pour garder):"
 msgstr ""
 
 #: LocalizationToolKit.py:722
-#: tools\applicator\menu.py:216
+#: tools\applicator\menu.py:217
 #: tools\extractor\menu.py:161
 msgid "Les plugins Lightroom doivent se terminer par .lrplugin"
 msgstr ""
 
 #: LocalizationToolKit.py:723
-#: tools\applicator\menu.py:217
-#: tools\applicator\menu.py:247
+#: tools\applicator\menu.py:218
+#: tools\applicator\menu.py:248
 #: tools\extractor\menu.py:162
 msgid "Continuer quand même? [o/N]:"
 msgstr ""
 
 #: LocalizationToolKit.py:725
-#: tools\applicator\menu.py:219
+#: tools\applicator\menu.py:220
 #: tools\extractor\menu.py:164
 msgid "Configuration annulée"
 msgstr ""
@@ -316,7 +316,7 @@ msgstr ""
 #: LocalizationToolKit.py:735
 #: core\menu_helpers.py:82
 #: core\menu_helpers.py:116
-#: tools\applicator\menu.py:197
+#: tools\applicator\menu.py:198
 #: tools\extractor\menu.py:142
 msgid "Chemin inchangé"
 msgstr ""
@@ -401,9 +401,9 @@ msgstr ""
 #: LocalizationToolKit.py:904
 #: core\menu_helpers.py:79
 #: core\menu_helpers.py:113
-#: tools\applicator\main.py:548
-#: tools\applicator\main.py:566
-#: tools\applicator\menu.py:325
+#: tools\applicator\main.py:660
+#: tools\applicator\main.py:678
+#: tools\applicator\menu.py:326
 #: tools\extractor\menu.py:310
 #: tools\toolbox\delete_temp_dir.py:282
 #: tools\translator\addlang.py:434
@@ -480,7 +480,7 @@ msgid "Appuyez sur ENTRÉE pour continuer..."
 msgstr ""
 
 #: LocalizationToolKit.py:907
-#: tools\applicator\menu.py:329
+#: tools\applicator\menu.py:330
 #: tools\extractor\menu.py:314
 msgid "Au revoir!"
 msgstr ""
@@ -601,7 +601,7 @@ msgid "FICHIERS GÉNÉRÉS"
 msgstr ""
 
 #: core\output_formatters.py:145
-#: tools\applicator\menu.py:160
+#: tools\applicator\menu.py:161
 msgid "Sortie"
 msgstr ""
 
@@ -610,8 +610,8 @@ msgid "RÉSUMÉ DE L'EXTRACTION"
 msgstr ""
 
 #: core\output_formatters.py:179
-#: tools\applicator\menu.py:121
-#: tools\applicator\menu.py:123
+#: tools\applicator\menu.py:122
+#: tools\applicator\menu.py:124
 msgid "Plugin"
 msgstr ""
 
@@ -771,150 +771,198 @@ msgstr ""
 msgid "Erreur lors du lancement de AUTOSYNC: {error}"
 msgstr ""
 
-#: tools\applicator\main.py:521
-msgid "Fichier mis en place : {name}"
+#: tools\applicator\main.py:558
+msgid "Préparer d'autres langues ?"
 msgstr ""
 
-#: tools\applicator\main.py:524
-msgid "Impossible de copier le fichier: {error}"
+#: tools\applicator\main.py:561
+msgid "Le fichier qui vient d'être installé ne contient aucune traduction :"
 msgstr ""
 
-#: tools\applicator\main.py:539
-msgid "Que voulez-vous faire ?"
-msgstr ""
-
-#: tools\applicator\main.py:543
-msgid "Choisir un autre fichier depuis une extraction précédente."
-msgstr ""
-
-#: tools\applicator\main.py:544
-msgid "Importer un fichier depuis l'extérieur"
-msgstr ""
-
-#: tools\applicator\main.py:545
-msgid "Sortir sans copier"
-msgstr ""
-
-#: tools\applicator\main.py:553
-msgid "Fichiers disponibles dans l'extraction :"
+#: tools\applicator\main.py:562
+msgid "il sert de base pour que des traducteurs puissent le remplir."
 msgstr ""
 
 #: tools\applicator\main.py:563
-msgid "Retour"
+msgid "On peut en créer un par langue supplémentaire, pour leur simplifier la vie."
 msgstr ""
 
-#: tools\applicator\main.py:572
-#: tools\applicator\main.py:574
-#: tools\applicator\main.py:582
-#: tools\applicator\main.py:593
-msgid "Rien copié"
+#: tools\applicator\main.py:565
+msgid "Langues proposées :"
+msgstr ""
+
+#: tools\applicator\main.py:576
+msgid "Entrez les codes séparés par des virgules, ou ENTRÉE pour passer :"
+msgstr ""
+
+#: tools\applicator\main.py:577
+msgid "Exemple : de, it, es"
 msgstr ""
 
 #: tools\applicator\main.py:580
-msgid "Chemin du fichier TranslatedStrings_xx.txt :"
+msgid "Langues :"
 msgstr ""
 
-#: tools\applicator\main.py:587
-msgid "Fichier introuvable: {path}"
+#: tools\applicator\main.py:600
+msgid "Ignoré(s) : {codes}"
 msgstr ""
 
-#: tools\applicator\main.py:606
-msgid "GESTION DES TRADUCTIONS"
+#: tools\applicator\main.py:614
+msgid "  {name} existe déjà — ignoré"
+msgstr ""
+
+#: tools\applicator\main.py:619
+msgid "  {name} — créé"
 msgstr ""
 
 #: tools\applicator\main.py:621
-msgid "Aucun fichier TranslatedStrings_xx.txt à la racine."
+msgid "  {name} — erreur : {error}"
 msgstr ""
 
-#: tools\applicator\main.py:622
-msgid "  1. Lancez l'Extractor sur le plugin"
+#: tools\applicator\main.py:633
+msgid "Fichier mis en place : {name}"
 msgstr ""
 
-#: tools\applicator\main.py:623
-msgid "  2. Copiez le fichier TranslatedStrings_xx.txt"
+#: tools\applicator\main.py:636
+msgid "Impossible de copier le fichier: {error}"
 msgstr ""
 
-#: tools\applicator\main.py:624
-msgid "     généré à la racine du plugin"
+#: tools\applicator\main.py:651
+msgid "Que voulez-vous faire ?"
 msgstr ""
 
-#: tools\applicator\main.py:625
-msgid "  3. Éditez le fichier pour ajouter vos traductions"
+#: tools\applicator\main.py:655
+msgid "Choisir un autre fichier depuis une extraction précédente."
 msgstr ""
 
-#: tools\applicator\main.py:630
-msgid "Il semble que ce soit votre première installation d'une langue à traduire."
+#: tools\applicator\main.py:656
+msgid "Importer un fichier depuis l'extérieur"
 msgstr ""
 
-#: tools\applicator\main.py:632
-msgid "Utiliseriez-vous le dernier fichier extrait depuis Extractor comme référence ?"
+#: tools\applicator\main.py:657
+msgid "Sortir sans copier"
 msgstr ""
 
-#: tools\applicator\main.py:644
-msgid "Copier le fichier? [O/n]:"
-msgstr ""
-
-#: tools\applicator\main.py:663
-msgid "Plusieurs langues détectées à la racine du plugin :"
-msgstr ""
-
-#: tools\applicator\main.py:667
-msgid "Cela indique une mise à jour manuelle sans passer par les outils standard."
-msgstr ""
-
-#: tools\applicator\main.py:668
-msgid "Lancement automatique de AUTOSYNC pour synchroniser l'ensemble."
-msgstr ""
-
-#: tools\applicator\main.py:671
-msgid "Lancer AUTOSYNC ? [O/n]:"
+#: tools\applicator\main.py:665
+msgid "Fichiers disponibles dans l'extraction :"
 msgstr ""
 
 #: tools\applicator\main.py:675
-msgid "AUTOSYNC non lancé"
-msgstr ""
-
-#: tools\applicator\main.py:682
-msgid "Vous venez certainement de mettre à jour vos clés dans votre lua."
-msgstr ""
-
-#: tools\applicator\main.py:683
-msgid "Un fichier {name} se trouve déjà à la racine de votre plugin."
+msgid "Retour"
 msgstr ""
 
 #: tools\applicator\main.py:684
+#: tools\applicator\main.py:686
+#: tools\applicator\main.py:694
+#: tools\applicator\main.py:705
+msgid "Rien copié"
+msgstr ""
+
+#: tools\applicator\main.py:692
+msgid "Chemin du fichier TranslatedStrings_xx.txt :"
+msgstr ""
+
+#: tools\applicator\main.py:699
+msgid "Fichier introuvable: {path}"
+msgstr ""
+
+#: tools\applicator\main.py:718
+msgid "GESTION DES TRADUCTIONS"
+msgstr ""
+
+#: tools\applicator\main.py:733
+msgid "Aucun fichier TranslatedStrings_xx.txt à la racine."
+msgstr ""
+
+#: tools\applicator\main.py:734
+msgid "  1. Lancez l'Extractor sur le plugin"
+msgstr ""
+
+#: tools\applicator\main.py:735
+msgid "  2. Copiez le fichier TranslatedStrings_xx.txt"
+msgstr ""
+
+#: tools\applicator\main.py:736
+msgid "     généré à la racine du plugin"
+msgstr ""
+
+#: tools\applicator\main.py:737
+msgid "  3. Éditez le fichier pour ajouter vos traductions"
+msgstr ""
+
+#: tools\applicator\main.py:742
+msgid "Il semble que ce soit votre première installation d'une langue à traduire."
+msgstr ""
+
+#: tools\applicator\main.py:744
+msgid "Utiliseriez-vous le dernier fichier extrait depuis Extractor comme référence ?"
+msgstr ""
+
+#: tools\applicator\main.py:756
+msgid "Copier le fichier? [O/n]:"
+msgstr ""
+
+#: tools\applicator\main.py:778
+msgid "Plusieurs langues détectées à la racine du plugin :"
+msgstr ""
+
+#: tools\applicator\main.py:782
+msgid "Cela indique une mise à jour manuelle sans passer par les outils standard."
+msgstr ""
+
+#: tools\applicator\main.py:783
+msgid "Lancement automatique de AUTOSYNC pour synchroniser l'ensemble."
+msgstr ""
+
+#: tools\applicator\main.py:786
+msgid "Lancer AUTOSYNC ? [O/n]:"
+msgstr ""
+
+#: tools\applicator\main.py:790
+msgid "AUTOSYNC non lancé"
+msgstr ""
+
+#: tools\applicator\main.py:797
+msgid "Vous venez certainement de mettre à jour vos clés dans votre lua."
+msgstr ""
+
+#: tools\applicator\main.py:798
+msgid "Un fichier {name} se trouve déjà à la racine de votre plugin."
+msgstr ""
+
+#: tools\applicator\main.py:799
 msgid "Il est très fortement conseillé de le remplacer afin de le mettre à jour avec"
 msgstr ""
 
-#: tools\applicator\main.py:685
+#: tools\applicator\main.py:800
 msgid "votre dernière mise à jour."
 msgstr ""
 
-#: tools\applicator\main.py:688
+#: tools\applicator\main.py:803
 msgid "Remplacer le fichier déjà présent? [O/n]:"
 msgstr ""
 
-#: tools\applicator\main.py:693
+#: tools\applicator\main.py:808
 msgid "Fichier remplacé : {name}"
 msgstr ""
 
-#: tools\applicator\main.py:695
+#: tools\applicator\main.py:811
 msgid "Impossible de remplacer le fichier: {error}"
 msgstr ""
 
-#: tools\applicator\main.py:697
+#: tools\applicator\main.py:813
 msgid "Fichier non remplacé"
 msgstr ""
 
-#: tools\applicator\main.py:701
+#: tools\applicator\main.py:817
 msgid "Fichier(s) de traduction trouvé(s) à la racine du plugin :"
 msgstr ""
 
-#: tools\applicator\main.py:705
+#: tools\applicator\main.py:821
 msgid "Aucun template d'extraction ne correspond. Rien à faire."
 msgstr ""
 
-#: tools\applicator\main.py:722
+#: tools\applicator\main.py:838
 msgid "Application annulée"
 msgstr ""
 
@@ -924,188 +972,188 @@ msgid "Configuration:"
 msgstr ""
 
 #: tools\applicator\menu.py:120
-#: tools\applicator\menu.py:139
+#: tools\applicator\menu.py:140
 #: tools\extractor\menu.py:83
 msgid "INTROUVABLE"
 msgstr ""
 
-#: tools\applicator\menu.py:123
-#: tools\applicator\menu.py:141
+#: tools\applicator\menu.py:124
+#: tools\applicator\menu.py:142
 #: tools\extractor\menu.py:87
 msgid "(non défini - REQUIS)"
 msgstr ""
 
-#: tools\applicator\menu.py:133
+#: tools\applicator\menu.py:134
 msgid "replacements.json manquant"
 msgstr ""
 
-#: tools\applicator\menu.py:136
-#: tools\applicator\menu.py:139
-#: tools\applicator\menu.py:141
+#: tools\applicator\menu.py:137
+#: tools\applicator\menu.py:140
+#: tools\applicator\menu.py:142
 msgid "Extraction"
 msgstr ""
 
-#: tools\applicator\menu.py:145
+#: tools\applicator\menu.py:146
 msgid "Oui (SIMULATION)"
 msgstr ""
 
-#: tools\applicator\menu.py:147
+#: tools\applicator\menu.py:148
 msgid "Non (modifications réelles)"
 msgstr ""
 
-#: tools\applicator\menu.py:148
+#: tools\applicator\menu.py:149
 msgid "Mode simulation"
 msgstr ""
 
-#: tools\applicator\menu.py:152
+#: tools\applicator\menu.py:153
 msgid "Oui (recommandé)"
 msgstr ""
 
-#: tools\applicator\menu.py:154
-#: tools\applicator\menu.py:262
-#: tools\applicator\menu.py:309
+#: tools\applicator\menu.py:155
+#: tools\applicator\menu.py:263
+#: tools\applicator\menu.py:310
 #: tools\extractor\menu.py:107
 #: tools\extractor\menu.py:294
 msgid "Non"
 msgstr ""
 
-#: tools\applicator\menu.py:155
-#: tools\applicator\menu.py:281
+#: tools\applicator\menu.py:156
+#: tools\applicator\menu.py:282
 msgid "Sauvegardes .bak"
 msgstr ""
 
-#: tools\applicator\menu.py:170
-#: tools\applicator\menu.py:172
-#: tools\applicator\menu.py:174
+#: tools\applicator\menu.py:171
+#: tools\applicator\menu.py:173
+#: tools\applicator\menu.py:175
 #: tools\extractor\menu.py:117
 #: tools\extractor\menu.py:119
 msgid "ENTRÉE"
 msgstr ""
 
-#: tools\applicator\menu.py:170
+#: tools\applicator\menu.py:171
 msgid "Lancer la SIMULATION"
 msgstr ""
 
-#: tools\applicator\menu.py:172
+#: tools\applicator\menu.py:173
 msgid "Lancer l'application"
 msgstr ""
 
-#: tools\applicator\menu.py:174
+#: tools\applicator\menu.py:175
 msgid "Lancer (configurer plugin et extraction d'abord)"
 msgstr ""
 
-#: tools\applicator\menu.py:176
+#: tools\applicator\menu.py:177
 #: tools\extractor\menu.py:121
 msgid "Modifier une option"
 msgstr ""
 
-#: tools\applicator\menu.py:183
+#: tools\applicator\menu.py:184
 #: tools\extractor\menu.py:128
 msgid "Chemin du plugin Lightroom"
 msgstr ""
 
-#: tools\applicator\menu.py:192
+#: tools\applicator\menu.py:193
 #: tools\extractor\menu.py:137
 msgid "Nouveau chemin (ENTRÉE pour garder, x pour annuler):"
 msgstr ""
 
-#: tools\applicator\menu.py:194
-#: tools\applicator\menu.py:202
+#: tools\applicator\menu.py:195
+#: tools\applicator\menu.py:203
 #: tools\extractor\menu.py:139
 #: tools\extractor\menu.py:147
 msgid "Annulation"
 msgstr ""
 
-#: tools\applicator\menu.py:200
+#: tools\applicator\menu.py:201
 #: tools\extractor\menu.py:145
 msgid "Chemin du plugin (x pour annuler):"
 msgstr ""
 
-#: tools\applicator\menu.py:205
+#: tools\applicator\menu.py:206
 #: tools\extractor\menu.py:150
 msgid "Chemin requis!"
 msgstr ""
 
-#: tools\applicator\menu.py:224
+#: tools\applicator\menu.py:225
 #: tools\extractor\menu.py:168
 msgid "Plugin: {path}"
 msgstr ""
 
-#: tools\applicator\menu.py:230
+#: tools\applicator\menu.py:231
 msgid "Extraction auto-détectée: {name}"
 msgstr ""
 
-#: tools\applicator\menu.py:245
+#: tools\applicator\menu.py:246
 msgid "Fichiers manquants: {files}"
 msgstr ""
 
-#: tools\applicator\menu.py:246
+#: tools\applicator\menu.py:247
 msgid "Ce n'est peut-être pas un dossier Extractor valide."
 msgstr ""
 
-#: tools\applicator\menu.py:259
+#: tools\applicator\menu.py:260
 msgid "Mode simulation (dry-run)"
 msgstr ""
 
-#: tools\applicator\menu.py:261
+#: tools\applicator\menu.py:262
 msgid "Affiche les changements SANS modifier les fichiers"
 msgstr ""
 
-#: tools\applicator\menu.py:261
-#: tools\applicator\menu.py:309
+#: tools\applicator\menu.py:262
+#: tools\applicator\menu.py:310
 #: tools\extractor\menu.py:107
 #: tools\extractor\menu.py:294
 msgid "Oui"
 msgstr ""
 
-#: tools\applicator\menu.py:262
+#: tools\applicator\menu.py:263
 msgid "Applique les modifications (crée des backups)"
 msgstr ""
 
-#: tools\applicator\menu.py:266
+#: tools\applicator\menu.py:267
 msgid "Mode simulation? [{current}]:"
 msgstr ""
 
-#: tools\applicator\menu.py:270
+#: tools\applicator\menu.py:271
 msgid "Mode SIMULATION activé"
 msgstr ""
 
-#: tools\applicator\menu.py:273
+#: tools\applicator\menu.py:274
 msgid "Mode MODIFICATION activé"
 msgstr ""
 
-#: tools\applicator\menu.py:275
+#: tools\applicator\menu.py:276
 msgid "Modification"
 msgstr ""
 
-#: tools\applicator\menu.py:275
+#: tools\applicator\menu.py:276
 msgid "Simulation"
 msgstr ""
 
-#: tools\applicator\menu.py:276
-#: tools\applicator\menu.py:310
+#: tools\applicator\menu.py:277
+#: tools\applicator\menu.py:311
 #: tools\extractor\menu.py:295
 msgid "Option inchangée: {status}"
 msgstr ""
 
-#: tools\applicator\menu.py:283
+#: tools\applicator\menu.py:284
 msgid "Crée des copies de sauvegarde avant modification."
 msgstr ""
 
-#: tools\applicator\menu.py:284
+#: tools\applicator\menu.py:285
 msgid "Fortement recommandé pour pouvoir revenir en arrière."
 msgstr ""
 
-#: tools\applicator\menu.py:288
+#: tools\applicator\menu.py:289
 msgid "(Non utilisé en mode simulation)"
 msgstr ""
 
-#: tools\applicator\menu.py:289
-#: tools\applicator\menu.py:343
-#: tools\applicator\menu.py:347
-#: tools\applicator\menu.py:351
-#: tools\applicator\menu.py:363
-#: tools\applicator\menu.py:368
+#: tools\applicator\menu.py:290
+#: tools\applicator\menu.py:344
+#: tools\applicator\menu.py:348
+#: tools\applicator\menu.py:352
+#: tools\applicator\menu.py:364
+#: tools\applicator\menu.py:369
 #: tools\extractor\menu.py:325
 #: tools\extractor\menu.py:329
 #: tools\extractor\menu.py:333
@@ -1118,45 +1166,45 @@ msgstr ""
 msgid "Appuyez sur ENTRÉE..."
 msgstr ""
 
-#: tools\applicator\menu.py:293
+#: tools\applicator\menu.py:294
 msgid "Créer des sauvegardes? [{current}]:"
 msgstr ""
 
-#: tools\applicator\menu.py:297
-#: tools\applicator\menu.py:307
+#: tools\applicator\menu.py:298
+#: tools\applicator\menu.py:308
 msgid "Sauvegardes activées"
 msgstr ""
 
-#: tools\applicator\menu.py:300
+#: tools\applicator\menu.py:301
 msgid "Êtes-vous sûr de NE PAS vouloir de sauvegardes?"
 msgstr ""
 
-#: tools\applicator\menu.py:301
+#: tools\applicator\menu.py:302
 msgid "Confirmer [o/N]:"
 msgstr ""
 
-#: tools\applicator\menu.py:304
+#: tools\applicator\menu.py:305
 msgid "Sauvegardes désactivées"
 msgstr ""
 
-#: tools\applicator\menu.py:336
+#: tools\applicator\menu.py:337
 msgid "Lancement de la SIMULATION..."
 msgstr ""
 
-#: tools\applicator\menu.py:338
+#: tools\applicator\menu.py:339
 msgid "Lancement de l'application..."
 msgstr ""
 
-#: tools\applicator\menu.py:360
+#: tools\applicator\menu.py:361
 #: tools\extractor\menu.py:354
 msgid "Configurez d'abord le chemin du plugin (option 1)"
 msgstr ""
 
-#: tools\applicator\menu.py:362
+#: tools\applicator\menu.py:363
 msgid "Configurez d'abord le dossier d'extraction (option 2)"
 msgstr ""
 
-#: tools\applicator\menu.py:367
+#: tools\applicator\menu.py:368
 #: tools\extractor\menu.py:359
 msgid "Choix invalide: \\\"{choice}\\\""
 msgstr ""

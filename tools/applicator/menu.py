@@ -118,7 +118,8 @@ class ApplicatorMenu:
                 status = f"{c.OK}OK{c.RESET}"
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
-            print(c.config_line("1. " + _("Plugin"), f"{self.plugin_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
+            short_path = os.path.basename(self.plugin_path)
+            print(c.config_line("1. " + _("Plugin"), f".../{short_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
         else:
             print(c.config_line("1. " + _("Plugin"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
