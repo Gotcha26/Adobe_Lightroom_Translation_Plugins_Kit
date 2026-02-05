@@ -7,5 +7,6 @@
   "last_extraction_dir": "",
   "last_used": "",
   "enable_flip_anim": false,
-  "auto_add_gitignore": true
+  "auto_add_gitignore": true,
+  "debug_i18n": false
 }

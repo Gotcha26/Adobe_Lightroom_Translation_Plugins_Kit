@@ -35,13 +35,13 @@ DOMAIN = "messages"
 # - "fr" = Français (langue source, pas de traduction)
 # - "en" = English
 # - "auto" = Détection automatique selon le système
-UI_LANGUAGE = "fr"
+UI_LANGUAGE = "auto"
 
 # Langues supportées (à mettre à jour quand on ajoute des traductions)
 SUPPORTED_LANGUAGES = ["fr", "en"]
 
 # Langue de fallback si UI_LANGUAGE="auto" et détection échoue
-FALLBACK_LANGUAGE = "fr"
+FALLBACK_LANGUAGE = "en"
 
 # =============================================================================
 # VARIABLES GLOBALES
@@ -82,12 +82,25 @@ def _get_locale_dir() -> Path:
 
 
 def _detect_system_language() -> str:
-    """Détecte la langue du système."""
+    """Détecte la langue du système.
+
+    Ordre de priorité :
+        1. Variable d'environnement TOOLKIT_LANG (ex: "de", "en_US", "fr")
+        2. Locale système via locale.getdefaultlocale()
+        3. FALLBACK_LANGUAGE
+    """
+    # Override via variable d'environnement (utile pour tester)
+    env_lang = os.environ.get("TOOLKIT_LANG", "").strip()
+    if env_lang:
+        lang = env_lang.split("_")[0].lower()
+        if lang in SUPPORTED_LANGUAGES:
+            return lang
+        # Langue valide mais non supportée → fallback (ne pas ignorer silencieusement)
+        return FALLBACK_LANGUAGE
+
     try:
-        # Essayer de récupérer la langue du système
         lang_code = locale.getdefaultlocale()[0]
         if lang_code:
-            # Extraire le code langue (ex: "fr_FR" -> "fr")
             lang = lang_code.split("_")[0].lower()
             if lang in SUPPORTED_LANGUAGES:
                 return lang
@@ -273,3 +286,31 @@ def get_locale_dir() -> Path:
 def get_toolkit_root() -> Path:
     """Retourne le chemin racine du toolkit (pour les scripts)."""
     return _get_toolkit_root()
+
+
+def debug_language_detection() -> str:
+    """Affiche les informations de détection de langue (pour le debugging).
+
+    Returns:
+        Chaîne formatée avec les infos de détection
+    """
+    info = []
+
+    env_lang = os.environ.get("TOOLKIT_LANG", "")
+    if env_lang:
+        info.append(_("Locale système: {locale}").format(locale=f"TOOLKIT_LANG={env_lang}"))
+    else:
+        try:
+            lang_code = locale.getdefaultlocale()[0]
+            info.append(_("Locale système: {locale}").format(locale=lang_code or "None"))
+        except Exception as e:
+            info.append(_("Locale système: {locale}").format(locale=f"Erreur: {e}"))
+
+    info.append(_("Langue détectée: {lang}").format(lang=_current_language))
+
+    locale_dir = _get_locale_dir()
+    mo_file = locale_dir / _current_language / "LC_MESSAGES" / f"{DOMAIN}.mo"
+    mo_status = "OK" if mo_file.exists() else "introuvable"
+    info.append(_("Fichier .mo chargé: {status}").format(status=mo_status))
+
+    return "\n".join(info)

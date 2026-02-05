@@ -54,7 +54,7 @@ from core.paths import (
     validate_plugin_path, DEFAULT_I18N_DIR, TIMESTAMP_LENGTH
 )
 from core.colors import Colors
-from core.i18n import _
+from core.i18n import _, debug_language_detection
 
 # Instance couleurs
 c = Colors()
@@ -76,7 +76,8 @@ DEFAULT_CONFIG = {
     "last_extraction_dir": "",
     "last_used": "",
     "enable_flip_anim": True,  # 🎬 Lancer Flip-anim.py au démarrage (true = activé, false = désactivé)
-    "auto_add_gitignore": True  # Ajouter automatiquement le dossier temporaire au .gitignore du plugin
+    "auto_add_gitignore": True,  # Ajouter automatiquement le dossier temporaire au .gitignore du plugin
+    "debug_i18n": False  # Afficher les infos de détection de langue i18n dans l'en-tête
 }
 
 TOOL_DIRS = {
@@ -657,6 +658,12 @@ class MainMenu:
         else:
             print(f"  {c.WARNING}" + _("Plugin non configuré ou introuvable") + f"{c.RESET}")
 
+        # Debug i18n conditionnel
+        if self.config.get("debug_i18n", False):
+            print()
+            for line in debug_language_detection().splitlines():
+                print(f"  {c.DIM}{line}{c.RESET}")
+
         print()
 
     def print_menu(self):
@@ -781,6 +788,7 @@ class MainMenu:
         lang = self.config.get('lang', 'en')
         auto_gitignore = self.config.get("auto_add_gitignore", True)
         enable_flip = self.config.get("enable_flip_anim", True)
+        debug_i18n = self.config.get("debug_i18n", False)
 
         print(c.title(_("Paramètres actuels:")))
         print()
@@ -798,6 +806,10 @@ class MainMenu:
 
         print(c.config_line("5. " + _("Préfixe LOC"), str(prefix)))
         print(c.config_line("6. " + _("Langue par défaut"), str(lang)))
+
+        # Debug i18n
+        debug_status = f"{c.OK}" + _("activé") + f"{c.RESET}" if debug_i18n else f"{c.DIM}" + _("désactivé") + f"{c.RESET}"
+        print(c.config_line("7. " + _("Debug i18n"), str(debug_status)))
         print()
 
         # Afficher les exécutions récentes si le plugin est configuré
@@ -818,7 +830,7 @@ class MainMenu:
         print(f"{c.DIM}" + _("Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir") + f"{c.RESET}")
         print()
 
-        choice = input(c.prompt(_("Votre choix (0-6):") + " ")).strip()
+        choice = input(c.prompt(_("Votre choix:") + " (0-7): ")).strip()
 
         if choice == '0':
             # Retour au menu principal sans validation
@@ -875,6 +887,13 @@ class MainMenu:
                 print(c.success(_("Langue: {lang}").format(lang=new_lang)))
             else:
                 print(c.success(_("Langue inchangée")))
+        elif choice == '7':
+            # Toggle debug i18n
+            current = self.config.get("debug_i18n", False)
+            new_value = not current
+            self.config.set("debug_i18n", new_value)
+            status = _("activé") if new_value else _("désactivé")
+            print(c.success(_("Debug i18n: {status}").format(status=status)))
 
         input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
 
@@ -887,7 +906,7 @@ class MainMenu:
 
             # Adapter le message de prompt en fonction de la présence d'AUTOSYNC
             max_choice = "7" if self.has_translated_strings() else "6"
-            choice = input(c.prompt(_("Votre choix (0-{max}):").format(max=max_choice) + " ")).strip()
+            choice = input(c.prompt(_("Votre choix:") + f" (0-{max_choice}): ")).strip()
 
             if choice == '0':
                 print("\n" + _("Au revoir!"))

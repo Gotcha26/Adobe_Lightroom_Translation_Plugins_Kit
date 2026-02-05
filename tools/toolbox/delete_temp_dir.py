@@ -279,7 +279,7 @@ def select_deletion_mode(temp_dir_path: str) -> Tuple[str, Optional[List[str]]]:
     print()
 
     while True:
-        choice = input(f"{c.PROMPT}Votre choix (0-2): {c.RESET}").strip()
+        choice = input(c.prompt(_("Votre choix:") + " (0-2): ")).strip()
 
         if choice == '0':
             return "cancel", None

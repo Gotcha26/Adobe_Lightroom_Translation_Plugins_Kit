@@ -94,7 +94,7 @@ def advanced_menu(plugin_path: str):
         print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour au menu principal{c.RESET}")
         print(c.separator())
 
-        choice = input(f"\n{c.PROMPT}  Votre choix (0-8): {c.RESET}").strip()
+        choice = input(c.prompt(_("Votre choix:") + " (0-8): ")).strip()
 
         if choice == '1':
             menu_compare(plugin_path)
@@ -176,7 +176,7 @@ def main_menu(default_plugin_path: str = ""):
         print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Quitter{c.RESET}")
         print(c.separator())
 
-        choice = input(f"\n{c.PROMPT}  Votre choix (0-9): {c.RESET}").strip()
+        choice = input(c.prompt(_("Votre choix:") + " (0-9): ")).strip()
 
         if choice == '1':
             menu_install(plugin_path)

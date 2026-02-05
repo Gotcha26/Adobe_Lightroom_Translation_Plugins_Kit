@@ -431,7 +431,7 @@ def menu_addlang(plugin_path: str):
     print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour{c.RESET}")
     print()
 
-    choice = input(f"{c.PROMPT}  Votre choix (0-2): {c.RESET}").strip()
+    choice = input(c.prompt(_("Votre choix:") + " (0-2): ")).strip()
 
     if choice == '1':
         menu_mode_a_install_from_extraction(plugin_path, installed_langs)

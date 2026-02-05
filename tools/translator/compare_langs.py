@@ -366,7 +366,7 @@ def menu_compare_langs(plugin_path: str = ""):
     print(f"  {c.YELLOW}1{c.RESET}. Par codes langue (ex: fr, de) - cherche dans un répertoire")
     print(f"  {c.YELLOW}2{c.RESET}. Par chemins de fichiers complets")
 
-    mode = input(f"\n{c.PROMPT}  Votre choix (1-2): {c.RESET}").strip()
+    mode = input(c.prompt(_("Votre choix:") + " (1-2): ")).strip()
 
     file1 = None
     file2 = None
