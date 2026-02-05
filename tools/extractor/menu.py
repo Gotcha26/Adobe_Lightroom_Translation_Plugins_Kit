@@ -81,7 +81,6 @@ class InteractiveMenu:
                 status = f"{c.OK}OK{c.RESET}"
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
-            # Afficher seulement le dernier niveau du chemin
             short_path = os.path.basename(self.plugin_path)
             print(c.config_line("1. " + _("Plugin ciblé"), f".../{short_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
         else:

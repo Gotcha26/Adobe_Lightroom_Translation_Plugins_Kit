@@ -160,7 +160,8 @@ class ConfigManager:
         print()
         print(c.title(_("Configuration actuelle:")))
         print()
-        print(c.config_line(_("Plugin path"), str(plugin_path or f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}")))
+        short_plugin = f".../{os.path.basename(plugin_path)}" if plugin_path else f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}"
+        print(c.config_line(_("Plugin path"), str(short_plugin)))
         print(c.config_line(_("Dossier temporaire"), str(temp_dir)))
         print(c.config_line(_("Chemin complet"), str(i18n_path)))
         print(c.config_line(_("Préfixe LOC"), str(self.config.get('prefix', '$$$/Piwigo'))))
@@ -623,17 +624,10 @@ class MainMenu:
         if not plugin or not os.path.isdir(plugin):
             return False
 
-        temp_dir = self.config.get("temp_dir") or DEFAULT_I18N_DIR
-        i18n_path = os.path.join(plugin, temp_dir)
-
-        if not os.path.isdir(i18n_path):
-            return False
-
-        # Chercher les fichiers TranslatedStrings_xx.txt récursivement
-        for root, _, files in os.walk(i18n_path):
-            for file in files:
-                if file.startswith("TranslatedStrings_") and file.endswith(".txt"):
-                    return True
+        # Chercher les fichiers TranslatedStrings_xx.txt à la racine du plugin
+        for filename in os.listdir(plugin):
+            if filename.startswith("TranslatedStrings_") and filename.endswith(".txt"):
+                return True
 
         return False
 
@@ -792,7 +786,8 @@ class MainMenu:
 
         print(c.title(_("Paramètres actuels:")))
         print()
-        print(c.config_line("1. " + _("Plugin path"), str(plugin_path or f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}")))
+        short_plugin = f".../{os.path.basename(plugin_path)}" if plugin_path else f"{c.ERROR}" + _("(non défini)") + f"{c.RESET}"
+        print(c.config_line("1. " + _("Plugin path"), str(short_plugin)))
         print(c.config_line("2. " + _("Dossier temporaire"), str(temp_dir)))
         print(c.config_line("   " + _("Chemin complet"), str(i18n_path)))
 

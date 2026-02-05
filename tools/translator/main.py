@@ -240,6 +240,15 @@ def main():
         main_menu(default_plugin)
         return
 
+    # Mode AUTO-SYNC direct (lancé depuis LocalizationToolKit)
+    if len(sys.argv) == 4 and sys.argv[1] == '--plugin-path' and sys.argv[3] == '--autosync':
+        plugin_path = sys.argv[2]
+        if not os.path.isdir(plugin_path):
+            print(c.error(f"Plugin introuvable: {plugin_path}"))
+            sys.exit(1)
+        run_autosync(plugin_path)
+        return
+
     parser = argparse.ArgumentParser(
         description="Gestionnaire de traductions multilingues",
         formatter_class=argparse.RawDescriptionHelpFormatter,
