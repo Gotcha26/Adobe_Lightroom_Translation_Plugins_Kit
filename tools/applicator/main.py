@@ -137,8 +137,8 @@ class LocalizationReport:
                         f.write(f"{'-' * 80}\n\n")
 
                     f.write(f"  Ligne {change['line']}:\n")
-                    f.write(f"  AVANT : {change['before'][:100]}\n")
-                    f.write(f"  APRES : {change['after'][:100]}\n")
+                    f.write(f"  AVANT : {change['before']}\n")
+                    f.write(f"  APRES : {change['after']}\n")
                     for member in change['members']:
                         f.write(f"    - \"{member['original_text']}\" -> {member['loc_key']}\n")
                     f.write("\n")
@@ -151,7 +151,7 @@ class LocalizationReport:
                 for skip in self.skipped:
                     f.write(f"  {skip['file']}:{skip['line']}\n")
                     f.write(f"    Raison: {skip['reason']}\n")
-                    f.write(f"    Contenu: {skip['content'][:80]}\n\n")
+                    f.write(f"    Contenu: {skip['content']}\n\n")
 
             if self.errors:
                 f.write("\n" + "=" * 80 + "\n")
