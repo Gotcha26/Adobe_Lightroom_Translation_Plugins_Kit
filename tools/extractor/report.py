@@ -47,7 +47,7 @@ class ReportGenerator:
             relative = full_path.replace(plugin_path, "").lstrip(os.sep)
             # Normaliser les slashes en forward slashes
             relative = relative.replace("\\", "/")
-            return f"<plugin>/{relative}"
+            return _("<plugin>/{relative}").format(relative=relative)
         return full_path
 
     def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict],
@@ -61,41 +61,41 @@ class ReportGenerator:
         with open(output_path, 'w', encoding='utf-8') as f:
             # En-tête
             f.write("=" * 80 + "\n")
-            f.write("RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n")
+            f.write(_("RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n"))
             f.write("=" * 80 + "\n\n")
 
             f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"Plugin: {self.plugin_path}\n")
-            f.write(f"Préfixe: {self.prefix}\n\n")
+            f.write(_("Plugin: {var0}\n").format(var0=self.plugin_path))
+            f.write(_("Préfixe: {var0}\n\n").format(var0=self.prefix))
 
             # Légende des émojis
-            f.write("LÉGENDE:\n")
-            f.write("  ⬅️   = Espace(s) en DÉBUT de chaîne\n")
-            f.write("  ➡️   = Espace(s) en FIN de chaîne\n")
-            f.write("  ⬅️➡️ = Espaces des DEUX côtés\n")
-            f.write("  🔚  = Suffixe détecté (\" - \", \" -\", \"...\")\n")
-            f.write("  🔗  = Membre d'une chaîne concaténée\n\n")
+            f.write(_("LÉGENDE:\n"))
+            f.write(_("  ⬅️   = Espace(s) en DÉBUT de chaîne\n"))
+            f.write(_("  ➡️   = Espace(s) en FIN de chaîne\n"))
+            f.write(_("  ⬅️➡️ = Espaces des DEUX côtés\n"))
+            f.write(_("  🔚  = Suffixe détecté (\") - \", \" -\", \"...\_(")\n"))
+            f.write(_("  🔗  = Membre d'une chaîne concaténée\n\n"))
 
             # Statistiques
-            f.write("STATISTIQUES\n")
+            f.write(_("STATISTIQUES\n"))
             f.write("-" * 80 + "\n")
-            f.write(f"Fichiers analysés          : {self.stats.files_processed}\n")
-            f.write(f"Fichiers avec chaînes      : {self.stats.files_with_strings}\n")
-            f.write(f"Total chaînes trouvées     : {self.stats.total_strings}\n")
-            f.write(f"Clés uniques               : {self.stats.unique_strings}\n")
-            f.write(f"Lignes de log ignorées     : {self.stats.log_lines_ignored}\n")
-            f.write(f"Chaînes techniques ignorées: {self.stats.technical_ignored}\n")
-            f.write(f"Chaînes avec espaces       : {self.stats.strings_with_spacing}\n")
-            f.write(f"Chaînes avec suffixes      : {self.stats.strings_with_suffix}\n")
-            f.write(f"Lignes concaténées         : {self.stats.concatenated_lines}\n")
-            f.write(f"Membres de concaténation   : {self.stats.concat_members_total}\n")
+            f.write(_("Fichiers analysés          : {var0}\n").format(var0=self.stats.files_processed))
+            f.write(_("Fichiers avec chaînes      : {var0}\n").format(var0=self.stats.files_with_strings))
+            f.write(_("Total chaînes trouvées     : {var0}\n").format(var0=self.stats.total_strings))
+            f.write(_("Clés uniques               : {var0}\n").format(var0=self.stats.unique_strings))
+            f.write(_("Lignes de log ignorées     : {var0}\n").format(var0=self.stats.log_lines_ignored))
+            f.write(_("Chaînes techniques ignorées: {var0}\n").format(var0=self.stats.technical_ignored))
+            f.write(_("Chaînes avec espaces       : {var0}\n").format(var0=self.stats.strings_with_spacing))
+            f.write(_("Chaînes avec suffixes      : {var0}\n").format(var0=self.stats.strings_with_suffix))
+            f.write(_("Lignes concaténées         : {var0}\n").format(var0=self.stats.concatenated_lines))
+            f.write(_("Membres de concaténation   : {var0}\n").format(var0=self.stats.concat_members_total))
 
             # Compter les clés existantes
             existing_loc_count = sum(1 for e in extracted if e.pattern_name == "existing_loc")
-            f.write(f"Clés LOC existantes        : {existing_loc_count} (déjà localisées, non modifiées)\n\n")
+            f.write(_("Clés LOC existantes        : {existing_loc_count} (déjà localisées, non modifiées)\n\n").format(existing_loc_count=existing_loc_count))
 
             # Patterns détectés
-            f.write("PATTERNS DÉTECTÉS\n")
+            f.write(_("PATTERNS DÉTECTÉS\n"))
             f.write("-" * 80 + "\n")
             for pattern, count in sorted(self.stats.patterns_found.items(), key=lambda x: -x[1]):
                 f.write(f"  {pattern:25} : {count}\n")
@@ -109,14 +109,14 @@ class ReportGenerator:
                 f.write("=" * 80 + "\n\n")
                 for entry in existing_entries:
                     f.write(f"  🔒 {entry.file_path}:{entry.line_num}\n")
-                    f.write(f"     Clé    : {entry.suggested_key}\n")
-                    f.write(f"     Valeur : {entry.base_text}\n\n")
+                    f.write(_("     Clé    : {var0}\n").format(var0=entry.suggested_key))
+                    f.write(_("     Valeur : {var0}\n\n").format(var0=entry.base_text))
                 f.write("\n")
 
             # Détail par fichier (pour remplacement)
             # → Ne pas tenir compte du champs vide "REMPLACER" si vide !
             f.write("=" * 80 + "\n")
-            f.write("DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \"REMPLACER\" si vide !\n")
+            f.write(_("DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \")REMPLACER\_(" si vide !\n"))
             f.write("=" * 80 + "\n")
 
             for file_path in sorted(by_file.keys()):
@@ -124,8 +124,8 @@ class ReportGenerator:
                 unique_count = len(set(e.base_text for e in entries))
 
                 f.write(f"\n{'-' * 80}\n")
-                f.write(f"Fichier: {file_path}\n")
-                f.write(f"Chaînes: {len(entries)} ({unique_count} clés uniques)\n")
+                f.write(_("Fichier: {file_path}\n").format(file_path=file_path))
+                f.write(_("Chaînes: {var0} ({unique_count} clés uniques)\n").format(var0=len(entries), unique_count=unique_count))
                 f.write(f"{'-' * 80}\n\n")
 
                 # Grouper par numéro de ligne pour afficher les concaténations ensemble
@@ -139,54 +139,54 @@ class ReportGenerator:
 
                     # Afficher l'en-tête de la ligne
                     if first_entry.is_concat_member and len(line_entries) > 1:
-                        f.write(f"  [Ligne {line_num}] Pattern: {first_entry.pattern_name} 🔗 CHAÎNE CONCATÉNÉE ({len(line_entries)} membres)\n")
-                        f.write(f"  LIGNE    : {first_entry.line_content[:100]}\n")
+                        f.write(_("  [Ligne {line_num}] Pattern: {var1} 🔗 CHAÎNE CONCATÉNÉE ({var2} membres)\n").format(line_num=line_num, var1=first_entry.pattern_name, var2=len(line_entries)))
+                        f.write(_("  LIGNE    : {var0:100]}\n").format(var0=first_entry.line_content[))
 
                         # Afficher chaque membre
                         for idx, entry in enumerate(line_entries, 1):
                             markers = self._get_markers(entry)
-                            f.write(f"\n  MEMBRE {idx} : \"{entry.original_text}\"{markers}\n")
-                            f.write(f"    BASE   : \"{entry.base_text}\"\n")
-                            f.write(f"    CLÉ    : {entry.suggested_key}\n")
+                            f.write(_("\n  MEMBRE {idx} : \").format(idx=idx){entry.original_text}\"{markers}\n")
+                            f.write(_("    BASE   : \"){entry.base_text}\"\n")
+                            f.write(_("    CLÉ    : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
-                                f.write(f"    ESPACES: {entry.leading_spaces} début, {entry.trailing_spaces} fin\n")
+                                f.write(_("    ESPACES: {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(f"    SUFFIXE: \"{entry.suffix}\"\n")
+                                f.write(_("    SUFFIXE: \"){entry.suffix}\"\n")
 
                         f.write("\n")
                     else:
                         # Chaîne simple (non concaténée)
                         for entry in line_entries:
                             markers = self._get_markers(entry)
-                            f.write(f"  [Ligne {line_num}] Pattern: {entry.pattern_name}{markers}\n")
-                            f.write(f"  CHERCHER : \"{entry.original_text}\"\n")
-                            f.write(f"  BASE     : \"{entry.base_text}\"\n")
-                            f.write(f"  CLÉ      : {entry.suggested_key}\n")
+                            f.write(_("  [Ligne {line_num}] Pattern: {var1}{markers}\n").format(line_num=line_num, var1=entry.pattern_name, markers=markers))
+                            f.write(_("  CHERCHER : \"){entry.original_text}\"\n")
+                            f.write(_("  BASE     : \"){entry.base_text}\"\n")
+                            f.write(_("  CLÉ      : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
-                                f.write(f"  ESPACES  : {entry.leading_spaces} début, {entry.trailing_spaces} fin\n")
+                                f.write(_("  ESPACES  : {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(f"  SUFFIXE  : \"{entry.suffix}\"\n")
-                            f.write(f"  REMPLACER: {entry.replacement_code}\n\n")
+                                f.write(_("  SUFFIXE  : \"){entry.suffix}\"\n")
+                            f.write(_("  REMPLACER: {var0}\n\n").format(var0=entry.replacement_code))
 
             # Chaînes avec espaces ou suffixes (résumé)
             if spacing_metadata:
                 f.write("=" * 80 + "\n")
-                f.write("CHAÎNES AVEC ESPACES OU SUFFIXES\n")
+                f.write(_("CHAÎNES AVEC ESPACES OU SUFFIXES\n"))
                 f.write("=" * 80 + "\n\n")
-                f.write("Ces chaînes nécessitent une réinjection des espaces/suffixes.\n\n")
+                f.write(_("Ces chaînes nécessitent une réinjection des espaces/suffixes.\n\n"))
 
                 for i, (key, meta) in enumerate(sorted(spacing_metadata.items()), 1):
                     emojis = self._get_spacing_emojis(meta)
                     emoji_str = "".join(emojis)
 
                     f.write(f"  {i}. {emoji_str} {key}\n")
-                    f.write(f"     Original: \"{meta['original_text']}\"\n")
-                    f.write(f"     Base: \"{meta.get('base_text', meta['clean_text'])}\"\n")
+                    f.write(_("     Original: \"){meta['original_text']}\"\n")
+                    f.write(_("     Base: \"){meta.get('base_text', meta['clean_text'])}\"\n")
                     if meta['leading_spaces'] > 0 or meta['trailing_spaces'] > 0:
-                        f.write(f"     Espaces: {meta['leading_spaces']} début + {meta['trailing_spaces']} fin\n")
+                        f.write(_("     Espaces: {var0} début + {var1} fin\n").format(var0=meta['leading_spaces'], var1=meta['trailing_spaces']))
                     if meta.get('suffix'):
-                        f.write(f"     Suffixe: \"{meta['suffix']}\"\n")
-                    f.write(f"     Fichier: {meta['file']}:{meta['line']}\n\n")
+                        f.write(_("     Suffixe: \"){meta['suffix']}\"\n")
+                    f.write(_("     Fichier: {var0}:{var1}\n\n").format(var0=meta['file'], var1=meta['line']))
 
             # Liste des clés uniques pour PluginStrings
             f.write("=" * 80 + "\n")
@@ -199,7 +199,7 @@ class ReportGenerator:
                 if entry.suggested_key not in unique_keys:
                     unique_keys[entry.suggested_key] = entry
 
-            f.write(f"-- {len(unique_keys)} clés uniques\n\n")
+            f.write(_("-- {var0} clés uniques\n\n").format(var0=len(unique_keys)))
 
             for entry in sorted(unique_keys.values(), key=lambda e: e.suggested_key):
                 markers = self._get_markers(entry)

@@ -103,7 +103,7 @@ class ApplicatorMenu:
         if extraction_norm.startswith(plugin_norm):
             # Remplacer la partie plugin par <plugin>
             relative_part = extraction_norm[len(plugin_norm):]
-            return f"<plugin>{relative_part}"
+            return _("<plugin>{relative_part}").format(relative_part=relative_part)
 
         return extraction_path
 
@@ -119,7 +119,7 @@ class ApplicatorMenu:
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
             short_path = os.path.basename(self.plugin_path)
-            print(c.config_line("1. " + _("Plugin"), f".../{short_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
+            print(c.config_line("1. " + _("Plugin"), _(".../{short_path} {var1}[{var2}{status}{var4}]{var5}").format(short_path=short_path, var1=c.VALUE, var2=c.RESET, status=status, var4=c.VALUE, var5=c.RESET)))
         else:
             print(c.config_line("1. " + _("Plugin"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
@@ -157,7 +157,7 @@ class ApplicatorMenu:
 
         # Sortie Applicator
         if self.plugin_path:
-            output_path = f"<plugin>/{get_i18n_dir()}/Applicator/<timestamp>/"
+            output_path = _("<plugin>/{var0}/Applicator/<timestamp>/").format(var0=get_i18n_dir())
             print(c.config_line("   " + _("Sortie"), f"{c.DIM}{output_path}{c.RESET}"))
 
         print()
@@ -174,7 +174,7 @@ class ApplicatorMenu:
         else:
             print(f"  {c.DIM}" + _("ENTRÉE") + "  " + _("Lancer (configurer plugin et extraction d'abord)") + f"{c.RESET}")
 
-        print(c.menu_option("1-4", _("Modifier une option")))
+        print(c.menu_option(_("1-4"), _("Modifier une option")))
         print(c.menu_option("0", _("Quitter")))
         print()
 
@@ -184,8 +184,8 @@ class ApplicatorMenu:
         print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
         print(_("Exemples:"))
-        print(f"  {c.VALUE}C:\\Users\\User\\Lightroom\\plugin.lrplugin{c.RESET}")
-        print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
+        print(_("  {var0}C:\\Users\\User\\Lightroom\\plugin.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
+        print(_("  {var0}./piwigoPublish.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
         print()
 
         if self.plugin_path:
@@ -263,7 +263,7 @@ class ApplicatorMenu:
         print(f"  {c.VALUE}" + _("Non") + f"{c.RESET} = " + _("Applique les modifications (crée des backups)"))
         print()
 
-        current = "O" if self.dry_run else "N"
+        current = "O_(" if self.dry_run else ")N"
         response = input(c.prompt(_("Mode simulation? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
@@ -290,7 +290,7 @@ class ApplicatorMenu:
             input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
             return
 
-        current = "O" if self.create_backup else "N"
+        current = "O_(" if self.create_backup else ")N"
         response = input(c.prompt(_("Créer des sauvegardes? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes', '']:

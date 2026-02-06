@@ -185,19 +185,19 @@ class Colors:
     # Méthodes pour formater du texte
     def success(self, text: str) -> str:
         """Formate un texte de succès (vert)."""
-        return f"{self.OK}[OK]{self.RESET} {text}"
+        return "{var0}[OK]{var1} {text}".format(var0=self.OK, var1=self.RESET, text=text)
 
     def error(self, text: str) -> str:
         """Formate un texte d'erreur (rouge)."""
-        return f"{self.ERROR}[ERREUR]{self.RESET} {text}"
+        return "{var0}[ERREUR]{var1} {text}".format(var0=self.ERROR, var1=self.RESET, text=text)
 
     def warning(self, text: str) -> str:
         """Formate un texte d'avertissement (jaune)."""
-        return f"{self.WARNING}[ATTENTION]{self.RESET} {text}"
+        return "{var0}[ATTENTION]{var1} {text}".format(var0=self.WARNING, var1=self.RESET, text=text)
 
     def info(self, text: str) -> str:
         """Formate un texte d'information (bleu)."""
-        return f"{self.INFO}[INFO]{self.RESET} {text}"
+        return "{var0}[INFO]{var1} {text}".format(var0=self.INFO, var1=self.RESET, text=text)
 
     def header(self, text: str) -> str:
         """Formate un titre/header (cyan gras)."""
@@ -221,15 +221,15 @@ class Colors:
 
     def ok_marker(self) -> str:
         """Retourne un marqueur OK vert."""
-        return f"{self.OK}[OK]{self.RESET}"
+        return "{var0}[OK]{var1}".format(var0=self.OK, var1=self.RESET)
 
     def error_marker(self) -> str:
         """Retourne un marqueur ERREUR rouge."""
-        return f"{self.ERROR}[ERREUR]{self.RESET}"
+        return "{var0}[ERREUR]{var1}".format(var0=self.ERROR, var1=self.RESET)
 
     def warn_marker(self) -> str:
         """Retourne un marqueur ATTENTION jaune."""
-        return f"{self.WARNING}[ATTENTION]{self.RESET}"
+        return "{var0}[ATTENTION]{var1}".format(var0=self.WARNING, var1=self.RESET)
 
     def menu_option(self, number: str, text: str) -> str:
         """Formate une option de menu."""

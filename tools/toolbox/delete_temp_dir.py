@@ -163,23 +163,23 @@ def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:
     if default_plugin_path:
         is_valid, normalized, warning = validate_plugin_path(default_plugin_path)
         if is_valid:
-            print(c.success(f"Plugin: {c.VALUE}{os.path.basename(normalized)}{c.RESET}"))
-            print(f"{c.DIM}  Chemin: {normalized}{c.RESET}")
+            print(c.success(_("Plugin: {var0}{var1}{var2}").format(var0=c.VALUE, var1=os.path.basename(normalized), var2=c.RESET)))
+            print(_("{var0}  Chemin: {normalized}{var2}").format(var0=c.DIM, normalized=normalized, var2=c.RESET))
             print()
             return normalized
         else:
-            print(c.warning(f"Plugin par défaut invalide: {warning}"))
+            print(c.warning(_("Plugin par défaut invalide: {warning}").format(warning=warning)))
             print()
 
     # Demander le chemin du plugin
-    print(c.title("Chemin du plugin Lightroom"))
+    print(c.title(_("Chemin du plugin Lightroom")))
     print(c.separator())
-    print("Exemples:")
-    print(f"  {c.VALUE}D:\\Lightroom\\plugin.lrplugin{c.RESET}")
-    print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
+    print(_("Exemples:"))
+    print(_("  {var0}D:\\Lightroom\\plugin.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
+    print(_("  {var0}./piwigoPublish.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
     print()
 
-    path = input(c.prompt("Chemin du plugin: ")).strip()
+    path = input(c.prompt(_("Chemin du plugin: "))).strip()
 
     if not path:
         return None
@@ -193,8 +193,8 @@ def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:
     # Avertissement si pas .lrplugin
     if warning:
         print(c.warning(warning))
-        print("            Êtes-vous sûr que c'est un plugin Lightroom?")
-        confirm = input(c.prompt("Continuer quand même? [o/N]: ")).strip().lower()
+        print(_("            Êtes-vous sûr que c'est un plugin Lightroom?"))
+        confirm = input(c.prompt(_("Continuer quand même? [o/N]: "))).strip().lower()
         if confirm not in ['o', 'oui', 'y', 'yes']:
             return None
 
@@ -212,29 +212,29 @@ def show_temp_dir_info(plugin_path: str) -> Optional[str]:
     temp_dir_path = get_i18n_kit_path(plugin_path)
 
     print()
-    print(c.config_line("Dossier temporaire", temp_dir_name))
-    print(c.config_line("Chemin complet", temp_dir_path))
+    print(c.config_line(_("Dossier temporaire"), temp_dir_name))
+    print(c.config_line(_("Chemin complet"), temp_dir_path))
     print()
 
     if not os.path.isdir(temp_dir_path):
-        print(c.info("Le dossier temporaire n'existe pas."))
-        print("       Rien à supprimer.")
+        print(c.info(_("Le dossier temporaire n'existe pas.")))
+        print(_("       Rien à supprimer."))
         return None
 
     # Calculer les statistiques
     total_size, total_files = get_dir_size(temp_dir_path)
     subdirs = list_subdirs(temp_dir_path)
 
-    print(c.box_header("CONTENU DU DOSSIER TEMPORAIRE"))
+    print(c.box_header(_("CONTENU DU DOSSIER TEMPORAIRE")))
     print()
 
     if subdirs:
         for subdir in subdirs:
-            print(f"  {c.KEY}{subdir['name']:25}{c.RESET} : {c.VALUE}{subdir['file_count']:4}{c.RESET} fichiers, {c.VALUE}{format_size(subdir['size'])}{c.RESET}")
+            print(_("  {var0}{var1:25}{var2} : {var3}{var4:4}{var5} fichiers, {var6}{var7}{var8}").format(var0=c.KEY, var1=subdir['name'], var2=c.RESET, var3=c.VALUE, var4=subdir['file_count'], var5=c.RESET, var6=c.VALUE, var7=format_size(subdir['size']), var8=c.RESET))
         print()
 
     print(c.separator())
-    print(f"{c.BOLD}TOTAL: {total_files} fichiers, {format_size(total_size)}{c.RESET}")
+    print(_("{var0}TOTAL: {total_files} fichiers, {var2}{var3}").format(var0=c.BOLD, total_files=total_files, var2=format_size(total_size), var3=c.RESET))
     print(c.separator())
 
     return temp_dir_path
@@ -254,7 +254,7 @@ def select_deletion_mode(temp_dir_path: str) -> Tuple[str, Optional[List[str]]]:
     backups = find_backup_dirs(temp_dir_path)
 
     print()
-    print(c.title("Que voulez-vous supprimer?"))
+    print(c.title(_("Que voulez-vous supprimer?")))
     print(c.separator())
     print()
 
@@ -262,20 +262,20 @@ def select_deletion_mode(temp_dir_path: str) -> Tuple[str, Optional[List[str]]]:
     if backups:
         total_backup_size = sum(b['size'] for b in backups)
         total_backup_files = sum(b['file_count'] for b in backups)
-        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}Supprimer UNIQUEMENT les backups{c.RESET}")
-        print(f"     {c.DIM}{len(backups)} session(s) de backup • {total_backup_files} fichiers • {format_size(total_backup_size)}{c.RESET}")
+        print(_("  {var0}1{var1}. {var2}Supprimer UNIQUEMENT les backups{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
+        print(_("     {var0}{var1} session(s) de backup • {total_backup_files} fichiers • {var3}{var4}").format(var0=c.DIM, var1=len(backups), total_backup_files=total_backup_files, var3=format_size(total_backup_size), var4=c.RESET))
     else:
-        print(f"  {c.DIM}1. Supprimer UNIQUEMENT les backups (aucun backup trouvé){c.RESET}")
+        print(_("  {var0}1. Supprimer UNIQUEMENT les backups (aucun backup trouvé){var1}").format(var0=c.DIM, var1=c.RESET))
 
     # Option 2: Supprimer tout
     total_size, total_files = get_dir_size(temp_dir_path)
     print()
-    print(f"  {c.YELLOW}2{c.RESET}. {c.ERROR}Supprimer TOUT le dossier temporaire{c.RESET}")
-    print(f"     {c.DIM}Tout le contenu • {total_files} fichiers • {format_size(total_size)}{c.RESET}")
+    print(_("  {var0}2{var1}. {var2}Supprimer TOUT le dossier temporaire{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.ERROR, var3=c.RESET))
+    print(_("     {var0}Tout le contenu • {total_files} fichiers • {var2}{var3}").format(var0=c.DIM, total_files=total_files, var2=format_size(total_size), var3=c.RESET))
 
     # Option 0: Annuler
     print()
-    print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Annuler{c.RESET}")
+    print(_("  {var0}0{var1}. {var2}Annuler{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.DIM, var3=c.RESET))
     print()
 
     while True:
@@ -285,14 +285,14 @@ def select_deletion_mode(temp_dir_path: str) -> Tuple[str, Optional[List[str]]]:
             return "cancel", None
         elif choice == '1':
             if not backups:
-                print(c.error("Aucun backup à supprimer"))
+                print(c.error(_("Aucun backup à supprimer")))
                 continue
             # Retourner la liste des chemins de sessions à supprimer
             return "backups", [b['path'] for b in backups]
         elif choice == '2':
             return "all", None
         else:
-            print(c.error("Choix invalide. Entrez 0, 1 ou 2"))
+            print(c.error(_("Choix invalide. Entrez 0, 1 ou 2")))
             print()
 
 
@@ -310,54 +310,54 @@ def confirm_deletion(mode: str, target_path: str, paths_list: Optional[List[str]
     """
     print()
     print(f"{c.ERROR}{'!' * 60}{c.RESET}")
-    print(f"{c.ERROR}{c.BOLD}!!! ATTENTION - OPÉRATION IRRÉVERSIBLE !!!{c.RESET}")
+    print(_("{var0}{var1}!!! ATTENTION - OPÉRATION IRRÉVERSIBLE !!!{var2}").format(var0=c.ERROR, var1=c.BOLD, var2=c.RESET))
     print(f"{c.ERROR}{'!' * 60}{c.RESET}")
     print()
 
     if mode == "all":
-        print(f"Cette opération va {c.ERROR}SUPPRIMER DÉFINITIVEMENT{c.RESET}:")
+        print(_("Cette opération va {var0}SUPPRIMER DÉFINITIVEMENT{var1}:").format(var0=c.ERROR, var1=c.RESET))
         print(f"  {c.VALUE}{target_path}{c.RESET}")
         print()
-        print(f"{c.WARNING}Vous perdrez:{c.RESET}")
-        print("  - Toutes les extractions précédentes")
-        print("  - Tous les fichiers de backup (.bak)")
-        print("  - Toutes les sorties des outils")
+        print(_("{var0}Vous perdrez:{var1}").format(var0=c.WARNING, var1=c.RESET))
+        print(_("  - Toutes les extractions précédentes"))
+        print(_("  - Tous les fichiers de backup (.bak)"))
+        print(_("  - Toutes les sorties des outils"))
         print()
 
         # Triple confirmation pour suppression totale
-        print(f"{c.BOLD}Étape 1/3: Confirmation initiale{c.RESET}")
-        confirm1 = input(c.prompt("Voulez-vous vraiment supprimer ce dossier? [o/N]: ")).strip().lower()
+        print(_("{var0}Étape 1/3: Confirmation initiale{var1}").format(var0=c.BOLD, var1=c.RESET))
+        confirm1 = input(c.prompt(_("Voulez-vous vraiment supprimer ce dossier? [o/N]: "))).strip().lower()
         if confirm1 not in ['o', 'oui', 'y', 'yes']:
-            print(c.success("Suppression annulée."))
+            print(c.success(_("Suppression annulée.")))
             return False
 
-        print(f"\n{c.BOLD}Étape 2/3: Confirmation de sécurité{c.RESET}")
-        confirm2 = input(c.prompt(f"Tapez '{c.ERROR}SUPPRIMER{c.RESET}{c.YELLOW}' pour confirmer: ")).strip()
+        print(_("\n{var0}Étape 2/3: Confirmation de sécurité{var1}").format(var0=c.BOLD, var1=c.RESET))
+        confirm2 = input(c.prompt(_("Tapez '{var0}SUPPRIMER{var1}{var2}' pour confirmer: ").format(var0=c.ERROR, var1=c.RESET, var2=c.YELLOW))).strip()
         if confirm2 != 'SUPPRIMER':
-            print(c.success("Suppression annulée (mot de confirmation incorrect)."))
+            print(c.success(_("Suppression annulée (mot de confirmation incorrect).")))
             return False
 
-        print(f"\n{c.BOLD}Étape 3/3: Dernière chance{c.RESET}")
-        confirm3 = input(c.prompt("Dernière confirmation - Êtes-vous ABSOLUMENT sûr? [o/N]: ")).strip().lower()
+        print(_("\n{var0}Étape 3/3: Dernière chance{var1}").format(var0=c.BOLD, var1=c.RESET))
+        confirm3 = input(c.prompt(_("Dernière confirmation - Êtes-vous ABSOLUMENT sûr? [o/N]: "))).strip().lower()
         if confirm3 not in ['o', 'oui', 'y', 'yes']:
-            print(c.success("Suppression annulée."))
+            print(c.success(_("Suppression annulée.")))
             return False
 
     else:  # mode == "backups"
-        print(f"Cette opération va {c.WARNING}SUPPRIMER{c.RESET} les backups suivants:")
+        print(_("Cette opération va {var0}SUPPRIMER{var1} les backups suivants:").format(var0=c.WARNING, var1=c.RESET))
         print()
         if paths_list:
             for path in paths_list:
                 session_name = os.path.basename(path)
                 print(f"  {c.DIM}•{c.RESET} {c.VALUE}{session_name}{c.RESET}")
         print()
-        print(f"{c.INFO}Les autres fichiers du dossier temporaire seront conservés.{c.RESET}")
+        print(_("{var0}Les autres fichiers du dossier temporaire seront conservés.{var1}").format(var0=c.INFO, var1=c.RESET))
         print()
 
         # Confirmation simple pour backups uniquement
-        confirm = input(c.prompt("Confirmer la suppression des backups? [o/N]: ")).strip().lower()
+        confirm = input(c.prompt(_("Confirmer la suppression des backups? [o/N]: "))).strip().lower()
         if confirm not in ['o', 'oui', 'y', 'yes']:
-            print(c.success("Suppression annulée."))
+            print(c.success(_("Suppression annulée.")))
             return False
 
     return True
@@ -380,16 +380,16 @@ def delete_paths(paths: List[str], mode: str) -> Tuple[int, int]:
     for path in paths:
         try:
             name = os.path.basename(path) if mode == "backups" else path
-            print(f"  {c.DIM}Suppression:{c.RESET} {c.VALUE}{name}{c.RESET}...", end=" ")
+            print(_("  {var0}Suppression:{var1} {var2}{name}{var4}...").format(var0=c.DIM, var1=c.RESET, var2=c.VALUE, name=name, var4=c.RESET), end=" ")
             shutil.rmtree(path)
-            print(f"{c.OK}[OK]{c.RESET}")
+            print(_("{var0}[OK]{var1}").format(var0=c.OK, var1=c.RESET))
             success_count += 1
         except PermissionError as e:
-            print(f"{c.ERROR}[ERREUR]{c.RESET}")
-            print(f"    {c.DIM}Permission refusée: {e}{c.RESET}")
+            print(_("{var0}[ERREUR]{var1}").format(var0=c.ERROR, var1=c.RESET))
+            print(_("    {var0}Permission refusée: {e}{var2}").format(var0=c.DIM, e=e, var2=c.RESET))
             failure_count += 1
         except Exception as e:
-            print(f"{c.ERROR}[ERREUR]{c.RESET}")
+            print(_("{var0}[ERREUR]{var1}").format(var0=c.ERROR, var1=c.RESET))
             print(f"    {c.DIM}{e}{c.RESET}")
             failure_count += 1
 
@@ -415,22 +415,22 @@ def main():
     os.system('cls' if os.name == 'nt' else 'clear')
 
     print()
-    print(c.box_header("NETTOYAGE DU DOSSIER TEMPORAIRE (v2.0)"))
+    print(c.box_header(_("NETTOYAGE DU DOSSIER TEMPORAIRE (v2.0)")))
     print()
 
     # Demander le chemin du plugin (ou utiliser celui fourni)
     plugin_path = input_plugin_path(default_plugin)
 
     if not plugin_path:
-        print(c.error("Opération annulée."))
-        input(f"\n{c.DIM}Appuyez sur ENTRÉE pour quitter...{c.RESET}")
+        print(c.error(_("Opération annulée.")))
+        input(_("\n{var0}Appuyez sur ENTRÉE pour quitter...{var1}").format(var0=c.DIM, var1=c.RESET))
         sys.exit(1)
 
     # Afficher les informations sur le dossier temporaire
     temp_dir_path = show_temp_dir_info(plugin_path)
 
     if not temp_dir_path:
-        input(f"\n{c.DIM}Appuyez sur ENTRÉE pour quitter...{c.RESET}")
+        input(_("\n{var0}Appuyez sur ENTRÉE pour quitter...{var1}").format(var0=c.DIM, var1=c.RESET))
         sys.exit(0)
 
     # Demander le mode de suppression
@@ -438,20 +438,20 @@ def main():
 
     if mode == "cancel":
         print()
-        print(c.success("Opération annulée."))
-        input(f"\n{c.DIM}Appuyez sur ENTRÉE pour quitter...{c.RESET}")
+        print(c.success(_("Opération annulée.")))
+        input(_("\n{var0}Appuyez sur ENTRÉE pour quitter...{var1}").format(var0=c.DIM, var1=c.RESET))
         sys.exit(0)
 
     # Demander confirmation
     target_display = temp_dir_path if mode == "all" else "backups"
     if not confirm_deletion(mode, target_display, paths_to_delete):
-        input(f"\n{c.DIM}Appuyez sur ENTRÉE pour quitter...{c.RESET}")
+        input(_("\n{var0}Appuyez sur ENTRÉE pour quitter...{var1}").format(var0=c.DIM, var1=c.RESET))
         sys.exit(0)
 
     # Supprimer
     print()
     print(c.separator("=", 60))
-    print(c.title("NETTOYAGE EN COURS"))
+    print(c.title(_("NETTOYAGE EN COURS")))
     print(c.separator("=", 60))
     print()
 
@@ -468,20 +468,20 @@ def main():
     # Résumé
     print()
     print(c.separator("=", 60))
-    print(c.title("RÉSUMÉ"))
+    print(c.title(_("RÉSUMÉ")))
     print(c.separator("=", 60))
 
     if failure_count == 0:
-        print(c.success(f"{success_count} élément(s) supprimé(s) avec succès!"))
+        print(c.success(_("{success_count} élément(s) supprimé(s) avec succès!").format(success_count=success_count)))
         if mode == "backups":
             print()
-            print(c.info("Les autres fichiers du dossier temporaire ont été conservés."))
+            print(c.info(_("Les autres fichiers du dossier temporaire ont été conservés.")))
     else:
-        print(f"{c.OK}Succès{c.RESET}: {c.VALUE}{success_count}{c.RESET}")
-        print(f"{c.ERROR}Échecs{c.RESET}: {c.VALUE}{failure_count}{c.RESET}")
+        print(_("{var0}Succès{var1}: {var2}{success_count}{var4}").format(var0=c.OK, var1=c.RESET, var2=c.VALUE, success_count=success_count, var4=c.RESET))
+        print(_("{var0}Échecs{var1}: {var2}{failure_count}{var4}").format(var0=c.ERROR, var1=c.RESET, var2=c.VALUE, failure_count=failure_count, var4=c.RESET))
         print()
-        print(c.warning("Certains fichiers n'ont pas pu être supprimés."))
-        print("         Fermez tous les programmes qui utilisent ces fichiers.")
+        print(c.warning(_("Certains fichiers n'ont pas pu être supprimés.")))
+        print(_("         Fermez tous les programmes qui utilisent ces fichiers."))
 
     sys.exit(0 if failure_count == 0 else 1)
 

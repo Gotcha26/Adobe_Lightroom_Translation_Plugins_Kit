@@ -134,12 +134,12 @@ def menu_autosync(plugin_path: str):
     clear_screen()
     print_header()
 
-    print(f"\n{c.TITLE}  AUTO-SYNC - Orchestration complète{c.RESET}")
+    print(_("\n{var0}  AUTO-SYNC - Orchestration complète{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     # Vérifier le plugin
     if not plugin_path or not os.path.isdir(plugin_path):
-        print(c.error("Plugin non configuré ou introuvable."))
+        print(c.error(_("Plugin non configuré ou introuvable.")))
         return
 
     # Trouver les fichiers de traduction existants
@@ -148,36 +148,36 @@ def menu_autosync(plugin_path: str):
     if not translation_files:
         print(c.warning("Aucun fichier TranslatedStrings_xx.txt trouvé dans le plugin."))
         print()
-        print(f"{c.INFO}Première installation ?{c.RESET}")
-        print("  → Utilisez la commande INSTALL pour installer les fichiers depuis l'extraction")
+        print(_("{var0}Première installation ?{var1}").format(var0=c.INFO, var1=c.RESET))
+        print(_("  → Utilisez la commande INSTALL pour installer les fichiers depuis l'extraction"))
         return
 
-    print(f"\n{c.INFO}[INFO]{c.RESET} Fichiers de traduction détectés:")
+    print(_("\n{var0}[INFO]{var1} Fichiers de traduction détectés:").format(var0=c.INFO, var1=c.RESET))
     for f in translation_files:
         filename = os.path.basename(f)
         print(f"  - {c.VALUE}{filename}{c.RESET}")
     print()
 
-    print(f"{c.INFO}Workflow:{c.RESET}")
-    print(f"  1. {c.VALUE}EXTRACTOR{c.RESET}  → extrait clés depuis code Lua")
-    print(f"  2. {c.VALUE}APPLICATOR{c.RESET} → applique les remplacements dans le code")
-    print(f"  3. {c.VALUE}COMPARE{c.RESET}    → génère " + get_update_filename() + "")
-    print(f"  4. {c.VALUE}EXTRACT{c.RESET}    → génère fichiers TRANSLATE_xx.txt")
-    print(f"  5. {c.VALUE}INJECT{c.RESET}     → applique les traductions complétées")
-    print(f"  6. {c.VALUE}SYNC{c.RESET}       → synchronise avec la référence EN")
+    print(_("{var0}Workflow:{var1}").format(var0=c.INFO, var1=c.RESET))
+    print(_("  1. {var0}EXTRACTOR{var1}  → extrait clés depuis code Lua").format(var0=c.VALUE, var1=c.RESET))
+    print(_("  2. {var0}APPLICATOR{var1} → applique les remplacements dans le code").format(var0=c.VALUE, var1=c.RESET))
+    print(_("  3. {var0}COMPARE{var1}    → génère ").format(var0=c.VALUE, var1=c.RESET) + get_update_filename() + "")
+    print(_("  4. {var0}EXTRACT{var1}    → génère fichiers TRANSLATE_xx.txt").format(var0=c.VALUE, var1=c.RESET))
+    print(_("  5. {var0}INJECT{var1}     → applique les traductions complétées").format(var0=c.VALUE, var1=c.RESET))
+    print(_("  6. {var0}SYNC{var1}       → synchronise avec la référence EN").format(var0=c.VALUE, var1=c.RESET))
     print()
 
     # Demander confirmation
-    choice = input(f"{c.PROMPT}Lancer le workflow complet? (O/n): {c.RESET}").strip().lower()
+    choice = input(_("{var0}Lancer le workflow complet? (O/n): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
 
     if choice in ['n', 'non', 'no']:
-        print(c.warning("Workflow annulé"))
+        print(c.warning(_("Workflow annulé")))
         return
 
     # Exécuter le workflow
     print()
     print(c.separator())
-    print(f"{c.TITLE}Exécution du workflow...{c.RESET}")
+    print(_("{var0}Exécution du workflow...{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     results = run_autosync(plugin_path)
@@ -211,7 +211,7 @@ def run_autosync(plugin_path: str) -> Dict:
     }
 
     if not plugin_path or not os.path.isdir(plugin_path):
-        results['errors'].append("Chemin du plugin invalide")
+        results['errors'].append(_("Chemin du plugin invalide"))
         return results
 
     # Créer le dossier de sortie pour les rapports/artefacts
@@ -227,7 +227,7 @@ def run_autosync(plugin_path: str) -> Dict:
 
     # SAUVEGARDE CRITIQUE: Copier le fichier EN actuel du plugin AVANT toute modification
     # Ce fichier servira de référence "ANCIEN" pour COMPARE
-    original_en_path = os.path.join(plugin_path, "" + get_reference_filename() + "")
+    original_en_path = os.path.join(plugin_path, "_(" + get_reference_filename() + ")")
     saved_old_en_path = None
     if os.path.isfile(original_en_path):
         saved_old_en_path = os.path.join(output_dir, "_original_" + get_reference_filename() + "")
@@ -236,8 +236,8 @@ def run_autosync(plugin_path: str) -> Dict:
     # =========================================================================
     # ETAPE 1: EXTRACTOR (extrait clés depuis code Lua)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 1/6 | EXTRACTOR]{c.RESET} Extraction des clés depuis le code Lua")
-    print(f"{c.DIM}  → Extraction fraîche pour comparer AVANT vs MAINTENANT{c.RESET}")
+    print(_("\n{var0}[Étape 1/6 | EXTRACTOR]{var1} Extraction des clés depuis le code Lua").format(var0=c.INFO, var1=c.RESET))
+    print(_("{var0}  → Extraction fraîche pour comparer AVANT vs MAINTENANT{var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
         # Lancer Extractor avec paramètres par défaut
@@ -255,11 +255,11 @@ def run_autosync(plugin_path: str) -> Dict:
         # Récupérer la dernière extraction
         latest_extraction = find_latest_tool_output(plugin_path, "Extractor")
         if not latest_extraction:
-            raise RuntimeError("Extraction échouée - aucun répertoire généré")
+            raise RuntimeError(_("Extraction échouée - aucun répertoire généré"))
 
-        new_en_path = os.path.join(latest_extraction, "" + get_reference_filename() + "")
+        new_en_path = os.path.join(latest_extraction, "_(" + get_reference_filename() + ")")
         if not os.path.isfile(new_en_path):
-            raise RuntimeError("" + get_reference_filename() + " non généré par Extractor")
+            raise RuntimeError("_(" + get_reference_filename() + ") non généré par Extractor")
 
         results['extractor']['output_dir'] = latest_extraction
         results['extractor']['en_file'] = new_en_path
@@ -267,18 +267,18 @@ def run_autosync(plugin_path: str) -> Dict:
         # Afficher le chemin court
         plugin_name = os.path.basename(plugin_path)
         rel_path = os.path.relpath(latest_extraction, plugin_path).replace('\\', '/')
-        print(f"{c.DIM}  Détails  : {c.VALUE}{plugin_name}/{rel_path}{c.RESET}")
+        print(_("{var0}  Détails  : {var1}{plugin_name}/{rel_path}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_path=rel_path, var4=c.RESET))
 
     except Exception as e:
-        print(c.error(f"ERREUR: {e}"))
-        results['errors'].append(f"Extractor: {e}")
+        print(c.error(_("ERREUR: {e}").format(e=e)))
+        results['errors'].append(_("Extractor: {e}").format(e=e))
         return results
 
     # =========================================================================
     # ETAPE 2: APPLICATOR (applique les remplacements dans le code Lua)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 2/6 | APPLICATOR]{c.RESET} Application des remplacements LOC")
-    print(f"{c.DIM}  → Remplacement des chaînes hardcodées par les clés LOC{c.RESET}")
+    print(_("\n{var0}[Étape 2/6 | APPLICATOR]{var1} Application des remplacements LOC").format(var0=c.INFO, var1=c.RESET))
+    print(_("{var0}  → Remplacement des chaînes hardcodées par les clés LOC{var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
         # Lancer Applicator avec le répertoire d'extraction
@@ -292,20 +292,20 @@ def run_autosync(plugin_path: str) -> Dict:
         )
 
         if not success:
-            raise RuntimeError("Applicator a échoué")
+            raise RuntimeError(_("Applicator a échoué"))
 
         results['applicator']['success'] = True
-        print(f"{c.DIM}  Remplacements appliqués au code source{c.RESET}")
+        print(_("{var0}  Remplacements appliqués au code source{var1}").format(var0=c.DIM, var1=c.RESET))
 
     except Exception as e:
-        print(c.error(f"ERREUR: {e}"))
-        results['errors'].append(f"Applicator: {e}")
+        print(c.error(_("ERREUR: {e}").format(e=e)))
+        results['errors'].append(_("Applicator: {e}").format(e=e))
         return results
 
     # =========================================================================
     # ETAPE 3: COMPARE (ancien EN du plugin vs nouveau EN d'Extractor)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 3/6 | COMPARE]{c.RESET} Comparaison ANCIEN vs NOUVEAU")
+    print(_("\n{var0}[Étape 3/6 | COMPARE]{var1} Comparaison ANCIEN vs NOUVEAU").format(var0=c.INFO, var1=c.RESET))
 
     compare_dir = os.path.join(output_dir, "compare")
     os.makedirs(compare_dir, exist_ok=True)
@@ -316,7 +316,7 @@ def run_autosync(plugin_path: str) -> Dict:
             old_en_path = saved_old_en_path
         else:
             # Si l'ancien n'existe pas, c'est la première fois
-            print(f"  {c.WARNING}Première installation - ancien EN non trouvé{c.RESET}")
+            print(_("  {var0}Première installation - ancien EN non trouvé{var1}").format(var0=c.WARNING, var1=c.RESET))
             old_en_path = results['extractor']['en_file']  # Comparer avec lui-même
 
         # Nouveau EN = celui généré par Extractor
@@ -333,7 +333,7 @@ def run_autosync(plugin_path: str) -> Dict:
 
         # Charger le JSON pour obtenir le summary
         import json
-        update_json_path = os.path.join(compare_dir, '" + get_update_filename() + "')
+        update_json_path = os.path.join(compare_dir, '_(" + get_update_filename() + ")')
         if os.path.isfile(update_json_path):
             with open(update_json_path, 'r', encoding='utf-8') as f:
                 update_data = json.load(f)
@@ -346,27 +346,27 @@ def run_autosync(plugin_path: str) -> Dict:
                 plugin_name = os.path.basename(plugin_path)
                 old_short = os.path.basename(old_en_path)
                 new_rel = os.path.relpath(new_en_path, plugin_path).replace('\\', '/')
-                print(f"{c.DIM}  Ancien      : {c.VALUE}{old_short}{c.RESET}")
-                print(f"{c.DIM}  Nouveau     : {c.VALUE}{plugin_name}/{new_rel}{c.RESET}")
+                print(_("{var0}  Ancien      : {var1}{old_short}{var3}").format(var0=c.DIM, var1=c.VALUE, old_short=old_short, var3=c.RESET))
+                print(_("{var0}  Nouveau     : {var1}{plugin_name}/{new_rel}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, new_rel=new_rel, var4=c.RESET))
 
                 # Afficher résumé des changements
                 if added or changed or deleted:
-                    print(f"{c.DIM}  Changements : {c.GREEN}{added} ajoutées{c.RESET}, "
-                          f"{c.YELLOW}{changed} modifiées{c.RESET}, {c.RED}{deleted} supprimées{c.RESET}")
+                    print(_("{var0}  Changements : {var1}{added} ajoutées{var3}, ").format(var0=c.DIM, var1=c.GREEN, added=added, var3=c.RESET)
+                          _("{var0}{changed} modifiées{var2}, {var3}{deleted} supprimées{var5}").format(var0=c.YELLOW, changed=changed, var2=c.RESET, var3=c.RED, deleted=deleted, var5=c.RESET))
 
                 rel_compare = os.path.relpath(compare_dir, plugin_path).replace('\\', '/')
-                print(f"{c.DIM}  Détails     : {c.VALUE}{plugin_name}/{rel_compare}{c.RESET}")
+                print(_("{var0}  Détails     : {var1}{plugin_name}/{rel_compare}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_compare=rel_compare, var4=c.RESET))
 
     except Exception as e:
-        print(c.error(f"ERREUR: {e}"))
-        results['errors'].append(f"Compare: {e}")
+        print(c.error(_("ERREUR: {e}").format(e=e)))
+        results['errors'].append(_("Compare: {e}").format(e=e))
         return results
 
     # =========================================================================
     # ETAPE 4: EXTRACT (génère TRANSLATE_xx.txt)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 4/6 | EXTRACT]{c.RESET} Extraction des clés modifiées")
-    print(f"{c.DIM}  → Sélection uniquement des changements détectés{c.RESET}")
+    print(_("\n{var0}[Étape 4/6 | EXTRACT]{var1} Extraction des clés modifiées").format(var0=c.INFO, var1=c.RESET))
+    print(_("{var0}  → Sélection uniquement des changements détectés{var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
         # Charger les fichiers de langue existants
@@ -374,13 +374,13 @@ def run_autosync(plugin_path: str) -> Dict:
         lang_codes = set()
         for tf in translation_files:
             filename = os.path.basename(tf)
-            if filename != "" + get_reference_filename() + "":
+            if filename != "_(" + get_reference_filename() + ")":
                 lang_code = filename.replace("TranslatedStrings_", "").replace(".txt", "")
                 lang_codes.add(lang_code)
 
         if not lang_codes:
-            print(c.warning("Aucune langue trouvée dans le plugin"))
-            results['errors'].append("Aucun fichier de traduction trouvé")
+            print(c.warning(_("Aucune langue trouvée dans le plugin")))
+            results['errors'].append(_("Aucun fichier de traduction trouvé"))
             return results
 
         # Extraire pour chaque langue
@@ -397,24 +397,24 @@ def run_autosync(plugin_path: str) -> Dict:
                 )
                 results['extract'][lang_code] = translate_file
             except Exception as e:
-                print(c.error(f"  ERREUR {lang_code}: {e}"))
-                results['errors'].append(f"Extract {lang_code}: {e}")
+                print(c.error(_("  ERREUR {lang_code}: {e}").format(lang_code=lang_code, e=e)))
+                results['errors'].append(_("Extract {lang_code}: {e}").format(lang_code=lang_code, e=e))
 
         # Afficher le chemin
         plugin_name = os.path.basename(plugin_path)
         rel_extract = os.path.relpath(extract_dir, plugin_path).replace('\\', '/')
-        print(f"{c.DIM}  Détails     : {c.VALUE}{plugin_name}/{rel_extract}{c.RESET}")
+        print(_("{var0}  Détails     : {var1}{plugin_name}/{rel_extract}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_extract=rel_extract, var4=c.RESET))
 
     except Exception as e:
-        print(c.error(f"Erreur extraction: {e}"))
-        results['errors'].append(f"Extract: {e}")
+        print(c.error(_("Erreur extraction: {e}").format(e=e)))
+        results['errors'].append(_("Extract: {e}").format(e=e))
         return results
 
     # =========================================================================
     # ETAPE 5: INJECT (applique traductions au plugin)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 5/6 | INJECT]{c.RESET} Injection des traductions")
-    print(f"{c.DIM}  → Mise à jour des fichiers de traduction{c.RESET}")
+    print(_("\n{var0}[Étape 5/6 | INJECT]{var1} Injection des traductions").format(var0=c.INFO, var1=c.RESET))
+    print(_("{var0}  → Mise à jour des fichiers de traduction{var1}").format(var0=c.DIM, var1=c.RESET))
 
     translate_files = []
     if extract_dir and os.path.isdir(extract_dir):
@@ -425,7 +425,7 @@ def run_autosync(plugin_path: str) -> Dict:
         for lang_code, translate_file in translate_files:
             try:
                 # Cibler directement le fichier du plugin
-                plugin_target = os.path.join(plugin_path, f"TranslatedStrings_{lang_code}.txt")
+                plugin_target = os.path.join(plugin_path, _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code))
 
                 # Injecter directement (crée le fichier s'il n'existe pas)
                 inject_result = run_inject(
@@ -438,21 +438,21 @@ def run_autosync(plugin_path: str) -> Dict:
                 results['inject'][lang_code] = inject_result
                 total_injected += inject_result.get('injected', 0)
             except Exception as e:
-                print(c.error(f"  ERREUR {lang_code}: {e}"))
-                results['errors'].append(f"Inject {lang_code}: {e}")
+                print(c.error(_("  ERREUR {lang_code}: {e}").format(lang_code=lang_code, e=e)))
+                results['errors'].append(_("Inject {lang_code}: {e}").format(lang_code=lang_code, e=e))
 
         if total_injected > 0:
-            print(f"{c.DIM}  {c.GREEN}{total_injected}{c.RESET} traduction(s) injectée(s)")
+            print(_("{var0}  {var1}{total_injected}{var3} traduction(s) injectée(s)").format(var0=c.DIM, var1=c.GREEN, total_injected=total_injected, var3=c.RESET))
         else:
-            print(f"{c.DIM}  Aucune nouvelle traduction à injecter{c.RESET}")
+            print(_("{var0}  Aucune nouvelle traduction à injecter{var1}").format(var0=c.DIM, var1=c.RESET))
     else:
-        print(f"{c.DIM}  Aucune modification détectée{c.RESET}")
+        print(_("{var0}  Aucune modification détectée{var1}").format(var0=c.DIM, var1=c.RESET))
 
     # =========================================================================
     # ETAPE 6: SYNC (synchronise directement dans le plugin, SANS marqueurs)
     # =========================================================================
-    print(f"\n{c.INFO}[Étape 6/6 | SYNC]{c.RESET} Synchronisation finale")
-    print(f"{c.DIM}  → Alignement avec la référence EN (sans marqueurs){c.RESET}")
+    print(_("\n{var0}[Étape 6/6 | SYNC]{var1} Synchronisation finale").format(var0=c.INFO, var1=c.RESET))
+    print(_("{var0}  → Alignement avec la référence EN (sans marqueurs){var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
         # Utiliser le nouveau EN généré par Extractor comme référence
@@ -462,23 +462,23 @@ def run_autosync(plugin_path: str) -> Dict:
         sync_results = run_sync(
             reference_path=ref_en_path,
             locales_dir=plugin_path,
-            update_dir=compare_dir,  # Utilise " + get_update_filename() + " pour détecter suppressions
+            update_dir=compare_dir,  # Utilise _(" + get_update_filename() + ") pour détecter suppressions
             backup_dir=backup_dir  # Centraliser les backups
         )
 
         # Nettoyer les marqueurs des fichiers finaux
         translation_files = find_all_translation_files(plugin_path)
         for tf in translation_files:
-            if os.path.basename(tf) != "" + get_reference_filename() + "":
+            if os.path.basename(tf) != "_(" + get_reference_filename() + ")":
                 clean_markers_from_file(tf)
 
         for lang_code, sync_stats in sync_results.items():
             added = sync_stats.get('added', 0)
             modified = sync_stats.get('needs_review', 0)
             removed = sync_stats.get('removed', 0)
-            print(f"{c.DIM}  {lang_code}: {c.GREEN}{added}{c.RESET} ajoutées, "
-                  f"{c.YELLOW}{modified}{c.RESET} modifiées, "
-                  f"{c.RED}{removed}{c.RESET} supprimées")
+            print(_("{var0}  {lang_code}: {var2}{added}{var4} ajoutées, ").format(var0=c.DIM, lang_code=lang_code, var2=c.GREEN, added=added, var4=c.RESET)
+                  _("{var0}{modified}{var2} modifiées, ").format(var0=c.YELLOW, modified=modified, var2=c.RESET)
+                  _("{var0}{removed}{var2} supprimées").format(var0=c.RED, removed=removed, var2=c.RESET))
             results['sync'][lang_code] = sync_stats
 
         # Afficher le lien vers CHANGELOG
@@ -486,21 +486,21 @@ def run_autosync(plugin_path: str) -> Dict:
         changelog_path = os.path.join(compare_dir, 'CHANGELOG.txt')
         if os.path.isfile(changelog_path):
             rel_changelog = os.path.relpath(changelog_path, plugin_path).replace('\\', '/')
-            print(f"{c.DIM}  Détails     : {c.VALUE}{plugin_name}/{rel_changelog}{c.RESET}")
+            print(_("{var0}  Détails     : {var1}{plugin_name}/{rel_changelog}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_changelog=rel_changelog, var4=c.RESET))
 
     except Exception as e:
-        print(c.error(f"Erreur sync: {e}"))
-        results['errors'].append(f"Sync: {e}")
+        print(c.error(_("Erreur sync: {e}").format(e=e)))
+        results['errors'].append(_("Sync: {e}").format(e=e))
         return results
 
     # =========================================================================
     # ETAPE FINALE: Copier le nouveau " + get_reference_filename() + " vers le plugin
     # =========================================================================
-    print(f"\n{c.INFO}[Finalisation]{c.RESET} Mise à jour du fichier EN")
+    print(_("\n{var0}[Finalisation]{var1} Mise à jour du fichier EN").format(var0=c.INFO, var1=c.RESET))
 
     try:
         new_en_source = results['extractor']['en_file']
-        new_en_target = os.path.join(plugin_path, "" + get_reference_filename() + "")
+        new_en_target = os.path.join(plugin_path, "_(" + get_reference_filename() + ")")
 
         # Backup de l'ancien si existe
         if os.path.isfile(new_en_target):
@@ -511,19 +511,19 @@ def run_autosync(plugin_path: str) -> Dict:
                 shutil.copy2(new_en_target, backup_path)
                 plugin_name = os.path.basename(plugin_path)
                 rel_backup = os.path.relpath(backup_dir, plugin_path).replace('\\', '/')
-                print(f"{c.DIM}  Backup      : {c.VALUE}{plugin_name}/{rel_backup}/{os.path.basename(backup_path)}{c.RESET}")
+                print(_("{var0}  Backup      : {var1}{plugin_name}/{rel_backup}/{var4}{var5}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_backup=rel_backup, var4=os.path.basename(backup_path), var5=c.RESET))
             else:
                 backup_path = new_en_target + ".bak"
                 shutil.copy2(new_en_target, backup_path)
-                print(f"{c.DIM}  Backup      : {c.VALUE}{os.path.basename(backup_path)}{c.RESET}")
+                print(_("{var0}  Backup      : {var1}{var2}{var3}").format(var0=c.DIM, var1=c.VALUE, var2=os.path.basename(backup_path), var3=c.RESET))
 
         # Copier le nouveau
         shutil.copy2(new_en_source, new_en_target)
         print(f"{c.DIM}  " + get_reference_filename() + " → mis à jour{c.RESET}")
 
     except Exception as e:
-        print(c.error(f"ERREUR copie EN: {e}"))
-        results['errors'].append(f"Copy EN: {e}")
+        print(c.error(_("ERREUR copie EN: {e}").format(e=e)))
+        results['errors'].append(_("Copy EN: {e}").format(e=e))
 
     return results
 
@@ -535,12 +535,12 @@ def print_autosync_report(results: Dict, plugin_path: str):
 
     # Erreurs
     if results['errors']:
-        print(f"{c.ERROR}[ERREUR]{c.RESET} Workflow interrompu")
+        print(_("{var0}[ERREUR]{var1} Workflow interrompu").format(var0=c.ERROR, var1=c.RESET))
         for error in results['errors']:
             print(f"  {c.ERROR}→{c.RESET} {error}")
     else:
-        print(f"{c.SUCCESS}[OK]{c.RESET} Workflow complet sans erreur")
+        print(_("{var0}[OK]{var1} Workflow complet sans erreur").format(var0=c.SUCCESS, var1=c.RESET))
 
     # Statut final
     if results['sync'] and not results['errors']:
-        print(f"\n{c.DIM}Tous les fichiers TranslatedStrings_xx.txt à la racine plugin sont à jour.{c.RESET}")
+        print(_("\n{var0}Tous les fichiers TranslatedStrings_xx.txt à la racine plugin sont à jour.{var1}").format(var0=c.DIM, var1=c.RESET))

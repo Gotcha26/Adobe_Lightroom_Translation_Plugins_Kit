@@ -6,7 +6,7 @@ Dépendances : core.paths, core.colors, core.i18n, .menu
 
 Description :
 Script d'application des localisations aux plugins Lightroom. Remplace les chaînes
-en anglais hardcodées par des appels LOC au format "$$$/Key=Default Value" en
+en anglais hardcodées par des appels LOC au format _("$$$/Key=Default Value") en
 utilisant les fichiers générés par Extractor. Supporte le mode interactif (menu)
 et le mode CLI avec arguments.
 
@@ -111,21 +111,21 @@ class LocalizationReport:
     def generate(self, output_path: str):
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
-            f.write("RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n")
+            f.write(_("RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n"))
             f.write("=" * 80 + "\n\n")
 
-            f.write("STATISTIQUES GLOBALES\n")
+            f.write(_("STATISTIQUES GLOBALES\n"))
             f.write("-" * 80 + "\n")
-            f.write(f"Fichiers traites        : {self.stats['files_processed']}\n")
-            f.write(f"Fichiers modifies       : {self.stats['files_modified']}\n")
-            f.write(f"Lignes modifiees        : {self.stats['total_replacements']}\n")
-            f.write(f"Chaines remplacees      : {self.stats['strings_replaced']}\n")
-            f.write(f"Chaines ignorees        : {len(self.skipped)}\n")
-            f.write(f"Erreurs                 : {len(self.errors)}\n\n")
+            f.write(_("Fichiers traites        : {var0}\n").format(var0=self.stats['files_processed']))
+            f.write(_("Fichiers modifies       : {var0}\n").format(var0=self.stats['files_modified']))
+            f.write(_("Lignes modifiees        : {var0}\n").format(var0=self.stats['total_replacements']))
+            f.write(_("Chaines remplacees      : {var0}\n").format(var0=self.stats['strings_replaced']))
+            f.write(_("Chaines ignorees        : {var0}\n").format(var0=len(self.skipped)))
+            f.write(_("Erreurs                 : {var0}\n\n").format(var0=len(self.errors)))
 
             if self.changes:
                 f.write("\n" + "=" * 80 + "\n")
-                f.write("MODIFICATIONS EFFECTUEES\n")
+                f.write(_("MODIFICATIONS EFFECTUEES\n"))
                 f.write("=" * 80 + "\n\n")
 
                 current_file = None
@@ -133,42 +133,42 @@ class LocalizationReport:
                     if change['file'] != current_file:
                         current_file = change['file']
                         f.write(f"\n{'-' * 80}\n")
-                        f.write(f"Fichier: {change['file']}\n")
+                        f.write(_("Fichier: {var0}\n").format(var0=change['file']))
                         f.write(f"{'-' * 80}\n\n")
 
-                    f.write(f"  Ligne {change['line']}:\n")
-                    f.write(f"  AVANT : {change['before']}\n")
-                    f.write(f"  APRES : {change['after']}\n")
+                    f.write(_("  Ligne {var0}:\n").format(var0=change['line']))
+                    f.write(_("  AVANT : {var0}\n").format(var0=change['before']))
+                    f.write(_("  APRES : {var0}\n").format(var0=change['after']))
                     for member in change['members']:
                         f.write(f"    - \"{member['original_text']}\" -> {member['loc_key']}\n")
                     f.write("\n")
 
             if self.skipped:
                 f.write("\n" + "=" * 80 + "\n")
-                f.write("CHAINES IGNOREES\n")
+                f.write(_("CHAINES IGNOREES\n"))
                 f.write("=" * 80 + "\n\n")
 
                 for skip in self.skipped:
                     f.write(f"  {skip['file']}:{skip['line']}\n")
-                    f.write(f"    Raison: {skip['reason']}\n")
-                    f.write(f"    Contenu: {skip['content']}\n\n")
+                    f.write(_("    Raison: {var0}\n").format(var0=skip['reason']))
+                    f.write(_("    Contenu: {var0}\n\n").format(var0=skip['content']))
 
             if self.errors:
                 f.write("\n" + "=" * 80 + "\n")
-                f.write("ERREURS\n")
+                f.write(_("ERREURS\n"))
                 f.write("=" * 80 + "\n\n")
 
                 for err in self.errors:
                     f.write(f"  {err['file']}:{err['line']}\n")
-                    f.write(f"    Erreur: {err['error']}\n\n")
+                    f.write(_("    Erreur: {var0}\n\n").format(var0=err['error']))
 
             f.write("\n" + "=" * 80 + "\n")
-            f.write("RECOMMANDATIONS POST-TRAITEMENT\n")
+            f.write(_("RECOMMANDATIONS POST-TRAITEMENT\n"))
             f.write("=" * 80 + "\n\n")
-            f.write("1. Verifier les modifications avec Git diff\n")
-            f.write("2. REDEMARRER Lightroom Classic (reload ne suffit pas)\n")
+            f.write(_("1. Verifier les modifications avec Git diff\n"))
+            f.write(_("2. REDEMARRER Lightroom Classic (reload ne suffit pas)\n"))
             f.write("3. Verifier que TranslatedStrings_fr.txt existe a la racine\n")
-            f.write("4. Tester les textes dans l'interface\n\n")
+            f.write(_("4. Tester les textes dans l'interface\n\n"))
 
 
 def load_replacements_json(extraction_dir: str) -> Optional[Dict]:
@@ -199,7 +199,7 @@ def build_loc_call(member: Dict) -> str:
     """
     Construit l'appel LOC pour un membre.
 
-    Format SDK Lightroom: LOC "$$$/Key=Default Value"
+    Format SDK Lightroom: LOC _("$$$/Key=Default Value")
     """
     loc_key = member['loc_key']
     base_text = member['base_text']
@@ -211,7 +211,7 @@ def build_loc_call(member: Dict) -> str:
 
     # Espaces en debut
     if leading_spaces > 0:
-        parts.append('"' + ' ' * leading_spaces + '" .. ')
+        parts.append('_("' + ' ' * leading_spaces + '") .. ')
 
     # Appel LOC avec valeur par defaut
     parts.append(f'LOC "{loc_key}={base_text}"')
@@ -220,7 +220,7 @@ def build_loc_call(member: Dict) -> str:
     if suffix:
         parts.append(f' .. "{suffix}"')
     elif trailing_spaces > 0:
-        parts.append(' .. "' + ' ' * trailing_spaces + '"')
+        parts.append(' .. _("' + ' ' * trailing_spaces + '")')
 
     return ''.join(parts)
 
@@ -262,7 +262,7 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
         # Verifier que cette chaine n'est pas deja dans un LOC
         # Chercher "LOC" avant la position
         before_context = result[max(0, pos-20):pos]
-        if 'LOC ' in before_context or 'LOC"' in before_context or "LOC'" in before_context:
+        if 'LOC ' in before_context or 'LOC_("' in before_context or ")LOC'" in before_context:
             continue  # Deja localisee
 
         # Construire le remplacement
@@ -284,7 +284,7 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
     Retourne le nombre de remplacements effectues.
     """
     if not os.path.exists(file_path):
-        report.add_error(file_path, 0, "Fichier introuvable")
+        report.add_error(file_path, 0, _("Fichier introuvable"))
         return 0
 
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -329,7 +329,7 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 else:
                     # Pas de modification possible
                     report.add_skip(file_path, line_num,
-                                   "Chaine non trouvee ou deja localisee",
+                                   _("Chaine non trouvee ou deja localisee"),
                                    line)
                     new_lines.append(line)
         else:
@@ -422,14 +422,14 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         else:
             if not silent:
                 print(_("  ! Fichier introuvable: {file}").format(file=file_rel_path))
-            report.add_error(file_rel_path, 0, "Fichier introuvable")
+            report.add_error(file_rel_path, 0, _("Fichier introuvable"))
 
     # Generer le rapport dans le dossier Applicator
     report_path = os.path.join(applicator_output, "application_report.txt")
     report.generate(report_path)
 
     if not silent:
-        print("\n" + c.separator("─", 70))
+        print(_("\n_(") + c.separator(")─", 70))
         print(c.header(_("RÉSUMÉ")))
         print(c.separator("─", 70))
         print(c.config_line(_("Fichiers traités"),    str(report.stats['files_processed'])))
@@ -444,9 +444,9 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print(c.config_line(_("Rapport détaillé"),    _shorten(report_path, plugin_path)))
 
         if dry_run:
-            print("\n" + c.warning(_("MODE DRY-RUN: Aucun fichier n'a été modifié")))
+            print(_("\n_(") + c.warning(_(")MODE DRY-RUN: Aucun fichier n'a été modifié")))
 
-        print("\n" + c.separator("═", 70))
+        print(_("\n_(") + c.separator(")═", 70))
         print(c.warning(_("IMPORTANT: Redémarrez Lightroom après les modifications!")))
         print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
         print(c.separator("═", 70))
@@ -500,7 +500,7 @@ def _launch_autosync(plugin_path: str) -> None:
     """Lance run_autosync() depuis tools.translator.autosync."""
     try:
         from tools.translator.autosync import run_autosync
-        print("\n" + c.info(_("Lancement de AUTOSYNC...")))
+        print(_("\n_(") + c.info(_(")Lancement de AUTOSYNC...")))
         run_autosync(plugin_path)
     except ImportError:
         # Fallback : appel via subprocess sur le fichier autosync.py
@@ -510,7 +510,7 @@ def _launch_autosync(plugin_path: str) -> None:
             "autosync.py"
         )
         if os.path.exists(autosync_script):
-            print("\n" + c.info(_("Lancement de AUTOSYNC...")))
+            print(_("\n_(") + c.info(_(")Lancement de AUTOSYNC...")))
             try:
                 subprocess.run(
                     [sys.executable, autosync_script, plugin_path],
@@ -675,7 +675,7 @@ def _select_and_copy_template(plugin_path: str, extraction_dir: Optional[str]) -
     """
     templates = find_all_translation_templates(extraction_dir) if extraction_dir else []
 
-    print("\n" + c.separator("─", 70))
+    print(_("\n_(") + c.separator(")─", 70))
     print(c.title(_("Que voulez-vous faire ?")))
     print()
 
@@ -696,7 +696,7 @@ def _select_and_copy_template(plugin_path: str, extraction_dir: Optional[str]) -
             # Extraire les 2 derniers niveaux du chemin (timestamp/nomfichier)
             path_parts = t.replace('\\', '/').split('/')
             if len(path_parts) >= 2:
-                display_path = f"<temp_dir>/{path_parts[-2]}/{path_parts[-1]}"
+                display_path = _("<temp_dir>/{var0}/{var1}").format(var0=path_parts[-2], var1=path_parts[-1])
             else:
                 display_path = os.path.basename(t)
             print(c.menu_option(str(i), display_path))
@@ -742,7 +742,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
       2. Un fichier avec même langue         → mise à jour, proposition de remplacement
       3. Plusieurs langues détectées         → mise à jour manuelle détectée, lancement AUTOSYNC
     """
-    print("\n" + c.separator("─", 70))
+    print(_("\n_(") + c.separator(")─", 70))
     print(c.header(_("GESTION DES TRADUCTIONS")))
     print(c.separator("─", 70))
 
@@ -768,16 +768,16 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
         template_name = os.path.basename(template_file)
 
         print("\n" + _(
-            "Il semble que ce soit votre première installation d'une langue à traduire."))
+            _("Il semble que ce soit votre première installation d'une langue à traduire.")))
         print(_("Utiliseriez-vous le dernier fichier extrait depuis Extractor comme référence ?"))
         print()
         print(_("Il sera alors simplement mis en place à la racine du plugin,\n"
-                "prêt pour de futurs traductions."))
+                _("prêt pour de futurs traductions.")))
         print(_("Rien d'autre à faire si ce n'est d'inciter des contributeurs à\n"
-                "venir enrichir la communauté autour de ce plugin."))
+                _("venir enrichir la communauté autour de ce plugin.")))
         print()
         print(f"  {c.VALUE}{template_name}{c.RESET}"
-              f"  →  <plugin>\\{template_name}")
+              _("  →  <plugin>\\{template_name}").format(template_name=template_name))
         print()
 
         choice = input(c.prompt(
@@ -803,7 +803,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
 
     # --- CAS 3 : Plusieurs langues détectées → AUTOSYNC ---
     if len(existing_langs) > 1:
-        print("\n" + c.warning(_("Plusieurs langues détectées à la racine du plugin :")))
+        print(_("\n_(") + c.warning(_(")Plusieurs langues détectées à la racine du plugin :")))
         for code, f in sorted(existing_langs.items()):
             print(f"  - {c.VALUE}{os.path.basename(f)}{c.RESET}")
         print()
@@ -833,10 +833,10 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
         if choice in ['o', 'oui', 'y', 'yes', '']:
             try:
                 shutil.copy2(template_file, existing_langs[template_lang])
-                print("\n" + c.success(_("Fichier remplacé : {name}").format(name=existing_name)))
+                print(_("\n_(") + c.success(_(")Fichier remplacé : {name}").format(name=existing_name)))
                 _propose_additional_langs(template_file, plugin_path, template_lang)
             except Exception as e:
-                print("\n" + c.error(_("Impossible de remplacer le fichier: {error}").format(error=e)))
+                print(_("\n_(") + c.error(_(")Impossible de remplacer le fichier: {error}").format(error=e)))
         else:
             print(c.info(_("Fichier non remplacé")))
         return
@@ -878,7 +878,7 @@ def main():
     else:
         # Arguments en ligne de commande
         parser = argparse.ArgumentParser(
-            description="Applique les localisations generees par Extractor au plugin",
+            description=_("Applique les localisations generees par Extractor au plugin"),
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Exemples:

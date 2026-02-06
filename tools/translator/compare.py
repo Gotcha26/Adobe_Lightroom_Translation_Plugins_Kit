@@ -164,57 +164,57 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write("=" * 80 + "\n")
-        f.write("CHANGELOG - Modifications des traductions EN\n")
+        f.write(_("CHANGELOG - Modifications des traductions EN\n"))
         f.write("=" * 80 + "\n\n")
 
         f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"Ancien: {old_file}\n")
-        f.write(f"Nouveau: {new_file}\n\n")
+        f.write(_("Ancien: {old_file}\n").format(old_file=old_file))
+        f.write(_("Nouveau: {new_file}\n\n").format(new_file=new_file))
 
         f.write("-" * 80 + "\n")
-        f.write("RÉSUMÉ\n")
+        f.write(_("RÉSUMÉ\n"))
         f.write("-" * 80 + "\n")
-        f.write(f"  Clés ajoutées    : {len(result['added']):4d}  [NEW]\n")
-        f.write(f"  Clés modifiées   : {len(result['changed']):4d}  [CHANGED]\n")
-        f.write(f"  Clés supprimées  : {len(result['deleted']):4d}  [DELETED]\n")
-        f.write(f"  Clés inchangées  : {len(result['unchanged']):4d}\n")
+        f.write(_("  Clés ajoutées    : {var0:4d}  [NEW]\n").format(var0=len(result['added'])))
+        f.write(_("  Clés modifiées   : {var0:4d}  [CHANGED]\n").format(var0=len(result['changed'])))
+        f.write(_("  Clés supprimées  : {var0:4d}  [DELETED]\n").format(var0=len(result['deleted'])))
+        f.write(_("  Clés inchangées  : {var0:4d}\n").format(var0=len(result['unchanged'])))
         f.write("\n")
 
         if result['added']:
             f.write("=" * 80 + "\n")
-            f.write(f"CLÉS AJOUTÉES ({len(result['added'])})\n")
-            f.write("Ces clés doivent être traduites dans toutes les langues.\n")
+            f.write(_("CLÉS AJOUTÉES ({var0})\n").format(var0=len(result['added'])))
+            f.write(_("Ces clés doivent être traduites dans toutes les langues.\n"))
             f.write("=" * 80 + "\n\n")
             for key in sorted(result['added'].keys()):
                 value = result['added'][key]
-                f.write(f"  [NEW] {key}\n")
-                f.write(f"        EN: {value}\n\n")
+                f.write(_("  [NEW] {key}\n").format(key=key))
+                f.write(_("        EN: {value}\n\n").format(value=value))
 
         if result['changed']:
             f.write("=" * 80 + "\n")
-            f.write(f"CLÉS MODIFIÉES ({len(result['changed'])})\n")
-            f.write("Le texte anglais a changé. Les traductions doivent être révisées.\n")
+            f.write(_("CLÉS MODIFIÉES ({var0})\n").format(var0=len(result['changed'])))
+            f.write(_("Le texte anglais a changé. Les traductions doivent être révisées.\n"))
             f.write("=" * 80 + "\n\n")
             for key in sorted(result['changed'].keys()):
                 change = result['changed'][key]
-                f.write(f"  [CHANGED] {key}\n")
-                f.write(f"        AVANT: {change['old']}\n")
-                f.write(f"        APRÈS: {change['new']}\n\n")
+                f.write(_("  [CHANGED] {key}\n").format(key=key))
+                f.write(_("        AVANT: {var0}\n").format(var0=change['old']))
+                f.write(_("        APRÈS: {var0}\n\n").format(var0=change['new']))
 
         if result['deleted']:
             f.write("=" * 80 + "\n")
-            f.write(f"CLÉS SUPPRIMÉES ({len(result['deleted'])})\n")
-            f.write("Ces clés n'existent plus et seront retirées des traductions.\n")
+            f.write(_("CLÉS SUPPRIMÉES ({var0})\n").format(var0=len(result['deleted'])))
+            f.write(_("Ces clés n'existent plus et seront retirées des traductions.\n"))
             f.write("=" * 80 + "\n\n")
             for key in result['deleted']:
-                f.write(f"  [DELETED] {key}\n")
+                f.write(_("  [DELETED] {key}\n").format(key=key))
 
         f.write("\n" + "=" * 80 + "\n")
-        f.write("PROCHAINE ÉTAPE\n")
+        f.write(_("PROCHAINE ÉTAPE\n"))
         f.write("=" * 80 + "\n")
-        f.write("Lancez EXTRACT puis INJECT, ou directement SYNC:\n")
-        f.write(f"  python Translator_main.py extract --update {os.path.dirname(file_path)}\n")
-        f.write(f"  python Translator_main.py sync --update {os.path.dirname(file_path)}\n")
+        f.write(_("Lancez EXTRACT puis INJECT, ou directement SYNC:\n"))
+        f.write(_("  python Translator_main.py extract --update {var0}\n").format(var0=os.path.dirname(file_path)))
+        f.write(_("  python Translator_main.py sync --update {var0}\n").format(var0=os.path.dirname(file_path)))
 
 
 # =============================================================================
@@ -232,25 +232,25 @@ def menu_compare(plugin_path: str = ""):
 
     clear_screen()
     print_header()
-    print(f"\n{c.INFO}COMPARE{c.RESET}: Comparer deux versions EN")
+    print(_("\n{var0}COMPARE{var1}: Comparer deux versions EN").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
 
-    print(f"\n{c.KEY}Fichier ANCIEN{c.RESET} (TranslatedStrings_en.txt ou répertoire):")
+    print(_("\n{var0}Fichier ANCIEN{var1} (TranslatedStrings_en.txt ou répertoire):").format(var0=c.KEY, var1=c.RESET))
     old_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not old_path:
-        print(c.error("Chemin requis."))
-        input("\nAppuyez sur Entrée...")
+        print(c.error(_("Chemin requis.")))
+        input(_("\nAppuyez sur Entrée..."))
         return None
 
-    print(f"\n{c.KEY}Fichier NOUVEAU{c.RESET} (TranslatedStrings_en.txt ou répertoire):")
+    print(_("\n{var0}Fichier NOUVEAU{var1} (TranslatedStrings_en.txt ou répertoire):").format(var0=c.KEY, var1=c.RESET))
     new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not new_path:
-        print(c.error("Chemin requis."))
-        input("\nAppuyez sur Entrée...")
+        print(c.error(_("Chemin requis.")))
+        input(_("\nAppuyez sur Entrée..."))
         return None
 
     try:
-        print(f"\n{c.INFO}[INFO]{c.RESET} Comparaison en cours...")
+        print(_("\n{var0}[INFO]{var1} Comparaison en cours...").format(var0=c.INFO, var1=c.RESET))
 
         # Déterminer le répertoire de sortie
         if plugin_path:
@@ -266,30 +266,30 @@ def menu_compare(plugin_path: str = ""):
 
         summary = result['summary']
         print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
-        print(f"{c.TITLE}  RÉSUMÉ{c.RESET}")
+        print(_("{var0}  RÉSUMÉ{var1}").format(var0=c.TITLE, var1=c.RESET))
         print(f"{c.HEADER}{'=' * 66}{c.RESET}")
-        print(f"  {c.KEY}Clés ajoutées   {c.RESET}: {c.GREEN}{summary['added']:4d}{c.RESET}  {c.DIM}[NEW]{c.RESET}")
-        print(f"  {c.KEY}Clés modifiées  {c.RESET}: {c.YELLOW}{summary['changed']:4d}{c.RESET}  {c.DIM}[CHANGED]{c.RESET}")
-        print(f"  {c.KEY}Clés supprimées {c.RESET}: {c.RED}{summary['deleted']:4d}{c.RESET}  {c.DIM}[DELETED]{c.RESET}")
-        print(f"  {c.KEY}Clés inchangées {c.RESET}: {c.DIM}{summary['unchanged']:4d}{c.RESET}")
+        print(_("  {var0}Clés ajoutées   {var1}: {var2}{var3:4d}{var4}  {var5}[NEW]{var6}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, var3=summary['added'], var4=c.RESET, var5=c.DIM, var6=c.RESET))
+        print(_("  {var0}Clés modifiées  {var1}: {var2}{var3:4d}{var4}  {var5}[CHANGED]{var6}").format(var0=c.KEY, var1=c.RESET, var2=c.YELLOW, var3=summary['changed'], var4=c.RESET, var5=c.DIM, var6=c.RESET))
+        print(_("  {var0}Clés supprimées {var1}: {var2}{var3:4d}{var4}  {var5}[DELETED]{var6}").format(var0=c.KEY, var1=c.RESET, var2=c.RED, var3=summary['deleted'], var4=c.RESET, var5=c.DIM, var6=c.RESET))
+        print(_("  {var0}Clés inchangées {var1}: {var2}{var3:4d}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=summary['unchanged'], var4=c.RESET))
         print()
-        print(c.success(f"Fichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
-        print(f"    {c.DIM}• UPDATE_en.json{c.RESET}")
-        print(f"    {c.DIM}• CHANGELOG.txt{c.RESET}")
-        print(f"    {c.DIM}• TranslatedStrings_en.txt{c.RESET}")
+        print(c.success(_("Fichiers générés dans: {var0}{output_dir}{var2}").format(var0=c.VALUE, output_dir=output_dir, var2=c.RESET)))
+        print(_("    {var0}• UPDATE_en.json{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("    {var0}• CHANGELOG.txt{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("    {var0}• TranslatedStrings_en.txt{var1}").format(var0=c.DIM, var1=c.RESET))
 
         if summary['added'] or summary['changed'] or summary['deleted']:
             print()
-            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
-            print(f"  {c.DIM}• EXTRACT pour générer les fichiers de traduction{c.RESET}")
-            print(f"  {c.DIM}• ou SYNC directement pour utiliser EN par défaut{c.RESET}")
+            print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
+            print(_("  {var0}• EXTRACT pour générer les fichiers de traduction{var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("  {var0}• ou SYNC directement pour utiliser EN par défaut{var1}").format(var0=c.DIM, var1=c.RESET))
 
         return output_dir
 
     except FileNotFoundError as e:
-        print(c.error(f"Fichier non trouvé: {e}"))
+        print(c.error(_("Fichier non trouvé: {e}").format(e=e)))
     except Exception as e:
-        print(c.error(f"Erreur: {e}"))
+        print(c.error(_("Erreur: {e}").format(e=e)))
 
-    input("\nAppuyez sur Entrée pour continuer...")
+    input(_("\nAppuyez sur Entrée pour continuer..."))
     return None

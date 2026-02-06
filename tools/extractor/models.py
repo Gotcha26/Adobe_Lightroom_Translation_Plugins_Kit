@@ -63,7 +63,7 @@ class ExtractedString:
     suggested_key: str          # Clé LOC suggérée (basée sur base_text)
     leading_spaces: int = 0     # Espaces en début
     trailing_spaces: int = 0    # Espaces en fin
-    suffix: str = ""            # Suffixe détecté (" - ", " -", "...")
+    suffix: str = "_("            # Suffixe détecté (") - ", " -", "...")
     replacement_code: str = ""  # Code de remplacement à utiliser
     match_context: str = ""     # Contexte extrait autour du match
     is_concat_member: bool = False  # Fait partie d'une chaîne concaténée

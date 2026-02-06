@@ -167,7 +167,7 @@ class LocalizableStringExtractor:
         Cherche si le texte est précédé de 'LOC "$$$/...'
         """
         # Chercher toutes les occurrences du texte
-        search_pattern = re.compile(r'LOC\s*["\'](\$\$\$/[^=]+=)' + re.escape(text) + r'["\']')
+        search_pattern = re.compile(r'LOC\s*[_("\'](\$\$\$/[^=]+=)' + re.escape(text) + r'[")\']')
         return search_pattern.search(line) is not None
 
     def _find_non_localized_strings(self, line: str) -> List[Tuple[str, int, int]]:

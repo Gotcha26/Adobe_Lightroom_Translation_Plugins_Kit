@@ -150,11 +150,11 @@ def debug_config_info() -> str:
     update_file = get_update_filename()
 
     lines = [
-        "Configuration de la langue de référence:",
+        _("Configuration de la langue de référence:"),
         f"  - Fichier config   : {config_path or '(non trouvé)'}",
-        f"  - Langue référence : {lang}",
-        f"  - Fichier référence: {ref_file}",
-        f"  - Fichier UPDATE   : {update_file}"
+        _("  - Langue référence : {lang}").format(lang=lang),
+        _("  - Fichier référence: {ref_file}").format(ref_file=ref_file),
+        _("  - Fichier UPDATE   : {update_file}").format(update_file=update_file)
     ]
 
     return "\n".join(lines)

@@ -74,7 +74,7 @@ class OutputGenerator:
             relative = full_path.replace(plugin_path, "").lstrip(os.sep)
             # Normaliser les slashes en forward slashes
             relative = relative.replace("\\", "/")
-            return f"<plugin>/{relative}"
+            return _("<plugin>/{relative}").format(relative=relative)
         return full_path
 
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
@@ -94,12 +94,12 @@ class OutputGenerator:
             by_category[category].append(entry)
 
         with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(f"-- =============================================================================\n")
-            f.write(f"-- Plugin Localization - {lang.upper()}\n")
+            f.write(_("-- =============================================================================\n"))
+            f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
             f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"-- Total keys: {len(unique_keys)}\n")
-            f.write(f"-- SOURCE: Extractor\n")
-            f.write(f"-- =============================================================================\n\n")
+            f.write(_("-- Total keys: {var0}\n").format(var0=len(unique_keys)))
+            f.write(_("-- SOURCE: Extractor\n"))
+            f.write(_("-- =============================================================================\n\n"))
 
             # Add translation warning note for translators
             f.write(TRANSLATION_WARNING_NOTE)
@@ -241,14 +241,14 @@ class OutputGenerator:
         """
         Construit l'appel LOC pour une entrée.
 
-        Format ZString du SDK Lightroom: LOC "$$$/Key=Default Value"
+        Format ZString du SDK Lightroom: LOC _("$$$/Key=Default Value")
         La valeur par défaut EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
         """
         parts = []
 
         # Espaces en début
         if entry.leading_spaces > 0:
-            parts.append('"' + ' ' * entry.leading_spaces + '" .. ')
+            parts.append('_("' + ' ' * entry.leading_spaces + '") .. ')
 
         # Appel LOC avec valeur par défaut (base_text)
         parts.append(f'LOC "{entry.suggested_key}={entry.base_text}"')
@@ -257,7 +257,7 @@ class OutputGenerator:
         if entry.suffix:
             parts.append(f' .. "{entry.suffix}"')
         elif entry.trailing_spaces > 0:
-            parts.append(' .. "' + ' ' * entry.trailing_spaces + '"')
+            parts.append(' .. _("' + ' ' * entry.trailing_spaces + '")')
 
         return ''.join(parts)
 

@@ -250,102 +250,102 @@ def menu_inject(plugin_path: str = ""):
 
     clear_screen()
     print_header()
-    print(f"\n{c.INFO}INJECT{c.RESET}: Réinjecter les traductions")
+    print(_("\n{var0}INJECT{var1}: Réinjecter les traductions").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
-    print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Les clés non traduites (→ vide) recevront la valeur EN")
+    print(_("\n{var0}[ATTENTION]{var1} Les clés non traduites (→ vide) recevront la valeur EN").format(var0=c.WARNING, var1=c.RESET))
 
-    print(f"\n{c.KEY}Mode{c.RESET}:")
-    print(f"  {c.YELLOW}1{c.RESET}. Injecter un fichier TRANSLATE_xx.txt spécifique")
+    print(_("\n{var0}Mode{var1}:").format(var0=c.KEY, var1=c.RESET))
+    print(_("  {var0}1{var1}. Injecter un fichier TRANSLATE_xx.txt spécifique").format(var0=c.YELLOW, var1=c.RESET))
     print(f"  {c.YELLOW}2{c.RESET}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier")
-    mode = input(f"\n{c.PROMPT}  Choix (1-2): {c.RESET}").strip()
+    mode = input(_("\n{var0}  Choix (1-2): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
     if mode == '1':
-        print(f"\n{c.KEY}Fichier TRANSLATE_xx.txt{c.RESET}:")
+        print(_("\n{var0}Fichier TRANSLATE_xx.txt{var1}:").format(var0=c.KEY, var1=c.RESET))
         translate_file = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not translate_file or not os.path.isfile(translate_file):
-            print(c.error("Fichier invalide."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Fichier invalide.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.KEY}Fichier cible TranslatedStrings_xx.txt{c.RESET}:")
+        print(_("\n{var0}Fichier cible TranslatedStrings_xx.txt{var1}:").format(var0=c.KEY, var1=c.RESET))
         target_file = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not target_file:
-            print(c.error("Chemin requis."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Chemin requis.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_{lang}.json):")
-        print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
+        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_{lang}.json):").format(var0=c.KEY, var1=c.RESET, lang=lang))
+        print(_("{var0}  (Entrée = même dossier que TRANSLATE){var1}").format(var0=c.DIM, var1=c.RESET))
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
         try:
-            print(f"\n{c.INFO}[INFO]{c.RESET} Injection en cours...")
+            print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
             stats = run_inject(translate_file, target_file, update_dir)
 
             print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
-            print(f"{c.TITLE}  RÉSULTAT{c.RESET}")
+            print(_("{var0}  RÉSULTAT{var1}").format(var0=c.TITLE, var1=c.RESET))
             print(f"{c.HEADER}{'=' * 66}{c.RESET}")
-            print(f"  {c.KEY}Traductions injectées  {c.RESET}: {c.GREEN}{stats['injected']}{c.RESET}")
-            print(f"  {c.KEY}Valeurs EN par défaut  {c.RESET}: {c.CYAN}{stats['from_ref']}{c.RESET}")
-            print(f"  {c.KEY}Entrées ignorées       {c.RESET}: {c.DIM}{stats['skipped']}{c.RESET}")
-            print(f"  {c.KEY}Total clés dans fichier{c.RESET}: {c.WHITE}{stats['total']}{c.RESET}")
+            print(_("  {var0}Traductions injectées  {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, var3=stats['injected'], var4=c.RESET))
+            print(_("  {var0}Valeurs EN par défaut  {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.CYAN, var3=stats['from_ref'], var4=c.RESET))
+            print(_("  {var0}Entrées ignorées       {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=stats['skipped'], var4=c.RESET))
+            print(_("  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=stats['total'], var4=c.RESET))
             print()
-            print(c.success(f"Fichier mis à jour: {c.VALUE}{target_file}{c.RESET}"))
-            print(f"{c.DIM}  (Backup .bak créé){c.RESET}")
+            print(c.success(_("Fichier mis à jour: {var0}{target_file}{var2}").format(var0=c.VALUE, target_file=target_file, var2=c.RESET)))
+            print(_("{var0}  (Backup .bak créé){var1}").format(var0=c.DIM, var1=c.RESET))
 
             return stats
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
 
     elif mode == '2':
-        print(f"\n{c.KEY}Dossier contenant les fichiers TRANSLATE_*.txt{c.RESET}:")
+        print(_("\n{var0}Dossier contenant les fichiers TRANSLATE_*.txt{var1}:").format(var0=c.KEY, var1=c.RESET))
         translate_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not translate_dir or not os.path.isdir(translate_dir):
-            print(c.error("Répertoire invalide."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Répertoire invalide.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.KEY}Répertoire des fichiers de langue{c.RESET} (Locales):")
+        print(_("\n{var0}Répertoire des fichiers de langue{var1} (Locales):").format(var0=c.KEY, var1=c.RESET))
         locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not locales_dir or not os.path.isdir(locales_dir):
-            print(c.error("Répertoire invalide."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Répertoire invalide.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_{lang}.json):")
-        print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
+        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_{lang}.json):").format(var0=c.KEY, var1=c.RESET, lang=lang))
+        print(_("{var0}  (Entrée = même dossier que TRANSLATE){var1}").format(var0=c.DIM, var1=c.RESET))
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
         try:
-            print(f"\n{c.INFO}[INFO]{c.RESET} Injection en cours...")
+            print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
             results = run_inject_from_dir(translate_dir, locales_dir, update_dir)
 
             if results:
                 print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
-                print(f"{c.TITLE}  RÉSULTAT{c.RESET}")
+                print(_("{var0}  RÉSULTAT{var1}").format(var0=c.TITLE, var1=c.RESET))
                 print(f"{c.HEADER}{'=' * 66}{c.RESET}")
                 for lang, stats in sorted(results.items()):
                     if 'error' in stats:
-                        print(f"  {c.RED}[{lang.upper()}]{c.RESET} {c.ERROR}[ERREUR]{c.RESET} {stats['error']}")
+                        print(_("  {var0}[{var1}]{var2} {var3}[ERREUR]{var4} {var5}").format(var0=c.RED, var1=lang.upper(), var2=c.RESET, var3=c.ERROR, var4=c.RESET, var5=stats['error']))
                     else:
                         translated = stats['injected']
                         from_ref = stats['from_ref']
-                        print(f"  {c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET} {c.GREEN}{translated}{c.RESET} traduites + {c.CYAN}{from_ref}{c.RESET} EN par défaut")
+                        print(_("  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} traduites + {var8}{from_ref}{var10} EN par défaut").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, translated=translated, var7=c.RESET, var8=c.CYAN, from_ref=from_ref, var10=c.RESET))
                 print()
-                print(c.success("Fichiers mis à jour (backups .bak créés)"))
+                print(c.success(_("Fichiers mis à jour (backups .bak créés)")))
 
                 return results
             else:
-                print(c.warning("Aucun fichier TRANSLATE_*.txt trouvé"))
+                print(c.warning(_("Aucun fichier TRANSLATE_*.txt trouvé")))
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
 
     else:
-        print(c.error("Choix invalide."))
-        input("\nAppuyez sur Entrée...")
+        print(c.error(_("Choix invalide.")))
+        input(_("\nAppuyez sur Entrée..."))
         return None
 
-    input("\nAppuyez sur Entrée pour continuer...")
+    input(_("\nAppuyez sur Entrée pour continuer..."))
     return None

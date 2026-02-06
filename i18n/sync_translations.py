@@ -80,9 +80,9 @@ def main():
     print()
 
     # Étape 1: Extraction
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
     print(f"{c.HEADER}ÉTAPE 1/3: EXTRACTION DES CHAÎNES{c.RESET}")
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
 
     if not run_command("extract_strings.py"):
         print()
@@ -92,9 +92,9 @@ def main():
     print()
 
     # Étape 2: Mise à jour
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
     print(f"{c.HEADER}ÉTAPE 2/3: MISE À JOUR DES TRADUCTIONS{c.RESET}")
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
 
     args = [target_lang] if target_lang else []
     if not run_command("update_po.py", args):
@@ -105,9 +105,9 @@ def main():
     print()
 
     # Étape 3: Compilation
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
     print(f"{c.HEADER}ÉTAPE 3/3: COMPILATION DES TRADUCTIONS{c.RESET}")
-    print(c.separator("─", 70))
+    print(c.separator("-", 70))
 
     args = [target_lang] if target_lang else []
     if not run_command("compile_po.py", args):
@@ -116,9 +116,9 @@ def main():
         return 1
 
     print()
-    print(c.separator("═", 70))
-    print(c.success("✓ SYNCHRONISATION TERMINÉE AVEC SUCCÈS"))
-    print(c.separator("═", 70))
+    print(c.separator("=", 70))
+    print(c.success("[OK] SYNCHRONISATION TERMINEE AVEC SUCCES"))
+    print(c.separator("=", 70))
     print()
 
     return 0

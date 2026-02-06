@@ -250,7 +250,7 @@ def generate_replacement_code(pattern_name: str, loc_key: str,
     """
     Génère le code de remplacement Lua avec gestion des espaces ET des suffixes.
 
-    Format ZString du SDK Lightroom: LOC "$$$/Key=Default Value"
+    Format ZString du SDK Lightroom: LOC _("$$$/Key=Default Value")
     La valeur par défaut EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
 
     Exemples:

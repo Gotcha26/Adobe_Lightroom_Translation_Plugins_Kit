@@ -155,10 +155,10 @@ def restore_files(pairs: List[Tuple[str, str]]) -> int:
 
         try:
             shutil.copy2(bak_path, lua_path)
-            print(f"  {c.OK}[OK]{c.RESET} {rel_path}")
+            print(_("  {var0}[OK]{var1} {rel_path}").format(var0=c.OK, var1=c.RESET, rel_path=rel_path))
             restored += 1
         except Exception as e:
-            print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
+            print(_("  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}").format(var0=c.ERROR, var1=c.RESET, rel_path=rel_path, var3=c.DIM, e=e, var5=c.RESET))
 
     return restored
 
@@ -177,10 +177,10 @@ def delete_backups(pairs: List[Tuple[str, str]]) -> int:
 
         try:
             os.remove(bak_path)
-            print(f"  {c.OK}[OK]{c.RESET} Supprimé: {rel_path}")
+            print(_("  {var0}[OK]{var1} Supprimé: {rel_path}").format(var0=c.OK, var1=c.RESET, rel_path=rel_path))
             deleted += 1
         except Exception as e:
-            print(f"  {c.ERROR}[FAIL]{c.RESET} {rel_path} {c.DIM}- Erreur: {e}{c.RESET}")
+            print(_("  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}").format(var0=c.ERROR, var1=c.RESET, rel_path=rel_path, var3=c.DIM, e=e, var5=c.RESET))
 
     return deleted
 
@@ -203,7 +203,7 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
         Tuple (timestamp, backup_dir) ou None si annulé
     """
     print()
-    print(c.title("Sessions Applicator avec backups disponibles"))
+    print(c.title(_("Sessions Applicator avec backups disponibles")))
     print(c.separator())
     print()
 
@@ -214,13 +214,13 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
 
         # Marquer la plus récente (première)
         if i == 1:
-            marker = f"{c.OK}[DERNIÈRE]{c.RESET} "
+            marker = _("{var0}[DERNIÈRE]{var1} ").format(var0=c.OK, var1=c.RESET)
         else:
             marker = "           "
 
-        print(f"  {c.YELLOW}{i}{c.RESET}. {marker}{c.VALUE}{formatted}{c.RESET} {c.DIM}({bak_count} fichier(s)){c.RESET}")
+        print(_("  {var0}{i}{var2}. {marker}{var4}{formatted}{var6} {var7}({bak_count} fichier(s)){var9}").format(var0=c.YELLOW, i=i, var2=c.RESET, marker=marker, var4=c.VALUE, formatted=formatted, var6=c.RESET, var7=c.DIM, bak_count=bak_count, var9=c.RESET))
 
-    print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Annuler{c.RESET}")
+    print(_("  {var0}0{var1}. {var2}Annuler{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.DIM, var3=c.RESET))
     print()
 
     # Suggestion par défaut: la plus récente
@@ -228,7 +228,7 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
 
     while True:
         try:
-            choice = input(f"{c.PROMPT}Choisir une session [{c.OK}{default_choice}{c.RESET}{c.PROMPT} par défaut]{c.RESET}: ").strip()
+            choice = input(_("{var0}Choisir une session [{var1}{default_choice}{var3}{var4} par défaut]{var5}: ").format(var0=c.PROMPT, var1=c.OK, default_choice=default_choice, var3=c.RESET, var4=c.PROMPT, var5=c.RESET)).strip()
 
             # Si vide, utiliser le défaut
             if choice == '':
@@ -241,9 +241,9 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
             if 0 <= idx < len(sessions):
                 return sessions[idx]
             else:
-                print(c.error(f"Choix invalide. Entrez un nombre entre 0 et {len(sessions)}"))
+                print(c.error(_("Choix invalide. Entrez un nombre entre 0 et {var0}").format(var0=len(sessions))))
         except ValueError:
-            print(c.error("Entrez un nombre valide"))
+            print(c.error(_("Entrez un nombre valide")))
 
 
 def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]:
@@ -257,37 +257,37 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
         (chemin_plugin, backup_dir ou None)
     """
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(c.box_header("RESTAURATION DES FICHIERS .bak"))
+    print(c.box_header(_("RESTAURATION DES FICHIERS .bak")))
     print()
 
     # Si un plugin par défaut est fourni et valide, l'utiliser directement
     if default_plugin_path:
         is_valid, normalized, warning = validate_plugin_path(default_plugin_path)
         if is_valid:
-            print(c.success(f"Plugin: {c.VALUE}{os.path.basename(normalized)}{c.RESET}"))
-            print(f"{c.DIM}  Chemin: {normalized}{c.RESET}")
+            print(c.success(_("Plugin: {var0}{var1}{var2}").format(var0=c.VALUE, var1=os.path.basename(normalized), var2=c.RESET)))
+            print(_("{var0}  Chemin: {normalized}{var2}").format(var0=c.DIM, normalized=normalized, var2=c.RESET))
             print()
         else:
             # Le chemin par défaut est invalide, demander à l'utilisateur
-            print(c.warning(f"Plugin par défaut invalide: {warning}"))
+            print(c.warning(_("Plugin par défaut invalide: {warning}").format(warning=warning)))
             print()
             default_plugin_path = ""
 
     # Si pas de plugin par défaut valide, demander à l'utilisateur
     if not default_plugin_path:
-        print(c.title("Configuration du plugin"))
+        print(c.title(_("Configuration du plugin")))
         print(c.separator())
         print()
-        print(f"{c.DIM}Répertoire du plugin à restaurer:{c.RESET}")
-        print(f"{c.DIM}  Exemples: ./piwigoPublish.lrplugin{c.RESET}")
-        print(f"{c.DIM}            D:\\Lightroom\\plugin.lrplugin{c.RESET}")
+        print(_("{var0}Répertoire du plugin à restaurer:{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("{var0}  Exemples: ./piwigoPublish.lrplugin{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("{var0}            D:\\Lightroom\\plugin.lrplugin{var1}").format(var0=c.DIM, var1=c.RESET))
         print()
 
         while True:
-            path = input(f"{c.PROMPT}Chemin du plugin: {c.RESET}").strip()
+            path = input(_("{var0}Chemin du plugin: {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
             if not path:
-                print(c.error("Chemin obligatoire"))
+                print(c.error(_("Chemin obligatoire")))
                 print()
                 continue
 
@@ -302,7 +302,7 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
             # Avertissement si pas .lrplugin
             if warning:
                 print(c.warning(warning))
-                confirm = input(f"{c.PROMPT}Continuer quand même? [o/N]: {c.RESET}").strip().lower()
+                confirm = input(_("{var0}Continuer quand même? [o/N]: {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
                 if confirm not in ['o', 'oui', 'y', 'yes']:
                     print()
                     continue
@@ -310,7 +310,7 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
             break
 
         print()
-        print(c.success(f"Plugin: {c.VALUE}{normalized}{c.RESET}"))
+        print(c.success(_("Plugin: {var0}{normalized}{var2}").format(var0=c.VALUE, normalized=normalized, var2=c.RESET)))
         print()
     else:
         # Utiliser le plugin par défaut validé
@@ -321,21 +321,21 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
     backup_dir = None
 
     if sessions:
-        print(c.info(f"{len(sessions)} session(s) Applicator trouvée(s) dans {get_i18n_dir()}/"))
+        print(c.info(_("{var0} session(s) Applicator trouvée(s) dans {var1}/").format(var0=len(sessions), var1=get_i18n_dir())))
         print()
 
         selected = select_backup_session(sessions)
         if selected:
             timestamp, backup_dir = selected
             print()
-            print(c.success(f"Session sélectionnée: {c.VALUE}{format_timestamp(timestamp)}{c.RESET}"))
+            print(c.success(_("Session sélectionnée: {var0}{var1}{var2}").format(var0=c.VALUE, var1=format_timestamp(timestamp), var2=c.RESET)))
         else:
             print()
-            print(c.warning("Restauration annulée"))
+            print(c.warning(_("Restauration annulée")))
             sys.exit(0)
     else:
-        print(c.warning(f"Aucune session Applicator trouvée dans {get_i18n_dir()}/"))
-        print(f"{c.DIM}Recherche des backups legacy (.lua.bak à côté des fichiers)...{c.RESET}")
+        print(c.warning(_("Aucune session Applicator trouvée dans {var0}/").format(var0=get_i18n_dir())))
+        print(_("{var0}Recherche des backups legacy (.lua.bak à côté des fichiers)...{var1}").format(var0=c.DIM, var1=c.RESET))
 
     return normalized, backup_dir
 
@@ -366,57 +366,57 @@ def main():
         # Mode CLI avec chemin direct
         directory = os.path.normpath(args[0])
         if not os.path.isdir(directory):
-            print(c.error(f"Répertoire introuvable: {directory}"))
+            print(c.error(_("Répertoire introuvable: {directory}").format(directory=directory)))
             sys.exit(1)
 
         # En mode CLI, chercher automatiquement la dernière session
         sessions = find_applicator_sessions(directory)
         if sessions:
             timestamp, backup_dir = sessions[0]  # La plus récente
-            print(c.success(f"Session Applicator trouvée: {c.VALUE}{format_timestamp(timestamp)}{c.RESET}"))
+            print(c.success(_("Session Applicator trouvée: {var0}{var1}{var2}").format(var0=c.VALUE, var1=format_timestamp(timestamp), var2=c.RESET)))
     else:
         # Menu interactif (avec plugin par défaut si fourni)
         directory, backup_dir = interactive_menu(default_plugin)
 
     # Rechercher les paires
     print(c.separator("=", 60))
-    print(c.title("RECHERCHE DES FICHIERS .bak"))
+    print(c.title(_("RECHERCHE DES FICHIERS .bak")))
     print(c.separator("=", 60))
-    print(f"{c.KEY}Plugin{c.RESET}: {c.VALUE}{directory}{c.RESET}")
+    print(_("{var0}Plugin{var1}: {var2}{directory}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.VALUE, directory=directory, var4=c.RESET))
 
     if backup_dir:
-        print(f"{c.KEY}Source{c.RESET}: {c.VALUE}{backup_dir}{c.RESET}")
+        print(_("{var0}Source{var1}: {var2}{backup_dir}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.VALUE, backup_dir=backup_dir, var4=c.RESET))
         pairs = find_backup_pairs_in_dir(backup_dir, directory)
     else:
-        print(f"{c.KEY}Source{c.RESET}: {c.DIM}Legacy (fichiers .bak à côté des .lua){c.RESET}")
+        print(_("{var0}Source{var1}: {var2}Legacy (fichiers .bak à côté des .lua){var3}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=c.RESET))
         pairs = find_backup_pairs_legacy(directory)
 
     print()
 
     if not pairs:
-        print(c.warning("Aucun fichier .bak trouvé"))
+        print(c.warning(_("Aucun fichier .bak trouvé")))
         print()
-        print(c.info("Rien à restaurer"))
+        print(c.info(_("Rien à restaurer")))
         sys.exit(0)
 
     # Afficher les fichiers trouvés
-    print(c.info(f"Fichiers trouvés: {c.VALUE}{len(pairs)}{c.RESET}"))
+    print(c.info(_("Fichiers trouvés: {var0}{var1}{var2}").format(var0=c.VALUE, var1=len(pairs), var2=c.RESET)))
     print()
 
     for lua_path, bak_path in pairs:
         lua_name = os.path.basename(lua_path)
         if os.path.exists(lua_path):
-            exists_marker = f"{c.OK}[REMPLACER]{c.RESET}"
+            exists_marker = _("{var0}[REMPLACER]{var1}").format(var0=c.OK, var1=c.RESET)
         else:
-            exists_marker = f"{c.INFO}[NOUVEAU]{c.RESET}"
+            exists_marker = _("{var0}[NOUVEAU]{var1}").format(var0=c.INFO, var1=c.RESET)
         print(f"  {exists_marker} {lua_name}")
 
     # Confirmation
     print()
-    confirm = input(f"{c.PROMPT}Restaurer ces {len(pairs)} fichier(s) ? [o/N]: {c.RESET}").strip().lower()
+    confirm = input(_("{var0}Restaurer ces {var1} fichier(s) ? [o/N]: {var2}").format(var0=c.PROMPT, var1=len(pairs), var2=c.RESET)).strip().lower()
     if confirm not in ['o', 'oui', 'yes', 'y']:
         print()
-        print(c.warning("Restauration annulée"))
+        print(c.warning(_("Restauration annulée")))
         sys.exit(0)
 
     # Restaurer
@@ -431,26 +431,26 @@ def main():
     # Demander si on supprime les .bak
     if restored > 0:
         print()
-        delete_confirm = input(f"{c.PROMPT}Supprimer les fichiers .bak ? [o/N]: {c.RESET}").strip().lower()
+        delete_confirm = input(_("{var0}Supprimer les fichiers .bak ? [o/N]: {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
 
         if delete_confirm in ['o', 'oui', 'yes', 'y']:
             print()
-            print(c.info("Suppression des .bak"))
+            print(c.info(_("Suppression des .bak")))
             print()
             deleted = delete_backups(pairs)
             print()
-            print(c.success(f"{deleted} fichier(s) .bak supprimé(s)"))
+            print(c.success(_("{deleted} fichier(s) .bak supprimé(s)").format(deleted=deleted)))
 
     # Résumé
     print()
     print(c.separator("=", 60))
-    print(c.title("RÉSUMÉ"))
+    print(c.title(_("RÉSUMÉ")))
     print(c.separator("=", 60))
 
-    print(f"{c.KEY}Fichiers restaurés{c.RESET}: {c.VALUE}{restored}{c.RESET}")
+    print(_("{var0}Fichiers restaurés{var1}: {var2}{restored}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.VALUE, restored=restored, var4=c.RESET))
 
     print()
-    print(c.success("Terminé!"))
+    print(c.success(_("Terminé!")))
 
 
 if __name__ == "__main__":

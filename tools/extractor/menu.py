@@ -92,7 +92,7 @@ class InteractiveMenu:
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
             short_path = os.path.basename(self.plugin_path)
-            print(c.config_line("1. " + _("Plugin ciblé"), f".../{short_path} {c.VALUE}[{c.RESET}{status}{c.VALUE}]{c.RESET}"))
+            print(c.config_line("1. " + _("Plugin ciblé"), _(".../{short_path} {var1}[{var2}{status}{var4}]{var5}").format(short_path=short_path, var1=c.VALUE, var2=c.RESET, status=status, var4=c.VALUE, var5=c.RESET)))
         else:
             print(c.config_line("1. " + _("Plugin ciblé"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
@@ -128,7 +128,7 @@ class InteractiveMenu:
         else:
             print(f"  {c.DIM}" + _("ENTRÉE") + "  " + _("Lancer l'extraction (configurer le plugin d'abord)") + f"{c.RESET}")
 
-        print(c.menu_option("1-7", _("Modifier une option")))
+        print(c.menu_option(_("1-7"), _("Modifier une option")))
         print(c.menu_option("0", _("Quitter")))
         print()
 
@@ -138,8 +138,8 @@ class InteractiveMenu:
         print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
         print(_("Exemples:"))
-        print(f"  {c.VALUE}C:/Users/User/Lightroom/plugin.lrplugin{c.RESET}")
-        print(f"  {c.VALUE}./piwigoPublish.lrplugin{c.RESET}")
+        print(_("  {var0}C:/Users/User/Lightroom/plugin.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
+        print(_("  {var0}./piwigoPublish.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
         print()
 
         if self.plugin_path:
@@ -291,7 +291,7 @@ class InteractiveMenu:
 
         # ignore_log=True signifie "ignorer les logs" (donc ne pas les inclure)
         # current affiche si les logs sont inclus (inverse de ignore_log)
-        current = "N" if self.ignore_log else "O"
+        current = "N_(" if self.ignore_log else ")O"
         response = input(c.prompt(_("Inclure les messages de log? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:

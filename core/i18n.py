@@ -140,11 +140,11 @@ def _load_translator(language: str) -> Callable[[str], str]:
         return lambda s: s
 
     # Vérifier si la traduction existe
-    mo_file = locale_dir / language / "LC_MESSAGES" / f"{DOMAIN}.mo"
+    mo_file = locale_dir / language / "LC_MESSAGES" / _("{DOMAIN}.mo").format(DOMAIN=DOMAIN)
 
     if not mo_file.exists():
         # Pas de fichier .mo, essayer avec le .po (moins performant)
-        po_file = locale_dir / language / "LC_MESSAGES" / f"{DOMAIN}.po"
+        po_file = locale_dir / language / "LC_MESSAGES" / _("{DOMAIN}.po").format(DOMAIN=DOMAIN)
         if not po_file.exists():
             # Aucune traduction disponible
             return lambda s: s
@@ -248,7 +248,7 @@ def ngettext(singular: str, plural: str, n: int) -> str:
     """Traduction avec support du pluriel.
 
     Usage:
-        print(ngettext("{n} fichier", "{n} fichiers", count).format(n=count))
+        print(ngettext(_("{n} fichier"), _("{n} fichiers"), count).format(n=count))
 
     Args:
         singular: Forme singulière
@@ -309,8 +309,8 @@ def debug_language_detection() -> str:
     info.append(_("Langue détectée: {lang}").format(lang=_current_language))
 
     locale_dir = _get_locale_dir()
-    mo_file = locale_dir / _current_language / "LC_MESSAGES" / f"{DOMAIN}.mo"
-    mo_status = "OK" if mo_file.exists() else "introuvable"
+    mo_file = locale_dir / _current_language / "LC_MESSAGES" / _("{DOMAIN}.mo").format(DOMAIN=DOMAIN)
+    mo_status = "OK_(" if mo_file.exists() else ")introuvable"
     info.append(_("Fichier .mo chargé: {status}").format(status=mo_status))
 
     return "\n".join(info)

@@ -71,27 +71,27 @@ def advanced_menu(plugin_path: str):
         clear_screen()
         print_header()
 
-        print(f"\n{c.TITLE}  OPTIONS AVANCÉES{c.RESET}")
-        print(f"  {c.DIM}Workflow manuel étape par étape{c.RESET}")
+        print(_("\n{var0}  OPTIONS AVANCÉES{var1}").format(var0=c.TITLE, var1=c.RESET))
+        print(_("  {var0}Workflow manuel étape par étape{var1}").format(var0=c.DIM, var1=c.RESET))
         print(c.separator())
 
         # Afficher le plugin configuré
         if plugin_path:
-            print(f"\n{c.INFO}[INFO]{c.RESET} Plugin: {c.VALUE}{os.path.basename(plugin_path)}{c.RESET}")
+            print(_("\n{var0}[INFO]{var1} Plugin: {var2}{var3}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, var3=os.path.basename(plugin_path), var4=c.RESET))
         else:
-            print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Aucun plugin configuré - utilise répertoires locaux")
+            print(_("\n{var0}[ATTENTION]{var1} Aucun plugin configuré - utilise répertoires locaux").format(var0=c.WARNING, var1=c.RESET))
 
-        print(f"\n{c.TITLE}  Commandes:{c.RESET}")
+        print(_("\n{var0}  Commandes:{var1}").format(var0=c.TITLE, var1=c.RESET))
         print(c.separator())
-        print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}COMPARE{c.RESET}       - Comparer 2 versions EN")
-        print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}COMPARE-LANGS{c.RESET} - Comparer 2 fichiers de langues")
-        print(f"  {c.YELLOW}3{c.RESET}. {c.INFO}EXTRACT{c.RESET}       - Extraire les clés à traduire")
-        print(f"  {c.YELLOW}4{c.RESET}. {c.INFO}INJECT{c.RESET}        - Réinjecter les traductions")
-        print(f"  {c.YELLOW}5{c.RESET}. {c.INFO}SYNC{c.RESET}          - Synchroniser les langues avec EN")
+        print(_("  {var0}1{var1}. {var2}COMPARE{var3}       - Comparer 2 versions EN").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
+        print(_("  {var0}2{var1}. {var2}COMPARE-LANGS{var3} - Comparer 2 fichiers de langues").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
+        print(_("  {var0}3{var1}. {var2}EXTRACT{var3}       - Extraire les clés à traduire").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
+        print(_("  {var0}4{var1}. {var2}INJECT{var3}        - Réinjecter les traductions").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
+        print(_("  {var0}5{var1}. {var2}SYNC{var3}          - Synchroniser les langues avec EN").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
         print()
         print(c.separator())
-        print(f"  {c.YELLOW}8{c.RESET}. {c.CYAN}Aide{c.RESET}          - Documentation complète")
-        print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour au menu principal{c.RESET}")
+        print(_("  {var0}8{var1}. {var2}Aide{var3}          - Documentation complète").format(var0=c.YELLOW, var1=c.RESET, var2=c.CYAN, var3=c.RESET))
+        print(_("  {var0}0{var1}. {var2}Retour au menu principal{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.DIM, var3=c.RESET))
         print(c.separator())
 
         choice = input(c.prompt(_("Votre choix:") + " (0-8): ")).strip()
@@ -109,12 +109,12 @@ def advanced_menu(plugin_path: str):
         elif choice == '8':
             clear_screen()
             print(__doc__)
-            input(f"\n{c.DIM}Appuyez sur Entrée pour revenir au menu...{c.RESET}")
+            input(_("\n{var0}Appuyez sur Entrée pour revenir au menu...{var1}").format(var0=c.DIM, var1=c.RESET))
         elif choice == '0':
             return  # Retour au menu principal
         else:
-            print(c.error(f"Choix invalide : \"{choice}\""))
-            input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
+            print(c.error(_("Choix invalide : \"){choice}\""))
+            input(_("{var0}Appuyez sur Entrée...{var1}").format(var0=c.DIM, var1=c.RESET))
 
 
 def main_menu(default_plugin_path: str = ""):
@@ -129,14 +129,14 @@ def main_menu(default_plugin_path: str = ""):
     if not plugin_path:
         clear_screen()
         print_header()
-        print(f"\n{c.INFO}Configuration initiale{c.RESET}")
+        print(_("\n{var0}Configuration initiale{var1}").format(var0=c.INFO, var1=c.RESET))
         print(c.separator())
-        print(f"\n{c.KEY}Chemin du plugin{c.RESET} (.lrplugin) {c.DIM}(x pour annuler){c.RESET}:")
+        print(_("\n{var0}Chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=c.RESET))
         print(f"{c.DIM}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){c.RESET}")
-        print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
+        print(_("{var0}  (Entrée pour ignorer - utilise répertoires locaux){var1}").format(var0=c.DIM, var1=c.RESET))
         plugin_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if plugin_path.lower() == 'x':
-            print(f"\n{c.DIM}Annulation{c.RESET}")
+            print(_("\n{var0}Annulation{var1}").format(var0=c.DIM, var1=c.RESET))
             sys.exit(0)
 
     # Valider le chemin du plugin si fourni
@@ -146,10 +146,10 @@ def main_menu(default_plugin_path: str = ""):
         if is_valid:
             plugin_path = normalized
         else:
-            print(c.warning(f"Chemin invalide: {error}"))
-            print(f"{c.DIM}Vous pouvez continuer sans plugin (répertoires locaux){c.RESET}")
+            print(c.warning(_("Chemin invalide: {error}").format(error=error)))
+            print(_("{var0}Vous pouvez continuer sans plugin (répertoires locaux){var1}").format(var0=c.DIM, var1=c.RESET))
             plugin_path = ""
-            input(f"{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
+            input(_("{var0}Appuyez sur Entrée pour continuer...{var1}").format(var0=c.DIM, var1=c.RESET))
 
     while True:
         clear_screen()
@@ -157,20 +157,20 @@ def main_menu(default_plugin_path: str = ""):
 
         # Afficher le plugin configuré
         if plugin_path:
-            print(f"\n{c.INFO}[INFO]{c.RESET} Plugin: {c.VALUE}{os.path.basename(plugin_path)}{c.RESET}")
+            print(_("\n{var0}[INFO]{var1} Plugin: {var2}{var3}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, var3=os.path.basename(plugin_path), var4=c.RESET))
         else:
-            print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Aucun plugin configuré - utilise répertoires locaux")
+            print(_("\n{var0}[ATTENTION]{var1} Aucun plugin configuré - utilise répertoires locaux").format(var0=c.WARNING, var1=c.RESET))
 
-        print(f"\n{c.TITLE}  Options essentielles:{c.RESET}")
+        print(_("\n{var0}  Options essentielles:{var1}").format(var0=c.TITLE, var1=c.RESET))
         print(c.separator())
-        print(f"  {c.YELLOW}1{c.RESET}. {c.SUCCESS}INSTALL{c.RESET}          - Première installation")
-        print(f"  {c.YELLOW}2{c.RESET}. {c.SUCCESS}AUTO-SYNC{c.RESET} ⭐     - Maintenance automatique")
-        print(f"  {c.YELLOW}3{c.RESET}. {c.SUCCESS}ADD LANGUAGE{c.RESET}     - Ajouter/réinstaller une langue")
+        print(_("  {var0}1{var1}. {var2}INSTALL{var3}          - Première installation").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
+        print(_("  {var0}2{var1}. {var2}AUTO-SYNC{var3} ⭐     - Maintenance automatique").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
+        print(_("  {var0}3{var1}. {var2}ADD LANGUAGE{var3}     - Ajouter/réinstaller une langue").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
         print()
         print(c.separator())
-        print(f"  {c.YELLOW}7{c.RESET}. {c.CYAN}Options avancées{c.RESET}")
-        print(f"  {c.YELLOW}9{c.RESET}. {c.CYAN}Changer le plugin{c.RESET}")
-        print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Quitter{c.RESET}")
+        print(_("  {var0}7{var1}. {var2}Options avancées{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.CYAN, var3=c.RESET))
+        print(_("  {var0}9{var1}. {var2}Changer le plugin{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.CYAN, var3=c.RESET))
+        print(_("  {var0}0{var1}. {var2}Quitter{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.DIM, var3=c.RESET))
         print(c.separator())
 
         choice = input(c.prompt(_("Votre choix:") + " (0-9): ")).strip()
@@ -187,10 +187,10 @@ def main_menu(default_plugin_path: str = ""):
             # Changer le plugin
             clear_screen()
             print_header()
-            print(f"\n{c.INFO}Changement de plugin{c.RESET}")
+            print(_("\n{var0}Changement de plugin{var1}").format(var0=c.INFO, var1=c.RESET))
             print(c.separator())
-            print(f"\n{c.KEY}Nouveau chemin du plugin{c.RESET} (.lrplugin) {c.DIM}(x pour annuler){c.RESET}:")
-            print(f"{c.DIM}  (Entrée pour ignorer - utilise répertoires locaux){c.RESET}")
+            print(_("\n{var0}Nouveau chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=c.RESET))
+            print(_("{var0}  (Entrée pour ignorer - utilise répertoires locaux){var1}").format(var0=c.DIM, var1=c.RESET))
             new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
 
             if new_path.lower() == 'x':
@@ -201,20 +201,20 @@ def main_menu(default_plugin_path: str = ""):
                 is_valid, normalized, error = validate_plugin_path(new_path)
                 if is_valid:
                     plugin_path = normalized
-                    print(c.success(f"Plugin changé: {c.VALUE}{plugin_path}{c.RESET}"))
+                    print(c.success(_("Plugin changé: {var0}{plugin_path}{var2}").format(var0=c.VALUE, plugin_path=plugin_path, var2=c.RESET)))
                 else:
-                    print(c.error(f"Chemin invalide: {error}"))
+                    print(c.error(_("Chemin invalide: {error}").format(error=error)))
             else:
                 plugin_path = ""
-                print(c.success("Plugin désactivé - utilise répertoires locaux"))
+                print(c.success(_("Plugin désactivé - utilise répertoires locaux")))
 
-            input(f"\n{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
+            input(_("\n{var0}Appuyez sur Entrée pour continuer...{var1}").format(var0=c.DIM, var1=c.RESET))
         elif choice == '0':
-            print(f"\n{c.DIM}Au revoir !{c.RESET}")
+            print(_("\n{var0}Au revoir !{var1}").format(var0=c.DIM, var1=c.RESET))
             break  # Sortir du menu principal
         else:
-            print(c.error(f"Choix invalide : \"{choice}\""))
-            input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
+            print(c.error(_("Choix invalide : \"){choice}\""))
+            input(_("{var0}Appuyez sur Entrée...{var1}").format(var0=c.DIM, var1=c.RESET))
 
 
 # =============================================================================
@@ -238,7 +238,7 @@ def main():
     if len(sys.argv) == 4 and sys.argv[1] == '--plugin-path' and sys.argv[3] == '--autosync':
         plugin_path = sys.argv[2]
         if not os.path.isdir(plugin_path):
-            print(c.error(f"Plugin introuvable: {plugin_path}"))
+            print(c.error(_("Plugin introuvable: {plugin_path}").format(plugin_path=plugin_path)))
             sys.exit(1)
         results = run_autosync(plugin_path)
         from .autosync import print_autosync_report
@@ -246,7 +246,7 @@ def main():
         return
 
     parser = argparse.ArgumentParser(
-        description="Gestionnaire de traductions multilingues",
+        description=_("Gestionnaire de traductions multilingues"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples:
@@ -314,7 +314,7 @@ Exemples:
 
     if args.command == 'compare':
         try:
-            print(f"{c.INFO}[INFO]{c.RESET} Comparaison...")
+            print(_("{var0}[INFO]{var1} Comparaison...").format(var0=c.INFO, var1=c.RESET))
             # Determiner le repertoire de sortie
             if args.output:
                 output_dir = args.output
@@ -330,22 +330,22 @@ Exemples:
 
             summary = result['summary']
             print(f"\n{c.HEADER}{'=' * 60}{c.RESET}")
-            print(f"{c.TITLE}RÉSUMÉ{c.RESET}")
+            print(_("{var0}RÉSUMÉ{var1}").format(var0=c.TITLE, var1=c.RESET))
             print(f"{c.HEADER}{'=' * 60}{c.RESET}")
-            print(f"{c.KEY}Clés ajoutées   {c.RESET}: {c.GREEN}{summary['added']}{c.RESET}")
-            print(f"{c.KEY}Clés modifiées  {c.RESET}: {c.YELLOW}{summary['changed']}{c.RESET}")
-            print(f"{c.KEY}Clés supprimées {c.RESET}: {c.RED}{summary['deleted']}{c.RESET}")
-            print(f"{c.KEY}Clés inchangées {c.RESET}: {c.DIM}{summary['unchanged']}{c.RESET}")
-            print(c.success(f"Fichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+            print(_("{var0}Clés ajoutées   {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, var3=summary['added'], var4=c.RESET))
+            print(_("{var0}Clés modifiées  {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.YELLOW, var3=summary['changed'], var4=c.RESET))
+            print(_("{var0}Clés supprimées {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.RED, var3=summary['deleted'], var4=c.RESET))
+            print(_("{var0}Clés inchangées {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=summary['unchanged'], var4=c.RESET))
+            print(c.success(_("Fichiers générés dans: {var0}{output_dir}{var2}").format(var0=c.VALUE, output_dir=output_dir, var2=c.RESET)))
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
             sys.exit(1)
 
     elif args.command == 'compare-langs':
         try:
             import json
-            print(f"{c.INFO}[INFO]{c.RESET} Comparaison de langues...")
+            print(_("{var0}[INFO]{var1} Comparaison de langues...").format(var0=c.INFO, var1=c.RESET))
 
             # Déterminer les fichiers à comparer
             file1 = None
@@ -356,7 +356,7 @@ Exemples:
             # Mode 1: Par codes langue (--lang1 --lang2 --locales)
             if args.lang1 and args.lang2:
                 if not args.locales:
-                    print(c.error("--locales requis avec --lang1 et --lang2"))
+                    print(c.error(_("--locales requis avec --lang1 et --lang2")))
                     sys.exit(1)
 
                 file1 = os.path.join(args.locales, f'TranslatedStrings_{args.lang1}.txt')
@@ -365,10 +365,10 @@ Exemples:
                 lang2_name = args.lang2
 
                 if not os.path.isfile(file1):
-                    print(c.error(f"Fichier non trouvé: {file1}"))
+                    print(c.error(_("Fichier non trouvé: {file1}").format(file1=file1)))
                     sys.exit(1)
                 if not os.path.isfile(file2):
-                    print(c.error(f"Fichier non trouvé: {file2}"))
+                    print(c.error(_("Fichier non trouvé: {file2}").format(file2=file2)))
                     sys.exit(1)
 
             # Mode 2: Par chemins de fichiers (--file1 --file2)
@@ -378,7 +378,7 @@ Exemples:
                 # lang1_name et lang2_name seront auto-détectés
 
             else:
-                print(c.error("Spécifiez soit --lang1 + --lang2 + --locales, soit --file1 + --file2"))
+                print(c.error(_("Spécifiez soit --lang1 + --lang2 + --locales, soit --file1 + --file2")))
                 sys.exit(1)
 
             # Déterminer le répertoire de sortie
@@ -401,59 +401,59 @@ Exemples:
             l2 = result['lang2_name']
 
             print(f"\n{c.HEADER}{'=' * 60}{c.RESET}")
-            print(f"{c.TITLE}RÉSUMÉ - COMPARAISON DE LANGUES{c.RESET}")
+            print(_("{var0}RÉSUMÉ - COMPARAISON DE LANGUES{var1}").format(var0=c.TITLE, var1=c.RESET))
             print(f"{c.HEADER}{'=' * 60}{c.RESET}")
-            print(f"{c.KEY}Langue 1{c.RESET}: {c.CYAN}{l1}{c.RESET} ({stats['keys_in_lang1']} clés)")
-            print(f"{c.KEY}Langue 2{c.RESET}: {c.CYAN}{l2}{c.RESET} ({stats['keys_in_lang2']} clés)")
+            print(_("{var0}Langue 1{var1}: {var2}{l1}{var4} ({var5} clés)").format(var0=c.KEY, var1=c.RESET, var2=c.CYAN, l1=l1, var4=c.RESET, var5=stats['keys_in_lang1']))
+            print(_("{var0}Langue 2{var1}: {var2}{l2}{var4} ({var5} clés)").format(var0=c.KEY, var1=c.RESET, var2=c.CYAN, l2=l2, var4=c.RESET, var5=stats['keys_in_lang2']))
             print()
-            print(f"{c.KEY}Clés totales uniques    {c.RESET}: {c.VALUE}{stats['total_unique_keys']}{c.RESET}")
-            print(f"{c.KEY}Clés dans les deux      {c.RESET}: {c.GREEN}{stats['keys_in_both']}{c.RESET}")
-            print(f"{c.KEY}Seulement dans {l1:<7s}{c.RESET}: {c.YELLOW}{stats['only_lang1']}{c.RESET}")
-            print(f"{c.KEY}Seulement dans {l2:<7s}{c.RESET}: {c.YELLOW}{stats['only_lang2']}{c.RESET}")
+            print(_("{var0}Clés totales uniques    {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.VALUE, var3=stats['total_unique_keys'], var4=c.RESET))
+            print(_("{var0}Clés dans les deux      {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, var3=stats['keys_in_both'], var4=c.RESET))
+            print(_("{var0}Seulement dans {l1:<7s}{var2}: {var3}{var4}{var5}").format(var0=c.KEY, l1=l1, var2=c.RESET, var3=c.YELLOW, var4=stats['only_lang1'], var5=c.RESET))
+            print(_("{var0}Seulement dans {l2:<7s}{var2}: {var3}{var4}{var5}").format(var0=c.KEY, l2=l2, var2=c.RESET, var3=c.YELLOW, var4=stats['only_lang2'], var5=c.RESET))
             print()
-            print(f"{c.KEY}Valeurs identiques      {c.RESET}: {c.DIM}{stats['identical_values_count']}{c.RESET}")
-            print(f"{c.KEY}Valeurs différentes     {c.RESET}: {c.VALUE}{stats['different_values_count']}{c.RESET}")
+            print(_("{var0}Valeurs identiques      {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=stats['identical_values_count'], var4=c.RESET))
+            print(_("{var0}Valeurs différentes     {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.VALUE, var3=stats['different_values_count'], var4=c.RESET))
 
             if stats['identical_values_count'] > 0 and (l1 == 'EN' or l2 == 'EN'):
-                print(f"\n{c.WARNING}⚠️  {stats['identical_values_count']} traduction(s) identique(s) à EN détectée(s)!{c.RESET}")
+                print(_("\n{var0}⚠️  {var1} traduction(s) identique(s) à EN détectée(s)!{var2}").format(var0=c.WARNING, var1=stats['identical_values_count'], var2=c.RESET))
 
-            print(c.success(f"\nFichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+            print(c.success(_("\nFichiers générés dans: {var0}{output_dir}{var2}").format(var0=c.VALUE, output_dir=output_dir, var2=c.RESET)))
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
             import traceback
             traceback.print_exc()
             sys.exit(1)
 
     elif args.command == 'extract':
         try:
-            print(f"{c.INFO}[INFO]{c.RESET} Extraction...")
+            print(_("{var0}[INFO]{var1} Extraction...").format(var0=c.INFO, var1=c.RESET))
             # Determiner le dossier UPDATE
             update_dir = args.update
             if not update_dir and hasattr(args, 'plugin_path') and args.plugin_path:
                 update_dir = find_latest_tool_output(args.plugin_path, "Translator")
                 if not update_dir:
-                    print(c.error("Aucun dossier Translator trouvé dans __i18n_tmp__/"))
+                    print(c.error(_("Aucun dossier Translator trouvé dans __i18n_tmp__/")))
                     print(f"{c.DIM}        Lancez d'abord la commande 'compare'.{c.RESET}")
                     sys.exit(1)
-                print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
+                print(_("{var0}[INFO]{var1} Auto-détection: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
 
             if not update_dir:
-                print(c.error("--update ou --plugin-path requis"))
+                print(c.error(_("--update ou --plugin-path requis")))
                 sys.exit(1)
 
             output_dir = args.output
             if args.lang:
                 output_file = run_extract(update_dir, args.lang, args.locales, output_dir)
-                print(c.success(f"Généré: {c.VALUE}{output_file}{c.RESET}"))
+                print(c.success(_("Généré: {var0}{output_file}{var2}").format(var0=c.VALUE, output_file=output_file, var2=c.RESET)))
             else:
                 generated = run_extract_all(update_dir, args.locales, output_dir)
-                print(f"\n{c.OK}[OK]{c.RESET} {c.WHITE}{len(generated)}{c.RESET} fichier(s) généré(s):")
+                print(_("\n{var0}[OK]{var1} {var2}{var3}{var4} fichier(s) généré(s):").format(var0=c.OK, var1=c.RESET, var2=c.WHITE, var3=len(generated), var4=c.RESET))
                 for f in generated:
                     print(f"  {c.DIM}-{c.RESET} {c.VALUE}{os.path.basename(f)}{c.RESET}")
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
             sys.exit(1)
 
     elif args.command == 'inject':
@@ -465,26 +465,26 @@ Exemples:
                 translate_dir = find_latest_tool_output(args.plugin_path, "Translator")
                 update_dir = update_dir or translate_dir
                 if translate_dir:
-                    print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{translate_dir}{c.RESET}")
+                    print(_("{var0}[INFO]{var1} Auto-détection: {var2}{translate_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, translate_dir=translate_dir, var4=c.RESET))
 
             if args.translate and args.target:
-                print(f"{c.INFO}[INFO]{c.RESET} Injection...")
+                print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
                 stats = run_inject(args.translate, args.target, update_dir)
-                print(c.success(f"{c.GREEN}{stats['injected']}{c.RESET} traduites + {c.CYAN}{stats['from_en']}{c.RESET} EN par défaut"))
+                print(c.success(_("{var0}{var1}{var2} traduites + {var3}{var4}{var5} EN par défaut").format(var0=c.GREEN, var1=stats['injected'], var2=c.RESET, var3=c.CYAN, var4=stats['from_en'], var5=c.RESET)))
             elif translate_dir and args.locales:
-                print(f"{c.INFO}[INFO]{c.RESET} Injection...")
+                print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
                 results = run_inject_from_dir(translate_dir, args.locales, update_dir)
                 for lang, stats in sorted(results.items()):
                     if 'error' in stats:
-                        print(f"{c.CYAN}[{lang.upper()}]{c.RESET} {c.ERROR}[ERREUR]{c.RESET}: {stats['error']}")
+                        print(_("{var0}[{var1}]{var2} {var3}[ERREUR]{var4}: {var5}").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.ERROR, var4=c.RESET, var5=stats['error']))
                     else:
-                        print(f"{c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET}: {c.GREEN}{stats['injected']}{c.RESET} traduites + {c.CYAN}{stats['from_en']}{c.RESET} EN")
+                        print(_("{var0}[{var1}]{var2} {var3}[OK]{var4}: {var5}{var6}{var7} traduites + {var8}{var9}{var10} EN").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, var6=stats['injected'], var7=c.RESET, var8=c.CYAN, var9=stats['from_en'], var10=c.RESET))
             else:
-                print(c.error("Spécifiez --translate + --target OU --translate-dir + --locales OU --plugin-path + --locales"))
+                print(c.error(_("Spécifiez --translate + --target OU --translate-dir + --locales OU --plugin-path + --locales")))
                 sys.exit(1)
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
             sys.exit(1)
 
     elif args.command == 'sync':
@@ -494,23 +494,23 @@ Exemples:
             if hasattr(args, 'plugin_path') and args.plugin_path and not update_dir:
                 update_dir = find_latest_tool_output(args.plugin_path, "Translator")
                 if update_dir:
-                    print(f"{c.INFO}[INFO]{c.RESET} Auto-détection: {c.VALUE}{update_dir}{c.RESET}")
+                    print(_("{var0}[INFO]{var1} Auto-détection: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
 
             if not args.ref and not update_dir:
-                print(c.error("--ref, --update ou --plugin-path requis"))
+                print(c.error(_("--ref, --update ou --plugin-path requis")))
                 sys.exit(1)
 
-            print(f"{c.INFO}[INFO]{c.RESET} Synchronisation...")
+            print(_("{var0}[INFO]{var1} Synchronisation...").format(var0=c.INFO, var1=c.RESET))
             results = run_sync(args.ref, args.locales, update_dir)
 
             if not results:
-                print(c.warning("Aucune langue étrangère trouvée."))
+                print(c.warning(_("Aucune langue étrangère trouvée.")))
             else:
                 print()
                 print(generate_sync_report(results))
 
         except Exception as e:
-            print(c.error(f"Erreur: {e}"))
+            print(c.error(_("Erreur: {e}").format(e=e)))
             sys.exit(1)
 
     else:

@@ -295,10 +295,10 @@ def validate_plugin_path(path: str) -> tuple:
     normalized = os.path.normpath(path)
 
     if not os.path.isdir(normalized):
-        return False, normalized, f"Répertoire introuvable: {normalized}"
+        return False, normalized, _("Répertoire introuvable: {normalized}").format(normalized=normalized)
 
     if not normalized.lower().endswith('.lrplugin'):
-        return True, normalized, "Ce dossier ne se termine pas par .lrplugin"
+        return True, normalized, _("Ce dossier ne se termine pas par .lrplugin")
 
     return True, normalized, None
 

@@ -70,7 +70,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
 
     # Résoudre le chemin de référence
     if not reference_path:
-        raise ValueError("Chemin de référence requis (--ref ou via --update)")
+        raise ValueError(_("Chemin de référence requis (--ref ou via --update)"))
 
     ref_dir, ref_file = resolve_path(reference_path)
 
@@ -157,7 +157,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
 
         # Marquer si le texte de référence a changé (UNIQUEMENT si update_data fourni via COMPARE)
         if update_data and key in changed_keys:
-            markers[key] = "-- [NEEDS_REVIEW] Reference text was modified"
+            markers[key] = _("-- [NEEDS_REVIEW] Reference text was modified")
             stats['needs_review'] += 1
 
     # Clés manquantes : ajouter avec valeur de référence
@@ -165,7 +165,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         new_strings[key] = ref_strings[key]  # Valeur de référence par défaut
         # Marquer UNIQUEMENT si update_data fourni via COMPARE
         if update_data:
-            markers[key] = "-- [NEW] To translate"
+            markers[key] = _("-- [NEW] To translate")
         stats['added'] += 1
 
     # Clés en trop : ne pas copier (= supprimées)
@@ -199,7 +199,7 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
     """Génère un rapport de synchronisation avec couleurs."""
     lines = []
     lines.append(f"{c.HEADER}{'=' * 70}{c.RESET}")
-    lines.append(f"{c.TITLE}RAPPORT DE SYNCHRONISATION{c.RESET}")
+    lines.append(_("{var0}RAPPORT DE SYNCHRONISATION{var1}").format(var0=c.TITLE, var1=c.RESET))
     lines.append(f"{c.HEADER}{'=' * 70}{c.RESET}")
     lines.append("")
 
@@ -213,35 +213,35 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
         total_removed += data['removed']
 
         lines.append(f"{c.CYAN}[{lang.upper()}]{c.RESET}")
-        lines.append(f"  {c.KEY}Clés conservées  {c.RESET}: {c.WHITE}{data['kept']}{c.RESET}")
-        lines.append(f"  {c.KEY}Clés ajoutées    {c.RESET}: {c.GREEN}{data['added']}{c.RESET}  {c.DIM}[NEW] à traduire{c.RESET}")
-        lines.append(f"  {c.KEY}Clés à réviser   {c.RESET}: {c.YELLOW}{data['needs_review']}{c.RESET}  {c.DIM}[NEEDS_REVIEW]{c.RESET}")
-        lines.append(f"  {c.KEY}Clés supprimées  {c.RESET}: {c.RED}{data['removed']}{c.RESET}")
-        lines.append(f"  {c.KEY}Total            {c.RESET}: {c.WHITE}{data['total']}{c.RESET}")
+        lines.append(_("  {var0}Clés conservées  {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=data['kept'], var4=c.RESET))
+        lines.append(_("  {var0}Clés ajoutées    {var1}: {var2}{var3}{var4}  {var5}[NEW] à traduire{var6}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, var3=data['added'], var4=c.RESET, var5=c.DIM, var6=c.RESET))
+        lines.append(_("  {var0}Clés à réviser   {var1}: {var2}{var3}{var4}  {var5}[NEEDS_REVIEW]{var6}").format(var0=c.KEY, var1=c.RESET, var2=c.YELLOW, var3=data['needs_review'], var4=c.RESET, var5=c.DIM, var6=c.RESET))
+        lines.append(_("  {var0}Clés supprimées  {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.RED, var3=data['removed'], var4=c.RESET))
+        lines.append(_("  {var0}Total            {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=data['total'], var4=c.RESET))
 
         if data['added_keys']:
-            lines.append(f"  {c.DIM}Nouvelles clés:{c.RESET}")
+            lines.append(_("  {var0}Nouvelles clés:{var1}").format(var0=c.DIM, var1=c.RESET))
             for key in data['added_keys'][:5]:
                 lines.append(f"    {c.GREEN}+{c.RESET} {c.DIM}{key}{c.RESET}")
             if len(data['added_keys']) > 5:
-                lines.append(f"    {c.DIM}... et {len(data['added_keys']) - 5} autres{c.RESET}")
+                lines.append(_("    {var0}... et {var1} autres{var2}").format(var0=c.DIM, var1=len(data['added_keys']) - 5, var2=c.RESET))
 
         if data['review_keys']:
-            lines.append(f"  {c.DIM}Clés à réviser:{c.RESET}")
+            lines.append(_("  {var0}Clés à réviser:{var1}").format(var0=c.DIM, var1=c.RESET))
             for key in data['review_keys'][:5]:
                 lines.append(f"    {c.YELLOW}?{c.RESET} {c.DIM}{key}{c.RESET}")
             if len(data['review_keys']) > 5:
-                lines.append(f"    {c.DIM}... et {len(data['review_keys']) - 5} autres{c.RESET}")
+                lines.append(_("    {var0}... et {var1} autres{var2}").format(var0=c.DIM, var1=len(data['review_keys']) - 5, var2=c.RESET))
 
         lines.append("")
 
     lines.append(f"{c.separator()}")
-    lines.append(f"{c.TITLE}TOTAL{c.RESET}")
+    lines.append(_("{var0}TOTAL{var1}").format(var0=c.TITLE, var1=c.RESET))
     lines.append(f"{c.separator()}")
-    lines.append(f"  {c.KEY}Langues traitées {c.RESET}: {c.WHITE}{len(results)}{c.RESET}")
-    lines.append(f"  {c.KEY}Clés ajoutées    {c.RESET}: {c.GREEN}{total_added}{c.RESET}")
-    lines.append(f"  {c.KEY}Clés à réviser   {c.RESET}: {c.YELLOW}{total_review}{c.RESET}")
-    lines.append(f"  {c.KEY}Clés supprimées  {c.RESET}: {c.RED}{total_removed}{c.RESET}")
+    lines.append(_("  {var0}Langues traitées {var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=len(results), var4=c.RESET))
+    lines.append(_("  {var0}Clés ajoutées    {var1}: {var2}{total_added}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.GREEN, total_added=total_added, var4=c.RESET))
+    lines.append(_("  {var0}Clés à réviser   {var1}: {var2}{total_review}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.YELLOW, total_review=total_review, var4=c.RESET))
+    lines.append(_("  {var0}Clés supprimées  {var1}: {var2}{total_removed}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.RED, total_removed=total_removed, var4=c.RESET))
 
     return "\n".join(lines)
 
@@ -262,12 +262,12 @@ def menu_sync(plugin_path: str = ""):
 
     clear_screen()
     print_header()
-    print(f"\n{c.INFO}SYNC{c.RESET}: Synchroniser les langues étrangères")
+    print(_("\n{var0}SYNC{var1}: Synchroniser les langues étrangères").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
 
-    print(f"\n{c.KEY}Avez-vous un dossier UPDATE{c.RESET} (généré par COMPARE) ?")
-    print(f"{c.DIM}  (Permet de marquer les clés [NEEDS_REVIEW]){c.RESET}")
-    has_update = input(f"{c.PROMPT}  [O/n]: {c.RESET}").strip().lower()
+    print(_("\n{var0}Avez-vous un dossier UPDATE{var1} (généré par COMPARE) ?").format(var0=c.KEY, var1=c.RESET))
+    print(_("{var0}  (Permet de marquer les clés [NEEDS_REVIEW]){var1}").format(var0=c.DIM, var1=c.RESET))
+    has_update = input(_("{var0}  [O/n]: {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
 
     update_dir = None
     ref_path = None
@@ -278,52 +278,52 @@ def menu_sync(plugin_path: str = ""):
         if plugin_path:
             update_dir = select_tool_output_dir(plugin_path, "Translator", "")
             if update_dir:
-                print(f"\n{c.INFO}[INFO]{c.RESET} Dossier sélectionné: {c.VALUE}{update_dir}{c.RESET}")
+                print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
             else:
-                print(c.warning("Aucun dossier Translator sélectionné"))
+                print(c.warning(_("Aucun dossier Translator sélectionné")))
 
         if not update_dir:
             update_filename = get_update_filename()
-            print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant {update_filename}):")
+            print(_("\n{var0}Dossier UPDATE{var1} (contenant {update_filename}):").format(var0=c.KEY, var1=c.RESET, update_filename=update_filename))
             update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
             if not update_dir or not os.path.isdir(update_dir):
-                print(c.error("Répertoire invalide."))
-                input("\nAppuyez sur Entrée...")
+                print(c.error(_("Répertoire invalide.")))
+                input(_("\nAppuyez sur Entrée..."))
                 return None
     else:
-        print(f"\n{c.KEY}Fichier EN de référence{c.RESET} (ou répertoire):")
+        print(_("\n{var0}Fichier EN de référence{var1} (ou répertoire):").format(var0=c.KEY, var1=c.RESET))
         ref_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not ref_path:
-            print(c.error("Chemin requis."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Chemin requis.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
-    print(f"\n{c.KEY}Répertoire des fichiers de langues{c.RESET} (Locales):")
-    print(f"{c.DIM}  (Entrée = même répertoire que la référence){c.RESET}")
+    print(_("\n{var0}Répertoire des fichiers de langues{var1} (Locales):").format(var0=c.KEY, var1=c.RESET))
+    print(_("{var0}  (Entrée = même répertoire que la référence){var1}").format(var0=c.DIM, var1=c.RESET))
     locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
     try:
-        print(f"\n{c.INFO}[INFO]{c.RESET} Synchronisation en cours...")
+        print(_("\n{var0}[INFO]{var1} Synchronisation en cours...").format(var0=c.INFO, var1=c.RESET))
         results = run_sync(ref_path, locales_dir, update_dir)
 
         if not results:
-            print(c.warning("Aucune langue étrangère trouvée."))
+            print(c.warning(_("Aucune langue étrangère trouvée.")))
         else:
             print()
             print(generate_sync_report(results))
             print()
-            print(c.success("Fichiers mis à jour (backups .bak créés)"))
+            print(c.success(_("Fichiers mis à jour (backups .bak créés)")))
             print()
-            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
-            print(f"{c.DIM}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{c.RESET}")
-            print(f"{c.DIM}  pour compléter les traductions.{c.RESET}")
+            print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
+            print(_("{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("{var0}  pour compléter les traductions.{var1}").format(var0=c.DIM, var1=c.RESET))
 
         return results
 
     except FileNotFoundError as e:
-        print(c.error(f"Fichier non trouvé: {e}"))
+        print(c.error(_("Fichier non trouvé: {e}").format(e=e)))
     except Exception as e:
-        print(c.error(f"Erreur: {e}"))
+        print(c.error(_("Erreur: {e}").format(e=e)))
 
-    input("\nAppuyez sur Entrée pour continuer...")
+    input(_("\nAppuyez sur Entrée pour continuer..."))
     return None

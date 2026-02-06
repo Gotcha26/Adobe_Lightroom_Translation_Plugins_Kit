@@ -7,10 +7,11 @@ Ce dossier contient les outils pour gérer automatiquement les traductions du pr
 1. [Structure rapide](#structure-rapide)
 2. [Démarrage rapide](#démarrage-rapide)
 3. [Cas d'usage courants](#cas-dusage-courants)
-4. [Workflow complet](#workflow-complet)
-5. [Traductions externes](#traductions-externes)
-6. [Vérifier l'état](#vérifier-létat-des-traductions)
-7. [Dépannage](#dépannage)
+4. [Formatage automatique global](#formatage-automatique-global)
+5. [Workflow complet](#workflow-complet)
+6. [Traductions externes](#traductions-externes)
+7. [Vérifier l'état](#vérifier-létat-des-traductions)
+8. [Dépannage](#dépannage)
 
 ---
 
@@ -18,13 +19,20 @@ Ce dossier contient les outils pour gérer automatiquement les traductions du pr
 
 ### Outils disponibles
 
+**Outils d'automatisation (NOUVEAUX)** ⭐
 ```
-i18n/
+├── find_untranslated_strings.py  # Localise les chaînes sans _()
+├── auto_i18n.py                  # Enrobe automatiquement (gère f-strings)
+└── auto_wrap_strings.py          # Enrobe simplement (fichier par fichier)
+```
+
+**Outils de traduction (essentiels)**
+```
 ├── extract_strings.py        # Extrait les chaînes du code
 ├── update_po.py              # Met à jour les traductions
 ├── compile_po.py             # Compile en fichiers binaires
 ├── init_language.py          # Initialise une nouvelle langue
-├── sync_translations.py       # Fait tout en une seule commande
+├── sync_translations.py       # Fait tout en une seule commande (3 étapes)
 └── check_translations.py      # Vérifie l'état des traductions
 ```
 
@@ -57,6 +65,26 @@ python i18n/sync_translations.py
 ```
 
 Ou sur Windows, double-clic sur `sync_translations.bat`.
+
+### 🚀 5 minutes pour traiter TOUT le projet
+
+Vous avez ajouté du code et voulez que tout soit traduit d'un coup ?
+
+```bash
+# 1. Scanner pour voir ce qui doit être traduit
+python i18n/find_untranslated_strings.py --confidence HIGH
+
+# 2. Enrober automatiquement tout
+python i18n/auto_i18n.py --all --apply
+
+# 3. Synchroniser
+python i18n/sync_translations.py
+
+# ✅ C'est fait ! Vérifiez :
+python i18n/check_translations.py
+```
+
+C'est tout ! Tous les chaînes détectées comme "HIGH confidence" sont maintenant enrobées et prêtes à être traduites.
 
 ---
 
@@ -172,6 +200,104 @@ Vous pouvez aussi utiliser [Poedit](https://poedit.net/) pour éditer graphiquem
 
 ---
 
+## Formatage automatique global
+
+**Nouveau !** Trois outils pour automatiser l'ajout de `_()` sur l'ensemble du code.
+
+### 🔍 1. Trouver les chaînes non traduites
+
+```bash
+# Scanner global
+python i18n/find_untranslated_strings.py
+
+# Avec détails (liste complète)
+python i18n/find_untranslated_strings.py --verbose
+
+# Fichier spécifique
+python i18n/find_untranslated_strings.py --file tools/translator/compare_langs.py
+
+# Filtrer par confiance
+python i18n/find_untranslated_strings.py --confidence HIGH
+```
+
+Affiche :
+- Nombre de chaînes non traduites par fichier
+- Niveau de confiance (HIGH/MEDIUM/LOW)
+- Contexte et numéro de ligne
+
+### 🤖 2. Enrober automatiquement les chaînes
+
+#### Option A : Auto i18n (recommandé, gère les f-strings)
+
+```bash
+# Aperçu avant modification
+python i18n/auto_i18n.py --file tools/translator/compare_langs.py --preview
+
+# Appliquer les modifications
+python i18n/auto_i18n.py --file tools/translator/compare_langs.py --apply
+
+# Tous les fichiers à la fois
+python i18n/auto_i18n.py --all --apply
+```
+
+**Avantages :**
+- Gère les f-strings complexes : `f"Texte {var}"` → `_("Texte {var}").format(var=var)`
+- Ignore automatiquement les patterns techniques
+- Mode aperçu avant de modifier
+- Préserve le formatage
+
+#### Option B : Auto wrap strings (plus simple, fichier par fichier)
+
+```bash
+# Aperçu
+python i18n/auto_wrap_strings.py --file tools/translator/compare_langs.py --dry-run
+
+# Appliquer
+python i18n/auto_wrap_strings.py --file tools/translator/compare_langs.py
+
+# Avec contrôle de confiance
+python i18n/auto_wrap_strings.py --file tools/translator/compare_langs.py --confidence MEDIUM
+```
+
+### ✅ Workflow complet automatisé
+
+```bash
+# 1. Trouver les chaînes
+python i18n/find_untranslated_strings.py --confidence HIGH
+
+# 2. Aperçu des modifications
+python i18n/auto_i18n.py --file tools/translator/compare_langs.py --preview
+
+# 3. Appliquer
+python i18n/auto_i18n.py --file tools/translator/compare_langs.py --apply
+
+# 4. Synchroniser les traductions
+python i18n/sync_translations.py
+
+# 5. Vérifier
+python i18n/check_translations.py --verbose
+```
+
+### 📋 Exemple pratique
+
+**Situation :** Vous avez ajouté du code avec des chaînes, et vous voulez les traduire automatiquement.
+
+```bash
+# 1. Scanner pour voir ce qui doit être traduit
+python i18n/find_untranslated_strings.py --file tools/new_feature.py --verbose
+
+# 2. Voir les modifications proposées
+python i18n/auto_i18n.py --file tools/new_feature.py --preview
+
+# 3. Si ça vous plaît, appliquer
+python i18n/auto_i18n.py --file tools/new_feature.py --apply
+
+# 4. Finaliser
+python i18n/sync_translations.py fr en
+```
+
+---
+
 ## Workflow complet
 
 ### Les 3 commandes de base
@@ -267,18 +393,25 @@ Vous obtenez un résumé avec pourcentage de traduction et liste des chaînes `f
 # ✅ Bon
 print(_("Bienvenue"))
 msg = _("Erreur: {var}").format(var=variable)
+label = _("Nom complet")
 
 # ❌ Mauvais
 print("Bienvenue")                          # Pas de _()
 msg = "Erreur: " + variable                 # Pas de _()
+filename = "data.json"                      # Fichier technique, pas traduire
 ```
 
-### Ordre d'exécution
+### Ordre d'exécution standard
 
-1. Modifiez le code (ajouter/modifier/supprimer des chaînes `_()`)
-2. Lancez `python i18n/sync_translations.py`
+1. Modifiez le code
+2. Lancez `python i18n/find_untranslated_strings.py` (optionnel, pour vérifier)
+3. Lancez `python i18n/auto_i18n.py --file <path> --preview` (optionnel, pour aperçu)
+4. Lancez `python i18n/auto_i18n.py --file <path> --apply` (automatise les _())
+5. Lancez `python i18n/sync_translations.py`
 
 C'est tout ! Les trois étapes (extract → update → compile) se font automatiquement.
+
+**Note:** Les étapes 2-4 sont optionnelles si vous avez déjà enrobé vos chaînes de `_()` manuellement.
 
 ### Fichiers à ne pas toucher
 
@@ -292,9 +425,12 @@ C'est tout ! Les trois étapes (extract → update → compile) se font automati
 
 | Problème | Cause | Solution |
 |----------|-------|----------|
-| Le `.pot` ne change pas | Chaînes non enrobées de `_()` | Ajouter `_()` autour des chaînes |
+| Le `.pot` ne change pas | Chaînes non enrobées de `_()` | Lancer `python i18n/auto_i18n.py --file <path> --apply` |
+| Trop de chaînes techniques détectées | Patterns non reconnus | Ajouter patterns à ignorer dans `find_untranslated_strings.py` |
+| F-string pas enrobée correctement | Auto i18n ne gère pas ce cas | Modifier manuellement ou signaler l'issue |
 | Traductions non à jour dans l'appli | `.po` modifiés mais pas compilés | Lancer `python i18n/compile_po.py` |
 | Fichier `.po` corrompu | Édition incorrecte | Restaurer depuis `.po.bak` |
+| Auto wrap ne trouve pas la chaîne | Guillemets imbriqués ou f-string | Utiliser `auto_i18n.py` à la place |
 
 ---
 

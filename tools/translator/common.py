@@ -127,20 +127,20 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
         by_category[category].append(key)
 
     with open(file_path, 'w', encoding='utf-8') as f:
-        f.write("-- =============================================================================\n")
-        f.write(f"-- Plugin Localization - {lang.upper()}\n")
+        f.write(_("-- =============================================================================\n"))
+        f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
         f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"-- Total keys: {len(translations)}\n")
+        f.write(_("-- Total keys: {var0}\n").format(var0=len(translations)))
 
         # Infos supplémentaires depuis metadata
         if metadata.get('new_keys'):
-            f.write(f"-- New keys: {metadata['new_keys']}\n")
+            f.write(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
         if metadata.get('changed_keys'):
-            f.write(f"-- Changed keys: {metadata['changed_keys']}\n")
+            f.write(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
         if metadata.get('source'):
-            f.write(f"-- Source: {metadata['source']}\n")
+            f.write(_("-- Source: {var0}\n").format(var0=metadata['source']))
 
-        f.write("-- =============================================================================\n\n")
+        f.write(_("-- =============================================================================\n\n"))
 
         # Add translation warning note for translators
         f.write(TRANSLATION_WARNING_NOTE)
@@ -355,24 +355,24 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
         elif stripped.startswith('-- Total keys:'):
             total_keys_found = True
             if metadata.get('total_keys') is not None:
-                updated.append(f"-- Total keys: {metadata['total_keys']}\n")
+                updated.append(_("-- Total keys: {var0}\n").format(var0=metadata['total_keys']))
             else:
                 updated.append(line)
         # Remplacer ou supprimer New keys
         elif stripped.startswith('-- New keys:'):
             new_keys_found = True
             if metadata.get('new_keys'):
-                updated.append(f"-- New keys: {metadata['new_keys']}\n")
+                updated.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
         # Remplacer ou supprimer Changed keys
         elif stripped.startswith('-- Changed keys:'):
             changed_keys_found = True
             if metadata.get('changed_keys'):
-                updated.append(f"-- Changed keys: {metadata['changed_keys']}\n")
+                updated.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
         # Remplacer Source
         elif stripped.startswith('-- Source:') or stripped.startswith('-- SOURCE:'):
             source_found = True
             if metadata.get('source'):
-                updated.append(f"-- Source: {metadata['source']}\n")
+                updated.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
             else:
                 updated.append(line)
         else:
@@ -387,11 +387,11 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
 
     additions = []
     if not new_keys_found and metadata.get('new_keys'):
-        additions.append(f"-- New keys: {metadata['new_keys']}\n")
+        additions.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
     if not changed_keys_found and metadata.get('changed_keys'):
-        additions.append(f"-- Changed keys: {metadata['changed_keys']}\n")
+        additions.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
     if not source_found and metadata.get('source'):
-        additions.append(f"-- Source: {metadata['source']}\n")
+        additions.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
 
     if additions:
         updated = updated[:insert_index] + additions + updated[insert_index:]
@@ -419,9 +419,9 @@ def resolve_path(path: str) -> Tuple[str, str]:
         ref_file = os.path.join(path, ref_filename)
         if os.path.isfile(ref_file):
             return path, ref_file
-        raise FileNotFoundError(f"{ref_filename} non trouvé dans: {path}")
+        raise FileNotFoundError(_("{ref_filename} non trouvé dans: {path}").format(ref_filename=ref_filename, path=path))
     else:
-        raise FileNotFoundError(f"Chemin invalide: {path}")
+        raise FileNotFoundError(_("Chemin invalide: {path}").format(path=path))
 
 
 def load_update_json(update_dir: str) -> Optional[Dict]:
@@ -472,12 +472,12 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def print_header(version: str = "6.0"):
+def print_header(version: str = _("6.0")):
     """Affiche l'entete du menu avec couleurs."""
     print()
     print(c.HEADER + "=" * 70 + c.RESET)
-    title = f"  TRANSLATION MANAGER v{version}".center(70)
-    subtitle = "  Gestionnaire de traductions multilingues".center(70)
+    title = _("  TRANSLATION MANAGER v{version}").format(version=version).center(70)
+    subtitle = _("  Gestionnaire de traductions multilingues").center(70)
     print(c.TITLE + title + c.RESET)
     print(c.DIM + subtitle + c.RESET)
     print(c.HEADER + "=" * 70 + c.RESET)

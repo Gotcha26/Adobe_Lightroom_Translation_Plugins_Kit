@@ -74,12 +74,12 @@ def validate_language_code(lang_code: str) -> Tuple[bool, str, Optional[str]]:
 
     # Vérifier format: exactement 2 lettres
     if not re.match(r'^[a-z]{2}$', normalized):
-        return False, normalized, "Code langue invalide (doit être 2 lettres, ex: fr, de, es)"
+        return False, normalized, _("Code langue invalide (doit être 2 lettres, ex: fr, de, es)")
 
     # Réserver la langue de référence pour éviter confusion
     if is_reference_lang(normalized):
         ref_lang = get_reference_lang().upper()
-        return False, normalized, f"Utilisez INSTALL pour le fichier {ref_lang} de référence"
+        return False, normalized, _("Utilisez INSTALL pour le fichier {ref_lang} de référence").format(ref_lang=ref_lang)
 
     return True, normalized, None
 
@@ -98,7 +98,7 @@ def check_existing_language(plugin_path: str, lang_code: str) -> Tuple[bool, Opt
     if not os.path.isdir(plugin_path):
         return False, None
 
-    filename = f"TranslatedStrings_{lang_code}.txt"
+    filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
     file_path = os.path.join(plugin_path, filename)
 
     if os.path.isfile(file_path):
@@ -211,11 +211,11 @@ def install_language_from_extraction(plugin_path: str, lang_code: str,
     if not extraction_dir:
         extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not extraction_dir:
-            print(c.error("Aucune extraction Extractor trouvée"))
+            print(c.error(_("Aucune extraction Extractor trouvée")))
             return False
 
     # Vérifier que le fichier source existe
-    source_filename = f"TranslatedStrings_{lang_code}.txt"
+    source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
     source_path = os.path.join(extraction_dir, source_filename)
 
     if not os.path.isfile(source_path):
@@ -228,27 +228,27 @@ def install_language_from_extraction(plugin_path: str, lang_code: str,
     exists = os.path.isfile(dest_path)
 
     if exists and not force:
-        print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Le fichier {c.VALUE}{source_filename}{c.RESET} existe déjà dans le plugin.")
+        print(_("\n{var0}[ATTENTION]{var1} Le fichier {var2}{source_filename}{var4} existe déjà dans le plugin.").format(var0=c.WARNING, var1=c.RESET, var2=c.VALUE, source_filename=source_filename, var4=c.RESET))
         print()
-        choice = input(f"{c.PROMPT}Écraser? (o/N): {c.RESET}").strip().lower()
+        choice = input(_("{var0}Écraser? (o/N): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
         if choice not in ['o', 'oui', 'y', 'yes']:
-            print(c.warning("Installation annulée"))
+            print(c.warning(_("Installation annulée")))
             return False
 
         # Créer backup avant écrasement
         backup_created = create_backup(plugin_path, lang_code)
         if backup_created:
-            print(c.success(f"Backup créé: {backup_created}"))
+            print(c.success(_("Backup créé: {backup_created}").format(backup_created=backup_created)))
 
     # Copier le fichier
     try:
         shutil.copy2(source_path, dest_path)
         print()
-        print(c.success(f"✓ Fichier installé: {source_filename}"))
+        print(c.success(_("✓ Fichier installé: {source_filename}").format(source_filename=source_filename)))
         print(f"  {c.DIM}→ {dest_path}{c.RESET}")
         return True
     except Exception as e:
-        print(c.error(f"Erreur lors de la copie: {e}"))
+        print(c.error(_("Erreur lors de la copie: {e}").format(e=e)))
         return False
 
 
@@ -277,11 +277,11 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         if not ref_file:
             ref_lang = get_reference_lang().upper()
             ref_filename = get_reference_filename()
-            print(c.error(f"Aucun fichier {ref_lang} de référence trouvé"))
+            print(c.error(_("Aucun fichier {ref_lang} de référence trouvé").format(ref_lang=ref_lang)))
             print()
-            print(f"{c.DIM}Vérifiez que:{c.RESET}")
+            print(_("{var0}Vérifiez que:{var1}").format(var0=c.DIM, var1=c.RESET))
             print(f"  - {c.DIM}L'Extractor a été lancé{c.RESET}")
-            print(f"  - {c.DIM}{ref_filename} existe dans le plugin{c.RESET}")
+            print(_("  - {var0}{ref_filename} existe dans le plugin{var2}").format(var0=c.DIM, ref_filename=ref_filename, var2=c.RESET))
             return False
 
     # Parser le fichier de référence
@@ -289,30 +289,30 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         ref_translations = parse_translation_file(ref_file)
     except Exception as e:
         ref_lang = get_reference_lang().upper()
-        print(c.error(f"Erreur lors de la lecture du fichier {ref_lang}: {e}"))
+        print(c.error(_("Erreur lors de la lecture du fichier {ref_lang}: {e}").format(ref_lang=ref_lang, e=e)))
         return False
 
     if not ref_translations:
-        print(c.error("Aucune clé trouvée dans le fichier EN de référence"))
+        print(c.error(_("Aucune clé trouvée dans le fichier EN de référence")))
         return False
 
     # Vérifier si le fichier existe déjà
-    dest_filename = f"TranslatedStrings_{lang_code}.txt"
+    dest_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
     dest_path = os.path.join(plugin_path, dest_filename)
     exists = os.path.isfile(dest_path)
 
     if exists and not force:
-        print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Le fichier {c.VALUE}{dest_filename}{c.RESET} existe déjà dans le plugin.")
+        print(_("\n{var0}[ATTENTION]{var1} Le fichier {var2}{dest_filename}{var4} existe déjà dans le plugin.").format(var0=c.WARNING, var1=c.RESET, var2=c.VALUE, dest_filename=dest_filename, var4=c.RESET))
         print()
-        choice = input(f"{c.PROMPT}Écraser? (o/N): {c.RESET}").strip().lower()
+        choice = input(_("{var0}Écraser? (o/N): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
         if choice not in ['o', 'oui', 'y', 'yes']:
-            print(c.warning("Création annulée"))
+            print(c.warning(_("Création annulée")))
             return False
 
         # Créer backup avant écrasement
         backup_created = create_backup(plugin_path, lang_code)
         if backup_created:
-            print(c.success(f"Backup créé: {backup_created}"))
+            print(c.success(_("Backup créé: {backup_created}").format(backup_created=backup_created)))
 
     # Créer le nouveau fichier avec valeurs EN par défaut
     try:
@@ -330,22 +330,22 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         )
 
         print()
-        print(c.success(f"✓ Fichier créé: {dest_filename}"))
+        print(c.success(_("✓ Fichier créé: {dest_filename}").format(dest_filename=dest_filename)))
         print(f"  {c.DIM}→ {dest_path}{c.RESET}")
         print()
-        print(f"{c.INFO}[INFO]{c.RESET} Le fichier contient:")
-        print(f"  • {c.WHITE}{len(ref_translations)}{c.RESET} clés")
-        print(f"  • Valeurs EN par défaut (à traduire)")
+        print(_("{var0}[INFO]{var1} Le fichier contient:").format(var0=c.INFO, var1=c.RESET))
+        print(_("  • {var0}{var1}{var2} clés").format(var0=c.WHITE, var1=len(ref_translations), var2=c.RESET))
+        print(_("  • Valeurs EN par défaut (à traduire)"))
         print()
-        print(f"{c.INFO}Prochaines étapes:{c.RESET}")
-        print(f"  1. Ouvrez {c.VALUE}{dest_filename}{c.RESET} dans un éditeur")
-        print(f"  2. Traduisez les valeurs dans la langue cible")
-        print(f"  3. Testez le plugin dans Lightroom")
+        print(_("{var0}Prochaines étapes:{var1}").format(var0=c.INFO, var1=c.RESET))
+        print(_("  1. Ouvrez {var0}{dest_filename}{var2} dans un éditeur").format(var0=c.VALUE, dest_filename=dest_filename, var2=c.RESET))
+        print(_("  2. Traduisez les valeurs dans la langue cible"))
+        print(_("  3. Testez le plugin dans Lightroom"))
 
         return True
 
     except Exception as e:
-        print(c.error(f"Erreur lors de la création du fichier: {e}"))
+        print(c.error(_("Erreur lors de la création du fichier: {e}").format(e=e)))
         return False
 
 
@@ -364,7 +364,7 @@ def create_backup(plugin_path: str, lang_code: str) -> Optional[str]:
     Returns:
         Chemin du backup créé ou None si erreur
     """
-    source_filename = f"TranslatedStrings_{lang_code}.txt"
+    source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
     source_path = os.path.join(plugin_path, source_filename)
 
     if not os.path.isfile(source_path):
@@ -377,14 +377,14 @@ def create_backup(plugin_path: str, lang_code: str) -> Optional[str]:
 
     # Nom du backup avec timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_filename = f"{source_filename}.{timestamp}.bak"
+    backup_filename = _("{source_filename}.{timestamp}.bak").format(source_filename=source_filename, timestamp=timestamp)
     backup_path = os.path.join(backup_dir, backup_filename)
 
     try:
         shutil.copy2(source_path, backup_path)
         return backup_path
     except Exception as e:
-        print(c.warning(f"Impossible de créer le backup: {e}"))
+        print(c.warning(_("Impossible de créer le backup: {e}").format(e=e)))
         return None
 
 
@@ -397,27 +397,27 @@ def menu_addlang(plugin_path: str):
     clear_screen()
     print_header()
 
-    print(f"\n{c.TITLE}  ADD LANGUAGE - Ajouter une langue au plugin{c.RESET}")
+    print(_("\n{var0}  ADD LANGUAGE - Ajouter une langue au plugin{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     # Vérifier si le plugin est configuré
     if not plugin_path or not os.path.isdir(plugin_path):
-        print(c.error("Plugin non configuré ou introuvable."))
+        print(c.error(_("Plugin non configuré ou introuvable.")))
         print()
-        print("Configurez d'abord le chemin du plugin dans le menu principal.")
+        print(_("Configurez d'abord le chemin du plugin dans le menu principal."))
         return
 
     plugin_name = os.path.basename(plugin_path)
-    print(f"\n{c.INFO}[INFO]{c.RESET} Plugin: {c.VALUE}{plugin_name}{c.RESET}")
+    print(_("\n{var0}[INFO]{var1} Plugin: {var2}{plugin_name}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, plugin_name=plugin_name, var4=c.RESET))
 
     # Lister les langues installées
     installed_langs = list_installed_languages(plugin_path)
     if installed_langs:
-        print(f"\n{c.INFO}Langues actuellement installées:{c.RESET}")
+        print(_("\n{var0}Langues actuellement installées:{var1}").format(var0=c.INFO, var1=c.RESET))
         for lang in installed_langs:
-            print(f"  {c.OK}✓{c.RESET} {c.VALUE}{lang}{c.RESET} (TranslatedStrings_{lang}.txt)")
+            print(_("  {var0}✓{var1} {var2}{lang}{var4} (TranslatedStrings_{lang}.txt)").format(var0=c.OK, var1=c.RESET, var2=c.VALUE, lang=lang, var4=c.RESET, lang=lang))
     else:
-        print(f"\n{c.WARNING}Aucune langue installée dans le plugin{c.RESET}")
+        print(_("\n{var0}Aucune langue installée dans le plugin{var1}").format(var0=c.WARNING, var1=c.RESET))
 
     # Menu de sélection du mode
     print()
@@ -425,17 +425,17 @@ def menu_addlang(plugin_path: str):
     print(f"{c.INFO}Sélectionnez le mode d'ajout:{c.RESET}")
     print(c.separator())
     print()
-    print(f"  {c.YELLOW}1{c.RESET}. {c.SUCCESS}Installer depuis Extractor{c.RESET}")
-    print(f"     {c.DIM}Copie un fichier TranslatedStrings_xx.txt existant depuis la{c.RESET}")
-    print(f"     {c.DIM}dernière extraction Extractor vers le plugin.{c.RESET}")
+    print(_("  {var0}1{var1}. {var2}Installer depuis Extractor{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
+    print(_("     {var0}Copie un fichier TranslatedStrings_xx.txt existant depuis la{var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("     {var0}dernière extraction Extractor vers le plugin.{var1}").format(var0=c.DIM, var1=c.RESET))
     print(f"     {c.DIM}→ Utile si le fichier existe déjà dans l'extraction{c.RESET}")
     print()
-    print(f"  {c.YELLOW}2{c.RESET}. {c.SUCCESS}Créer un nouveau fichier de langue{c.RESET}")
-    print(f"     {c.DIM}Génère un nouveau TranslatedStrings_xx.txt basé sur le fichier EN{c.RESET}")
-    print(f"     {c.DIM}de référence, avec toutes les clés et valeurs EN par défaut.{c.RESET}")
-    print(f"     {c.DIM}→ Utile pour préparer une nouvelle langue à traduire{c.RESET}")
+    print(_("  {var0}2{var1}. {var2}Créer un nouveau fichier de langue{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
+    print(_("     {var0}Génère un nouveau TranslatedStrings_xx.txt basé sur le fichier EN{var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("     {var0}de référence, avec toutes les clés et valeurs EN par défaut.{var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("     {var0}→ Utile pour préparer une nouvelle langue à traduire{var1}").format(var0=c.DIM, var1=c.RESET))
     print()
-    print(f"  {c.YELLOW}0{c.RESET}. {c.DIM}Retour{c.RESET}")
+    print(_("  {var0}0{var1}. {var2}Retour{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.DIM, var3=c.RESET))
     print()
 
     choice = input(c.prompt(_("Votre choix:") + " (0-2): ")).strip()
@@ -447,7 +447,7 @@ def menu_addlang(plugin_path: str):
     elif choice == '0':
         return
     else:
-        print(c.error("Choix invalide"))
+        print(c.error(_("Choix invalide")))
 
 
 def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[str]):
@@ -455,19 +455,19 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
     clear_screen()
     print_header()
 
-    print(f"\n{c.TITLE}  MODE : Installer depuis Extractor{c.RESET}")
+    print(_("\n{var0}  MODE : Installer depuis Extractor{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     # Trouver la dernière extraction
     latest_extraction = find_latest_tool_output(plugin_path, "Extractor")
 
     if not latest_extraction:
-        print(c.error("Aucune extraction Extractor trouvée"))
+        print(c.error(_("Aucune extraction Extractor trouvée")))
         print()
-        print("Lancez d'abord l'Extractor pour générer les fichiers de langue.")
+        print(_("Lancez d'abord l'Extractor pour générer les fichiers de langue."))
         return
 
-    print(f"\n{c.INFO}[INFO]{c.RESET} Dernière extraction détectée:")
+    print(_("\n{var0}[INFO]{var1} Dernière extraction détectée:").format(var0=c.INFO, var1=c.RESET))
     print(f"  {c.VALUE}→ {os.path.basename(latest_extraction)}{c.RESET}")
 
     # Lister les langues disponibles dans l'extraction
@@ -479,11 +479,11 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
 
     print(f"\n{c.INFO}Langues disponibles dans l'extraction:{c.RESET}")
     for i, lang in enumerate(available_langs, 1):
-        status = f"{c.DIM}[DÉJÀ INSTALLÉ]{c.RESET}" if lang in installed_langs else ""
-        print(f"  {c.YELLOW}{i}{c.RESET}. {c.VALUE}{lang}{c.RESET} (TranslatedStrings_{lang}.txt) {status}")
+        status = _("{var0}[DÉJÀ INSTALLÉ]{var1}").format(var0=c.DIM, var1=c.RESET) if lang in installed_langs else ""
+        print(_("  {var0}{i}{var2}. {var3}{lang}{var5} (TranslatedStrings_{lang}.txt) {status}").format(var0=c.YELLOW, i=i, var2=c.RESET, var3=c.VALUE, lang=lang, var5=c.RESET, lang=lang, status=status))
 
     print()
-    user_input = input(f"{c.PROMPT}Sélectionnez la langue à installer (numéro ou code langue): {c.RESET}").strip()
+    user_input = input(_("{var0}Sélectionnez la langue à installer (numéro ou code langue): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
     # Déterminer le code langue
     lang_code = None
@@ -500,11 +500,11 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
             # Cas spécial: permettre la langue de référence en mode A
             lang_code = get_reference_lang()
         else:
-            print(c.error("Langue non disponible dans l'extraction"))
+            print(c.error(_("Langue non disponible dans l'extraction")))
             return
 
     if not lang_code:
-        print(c.error("Sélection invalide"))
+        print(c.error(_("Sélection invalide")))
         return
 
     # Installer
@@ -513,7 +513,7 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
 
     if success and lang_code not in installed_langs:
         print()
-        print(c.success(f"✓ Langue {c.VALUE}{lang_code}{c.RESET} ajoutée au plugin"))
+        print(c.success(_("✓ Langue {var0}{lang_code}{var2} ajoutée au plugin").format(var0=c.VALUE, lang_code=lang_code, var2=c.RESET)))
 
 
 def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
@@ -521,7 +521,7 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     clear_screen()
     print_header()
 
-    print(f"\n{c.TITLE}  MODE : Créer un nouveau fichier de langue{c.RESET}")
+    print(_("\n{var0}  MODE : Créer un nouveau fichier de langue{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     # Trouver le fichier EN de référence
@@ -530,14 +530,14 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     if not ref_file:
         ref_lang = get_reference_lang().upper()
         ref_filename = get_reference_filename()
-        print(c.error(f"Aucun fichier {ref_lang} de référence trouvé"))
+        print(c.error(_("Aucun fichier {ref_lang} de référence trouvé").format(ref_lang=ref_lang)))
         print()
-        print(f"Lancez d'abord l'Extractor pour générer {ref_filename}")
+        print(_("Lancez d'abord l'Extractor pour générer {ref_filename}").format(ref_filename=ref_filename))
         return
 
     # Afficher info sur la source
     if "Extractor" in ref_file:
-        source_info = f"Dernière extraction: {os.path.basename(os.path.dirname(ref_file))}"
+        source_info = _("Dernière extraction: {var0}").format(var0=os.path.basename(os.path.dirname(ref_file)))
     else:
         source_info = "Plugin racine"
 
@@ -548,13 +548,13 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     except:
         key_count = "?"
 
-    print(f"\n{c.INFO}[INFO]{c.RESET} Fichier EN de référence:")
+    print(_("\n{var0}[INFO]{var1} Fichier EN de référence:").format(var0=c.INFO, var1=c.RESET))
     print(f"  → {c.VALUE}{source_info}{c.RESET}")
-    print(f"  → Total: {c.WHITE}{key_count}{c.RESET} clés")
+    print(_("  → Total: {var0}{key_count}{var2} clés").format(var0=c.WHITE, key_count=key_count, var2=c.RESET))
 
     # Demander le code langue
     print()
-    lang_input = input(f"{c.PROMPT}Code de la nouvelle langue (ex: de, es, it, pt, ja...): {c.RESET}").strip()
+    lang_input = input(_("{var0}Code de la nouvelle langue (ex: de, es, it, pt, ja...): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
     # Valider
     is_valid, lang_code, error = validate_language_code(lang_input)
@@ -566,20 +566,20 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     # Afficher résumé avant création
     print()
     print(c.separator())
-    print(f"{c.INFO}Fichier qui sera créé:{c.RESET}")
-    dest_filename = f"TranslatedStrings_{lang_code}.txt"
+    print(_("{var0}Fichier qui sera créé:{var1}").format(var0=c.INFO, var1=c.RESET))
+    dest_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
     print(f"  → {c.VALUE}{os.path.join(os.path.basename(plugin_path), dest_filename)}{c.RESET}")
     print()
-    print(f"{c.INFO}Contenu:{c.RESET}")
-    print(f"  • {c.WHITE}{key_count}{c.RESET} clés depuis le fichier EN de référence")
-    print(f"  • Valeurs EN par défaut (à traduire)")
+    print(_("{var0}Contenu:{var1}").format(var0=c.INFO, var1=c.RESET))
+    print(_("  • {var0}{key_count}{var2} clés depuis le fichier EN de référence").format(var0=c.WHITE, key_count=key_count, var2=c.RESET))
+    print(_("  • Valeurs EN par défaut (à traduire)"))
     print()
 
     # Confirmer
-    choice = input(f"{c.PROMPT}Créer ce fichier? (O/n): {c.RESET}").strip().lower()
+    choice = input(_("{var0}Créer ce fichier? (O/n): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
 
     if choice in ['n', 'non', 'no']:
-        print(c.warning("Création annulée"))
+        print(c.warning(_("Création annulée")))
         return
 
     # Créer
@@ -587,7 +587,7 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
 
     if success and lang_code not in installed_langs:
         print()
-        print(c.success(f"✓ Nouvelle langue {c.VALUE}{lang_code}{c.RESET} ajoutée au plugin"))
+        print(c.success(_("✓ Nouvelle langue {var0}{lang_code}{var2} ajoutée au plugin").format(var0=c.VALUE, lang_code=lang_code, var2=c.RESET)))
 
 
 # =============================================================================
@@ -628,7 +628,7 @@ def run_addlang_cli(plugin_path: str, lang_code: str, mode: str = 'auto',
             extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
 
         if extraction_dir:
-            source_filename = f"TranslatedStrings_{lang_code}.txt"
+            source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
             source_path = os.path.join(extraction_dir, source_filename)
             if os.path.isfile(source_path):
                 return install_language_from_extraction(plugin_path, lang_code, extraction_dir, force)
@@ -636,5 +636,5 @@ def run_addlang_cli(plugin_path: str, lang_code: str, mode: str = 'auto',
         # Fallback: créer nouveau fichier
         return create_language_from_reference(plugin_path, lang_code, None, force)
     else:
-        print(c.error(f"Mode invalide: {mode}"))
+        print(c.error(_("Mode invalide: {mode}").format(mode=mode)))
         return False

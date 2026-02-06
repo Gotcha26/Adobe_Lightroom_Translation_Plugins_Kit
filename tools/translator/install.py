@@ -112,7 +112,7 @@ def install_translation_files(plugin_path: str, source_dir: str,
                 shutil.copy2(file_path, dest_path)
                 installed.append(filename)
             except Exception as e:
-                print(c.error(f"Erreur lors de la copie de {filename}: {e}"))
+                print(c.error(_("Erreur lors de la copie de {filename}: {e}").format(filename=filename, e=e)))
                 return False, installed
         else:
             installed.append(filename)
@@ -127,40 +127,40 @@ def menu_install(plugin_path: str):
     clear_screen()
     print_header()
 
-    print(f"\n{c.TITLE}  INSTALL - Installation des fichiers de traduction{c.RESET}")
+    print(_("\n{var0}  INSTALL - Installation des fichiers de traduction{var1}").format(var0=c.TITLE, var1=c.RESET))
     print(c.separator())
 
     # Vérifier si le plugin est configuré
     if not plugin_path or not os.path.isdir(plugin_path):
-        print(c.error("Plugin non configuré ou introuvable."))
+        print(c.error(_("Plugin non configuré ou introuvable.")))
         return
 
     # Vérifier si des fichiers existent déjà
     has_files, existing = check_existing_translation_files(plugin_path)
 
     if has_files:
-        print(f"\n{c.WARNING}[ATTENTION]{c.RESET} Des fichiers de traduction existent déjà:")
+        print(_("\n{var0}[ATTENTION]{var1} Des fichiers de traduction existent déjà:").format(var0=c.WARNING, var1=c.RESET))
         for f in existing:
             print(f"  - {c.VALUE}{f}{c.RESET}")
         print()
-        print("Cette commande est destinée à l'initialisation du plugin.")
-        print("Pour mettre à jour des fichiers existants, utilisez SYNC.")
+        print(_("Cette commande est destinée à l'initialisation du plugin."))
+        print(_("Pour mettre à jour des fichiers existants, utilisez SYNC."))
         print()
-        choice = input(f"{c.PROMPT}Continuer quand même? (o/N): {c.RESET}").strip().lower()
+        choice = input(_("{var0}Continuer quand même? (o/N): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
         if choice not in ['o', 'oui', 'y', 'yes']:
-            print(c.warning("Installation annulée"))
+            print(c.warning(_("Installation annulée")))
             return
 
     # Trouver la dernière extraction
     latest_extraction = find_latest_tool_output(plugin_path, "Extractor")
 
     if not latest_extraction:
-        print(c.error("Aucune extraction trouvée."))
+        print(c.error(_("Aucune extraction trouvée.")))
         print()
         print("Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt")
         return
 
-    print(f"\n{c.INFO}[INFO]{c.RESET} Dernière extraction:")
+    print(_("\n{var0}[INFO]{var1} Dernière extraction:").format(var0=c.INFO, var1=c.RESET))
     print(f"  {c.VALUE}{os.path.basename(latest_extraction)}{c.RESET}")
     print()
 
@@ -171,16 +171,16 @@ def menu_install(plugin_path: str):
         print(c.error("Aucun fichier TranslatedStrings_xx.txt trouvé dans l'extraction."))
         return
 
-    print(f"{c.INFO}Fichiers à installer:{c.RESET}")
+    print(_("{var0}Fichiers à installer:{var1}").format(var0=c.INFO, var1=c.RESET))
     for f in files:
         print(f"  - {c.VALUE}{os.path.basename(f)}{c.RESET}")
     print()
 
     # Demander confirmation
-    choice = input(f"{c.PROMPT}Installer ces fichiers dans le plugin? (O/n): {c.RESET}").strip().lower()
+    choice = input(_("{var0}Installer ces fichiers dans le plugin? (O/n): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip().lower()
 
     if choice in ['n', 'non', 'no']:
-        print(c.warning("Installation annulée"))
+        print(c.warning(_("Installation annulée")))
         return
 
     # Installer
@@ -188,20 +188,20 @@ def menu_install(plugin_path: str):
 
     if success:
         print()
-        print(c.success("✓ Installation réussie!"))
+        print(c.success(_("✓ Installation réussie!")))
         print()
-        print(f"{c.INFO}Fichiers installés:{c.RESET}")
+        print(_("{var0}Fichiers installés:{var1}").format(var0=c.INFO, var1=c.RESET))
         for f in installed:
             dest = os.path.join(plugin_path, f)
             print(f"  {c.VALUE}{f}{c.RESET}")
             print(f"    → {c.DIM}{dest}{c.RESET}")
         print()
-        print(f"{c.INFO}Prochaines étapes:{c.RESET}")
-        print("  1. Lancez l'Applicator pour remplacer les chaînes en dur par LOC()")
-        print("  2. Testez le plugin dans Lightroom")
+        print(_("{var0}Prochaines étapes:{var1}").format(var0=c.INFO, var1=c.RESET))
+        print(_("  1. Lancez l'Applicator pour remplacer les chaînes en dur par LOC()"))
+        print(_("  2. Testez le plugin dans Lightroom"))
         print("  3. Créez des copies pour d'autres langues (TranslatedStrings_fr.txt, etc.)")
     else:
-        print(c.error("Installation échouée"))
+        print(c.error(_("Installation échouée")))
 
 
 def run_install(plugin_path: str, source_dir: Optional[str] = None,
@@ -218,14 +218,14 @@ def run_install(plugin_path: str, source_dir: Optional[str] = None,
         bool: Succès
     """
     if not plugin_path or not os.path.isdir(plugin_path):
-        print(c.error("Chemin du plugin invalide"))
+        print(c.error(_("Chemin du plugin invalide")))
         return False
 
     # Auto-détecter le dossier source si non fourni
     if not source_dir:
         source_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not source_dir:
-            print(c.error("Aucune extraction trouvée"))
+            print(c.error(_("Aucune extraction trouvée")))
             return False
 
     # Vérifier si des fichiers existent déjà
@@ -243,5 +243,5 @@ def run_install(plugin_path: str, source_dir: Optional[str] = None,
             print(c.success(f"✓ {len(installed)} fichier(s) installé(s): {', '.join(installed)}"))
         return True
     else:
-        print(c.error("Installation échouée"))
+        print(c.error(_("Installation échouée")))
         return False

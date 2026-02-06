@@ -12,7 +12,7 @@ Parcourt récursivement les répertoires configurés en ignorant les dossiers sp
 Usage CLI :
     python i18n/extract_strings.py
 
-Date : 2026-02-04
+Date : 2026-02-06
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -46,11 +46,9 @@ OUTPUT_FILE = PROJECT_ROOT / "locale" / "messages.pot"
 # Dossiers à scanner
 SCAN_DIRS = [
     PROJECT_ROOT,
-    PROJECT_ROOT / "common",
-    PROJECT_ROOT / "1_Extractor",
-    PROJECT_ROOT / "2_Applicator",
-    PROJECT_ROOT / "3_Translator",
-    PROJECT_ROOT / "9_Tools",
+    PROJECT_ROOT / "core",
+    PROJECT_ROOT / "tools",
+    PROJECT_ROOT / "assets",
 ]
 
 # Dossiers à ignorer

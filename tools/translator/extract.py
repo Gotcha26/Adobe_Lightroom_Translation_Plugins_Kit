@@ -52,7 +52,7 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
     update_data = load_update_json(update_dir)
     if not update_data:
         update_filename = get_update_filename()
-        raise FileNotFoundError(f"{update_filename} non trouvé dans: {update_dir}")
+        raise FileNotFoundError(_("{update_filename} non trouvé dans: {update_dir}").format(update_filename=update_filename, update_dir=update_dir))
 
     # Charger les traductions existantes si disponibles
     existing_translations = {}
@@ -74,36 +74,36 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write("# " + "=" * 70 + "\n")
-        f.write(f"# FICHIER DE TRADUCTION - {lang.upper()}\n")
+        f.write(_("# FICHIER DE TRADUCTION - {var0}\n").format(var0=lang.upper()))
         f.write(f"# Généré: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"# Source: {update_dir}\n")
+        f.write(_("# Source: {update_dir}\n").format(update_dir=update_dir))
         f.write("# " + "=" * 70 + "\n")
-        f.write("#\n")
-        f.write("# INSTRUCTIONS:\n")
-        f.write("# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n")
-        f.write("# 2. Laissez vide pour garder la valeur EN par défaut\n")
-        f.write("# 3. Les lignes commençant par # sont ignorées\n")
-        f.write("#\n")
+        f.write(_("#\n"))
+        f.write(_("# INSTRUCTIONS:\n"))
+        f.write(_("# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n"))
+        f.write(_("# 2. Laissez vide pour garder la valeur EN par défaut\n"))
+        f.write(_("# 3. Les lignes commençant par # sont ignorées\n"))
+        f.write(_("#\n"))
         f.write("# " + "=" * 70 + "\n\n")
 
         # Section: Nouvelles clés
         if added_keys:
             f.write("# " + "-" * 70 + "\n")
-            f.write(f"# NOUVELLES CLÉS ({len(added_keys)})\n")
+            f.write(_("# NOUVELLES CLÉS ({var0})\n").format(var0=len(added_keys)))
             f.write("# " + "-" * 70 + "\n\n")
 
             for key in sorted(added_keys.keys()):
                 en_value = added_keys[key]
-                f.write(f"[KEY] {key}\n")
-                f.write(f"[EN]  {en_value}\n")
-                f.write(f"[{lang.upper()}] → \n")
+                f.write(_("[KEY] {key}\n").format(key=key))
+                f.write(_("[EN]  {en_value}\n").format(en_value=en_value))
+                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
                 f.write("\n")
 
         # Section: Clés modifiées
         if changed_keys:
             f.write("# " + "-" * 70 + "\n")
             ref_lang = get_reference_lang().upper()
-            f.write(f"# CLÉS MODIFIÉES ({len(changed_keys)}) - Le texte {ref_lang} a changé\n")
+            f.write(_("# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n").format(var0=len(changed_keys), ref_lang=ref_lang))
             f.write("# " + "-" * 70 + "\n\n")
 
             for key in sorted(changed_keys.keys()):
@@ -112,17 +112,17 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
                 new_ref = change['new']
                 current_trans = existing_translations.get(key, '')
 
-                f.write(f"[KEY] {key}\n")
-                f.write(f"[{ref_lang} AVANT]  {old_ref}\n")
-                f.write(f"[{ref_lang} APRÈS]  {new_ref}\n")
+                f.write(_("[KEY] {key}\n").format(key=key))
+                f.write(_("[{ref_lang} AVANT]  {old_ref}\n").format(ref_lang=ref_lang, old_ref=old_ref))
+                f.write(_("[{ref_lang} APRÈS]  {new_ref}\n").format(ref_lang=ref_lang, new_ref=new_ref))
                 if current_trans and current_trans != old_ref:
-                    f.write(f"[{lang.upper()} ACTUEL] {current_trans}\n")
-                f.write(f"[{lang.upper()}] → \n")
+                    f.write(_("[{var0} ACTUEL] {current_trans}\n").format(var0=lang.upper(), current_trans=current_trans))
+                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
                 f.write("\n")
 
         # Résumé
         f.write("# " + "=" * 70 + "\n")
-        f.write(f"# TOTAL: {len(added_keys)} nouvelles + {len(changed_keys)} modifiées\n")
+        f.write(_("# TOTAL: {var0} nouvelles + {var1} modifiées\n").format(var0=len(added_keys), var1=len(changed_keys)))
         f.write("# " + "=" * 70 + "\n")
 
     return output_file
@@ -157,7 +157,7 @@ def run_extract_all(update_dir: str, locales_dir: Optional[str] = None,
             output_file = run_extract(update_dir, lang, locales_dir, output_dir)
             generated_files.append(output_file)
         except Exception as e:
-            print(c.warning(f"Erreur pour {lang}: {e}"))
+            print(c.warning(_("Erreur pour {lang}: {e}").format(lang=lang, e=e)))
 
     return generated_files
 
@@ -178,7 +178,7 @@ def menu_extract(plugin_path: str = ""):
 
     clear_screen()
     print_header()
-    print(f"\n{c.INFO}EXTRACT{c.RESET}: Générer fichiers de traduction")
+    print(_("\n{var0}EXTRACT{var1}: Générer fichiers de traduction").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
 
     # Auto-détection et sélection interactive du dossier UPDATE
@@ -186,39 +186,39 @@ def menu_extract(plugin_path: str = ""):
     if plugin_path:
         update_dir = select_tool_output_dir(plugin_path, "Translator", "")
         if update_dir:
-            print(f"\n{c.INFO}[INFO]{c.RESET} Dossier sélectionné: {c.VALUE}{update_dir}{c.RESET}")
+            print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
         else:
-            print(c.warning("Aucun dossier Translator sélectionné"))
+            print(c.warning(_("Aucun dossier Translator sélectionné")))
             print(f"{c.DIM}  Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement{c.RESET}")
 
     if not update_dir:
         update_filename = get_update_filename()
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant {update_filename}):")
+        print(_("\n{var0}Dossier UPDATE{var1} (contenant {update_filename}):").format(var0=c.KEY, var1=c.RESET, update_filename=update_filename))
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not update_dir or not os.path.isdir(update_dir):
-            print(c.error("Répertoire invalide."))
-            input("\nAppuyez sur Entrée...")
+            print(c.error(_("Répertoire invalide.")))
+            input(_("\nAppuyez sur Entrée..."))
             return None
 
     # Vérifier UPDATE_{lang}.json
     if not load_update_json(update_dir):
         update_filename = get_update_filename()
-        print(c.error(f"{update_filename} non trouvé."))
-        input("\nAppuyez sur Entrée...")
+        print(c.error(_("{update_filename} non trouvé.").format(update_filename=update_filename)))
+        input(_("\nAppuyez sur Entrée..."))
         return None
 
-    print(f"\n{c.KEY}Répertoire des traductions existantes{c.RESET} (Locales):")
-    print(f"{c.DIM}  (Pour récupérer les traductions actuelles des clés modifiées){c.RESET}")
-    print(f"{c.DIM}  (Entrée pour ignorer){c.RESET}")
+    print(_("\n{var0}Répertoire des traductions existantes{var1} (Locales):").format(var0=c.KEY, var1=c.RESET))
+    print(_("{var0}  (Pour récupérer les traductions actuelles des clés modifiées){var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("{var0}  (Entrée pour ignorer){var1}").format(var0=c.DIM, var1=c.RESET))
     locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
-    print(f"\n{c.KEY}Langue(s) à générer{c.RESET}:")
-    print(f"{c.DIM}  • Entrée = toutes les langues trouvées dans Locales{c.RESET}")
-    print(f"{c.DIM}  • Ou spécifier: fr, de, es...{c.RESET}")
+    print(_("\n{var0}Langue(s) à générer{var1}:").format(var0=c.KEY, var1=c.RESET))
+    print(_("{var0}  • Entrée = toutes les langues trouvées dans Locales{var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("{var0}  • Ou spécifier: fr, de, es...{var1}").format(var0=c.DIM, var1=c.RESET))
     lang_input = input(f"{c.PROMPT}  > {c.RESET}").strip().lower()
 
     try:
-        print(f"\n{c.INFO}[INFO]{c.RESET} Génération en cours...")
+        print(_("\n{var0}[INFO]{var1} Génération en cours...").format(var0=c.INFO, var1=c.RESET))
 
         if lang_input:
             languages = [l.strip() for l in lang_input.split(',')]
@@ -231,22 +231,22 @@ def menu_extract(plugin_path: str = ""):
 
         if generated:
             print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
-            print(f"{c.TITLE}  FICHIERS GÉNÉRÉS{c.RESET}")
+            print(_("{var0}  FICHIERS GÉNÉRÉS{var1}").format(var0=c.TITLE, var1=c.RESET))
             print(f"{c.HEADER}{'=' * 66}{c.RESET}")
             for f in generated:
-                print(f"  {c.OK}[OK]{c.RESET} {c.VALUE}{os.path.basename(f)}{c.RESET}")
+                print(_("  {var0}[OK]{var1} {var2}{var3}{var4}").format(var0=c.OK, var1=c.RESET, var2=c.VALUE, var3=os.path.basename(f), var4=c.RESET))
             print()
-            print(f"{c.INFO}[INFO]{c.RESET} PROCHAINE ÉTAPE:")
-            print(f"  {c.DIM}1. Éditez les fichiers et remplissez après chaque →{c.RESET}")
-            print(f"  {c.DIM}2. Lancez INJECT pour réinjecter les traductions{c.RESET}")
-            print(f"  {c.DIM}3. Lancez SYNC pour finaliser{c.RESET}")
+            print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
+            print(_("  {var0}1. Éditez les fichiers et remplissez après chaque →{var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("  {var0}2. Lancez INJECT pour réinjecter les traductions{var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("  {var0}3. Lancez SYNC pour finaliser{var1}").format(var0=c.DIM, var1=c.RESET))
 
             return generated
         else:
-            print(c.warning("Aucun fichier généré"))
+            print(c.warning(_("Aucun fichier généré")))
 
     except Exception as e:
-        print(c.error(f"Erreur: {e}"))
+        print(c.error(_("Erreur: {e}").format(e=e)))
 
-    input("\nAppuyez sur Entrée pour continuer...")
+    input(_("\nAppuyez sur Entrée pour continuer..."))
     return None

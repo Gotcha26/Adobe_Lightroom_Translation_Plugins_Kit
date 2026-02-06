@@ -161,7 +161,7 @@ TECHNICAL_PATTERNS: List[re.Pattern] = [
 # Patterns de contexte technique - si la ligne matche, ignorer les chaînes 'value'
 # Utilisé pour éviter d'extraire les valeurs dans des contextes techniques
 TECHNICAL_CONTEXT_PATTERNS: List[re.Pattern] = [
-    re.compile(r'\bfield\s*=\s*["\']'),       # { field = "Accept", value = "..." }
+    re.compile(r'\bfield\s*=\s*[_("\']'),       # { field = ")Accept", value = "..." }
     re.compile(r'headers?\s*=\s*\{'),          # headers = { ... }
     re.compile(r'http\.request'),              # Requêtes HTTP
     re.compile(r'LrHttp\.'),                   # SDK Lightroom HTTP
