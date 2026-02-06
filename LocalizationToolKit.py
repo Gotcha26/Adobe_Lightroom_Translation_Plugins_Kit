@@ -666,7 +666,7 @@ class MainMenu:
         print(c.separator())
         print(c.menu_option("1", _("Extractor      - Extraire les chaînes")))
         print(c.menu_option("2", _("Applicator     - Appliquer les localisations")))
-        print(c.menu_option("3", _("Translation    - Gérer les traductions")))
+        print(c.menu_option("3", _("Translator     - Gérer les traductions")))
         print(c.menu_option("4", _("Restore        - Restaurer les backups")))
         print(c.menu_option("5", f"{c.WARNING}" + _("Supprimer") + f"{c.RESET}      - " + _("Nettoyer le dossier temporaire")))
 

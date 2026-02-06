@@ -9,8 +9,8 @@ Module SYNC pour Translator.
 Synchronise les langues étrangères avec le fichier EN de référence.
 
 Fonctionne en deux modes :
-  - Mode sans UPDATE: Fusion simple des fichiers de langue avec EN
-  - Mode avec UPDATE: Utilise UPDATE_en.json pour marquer les changements
+  - Mode sans UPDATE: Fusion simple des fichiers de langue avec fichier de référence
+  - Mode avec UPDATE: Utilise UPDATE_{lang}.json pour marquer les changements
 
 Permet de garder les fichiers de langue synchronisés avec la version anglaise
 de référence lorsqu'il y a des modifications du code.
@@ -33,6 +33,7 @@ from .common import (
     parse_translation_file, write_translation_file, update_translation_file_surgical,
     resolve_path, load_update_json, find_languages, c
 )
+from .config_loader import get_reference_filename
 
 
 # =============================================================================
@@ -42,16 +43,16 @@ from .common import (
 def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = None,
              update_dir: Optional[str] = None, backup_dir: Optional[str] = None) -> Dict[str, Dict]:
     """
-    Synchronise les langues étrangères avec le fichier EN.
+    Synchronise les langues étrangères avec le fichier de référence.
 
     Modes:
-        1. Avec --update: utilise UPDATE_en.json pour marquer les changements
+        1. Avec --update: utilise UPDATE_{lang}.json pour marquer les changements
         2. Sans --update: synchronisation simple des clés
 
     Args:
-        reference_path: Fichier EN de référence (ou répertoire)
+        reference_path: Fichier de référence (ou répertoire)
         locales_dir: Répertoire des fichiers de langues
-        update_dir: Répertoire contenant UPDATE_en.json (optionnel)
+        update_dir: Répertoire contenant UPDATE_{lang}.json (optionnel)
         backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
 
     Returns:
@@ -61,27 +62,28 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
     update_data = None
     if update_dir:
         update_data = load_update_json(update_dir)
-        # Utiliser le fichier EN du dossier update comme référence
-        ref_in_update = os.path.join(update_dir, 'TranslatedStrings_en.txt')
+        # Utiliser le fichier de référence du dossier update
+        ref_filename = get_reference_filename()
+        ref_in_update = os.path.join(update_dir, ref_filename)
         if os.path.isfile(ref_in_update):
             reference_path = ref_in_update
-    
+
     # Résoudre le chemin de référence
     if not reference_path:
-        raise ValueError("Chemin de référence EN requis (--ref ou via --update)")
-    
+        raise ValueError("Chemin de référence requis (--ref ou via --update)")
+
     ref_dir, ref_file = resolve_path(reference_path)
-    
+
     # Déterminer le répertoire des locales
     if not locales_dir:
         locales_dir = ref_dir
-    
-    # Charger le fichier EN de référence
-    en_strings = parse_translation_file(ref_file)
-    en_keys = set(en_strings.keys())
-    
+
+    # Charger le fichier de référence
+    ref_strings = parse_translation_file(ref_file)
+    ref_keys = set(ref_strings.keys())
+
     # Trouver les langues étrangères
-    other_languages = find_languages(locales_dir, exclude_en=True)
+    other_languages = find_languages(locales_dir, exclude_reference=True)
     
     if not other_languages:
         return {}
@@ -101,7 +103,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
     for lang in sorted(other_languages):
         lang_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
         result = _sync_language(
-            lang, lang_file, en_strings, en_keys,
+            lang, lang_file, ref_strings, ref_keys,
             added_keys, changed_keys, deleted_keys,
             locales_dir, update_data, backup_dir
         )
@@ -110,11 +112,11 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
     return results
 
 
-def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
-                   en_keys: Set[str], added_keys: Set[str], changed_keys: Set[str],
+def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
+                   ref_keys: Set[str], added_keys: Set[str], changed_keys: Set[str],
                    deleted_keys: Set[str], output_dir: str,
                    update_data: Optional[Dict] = None, backup_dir: Optional[str] = None) -> Dict:
-    """Synchronise une langue avec le fichier EN."""
+    """Synchronise une langue avec le fichier de référence."""
 
     # Charger la langue actuelle
     if os.path.isfile(lang_file):
@@ -129,13 +131,13 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
             shutil.copy2(lang_file, lang_file + '.bak')
     else:
         lang_strings = {}
-    
+
     lang_keys = set(lang_strings.keys())
-    
+
     # Calculer les différences
-    missing_in_lang = en_keys - lang_keys
-    extra_in_lang = lang_keys - en_keys
-    common_keys = en_keys & lang_keys
+    missing_in_lang = ref_keys - lang_keys
+    extra_in_lang = lang_keys - ref_keys
+    common_keys = ref_keys & lang_keys
     
     # Construire le nouveau dictionnaire
     new_strings = {}
@@ -153,14 +155,14 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
         new_strings[key] = lang_strings[key]
         stats['kept'] += 1
 
-        # Marquer si le texte EN a changé (UNIQUEMENT si update_data fourni via COMPARE)
+        # Marquer si le texte de référence a changé (UNIQUEMENT si update_data fourni via COMPARE)
         if update_data and key in changed_keys:
-            markers[key] = "-- [NEEDS_REVIEW] English text was modified"
+            markers[key] = "-- [NEEDS_REVIEW] Reference text was modified"
             stats['needs_review'] += 1
 
-    # Clés manquantes : ajouter avec valeur EN
+    # Clés manquantes : ajouter avec valeur de référence
     for key in missing_in_lang:
-        new_strings[key] = en_strings[key]  # Valeur EN par défaut
+        new_strings[key] = ref_strings[key]  # Valeur de référence par défaut
         # Marquer UNIQUEMENT si update_data fourni via COMPARE
         if update_data:
             markers[key] = "-- [NEW] To translate"
@@ -173,7 +175,8 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
     metadata = {
         'new_keys': stats['added'],
         'changed_keys': stats['needs_review'],
-        'source': 'SYNC'
+        'source': 'SYNC',
+        'total_keys': len(new_strings)
     }
 
     # Écrire le fichier avec mise à jour chirurgicale
@@ -280,7 +283,8 @@ def menu_sync(plugin_path: str = ""):
                 print(c.warning("Aucun dossier Translator sélectionné"))
 
         if not update_dir:
-            print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+            update_filename = get_update_filename()
+            print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant {update_filename}):")
             update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
             if not update_dir or not os.path.isdir(update_dir):
                 print(c.error("Répertoire invalide."))

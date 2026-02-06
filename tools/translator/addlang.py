@@ -42,6 +42,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path
 from core.colors import Colors
+from core.i18n import _
 
 from .common import (
     clear_screen, print_header, parse_translation_file,
@@ -75,9 +76,10 @@ def validate_language_code(lang_code: str) -> Tuple[bool, str, Optional[str]]:
     if not re.match(r'^[a-z]{2}$', normalized):
         return False, normalized, "Code langue invalide (doit être 2 lettres, ex: fr, de, es)"
 
-    # Réserver 'en' pour éviter confusion
-    if normalized == 'en':
-        return False, normalized, "Utilisez INSTALL pour le fichier EN de référence"
+    # Réserver la langue de référence pour éviter confusion
+    if is_reference_lang(normalized):
+        ref_lang = get_reference_lang().upper()
+        return False, normalized, f"Utilisez INSTALL pour le fichier {ref_lang} de référence"
 
     return True, normalized, None
 
@@ -155,9 +157,9 @@ def list_available_languages_in_extraction(extraction_dir: str) -> List[str]:
     return sorted(languages)
 
 
-def get_reference_en_file(plugin_path: str) -> Optional[str]:
+def get_reference_file(plugin_path: str) -> Optional[str]:
     """
-    Trouve le fichier EN de référence.
+    Trouve le fichier de référence (basé sur config.json["lang"]).
 
     Priorité:
       1. Dernière extraction Extractor
@@ -167,19 +169,21 @@ def get_reference_en_file(plugin_path: str) -> Optional[str]:
         plugin_path: Chemin du plugin
 
     Returns:
-        Chemin du fichier EN ou None
+        Chemin du fichier de référence ou None
     """
+    ref_filename = get_reference_filename()
+
     # Priorité 1: Dernière extraction
     latest_extraction = find_latest_tool_output(plugin_path, "Extractor")
     if latest_extraction:
-        en_file = os.path.join(latest_extraction, "TranslatedStrings_en.txt")
-        if os.path.isfile(en_file):
-            return en_file
+        ref_file = os.path.join(latest_extraction, ref_filename)
+        if os.path.isfile(ref_file):
+            return ref_file
 
     # Priorité 2: Plugin racine
-    en_file = os.path.join(plugin_path, "TranslatedStrings_en.txt")
-    if os.path.isfile(en_file):
-        return en_file
+    ref_file = os.path.join(plugin_path, ref_filename)
+    if os.path.isfile(ref_file):
+        return ref_file
 
     return None
 
@@ -269,23 +273,26 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
     """
     # Trouver le fichier EN de référence si non fourni
     if not ref_file:
-        ref_file = get_reference_en_file(plugin_path)
+        ref_file = get_reference_file(plugin_path)
         if not ref_file:
-            print(c.error("Aucun fichier EN de référence trouvé"))
+            ref_lang = get_reference_lang().upper()
+            ref_filename = get_reference_filename()
+            print(c.error(f"Aucun fichier {ref_lang} de référence trouvé"))
             print()
             print(f"{c.DIM}Vérifiez que:{c.RESET}")
             print(f"  - {c.DIM}L'Extractor a été lancé{c.RESET}")
-            print(f"  - {c.DIM}TranslatedStrings_en.txt existe dans le plugin{c.RESET}")
+            print(f"  - {c.DIM}{ref_filename} existe dans le plugin{c.RESET}")
             return False
 
-    # Parser le fichier EN de référence
+    # Parser le fichier de référence
     try:
-        en_translations = parse_translation_file(ref_file)
+        ref_translations = parse_translation_file(ref_file)
     except Exception as e:
-        print(c.error(f"Erreur lors de la lecture du fichier EN: {e}"))
+        ref_lang = get_reference_lang().upper()
+        print(c.error(f"Erreur lors de la lecture du fichier {ref_lang}: {e}"))
         return False
 
-    if not en_translations:
+    if not ref_translations:
         print(c.error("Aucune clé trouvée dans le fichier EN de référence"))
         return False
 
@@ -317,7 +324,7 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         write_translation_file(
             dest_path,
             lang_code,
-            en_translations,
+            ref_translations,
             markers={},
             metadata=metadata
         )
@@ -327,7 +334,7 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         print(f"  {c.DIM}→ {dest_path}{c.RESET}")
         print()
         print(f"{c.INFO}[INFO]{c.RESET} Le fichier contient:")
-        print(f"  • {c.WHITE}{len(en_translations)}{c.RESET} clés")
+        print(f"  • {c.WHITE}{len(ref_translations)}{c.RESET} clés")
         print(f"  • Valeurs EN par défaut (à traduire)")
         print()
         print(f"{c.INFO}Prochaines étapes:{c.RESET}")
@@ -489,9 +496,9 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
         is_valid, normalized, error = validate_language_code(user_input)
         if is_valid and normalized in available_langs:
             lang_code = normalized
-        elif not is_valid and user_input.lower() == 'en':
-            # Cas spécial: permettre EN en mode A
-            lang_code = 'en'
+        elif not is_valid and is_reference_lang(user_input):
+            # Cas spécial: permettre la langue de référence en mode A
+            lang_code = get_reference_lang()
         else:
             print(c.error("Langue non disponible dans l'extraction"))
             return
@@ -518,12 +525,14 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     print(c.separator())
 
     # Trouver le fichier EN de référence
-    ref_file = get_reference_en_file(plugin_path)
+    ref_file = get_reference_file(plugin_path)
 
     if not ref_file:
-        print(c.error("Aucun fichier EN de référence trouvé"))
+        ref_lang = get_reference_lang().upper()
+        ref_filename = get_reference_filename()
+        print(c.error(f"Aucun fichier {ref_lang} de référence trouvé"))
         print()
-        print("Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt")
+        print(f"Lancez d'abord l'Extractor pour générer {ref_filename}")
         return
 
     # Afficher info sur la source
@@ -534,8 +543,8 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
 
     # Compter les clés
     try:
-        en_translations = parse_translation_file(ref_file)
-        key_count = len(en_translations)
+        ref_translations = parse_translation_file(ref_file)
+        key_count = len(ref_translations)
     except:
         key_count = "?"
 

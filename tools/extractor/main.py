@@ -196,8 +196,15 @@ Exemples:
                             help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
         parser.add_argument('--prefix', default='$$$/Piwigo',
                             help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
-        parser.add_argument('--lang', default='en',
-                            help='Code langue (défaut: en)')
+        # Charger la langue par défaut depuis config.json
+        try:
+            from tools.translator.config_loader import get_reference_lang
+            default_lang = get_reference_lang()
+        except:
+            default_lang = 'en'
+
+        parser.add_argument('--lang', default=default_lang,
+                            help=f'Code langue (défaut: {default_lang})')
         parser.add_argument('--exclude', action='append', default=[],
                             help='Fichiers à exclure (répétable)')
         parser.add_argument('--min-length', type=int, default=3,

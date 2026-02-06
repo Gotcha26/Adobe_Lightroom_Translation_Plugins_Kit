@@ -42,10 +42,20 @@ class InteractiveMenu:
         Args:
             default_plugin_path: Chemin du plugin pré-configuré (depuis LocalisationToolKit)
         """
+        # Charger la langue par défaut depuis config.json
+        try:
+            import sys
+            import os as _os
+            sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))))
+            from tools.translator.config_loader import get_reference_lang
+            default_lang = get_reference_lang()
+        except:
+            default_lang = "en"
+
         self.plugin_path = default_plugin_path
         self.output_dir = ""
         self.prefix = "$$$/Piwigo"
-        self.lang = "en"
+        self.lang = default_lang
         self.exclude_files: List[str] = []
         self.min_length = 3
         self.ignore_log = True

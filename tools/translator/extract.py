@@ -27,6 +27,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from .common import parse_translation_file, load_update_json, find_languages, c
+from .config_loader import get_update_filename, get_reference_lang
 
 
 # =============================================================================
@@ -37,20 +38,21 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
                 output_dir: Optional[str] = None) -> str:
     """
     Génère un fichier TRANSLATE_xx.txt avec les clés à traduire.
-    
+
     Args:
-        update_dir: Répertoire contenant UPDATE_en.json
+        update_dir: Répertoire contenant UPDATE_{lang}.json
         lang: Code langue cible (fr, de, es...)
         locales_dir: Répertoire des fichiers de langues existants
         output_dir: Répertoire de sortie (défaut: update_dir)
-    
+
     Returns:
         Chemin du fichier généré
     """
-    # Charger UPDATE_en.json
+    # Charger UPDATE_{lang}.json
     update_data = load_update_json(update_dir)
     if not update_data:
-        raise FileNotFoundError(f"UPDATE_en.json non trouvé dans: {update_dir}")
+        update_filename = get_update_filename()
+        raise FileNotFoundError(f"{update_filename} non trouvé dans: {update_dir}")
     
     # Charger les traductions existantes si disponibles
     existing_translations = {}
@@ -100,19 +102,20 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
         # Section: Clés modifiées
         if changed_keys:
             f.write("# " + "-" * 70 + "\n")
-            f.write(f"# CLÉS MODIFIÉES ({len(changed_keys)}) - Le texte EN a changé\n")
+            ref_lang = get_reference_lang().upper()
+            f.write(f"# CLÉS MODIFIÉES ({len(changed_keys)}) - Le texte {ref_lang} a changé\n")
             f.write("# " + "-" * 70 + "\n\n")
-            
+
             for key in sorted(changed_keys.keys()):
                 change = changed_keys[key]
-                old_en = change['old']
-                new_en = change['new']
+                old_ref = change['old']
+                new_ref = change['new']
                 current_trans = existing_translations.get(key, '')
-                
+
                 f.write(f"[KEY] {key}\n")
-                f.write(f"[EN AVANT]  {old_en}\n")
-                f.write(f"[EN APRÈS]  {new_en}\n")
-                if current_trans and current_trans != old_en:
+                f.write(f"[{ref_lang} AVANT]  {old_ref}\n")
+                f.write(f"[{ref_lang} APRÈS]  {new_ref}\n")
+                if current_trans and current_trans != old_ref:
                     f.write(f"[{lang.upper()} ACTUEL] {current_trans}\n")
                 f.write(f"[{lang.upper()}] → \n")
                 f.write("\n")
@@ -129,20 +132,20 @@ def run_extract_all(update_dir: str, locales_dir: Optional[str] = None,
                     output_dir: Optional[str] = None) -> List[str]:
     """
     Génère les fichiers TRANSLATE pour toutes les langues détectées.
-    
+
     Args:
-        update_dir: Répertoire contenant UPDATE_en.json
+        update_dir: Répertoire contenant UPDATE_{lang}.json
         locales_dir: Répertoire des fichiers de langues existants
         output_dir: Répertoire de sortie
-    
+
     Returns:
         Liste des fichiers générés
     """
     # Trouver les langues existantes
     languages = []
-    
+
     if locales_dir and os.path.isdir(locales_dir):
-        languages = find_languages(locales_dir, exclude_en=True)
+        languages = find_languages(locales_dir, exclude_reference=True)
     
     # Si aucune langue trouvée, proposer français par défaut
     if not languages:
@@ -189,16 +192,18 @@ def menu_extract(plugin_path: str = ""):
             print(f"{c.DIM}  Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement{c.RESET}")
 
     if not update_dir:
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        update_filename = get_update_filename()
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant {update_filename}):")
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if not update_dir or not os.path.isdir(update_dir):
             print(c.error("Répertoire invalide."))
             input("\nAppuyez sur Entrée...")
             return None
 
-    # Vérifier UPDATE_en.json
+    # Vérifier UPDATE_{lang}.json
     if not load_update_json(update_dir):
-        print(c.error("UPDATE_en.json non trouvé."))
+        update_filename = get_update_filename()
+        print(c.error(f"{update_filename} non trouvé."))
         input("\nAppuyez sur Entrée...")
         return None
 

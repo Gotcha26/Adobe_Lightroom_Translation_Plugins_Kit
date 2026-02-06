@@ -36,6 +36,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.colors import Colors
+from .config_loader import get_reference_lang, get_reference_filename, get_update_filename, is_reference_lang
 
 # Instance couleurs
 c = Colors()
@@ -334,10 +335,11 @@ def _extract_section_from_key(key: str) -> str:
 def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
     """
     Met à jour les métadonnées dans l'entête.
-    Remplace Generated, New keys, Changed keys, Source.
+    Remplace Generated, Total keys, New keys, Changed keys, Source.
     """
     updated = []
     generated_updated = False
+    total_keys_found = False
     new_keys_found = False
     changed_keys_found = False
     source_found = False
@@ -349,6 +351,13 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
         if stripped.startswith('-- Generated:'):
             updated.append(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             generated_updated = True
+        # Remplacer Total keys
+        elif stripped.startswith('-- Total keys:'):
+            total_keys_found = True
+            if metadata.get('total_keys') is not None:
+                updated.append(f"-- Total keys: {metadata['total_keys']}\n")
+            else:
+                updated.append(line)
         # Remplacer ou supprimer New keys
         elif stripped.startswith('-- New keys:'):
             new_keys_found = True
@@ -393,60 +402,68 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
 def resolve_path(path: str) -> Tuple[str, str]:
     """
     Résout un chemin vers (répertoire, fichier).
-    
+
     Accepte:
         - Un fichier .txt directement
-        - Un répertoire contenant TranslatedStrings_en.txt
-    
+        - Un répertoire contenant le fichier de référence (basé sur config.json["lang"])
+
     Returns:
         (répertoire, chemin_fichier)
     """
     path = os.path.normpath(path)
-    
+
     if os.path.isfile(path):
         return os.path.dirname(path), path
     elif os.path.isdir(path):
-        en_file = os.path.join(path, 'TranslatedStrings_en.txt')
-        if os.path.isfile(en_file):
-            return path, en_file
-        raise FileNotFoundError(f"TranslatedStrings_en.txt non trouvé dans: {path}")
+        ref_filename = get_reference_filename()
+        ref_file = os.path.join(path, ref_filename)
+        if os.path.isfile(ref_file):
+            return path, ref_file
+        raise FileNotFoundError(f"{ref_filename} non trouvé dans: {path}")
     else:
         raise FileNotFoundError(f"Chemin invalide: {path}")
 
 
 def load_update_json(update_dir: str) -> Optional[Dict]:
     """
-    Charge le fichier UPDATE_en.json depuis un répertoire.
-    
+    Charge le fichier UPDATE (basé sur config.json["lang"]) depuis un répertoire.
+
     Returns:
         Dict avec les données ou None si non trouvé
     """
-    update_file = os.path.join(update_dir, 'UPDATE_en.json')
+    update_filename = get_update_filename()
+    update_file = os.path.join(update_dir, update_filename)
     if not os.path.isfile(update_file):
         return None
-    
+
     with open(update_file, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 
-def find_languages(directory: str, exclude_en: bool = True) -> List[str]:
+def find_languages(directory: str, exclude_reference: bool = True) -> List[str]:
     """
     Trouve toutes les langues dans un répertoire.
-    
+
+    Args:
+        directory: Répertoire à scanner
+        exclude_reference: Si True, exclut la langue de référence (config.json["lang"])
+
     Returns:
         Liste des codes langue (ex: ['fr', 'de', 'es'])
     """
     languages = []
-    
+
     if not os.path.isdir(directory):
         return languages
-    
+
+    reference_lang = get_reference_lang()
+
     for file in os.listdir(directory):
         if file.startswith('TranslatedStrings_') and file.endswith('.txt'):
             lang = file.replace('TranslatedStrings_', '').replace('.txt', '')
-            if not exclude_en or lang != 'en':
+            if not exclude_reference or lang != reference_lang:
                 languages.append(lang)
-    
+
     return sorted(languages)
 
 

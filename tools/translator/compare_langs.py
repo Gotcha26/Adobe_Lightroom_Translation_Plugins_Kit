@@ -30,9 +30,14 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 
 import os
+import sys
 import json
 from datetime import datetime
 from typing import Dict, Set, Tuple, Optional
+
+# Ajouter la racine du projet au path pour importer core
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from core.i18n import _
 
 from .common import (
     parse_translation_file, resolve_path, find_languages, c
@@ -131,7 +136,7 @@ class LanguageComparator:
 
 def run_compare_langs(file1_path: str, file2_path: str,
                       lang1_name: Optional[str] = None, lang2_name: Optional[str] = None,
-                      output_dir: Optional[str] = None) -> str:
+                      output_dir: Optional[str] = None, comparison_mode: str = "keys") -> str:
     """
     Compare deux fichiers de traduction.
 
@@ -141,6 +146,7 @@ def run_compare_langs(file1_path: str, file2_path: str,
         lang1_name: Nom de la langue 1 (auto-détecté si None)
         lang2_name: Nom de la langue 2 (auto-détecté si None)
         output_dir: Répertoire de sortie (défaut: timestampé local)
+        comparison_mode: Mode de comparaison ("keys" ou "values")
 
     Returns:
         Chemin du répertoire de sortie
@@ -173,9 +179,9 @@ def run_compare_langs(file1_path: str, file2_path: str,
     result = comparator.compare()
 
     # Générer les sorties
-    _generate_json_output(output_dir, result, file1, file2, lang1_name, lang2_name)
+    _generate_json_output(output_dir, result, file1, file2, lang1_name, lang2_name, comparison_mode)
     _generate_text_report(output_dir, result, file1, file2, lang1_name, lang2_name,
-                         lang1_strings, lang2_strings)
+                         lang1_strings, lang2_strings, comparison_mode)
 
     return output_dir
 
@@ -189,7 +195,7 @@ def _extract_lang_from_filename(filepath: str) -> str:
 
 
 def _generate_json_output(output_dir: str, result: Dict, file1: str, file2: str,
-                          lang1_name: str, lang2_name: str):
+                          lang1_name: str, lang2_name: str, comparison_mode: str = "keys"):
     """Génère le fichier JSON avec les données structurées."""
     data = {
         'generated': datetime.now().isoformat(),
@@ -197,6 +203,7 @@ def _generate_json_output(output_dir: str, result: Dict, file1: str, file2: str,
         'file2': os.path.abspath(file2),
         'lang1_name': lang1_name.upper(),
         'lang2_name': lang2_name.upper(),
+        'comparison_mode': comparison_mode,
         'statistics': result['statistics'],
         'only_in_lang1': result['only_in_lang1'],
         'only_in_lang2': result['only_in_lang2'],
@@ -211,7 +218,8 @@ def _generate_json_output(output_dir: str, result: Dict, file1: str, file2: str,
 
 def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
                           lang1_name: str, lang2_name: str,
-                          lang1_strings: Dict[str, str], lang2_strings: Dict[str, str]):
+                          lang1_strings: Dict[str, str], lang2_strings: Dict[str, str],
+                          comparison_mode: str = "keys"):
     """Génère le rapport texte lisible."""
     stats = result['statistics']
     lang1_upper = lang1_name.upper()
@@ -222,10 +230,12 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
     with open(report_file, 'w', encoding='utf-8') as f:
         # En-tête
         f.write("=" * 80 + "\n")
-        f.write("RAPPORT DE COMPARAISON DE LANGUES\n")
+        mode_label = "CLÉS" if comparison_mode == "keys" else "VALEURS"
+        f.write(f"RAPPORT DE COMPARAISON DE LANGUES (MODE: {mode_label})\n")
         f.write("=" * 80 + "\n\n")
 
         f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Mode de comparaison: {mode_label}\n")
         f.write(f"Langue 1: {lang1_upper}\n")
         f.write(f"Langue 2: {lang2_upper}\n")
         f.write(f"Fichier 1: {file1}\n")
@@ -243,13 +253,30 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
         f.write(f"  Clés seulement dans {lang2_upper:<12s} : {stats['only_lang2']:4d}\n")
         f.write("\n")
 
-        # Analyse des clés communes
-        f.write("-" * 80 + "\n")
-        f.write("ANALYSE DES CLÉS COMMUNES\n")
-        f.write("-" * 80 + "\n")
-        f.write(f"  Valeurs identiques               : {stats['identical_values_count']:4d}\n")
-        f.write(f"  Valeurs différentes              : {stats['different_values_count']:4d}\n")
-        f.write("\n")
+        # Section adaptée au mode de comparaison
+        if comparison_mode == "values":
+            # Mode VALEURS : focus sur les traductions
+            f.write("-" * 80 + "\n")
+            f.write("ANALYSE DES TRADUCTIONS (parmi les clés communes)\n")
+            f.write("-" * 80 + "\n")
+            f.write(f"  Valeurs identiques (possibles oublis) : {stats['identical_values_count']:4d}\n")
+            f.write(f"  Valeurs différentes (traduites)       : {stats['different_values_count']:4d}\n")
+            f.write("\n")
+        else:
+            # Mode CLÉS : mettre en avant les différences structurelles
+            f.write("-" * 80 + "\n")
+            f.write("ANALYSE DE LA STRUCTURE\n")
+            f.write("-" * 80 + "\n")
+            if stats['only_lang1'] > 0 or stats['only_lang2'] > 0:
+                f.write(f"  ⚠ DÉSYNCHRONISATION DÉTECTÉE\n")
+                f.write(f"  Clés manquantes dans {lang2_upper:<12s} : {stats['only_lang1']:4d}\n")
+                f.write(f"  Clés manquantes dans {lang1_upper:<12s} : {stats['only_lang2']:4d}\n")
+            else:
+                f.write(f"  ✓ FICHIERS SYNCHRONISÉS (même structure de clés)\n")
+            f.write(f"\n")
+            f.write(f"  Info: Valeurs identiques             : {stats['identical_values_count']:4d}\n")
+            f.write(f"  Info: Valeurs différentes            : {stats['different_values_count']:4d}\n")
+            f.write("\n")
 
         # Section 1: Clés seulement dans Lang1
         if result['only_in_lang1']:
@@ -362,11 +389,24 @@ def menu_compare_langs(plugin_path: str = ""):
     print(f"  {c.DIM}• Deux versions d'une même langue (ex: ancien FR vs nouveau FR){c.RESET}")
     print(f"  {c.DIM}• Une langue vs EN (pour voir ce qui n'est pas traduit){c.RESET}")
 
+    print(f"\n{c.KEY}Mode de comparaison:{c.RESET}")
+    print(f"  {c.YELLOW}1{c.RESET}. {c.INFO}Par clés{c.RESET} - Identifie les clés manquantes/ajoutées (recommandé pour synchronisation)")
+    print(f"  {c.YELLOW}2{c.RESET}. {c.INFO}Par valeurs{c.RESET} - Identifie les traductions identiques (recommandé pour audit qualité)")
+
+    comparison_mode = input(c.prompt(_("Mode de comparaison") + " (1-2, défaut=1): ")).strip()
+    if not comparison_mode:
+        comparison_mode = "1"  # Défaut: mode clés
+
+    if comparison_mode not in ["1", "2"]:
+        print(c.error("Choix invalide."))
+        input("\nAppuyez sur Entrée...")
+        return None
+
     print(f"\n{c.KEY}Mode de sélection:{c.RESET}")
     print(f"  {c.YELLOW}1{c.RESET}. Par codes langue (ex: fr, de) - cherche dans un répertoire")
     print(f"  {c.YELLOW}2{c.RESET}. Par chemins de fichiers complets")
 
-    mode = input(c.prompt(_("Votre choix:") + " (1-2): ")).strip()
+    mode = input(c.prompt("Votre choix: (1-2): ")).strip()
 
     file1 = None
     file2 = None
@@ -376,8 +416,12 @@ def menu_compare_langs(plugin_path: str = ""):
     if mode == '1':
         # Mode: sélection par codes langue
         print(f"\n{c.KEY}Répertoire contenant les fichiers de langue{c.RESET}:")
-        print(f"{c.DIM}  (ex: ./Locales ou chemin vers le plugin){c.RESET}")
-        locales_dir = input(f"{c.PROMPT}  > {c.RESET}").strip()
+        print(f"{c.DIM}  (par défaut: {c.VALUE}{plugin_path}{c.RESET}{c.DIM}){c.RESET}")
+        print(f"{c.DIM}  Appuyez sur Entrée pour utiliser le répertoire par défaut, ou saisissez un autre chemin{c.RESET}")
+        user_input = input(f"{c.PROMPT}  > {c.RESET}").strip()
+
+        # Utiliser le plugin par défaut si rien saisi
+        locales_dir = user_input if user_input else plugin_path
 
         if not locales_dir or not os.path.isdir(locales_dir):
             print(c.error("Répertoire invalide."))
@@ -385,7 +429,7 @@ def menu_compare_langs(plugin_path: str = ""):
             return None
 
         # Trouver les langues disponibles
-        available_langs = find_languages(locales_dir, exclude_en=False)
+        available_langs = find_languages(locales_dir, exclude_reference=False)
         if not available_langs:
             print(c.error("Aucun fichier TranslatedStrings trouvé dans ce répertoire."))
             input("\nAppuyez sur Entrée...")
@@ -441,7 +485,10 @@ def menu_compare_langs(plugin_path: str = ""):
         else:
             output_dir = None  # run_compare_langs créera un dossier local
 
-        output_dir = run_compare_langs(file1, file2, lang1_name, lang2_name, output_dir)
+        # Convertir le mode de comparaison
+        comp_mode = "keys" if comparison_mode == "1" else "values"
+
+        output_dir = run_compare_langs(file1, file2, lang1_name, lang2_name, output_dir, comp_mode)
 
         # Charger le résultat pour affichage
         with open(os.path.join(output_dir, 'COMPARE_LANGS_data.json'), 'r', encoding='utf-8') as f:
@@ -450,38 +497,60 @@ def menu_compare_langs(plugin_path: str = ""):
         stats = result['statistics']
         l1 = result['lang1_name']
         l2 = result['lang2_name']
+        mode = result.get('comparison_mode', 'keys')
 
         # Afficher le résumé
         print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
-        print(f"{c.TITLE}  RÉSUMÉ DE LA COMPARAISON{c.RESET}")
+        mode_label = "CLÉS" if mode == "keys" else "VALEURS"
+        print(f"{c.TITLE}  RÉSUMÉ DE LA COMPARAISON ({mode_label}){c.RESET}")
         print(f"{c.HEADER}{'=' * 66}{c.RESET}")
         print(f"  {c.KEY}Langue 1{c.RESET}: {c.CYAN}{l1}{c.RESET}  ({c.VALUE}{stats['keys_in_lang1']}{c.RESET} clés)")
         print(f"  {c.KEY}Langue 2{c.RESET}: {c.CYAN}{l2}{c.RESET}  ({c.VALUE}{stats['keys_in_lang2']}{c.RESET} clés)")
         print()
-        print(f"  {c.KEY}Total de clés uniques       {c.RESET}: {c.VALUE}{stats['total_unique_keys']:4d}{c.RESET}")
-        print(f"  {c.KEY}Clés dans les deux langues  {c.RESET}: {c.GREEN}{stats['keys_in_both']:4d}{c.RESET}")
-        print(f"  {c.KEY}Seulement dans {l1:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang1']:4d}{c.RESET}")
-        print(f"  {c.KEY}Seulement dans {l2:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang2']:4d}{c.RESET}")
-        print()
-        print(f"  {c.KEY}Valeurs identiques          {c.RESET}: {c.DIM}{stats['identical_values_count']:4d}{c.RESET}")
-        print(f"  {c.KEY}Valeurs différentes         {c.RESET}: {c.VALUE}{stats['different_values_count']:4d}{c.RESET}")
+
+        if mode == "keys":
+            # Mode CLÉS : focus sur les différences structurelles
+            print(f"  {c.KEY}Total de clés uniques       {c.RESET}: {c.VALUE}{stats['total_unique_keys']:4d}{c.RESET}")
+            print(f"  {c.KEY}Clés dans les deux langues  {c.RESET}: {c.GREEN}{stats['keys_in_both']:4d}{c.RESET}")
+            print(f"  {c.KEY}Seulement dans {l1:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang1']:4d}{c.RESET}")
+            print(f"  {c.KEY}Seulement dans {l2:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang2']:4d}{c.RESET}")
+            print()
+            print(f"  {c.DIM}Valeurs identiques          : {stats['identical_values_count']:4d}{c.RESET}")
+            print(f"  {c.DIM}Valeurs différentes         : {stats['different_values_count']:4d}{c.RESET}")
+        else:
+            # Mode VALEURS : focus sur la qualité des traductions
+            print(f"  {c.KEY}Valeurs identiques          {c.RESET}: {c.WARNING}{stats['identical_values_count']:4d}{c.RESET}")
+            print(f"  {c.KEY}Valeurs différentes         {c.RESET}: {c.GREEN}{stats['different_values_count']:4d}{c.RESET}")
+            print()
+            print(f"  {c.DIM}Total de clés uniques       : {stats['total_unique_keys']:4d}{c.RESET}")
+            print(f"  {c.DIM}Clés dans les deux langues  : {stats['keys_in_both']:4d}{c.RESET}")
+            print(f"  {c.DIM}Seulement dans {l1:<12s}: {stats['only_lang1']:4d}{c.RESET}")
+            print(f"  {c.DIM}Seulement dans {l2:<12s}: {stats['only_lang2']:4d}{c.RESET}")
+
         print()
 
         # Avertissements
-        if stats['identical_values_count'] > 0 and (l1 == 'EN' or l2 == 'EN'):
-            print(f"  {c.WARNING}⚠️  {stats['identical_values_count']} traduction(s) identique(s) à EN détectée(s)!{c.RESET}")
+        if mode == "values" and stats['identical_values_count'] > 0:
+            print(f"  {c.WARNING}⚠️  {stats['identical_values_count']} traduction(s) identique(s) détectée(s)!{c.RESET}")
+            if l1 == 'EN' or l2 == 'EN':
+                print(f"  {c.WARNING}   Possibles traductions oubliées (identiques à EN){c.RESET}")
+        elif mode == "keys" and (stats['only_lang1'] > 0 or stats['only_lang2'] > 0):
+            print(f"  {c.WARNING}⚠️  Fichiers désynchronisés : clés manquantes détectées{c.RESET}")
 
         print(c.success(f"\nFichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
         print(f"  {c.DIM}• COMPARE_LANGS_report.txt{c.RESET}")
         print(f"  {c.DIM}• COMPARE_LANGS_data.json{c.RESET}")
 
+        input("\nAppuyez sur Entrée pour continuer...")
         return output_dir
 
     except FileNotFoundError as e:
         print(c.error(f"Fichier non trouvé: {e}"))
+        input("\nAppuyez sur Entrée...")
     except Exception as e:
         print(c.error(f"Erreur: {e}"))
         import traceback
         traceback.print_exc()
+        input("\nAppuyez sur Entrée...")
 
     return None

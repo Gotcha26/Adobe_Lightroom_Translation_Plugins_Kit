@@ -31,6 +31,7 @@ from .common import (
     parse_translation_file, write_translation_file, update_translation_file_surgical,
     load_update_json, find_languages, c
 )
+from .config_loader import get_update_filename, get_reference_lang
 
 
 # =============================================================================
@@ -47,7 +48,7 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
     
     Args:
         file_path: Chemin du fichier TRANSLATE_xx.txt
-        update_data: Données UPDATE_en.json pour récupérer les valeurs EN
+        update_data: Données UPDATE_{lang}.json pour récupérer les valeurs EN
     
     Returns:
         Dict[str, str]: {clé: traduction}
@@ -118,19 +119,19 @@ def run_inject(translate_file: str, target_file: str,
     Args:
         translate_file: Fichier TRANSLATE_xx.txt avec les traductions
         target_file: Fichier TranslatedStrings_xx.txt cible
-        update_dir: Répertoire contenant UPDATE_en.json (pour valeurs EN par défaut)
+        update_dir: Répertoire contenant UPDATE_{lang}.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
         backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
 
     Returns:
         Statistiques d'injection
     """
-    # Charger UPDATE_en.json si disponible
+    # Charger UPDATE_{lang}.json si disponible
     update_data = None
     if update_dir:
         update_data = load_update_json(update_dir)
     else:
-        # Essayer de trouver UPDATE_en.json dans le même dossier que TRANSLATE
+        # Essayer de trouver UPDATE_{lang}.json dans le même dossier que TRANSLATE
         translate_dir = os.path.dirname(translate_file)
         update_data = load_update_json(translate_dir)
     
@@ -138,7 +139,7 @@ def run_inject(translate_file: str, target_file: str,
     new_translations = parse_translate_file(translate_file, update_data)
     
     if not new_translations:
-        return {'injected': 0, 'from_en': 0, 'skipped': 0, 'total': 0}
+        return {'injected': 0, 'from_ref': 0, 'skipped': 0, 'total': 0}
     
     # Charger le fichier cible existant
     if os.path.isfile(target_file):
@@ -157,7 +158,7 @@ def run_inject(translate_file: str, target_file: str,
         existing = {}
     
     # Fusionner
-    stats = {'injected': 0, 'from_en': 0, 'skipped': 0}
+    stats = {'injected': 0, 'from_ref': 0, 'skipped': 0}
     
     # Récupérer les valeurs EN pour comparaison
     en_values = {}
@@ -171,7 +172,7 @@ def run_inject(translate_file: str, target_file: str,
         if translation:
             # Vérifier si c'est la valeur EN ou une vraie traduction
             if key in en_values and translation == en_values[key]:
-                stats['from_en'] += 1
+                stats['from_ref'] += 1
             else:
                 stats['injected'] += 1
             existing[key] = translation
@@ -188,7 +189,7 @@ def run_inject(translate_file: str, target_file: str,
     
     # Métadonnées pour l'entête
     metadata = {
-        'new_keys': stats['injected'] + stats['from_en'],
+        'new_keys': stats['injected'] + stats['from_ref'],
         'source': os.path.basename(translate_file)
     }
 
@@ -273,7 +274,7 @@ def menu_inject(plugin_path: str = ""):
             input("\nAppuyez sur Entrée...")
             return None
 
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_{lang}.json):")
         print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
@@ -285,7 +286,7 @@ def menu_inject(plugin_path: str = ""):
             print(f"{c.TITLE}  RÉSULTAT{c.RESET}")
             print(f"{c.HEADER}{'=' * 66}{c.RESET}")
             print(f"  {c.KEY}Traductions injectées  {c.RESET}: {c.GREEN}{stats['injected']}{c.RESET}")
-            print(f"  {c.KEY}Valeurs EN par défaut  {c.RESET}: {c.CYAN}{stats['from_en']}{c.RESET}")
+            print(f"  {c.KEY}Valeurs EN par défaut  {c.RESET}: {c.CYAN}{stats['from_ref']}{c.RESET}")
             print(f"  {c.KEY}Entrées ignorées       {c.RESET}: {c.DIM}{stats['skipped']}{c.RESET}")
             print(f"  {c.KEY}Total clés dans fichier{c.RESET}: {c.WHITE}{stats['total']}{c.RESET}")
             print()
@@ -312,7 +313,7 @@ def menu_inject(plugin_path: str = ""):
             input("\nAppuyez sur Entrée...")
             return None
 
-        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_en.json):")
+        print(f"\n{c.KEY}Dossier UPDATE{c.RESET} (contenant UPDATE_{lang}.json):")
         print(f"{c.DIM}  (Entrée = même dossier que TRANSLATE){c.RESET}")
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
@@ -329,8 +330,8 @@ def menu_inject(plugin_path: str = ""):
                         print(f"  {c.RED}[{lang.upper()}]{c.RESET} {c.ERROR}[ERREUR]{c.RESET} {stats['error']}")
                     else:
                         translated = stats['injected']
-                        from_en = stats['from_en']
-                        print(f"  {c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET} {c.GREEN}{translated}{c.RESET} traduites + {c.CYAN}{from_en}{c.RESET} EN par défaut")
+                        from_ref = stats['from_ref']
+                        print(f"  {c.CYAN}[{lang.upper()}]{c.RESET} {c.OK}[OK]{c.RESET} {c.GREEN}{translated}{c.RESET} traduites + {c.CYAN}{from_ref}{c.RESET} EN par défaut")
                 print()
                 print(c.success("Fichiers mis à jour (backups .bak créés)"))
 

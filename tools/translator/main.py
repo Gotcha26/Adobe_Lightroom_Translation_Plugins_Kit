@@ -98,13 +98,10 @@ def advanced_menu(plugin_path: str):
 
         if choice == '1':
             menu_compare(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '2':
             menu_compare_langs(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
             menu_extract(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '4':
             menu_inject(plugin_path)
         elif choice == '5':
@@ -180,13 +177,10 @@ def main_menu(default_plugin_path: str = ""):
 
         if choice == '1':
             menu_install(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '2':
             menu_autosync(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '3':
             menu_addlang(plugin_path)
-            input(f"\n{c.DIM}  Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '7':
             advanced_menu(plugin_path)
         elif choice == '9':
@@ -216,8 +210,8 @@ def main_menu(default_plugin_path: str = ""):
 
             input(f"\n{c.DIM}Appuyez sur Entrée pour continuer...{c.RESET}")
         elif choice == '0':
-            print(f"\n{c.SUCCESS}  Au revoir!{c.RESET}")
-            break
+            print(f"\n{c.DIM}Au revoir !{c.RESET}")
+            break  # Sortir du menu principal
         else:
             print(c.error(f"Choix invalide : \"{choice}\""))
             input(f"{c.DIM}Appuyez sur Entrée...{c.RESET}")
