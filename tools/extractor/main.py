@@ -45,8 +45,12 @@ from .menu import show_interactive_menu
 
 
 def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
-                   exclude_files: list, min_length: int, ignore_log: bool):
-    """Lance l'extraction avec les paramètres fournis."""
+                   exclude_files: list, min_length: int, ignore_log: bool, silent: bool = False):
+    """Lance l'extraction avec les paramètres fournis.
+
+    Args:
+        silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
+    """
 
     # Vérifier le chemin du plugin
     if not os.path.isdir(plugin_path):
@@ -64,8 +68,9 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         # Nouvelle structure dans le plugin
         timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
 
-    print(f"\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(_("Analyse de {plugin}...").format(plugin=os.path.basename(plugin_path)) + "\n")
+    if not silent:
+        print(f"\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(_("Analyse de {plugin}...").format(plugin=os.path.basename(plugin_path)) + "\n")
 
     # Créer l'extracteur
     extractor = LocalizableStringExtractor(
@@ -117,16 +122,17 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         _("Membres de concaténation"): extractor.stats.concat_members_total,
     }
 
-    # Afficher le résumé formaté
-    formatter.print_extraction_summary(
-        plugin_path=plugin_path,
-        output_dir=timestamped_output_dir,
-        prefix=prefix,
-        lang=lang,
-        main_stats=main_stats,
-        detail_stats=detail_stats,
-        existing_loc_count=existing_loc_count
-    )
+    # Afficher le résumé formaté (sauf si silent)
+    if not silent:
+        formatter.print_extraction_summary(
+            plugin_path=plugin_path,
+            output_dir=timestamped_output_dir,
+            prefix=prefix,
+            lang=lang,
+            main_stats=main_stats,
+            detail_stats=detail_stats,
+            existing_loc_count=existing_loc_count
+        )
 
     # Afficher les fichiers générés
     files_generated = [

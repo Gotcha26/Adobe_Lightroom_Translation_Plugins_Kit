@@ -148,6 +148,10 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     changelog_file = os.path.join(output_dir, 'CHANGELOG.txt')
     _generate_changelog(changelog_file, result, old_file, new_file)
 
+    # Copier l'ancien fichier EN pour traçabilité
+    old_en_file = os.path.join(output_dir, 'old_TranslatedStrings_en.txt')
+    shutil.copy2(old_file, old_en_file)
+
     # Copier le nouveau fichier EN comme référence
     new_en_file = os.path.join(output_dir, 'TranslatedStrings_en.txt')
     shutil.copy2(new_file, new_en_file)

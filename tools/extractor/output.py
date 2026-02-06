@@ -5,7 +5,7 @@ Nom du fichier : output.py
 Dépendances : .models
 
 Description :
-Génération des fichiers de sortie d'extraction: PluginStrings.txt, JSON de remplacement,
+Génération des fichiers de sortie d'extraction: TranslatedStrings_xx.txt, JSON de remplacement,
 métadonnées d'espaces/suffixes. Classe OutputGenerator pour gérer la sérialisation des résultats.
 
 Usage CLI :
@@ -77,7 +77,7 @@ class OutputGenerator:
         return full_path
 
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
-        """Génère le fichier PluginStrings.txt avec les clés uniques (fichier de référence)."""
+        """Génère le fichier TranslatedStrings_xx.txt avec les clés uniques (fichier de référence)."""
         # Construire un dictionnaire clé → entry (première occurrence)
         unique_keys: Dict[str, ExtractedString] = {}
 
@@ -97,6 +97,7 @@ class OutputGenerator:
             f.write(f"-- Plugin Localization - {lang.upper()}\n")
             f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"-- Total keys: {len(unique_keys)}\n")
+            f.write(f"-- SOURCE: Extractor\n")
             f.write(f"-- =============================================================================\n\n")
 
             # Add translation warning note for translators

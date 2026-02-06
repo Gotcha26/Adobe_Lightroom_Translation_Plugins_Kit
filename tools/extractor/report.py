@@ -104,7 +104,7 @@ class ReportGenerator:
             existing_entries = [e for e in extracted if e.pattern_name == "existing_loc"]
             if existing_entries:
                 f.write("=" * 80 + "\n")
-                f.write("CLÉS LOC EXISTANTES (déjà localisées - incluses dans PluginStrings.txt)\n")
+                f.write("CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx.txt)\n")
                 f.write("=" * 80 + "\n\n")
                 for entry in existing_entries:
                     f.write(f"  🔒 {entry.file_path}:{entry.line_num}\n")
@@ -113,8 +113,9 @@ class ReportGenerator:
                 f.write("\n")
 
             # Détail par fichier (pour remplacement)
+            # → Ne pas tenir compte du champs vide "REMPLACER" si vide !
             f.write("=" * 80 + "\n")
-            f.write("DÉTAIL PAR FICHIER (pour remplacement)\n")
+            f.write("DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \"REMPLACER\" si vide !\n")
             f.write("=" * 80 + "\n")
 
             for file_path in sorted(by_file.keys()):
@@ -188,7 +189,7 @@ class ReportGenerator:
 
             # Liste des clés uniques pour PluginStrings
             f.write("=" * 80 + "\n")
-            f.write("LISTE DES CLÉS POUR PluginStrings.txt\n")
+            f.write("LISTE DES CLÉS POUR TranslatedStrings_xx.txt\n")
             f.write("=" * 80 + "\n\n")
 
             # Construire la liste des clés uniques

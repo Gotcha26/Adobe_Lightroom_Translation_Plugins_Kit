@@ -187,15 +187,17 @@ class LocalizableStringExtractor:
                 continue
 
             # Vérifier si cette chaîne est dans un appel LOC
-            # Regarder ce qui précède la position de la chaîne
+            # Chercher LOC " immédiatement avant la position (avec espaces possibles)
             before = line[:start_pos]
 
-            # Pattern: LOC "$$$/Key= juste avant le texte
-            if re.search(r'LOC\s*"(\$\$\$/[^=]+=)\s*$', before):
-                # C'est la valeur par défaut d'un LOC existant
-                continue
+            # Pattern plus robuste: chercher LOC suivi d'espaces puis " juste avant start_pos
+            # Exemple: "... LOC   "$$$/" ou "... .. LOC "$$$/"
+            if re.search(r'LOC\s*"$', before.rstrip()):
+                if text.startswith('$$$/'):
+                    # C'est une clé LOC existante (format: LOC "$$$/Key=value")
+                    continue
 
-            # Pattern: "$$$/Key= au début de la chaîne (l'utilisateur a mis le LOC dans la chaîne)
+            # Pattern: chaîne commence par $$$/ (erreur utilisateur)
             if text.startswith('$$$/'):
                 continue
 
@@ -244,6 +246,12 @@ class LocalizableStringExtractor:
             if self.ignore_log and LOG_LINE_REGEX.search(line):
                 self.stats.log_lines_ignored += 1
                 continue
+
+            # EXTRACTION DES LOC EXISTANTS (même sans UI_CONTEXT_PATTERN)
+            has_existing_loc = 'LOC "$$$/' in line
+            if has_existing_loc:
+                self._extract_existing_loc(line, rel_path, file_name, line_num)
+                file_has_strings = True
 
             # Vérifier si la ligne contient un contexte UI
             matched_pattern = None
@@ -302,13 +310,20 @@ class LocalizableStringExtractor:
         combined = ctx.get_combined_content()
         pattern_name = ctx.pattern_name
 
+        extracted_any = False
+
+        # EXTRACTION DES LOC EXISTANTS dans le bloc multi-ligne
+        if 'LOC "$$$/' in combined:
+            for line_num, line_content in ctx.lines_with_numbers:
+                if 'LOC "$$$/' in line_content:
+                    self._extract_existing_loc(line_content, rel_path, file_name, line_num)
+                    extracted_any = True
+
         # Utiliser _find_non_localized_strings pour ne pas re-localiser
         non_localized = self._find_non_localized_strings(combined)
 
         if not non_localized:
-            return False
-
-        extracted_any = False
+            return extracted_any
 
         for original_text, start_pos, end_pos in non_localized:
             if len(original_text.strip()) < self.min_length:
@@ -503,7 +518,8 @@ class LocalizableStringExtractor:
 
     def _extract_existing_loc(self, line: str, rel_path: str, file_name: str, line_num: int):
         """Extrait les clés LOC existantes d'une ligne déjà localisée."""
-        loc_pattern = re.compile(r'LOC\s*["\'](\$\$\$/[^=]+)=([^"\']+)["\']')
+        # Capturer: LOC "$$$/Key=value" (valeur jusqu'au guillemet fermant uniquement)
+        loc_pattern = re.compile(r'LOC\s+"(\$\$\$/[^=]+)=([^"]+)"')
 
         for match in loc_pattern.finditer(line):
             existing_key = match.group(1)

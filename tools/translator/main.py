@@ -246,7 +246,9 @@ def main():
         if not os.path.isdir(plugin_path):
             print(c.error(f"Plugin introuvable: {plugin_path}"))
             sys.exit(1)
-        run_autosync(plugin_path)
+        results = run_autosync(plugin_path)
+        from .autosync import print_autosync_report
+        print_autosync_report(results, plugin_path)
         return
 
     parser = argparse.ArgumentParser(
