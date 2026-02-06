@@ -1,0 +1,12 @@
+{
+  "added": {
+    "5683$/Piwigo/API/TestNewKey": "Test new key value"
+  },
+  "changed": {
+    "5683$/Piwigo/API/AddTags": {
+      "old": "pour ajouter des tags",
+      "new": "pour ajouter des étiquettes"
+    }
+  },
+  "deleted": []
+}

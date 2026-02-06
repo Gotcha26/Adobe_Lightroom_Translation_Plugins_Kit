@@ -34,10 +34,11 @@ from .models import ExtractedString, ExtractionStats
 class ReportGenerator:
     """Génère les rapports détaillés d'extraction."""
 
-    def __init__(self, plugin_path: str, prefix: str, stats: ExtractionStats):
+    def __init__(self, plugin_path: str, prefix: str, stats: ExtractionStats, silent: bool = False):
         self.plugin_path = plugin_path
         self.prefix = prefix
         self.stats = stats
+        self.silent = silent
 
     @staticmethod
     def _shorten_path(full_path: str, plugin_path: str) -> str:
@@ -206,7 +207,8 @@ class ReportGenerator:
                 f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
 
         short_path = self._shorten_path(output_path, self.plugin_path)
-        print(_("✓ Rapport               : {path}").format(path=short_path))
+        if not self.silent:
+            print(_("✓ Rapport               : {path}").format(path=short_path))
 
     def _get_markers(self, entry: ExtractedString) -> str:
         """Retourne la chaîne de marqueurs (émojis) pour une entrée."""

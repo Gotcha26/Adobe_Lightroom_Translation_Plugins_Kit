@@ -59,15 +59,15 @@ During plugin development, text evolves:
 
 ```
 3_Translator/
-├── Translator_main.py      ← Entry point (menu + CLI)
-├── TM_common.py            ← Common functions (parser, utils)
-├── TM_install.py           ← INSTALL command
-├── TM_autosync.py          ← AUTO-SYNC command ⭐
-├── TM_addlang.py           ← ADD LANGUAGE command
-├── TM_compare.py           ← COMPARE command (advanced)
-├── TM_extract.py           ← EXTRACT command (advanced)
-├── TM_inject.py            ← INJECT command (advanced)
-├── TM_sync.py              ← SYNC command (advanced)
+├── main.py                 ← Entry point (menu + CLI)
+├── common.py               ← Common functions (parser, utils)
+├── install.py              ← INSTALL command
+├── autosync.py             ← AUTO-SYNC command ⭐
+├── addlang.py              ← ADD LANGUAGE command
+├── compare.py              ← COMPARE command (advanced)
+├── extract.py              ← EXTRACT command (advanced)
+├── inject.py               ← INJECT command (advanced)
+├── sync.py                 ← SYNC command (advanced)
 └── __doc/
     └── en/
         ├── README.md       ← This file
@@ -115,28 +115,28 @@ flowchart TB
 
 ### Modular Architecture
 
-Each command is implemented in its own `TM_*.py` module. This design enables:
+Each command is implemented in its own python module. This design enables:
 - Targeted maintenance
 - Isolated unit tests
 - Independent usage via Python import
 
 ```mermaid
 flowchart TB
-    subgraph Main["Translator_main.py"]
+    subgraph Main["(Translator) main.py"]
         M["Interactive menu<br/>+ CLI argparse"]
     end
 
     subgraph Essential["⭐ Essential Modules"]
-        I["TM_install.py"]
-        AS["TM_autosync.py"]
-        AL["TM_addlang.py"]
+        I["install.py"]
+        AS["autosync.py"]
+        AL["addlang.py"]
     end
 
     subgraph Advanced["🔧 Advanced Modules"]
-        CO["TM_compare.py"]
-        EX["TM_extract.py"]
-        IN["TM_inject.py"]
-        SY["TM_sync.py"]
+        CO["compare.py"]
+        EX["extract.py"]
+        IN["inject.py"]
+        SY["sync.py"]
     end
 
     subgraph Common["TM_common.py"]

@@ -59,16 +59,16 @@ Lors du développement d'un plugin, les textes évoluent :
 
 ```
 3_Translator/
-├── Translator_main.py      ← Point d'entrée (menu + CLI)
-├── TM_common.py            ← Fonctions communes (parser, utils)
-├── TM_install.py           ← Commande INSTALL
-├── TM_autosync.py          ← Commande AUTO-SYNC ⭐
-├── TM_addlang.py           ← Commande ADD LANGUAGE
-├── TM_compare.py           ← Commande COMPARE (avancé)
-├── TM_compare_langs.py     ← Commande COMPARE-LANGS (avancé)
-├── TM_extract.py           ← Commande EXTRACT (avancé)
-├── TM_inject.py            ← Commande INJECT (avancé)
-├── TM_sync.py              ← Commande SYNC (avancé)
+├── main.py                 ← Point d'entrée (menu + CLI)
+├── common.py               ← Fonctions communes (parser, utils)
+├── install.py              ← Commande INSTALL
+├── autosync.py             ← Commande AUTO-SYNC ⭐
+├── addlang.py              ← Commande ADD LANGUAGE
+├── compare.py              ← Commande COMPARE (avancé)
+├── compare_langs.py        ← Commande COMPARE-LANGS (avancé)
+├── extract.py              ← Commande EXTRACT (avancé)
+├── inject.py               ← Commande INJECT (avancé)
+├── sync.py                 ← Commande SYNC (avancé)
 └── __doc/
     └── fr/
         ├── Lisez-moi.md    ← Ce fichier
@@ -117,29 +117,29 @@ flowchart TB
 
 ### Architecture modulaire
 
-Chaque commande est implémentée dans son propre module `TM_*.py`. Cette conception permet :
+Chaque commande est implémentée dans son propre module python. Cette conception permet :
 - Une maintenance ciblée
 - Des tests unitaires isolés
 - Une utilisation indépendante via import Python
 
 ```mermaid
 flowchart TB
-    subgraph Main["Translator_main.py"]
+    subgraph Main["(Translator) main.py"]
         M["Menu interactif<br/>+ CLI argparse"]
     end
 
     subgraph Essential["⭐ Modules essentiels"]
-        I["TM_install.py"]
-        AS["TM_autosync.py"]
-        AL["TM_addlang.py"]
+        I["install.py"]
+        AS["autosync.py"]
+        AL["addlang.py"]
     end
 
     subgraph Advanced["🔧 Modules avancés"]
-        CO["TM_compare.py"]
-        CL["TM_compare_langs.py"]
-        EX["TM_extract.py"]
-        IN["TM_inject.py"]
-        SY["TM_sync.py"]
+        CO["compare.py"]
+        CL["compare_langs.py"]
+        EX["extract.py"]
+        IN["inject.py"]
+        SY["sync.py"]
     end
 
     subgraph Common["TM_common.py"]

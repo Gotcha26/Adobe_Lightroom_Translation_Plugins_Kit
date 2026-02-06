@@ -91,8 +91,8 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     report_file = os.path.join(timestamped_output_dir, f"extraction_report.txt")
 
     # Générateurs
-    output_gen = OutputGenerator(plugin_path, prefix)
-    report_gen = ReportGenerator(plugin_path, prefix, extractor.stats)
+    output_gen = OutputGenerator(plugin_path, prefix, silent=silent)
+    report_gen = ReportGenerator(plugin_path, prefix, extractor.stats, silent=silent)
 
     # Générer les fichiers
     output_gen.generate_plugin_strings(extractor.extracted, strings_file, lang)
@@ -134,15 +134,16 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
             existing_loc_count=existing_loc_count
         )
 
-    # Afficher les fichiers générés
-    files_generated = [
-        (f"TranslatedStrings_{lang}.txt", _("{n} clés").format(n=extractor.stats.unique_strings), _("Fichier de chaînes")),
-        ("spacing_metadata.json", _("{n} entrées").format(n=len(extractor.spacing_metadata)), _("Métadonnées d'espaces/suffixes")),
-        ("replacements.json", _("pour Applicator"), _("Remplacement des chaînes")),
-        ("extraction_report.txt", _("rapport détaillé"), _("Analyse complète")),
-    ]
+    # Afficher les fichiers générés (sauf si silent)
+    if not silent:
+        files_generated = [
+            (f"TranslatedStrings_{lang}.txt", _("{n} clés").format(n=extractor.stats.unique_strings), _("Fichier de chaînes")),
+            ("spacing_metadata.json", _("{n} entrées").format(n=len(extractor.spacing_metadata)), _("Métadonnées d'espaces/suffixes")),
+            ("replacements.json", _("pour Applicator"), _("Remplacement des chaînes")),
+            ("extraction_report.txt", _("rapport détaillé"), _("Analyse complète")),
+        ]
 
-    formatter.print_files_generated(files_generated, timestamped_output_dir, plugin_path)
+        formatter.print_files_generated(files_generated, timestamped_output_dir, plugin_path)
 
 
 def main():

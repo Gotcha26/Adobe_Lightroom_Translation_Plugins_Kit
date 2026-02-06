@@ -155,6 +155,241 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
             f.write("\n")
 
 
+def update_translation_file_surgical(
+    target_file: str,
+    update_data: Optional[Dict],
+    translations: Dict[str, str],
+    markers: Optional[Dict[str, str]] = None,
+    metadata: Optional[Dict] = None
+) -> None:
+    """
+    Mise à jour chirurgicale d'un fichier de traduction.
+    Préserve la structure originale, sections, lignes vides et commentaires.
+
+    Utilise UPDATE_en.json pour appliquer uniquement les changements nécessaires :
+    - deleted : Supprime les lignes de clés obsolètes
+    - changed : Modifie uniquement la valeur des clés existantes
+    - added : Insère les nouvelles clés au bon endroit (après la dernière clé de leur section)
+
+    Args:
+        target_file: Chemin du fichier à modifier
+        update_data: Données de UPDATE_en.json (peut être None)
+        translations: Dict {clé: nouvelle_valeur} avec toutes les traductions
+        markers: Dict {clé: marqueur} pour ajouter des commentaires [NEW] ou [NEEDS_REVIEW]
+        metadata: Dict avec infos pour l'entête (new_keys, changed_keys, source)
+    """
+    markers = markers or {}
+    metadata = metadata or {}
+
+    # Extraire les changements depuis update_data
+    deleted_keys = set(update_data.get('deleted', [])) if update_data else set()
+    changed_keys = set(update_data.get('changed', {}).keys()) if update_data else set()
+    added_keys = set(update_data.get('added', {}).keys()) if update_data else set()
+
+    # Lire le fichier ligne par ligne
+    if not os.path.isfile(target_file):
+        # Fichier n'existe pas : utiliser write_translation_file standard
+        lang = 'xx'
+        basename = os.path.basename(target_file)
+        if 'TranslatedStrings_' in basename:
+            lang = basename.replace('TranslatedStrings_', '').replace('.txt', '')
+        write_translation_file(target_file, lang, translations, markers, metadata)
+        return
+
+    with open(target_file, 'r', encoding='utf-8') as f:
+        original_lines = f.readlines()
+
+    # Structures pour tracking
+    output_lines = []
+    keys_processed = set()
+    current_section = None
+    last_key_in_section = {}  # {section: line_index}
+    keys_to_add_by_section = defaultdict(list)  # {section: [keys]}
+
+    # Première passe : identifier les sections et clés à ajouter
+    for key in added_keys:
+        section = _extract_section_from_key(key)
+        keys_to_add_by_section[section].append(key)
+
+    # Deuxième passe : traiter le fichier ligne par ligne
+    i = 0
+    in_header = True
+    header_updated = False
+
+    while i < len(original_lines):
+        line = original_lines[i]
+        stripped = line.strip()
+
+        # Détecter fin de l'entête
+        if in_header and stripped.startswith('-- ') and not stripped.startswith('-- =') and not stripped.startswith('-- -') and not stripped.startswith('-- Plugin') and not stripped.startswith('-- Generated') and not stripped.startswith('-- Total') and not stripped.startswith('-- New') and not stripped.startswith('-- Changed') and not stripped.startswith('-- Source') and not stripped.startswith('-- IMPORTANT'):
+            # C'est une section, fin de l'entête
+            in_header = False
+
+            # Mettre à jour l'entête si nécessaire
+            if not header_updated:
+                output_lines = _update_header(output_lines, metadata)
+                header_updated = True
+
+        # Détecter les sections (-- SectionName)
+        if stripped.startswith('-- ') and not stripped.startswith('-- =') and not stripped.startswith('-- -') and not stripped.startswith('-- IMPORTANT'):
+            # Vérifier si c'est vraiment une section (pas un commentaire dans l'entête)
+            if not in_header:
+                # Avant de changer de section, insérer les clés ajoutées de la section précédente
+                if current_section and current_section in keys_to_add_by_section:
+                    for key in keys_to_add_by_section[current_section]:
+                        if key not in keys_processed:
+                            marker = markers.get(key, '')
+                            if marker:
+                                output_lines.append(f'{marker}\n')
+                            output_lines.append(f'"{key}={translations[key]}"\n')
+                            keys_processed.add(key)
+                    del keys_to_add_by_section[current_section]
+
+                current_section = stripped[3:].strip()  # Enlever "-- "
+                output_lines.append(line)
+                i += 1
+                continue
+
+        # Détecter les clés
+        key_match = re.match(r'"(\$\$\$/[^"=]+)=([^"]*)"', stripped)
+        if key_match:
+            key = key_match.group(1)
+
+            # Clé à supprimer ?
+            if key in deleted_keys:
+                # Skip cette ligne (et le marqueur précédent s'il existe)
+                if output_lines and output_lines[-1].strip().startswith('-- ['):
+                    output_lines.pop()  # Retirer le marqueur
+                keys_processed.add(key)
+                i += 1
+                continue
+
+            # Clé à modifier ?
+            if key in translations:
+                new_value = translations[key]
+
+                # Ajouter marqueur si nécessaire
+                marker = markers.get(key, '')
+                if marker:
+                    output_lines.append(f'{marker}\n')
+
+                # Écrire la clé avec la nouvelle valeur
+                output_lines.append(f'"{key}={new_value}"\n')
+                keys_processed.add(key)
+
+                # Tracker la dernière clé de cette section
+                if current_section:
+                    last_key_in_section[current_section] = len(output_lines) - 1
+
+                i += 1
+                continue
+
+        # Ligne standard (commentaire, ligne vide, entête)
+        output_lines.append(line)
+        i += 1
+
+    # Ajouter les clés restantes de la dernière section
+    if current_section and current_section in keys_to_add_by_section:
+        for key in keys_to_add_by_section[current_section]:
+            if key not in keys_processed:
+                marker = markers.get(key, '')
+                if marker:
+                    output_lines.append(f'{marker}\n')
+                output_lines.append(f'"{key}={translations[key]}"\n')
+                keys_processed.add(key)
+        del keys_to_add_by_section[current_section]
+
+    # Ajouter les clés orphelines (sections non trouvées dans le fichier)
+    for section, keys in keys_to_add_by_section.items():
+        if keys:
+            # Créer une nouvelle section
+            output_lines.append(f'\n-- {section}\n')
+            for key in keys:
+                if key not in keys_processed:
+                    marker = markers.get(key, '')
+                    if marker:
+                        output_lines.append(f'{marker}\n')
+                    output_lines.append(f'"{key}={translations[key]}"\n')
+                    keys_processed.add(key)
+
+    # Écrire le fichier final
+    with open(target_file, 'w', encoding='utf-8') as f:
+        f.writelines(output_lines)
+
+
+def _extract_section_from_key(key: str) -> str:
+    """
+    Extrait le nom de section depuis une clé.
+    Ex: $$$/Piwigo/API/AddTags -> API
+        $$$/FionaBoston/Title -> FionaBoston
+    """
+    parts = key.split('/')
+    if len(parts) >= 3:
+        return parts[2]  # $$$/Piwigo/API/... -> API
+    elif len(parts) == 2:
+        return parts[1]  # $$$/FionaBoston/... -> FionaBoston
+    return 'General'
+
+
+def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
+    """
+    Met à jour les métadonnées dans l'entête.
+    Remplace Generated, New keys, Changed keys, Source.
+    """
+    updated = []
+    generated_updated = False
+    new_keys_found = False
+    changed_keys_found = False
+    source_found = False
+
+    for line in header_lines:
+        stripped = line.strip()
+
+        # Remplacer Generated
+        if stripped.startswith('-- Generated:'):
+            updated.append(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            generated_updated = True
+        # Remplacer ou supprimer New keys
+        elif stripped.startswith('-- New keys:'):
+            new_keys_found = True
+            if metadata.get('new_keys'):
+                updated.append(f"-- New keys: {metadata['new_keys']}\n")
+        # Remplacer ou supprimer Changed keys
+        elif stripped.startswith('-- Changed keys:'):
+            changed_keys_found = True
+            if metadata.get('changed_keys'):
+                updated.append(f"-- Changed keys: {metadata['changed_keys']}\n")
+        # Remplacer Source
+        elif stripped.startswith('-- Source:') or stripped.startswith('-- SOURCE:'):
+            source_found = True
+            if metadata.get('source'):
+                updated.append(f"-- Source: {metadata['source']}\n")
+            else:
+                updated.append(line)
+        else:
+            updated.append(line)
+
+    # Ajouter les métadonnées manquantes (avant la ligne de séparation finale)
+    insert_index = len(updated)
+    for i in range(len(updated) - 1, -1, -1):
+        if updated[i].strip().startswith('-- ='):
+            insert_index = i
+            break
+
+    additions = []
+    if not new_keys_found and metadata.get('new_keys'):
+        additions.append(f"-- New keys: {metadata['new_keys']}\n")
+    if not changed_keys_found and metadata.get('changed_keys'):
+        additions.append(f"-- Changed keys: {metadata['changed_keys']}\n")
+    if not source_found and metadata.get('source'):
+        additions.append(f"-- Source: {metadata['source']}\n")
+
+    if additions:
+        updated = updated[:insert_index] + additions + updated[insert_index:]
+
+    return updated
+
+
 def resolve_path(path: str) -> Tuple[str, str]:
     """
     Résout un chemin vers (répertoire, fichier).

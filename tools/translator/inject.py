@@ -28,7 +28,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file,
+    parse_translation_file, write_translation_file, update_translation_file_surgical,
     load_update_json, find_languages, c
 )
 
@@ -110,16 +110,18 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
 # =============================================================================
 
 def run_inject(translate_file: str, target_file: str,
-               update_dir: Optional[str] = None, create_backup: bool = True) -> Dict:
+               update_dir: Optional[str] = None, create_backup: bool = True,
+               backup_dir: Optional[str] = None) -> Dict:
     """
     Injecte les traductions d'un fichier TRANSLATE dans un fichier de langue.
-    
+
     Args:
         translate_file: Fichier TRANSLATE_xx.txt avec les traductions
         target_file: Fichier TranslatedStrings_xx.txt cible
         update_dir: Répertoire contenant UPDATE_en.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
-    
+        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+
     Returns:
         Statistiques d'injection
     """
@@ -142,7 +144,15 @@ def run_inject(translate_file: str, target_file: str,
     if os.path.isfile(target_file):
         existing = parse_translation_file(target_file)
         if create_backup:
-            shutil.copy2(target_file, target_file + '.bak')
+            if backup_dir:
+                # Backup dans le répertoire spécifié
+                os.makedirs(backup_dir, exist_ok=True)
+                backup_filename = os.path.basename(target_file) + '.bak'
+                backup_path = os.path.join(backup_dir, backup_filename)
+                shutil.copy2(target_file, backup_path)
+            else:
+                # Backup classique à côté du fichier
+                shutil.copy2(target_file, target_file + '.bak')
     else:
         existing = {}
     
@@ -181,9 +191,9 @@ def run_inject(translate_file: str, target_file: str,
         'new_keys': stats['injected'] + stats['from_en'],
         'source': os.path.basename(translate_file)
     }
-    
-    # Écrire le fichier mis à jour
-    write_translation_file(target_file, lang, existing, metadata=metadata)
+
+    # Écrire le fichier avec mise à jour chirurgicale
+    update_translation_file_surgical(target_file, update_data, existing, metadata=metadata)
     
     return stats
 

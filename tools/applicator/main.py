@@ -352,8 +352,12 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
 
 
 def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = None, dry_run: bool = False,
-                              create_backup: bool = True) -> bool:
-    """Traite tous les fichiers Lua du plugin en utilisant replacements.json."""
+                              create_backup: bool = True, silent: bool = False) -> bool:
+    """Traite tous les fichiers Lua du plugin en utilisant replacements.json.
+
+    Args:
+        silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
+    """
 
     if not os.path.isdir(plugin_path):
         print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
@@ -376,67 +380,76 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
     backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
 
-    print()
+    if not silent:
+        print()
 
     # Charger replacements.json
     replacements_data = load_replacements_json(extraction_dir)
 
     if not replacements_data:
-        print(_("ERREUR: Impossible de charger les remplacements"))
+        if not silent:
+            print(_("ERREUR: Impossible de charger les remplacements"))
         return False
 
     files_data = replacements_data.get('files', {})
 
     if not files_data:
-        print(_("Aucun remplacement à effectuer"))
+        if not silent:
+            print(_("Aucun remplacement à effectuer"))
         return True
 
-    print()
+    if not silent:
+        print()
     report = LocalizationReport()
 
     for file_rel_path, file_replacements in sorted(files_data.items()):
         file_path = os.path.join(plugin_path, file_rel_path)
 
         if os.path.exists(file_path):
-            print(_("Traitement de {file}...").format(file=file_rel_path))
+            if not silent:
+                print(_("Traitement de {file}...").format(file=file_rel_path))
             replacements_count = process_file_with_replacements(
                 file_path, file_replacements, report, dry_run, backup_dir, create_backup
             )
             report.stats['files_processed'] += 1
             if replacements_count > 0:
                 report.stats['files_modified'] += 1
-                print(_("  * {n} chaîne(s) remplacée(s)").format(n=replacements_count))
+                if not silent:
+                    print(_("  * {n} chaîne(s) remplacée(s)").format(n=replacements_count))
             else:
-                print(_("  - Aucun remplacement"))
+                if not silent:
+                    print(_("  - Aucun remplacement"))
         else:
-            print(_("  ! Fichier introuvable: {file}").format(file=file_rel_path))
+            if not silent:
+                print(_("  ! Fichier introuvable: {file}").format(file=file_rel_path))
             report.add_error(file_rel_path, 0, "Fichier introuvable")
 
     # Generer le rapport dans le dossier Applicator
     report_path = os.path.join(applicator_output, "application_report.txt")
     report.generate(report_path)
 
-    print("\n" + c.separator("─", 70))
-    print(c.header(_("RÉSUMÉ")))
-    print(c.separator("─", 70))
-    print(c.config_line(_("Fichiers traités"),    str(report.stats['files_processed'])))
-    print(c.config_line(_("Fichiers modifiés"),   str(report.stats['files_modified'])))
-    print(c.config_line(_("Lignes modifiées"),    str(report.stats['total_replacements'])))
-    print(c.config_line(_("Chaînes remplacées"),  str(report.stats['strings_replaced'])))
-    print(c.config_line(_("Chaînes ignorées"),    str(len(report.skipped))))
-    print()
-    print(c.config_line(_("Sortie Applicator"),   _shorten(applicator_output, plugin_path)))
-    if not dry_run and report.stats['files_modified'] > 0 and create_backup and backup_dir:
-        print(c.config_line(_("Backups"),         _shorten(backup_dir, plugin_path)))
-    print(c.config_line(_("Rapport détaillé"),    _shorten(report_path, plugin_path)))
+    if not silent:
+        print("\n" + c.separator("─", 70))
+        print(c.header(_("RÉSUMÉ")))
+        print(c.separator("─", 70))
+        print(c.config_line(_("Fichiers traités"),    str(report.stats['files_processed'])))
+        print(c.config_line(_("Fichiers modifiés"),   str(report.stats['files_modified'])))
+        print(c.config_line(_("Lignes modifiées"),    str(report.stats['total_replacements'])))
+        print(c.config_line(_("Chaînes remplacées"),  str(report.stats['strings_replaced'])))
+        print(c.config_line(_("Chaînes ignorées"),    str(len(report.skipped))))
+        print()
+        print(c.config_line(_("Sortie Applicator"),   _shorten(applicator_output, plugin_path)))
+        if not dry_run and report.stats['files_modified'] > 0 and create_backup and backup_dir:
+            print(c.config_line(_("Backups"),         _shorten(backup_dir, plugin_path)))
+        print(c.config_line(_("Rapport détaillé"),    _shorten(report_path, plugin_path)))
 
-    if dry_run:
-        print("\n" + c.warning(_("MODE DRY-RUN: Aucun fichier n'a été modifié")))
+        if dry_run:
+            print("\n" + c.warning(_("MODE DRY-RUN: Aucun fichier n'a été modifié")))
 
-    print("\n" + c.separator("═", 70))
-    print(c.warning(_("IMPORTANT: Redémarrez Lightroom après les modifications!")))
-    print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
-    print(c.separator("═", 70))
+        print("\n" + c.separator("═", 70))
+        print(c.warning(_("IMPORTANT: Redémarrez Lightroom après les modifications!")))
+        print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
+        print(c.separator("═", 70))
 
     return True
 

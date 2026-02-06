@@ -30,7 +30,7 @@ from datetime import datetime
 from typing import Dict, List, Set, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file,
+    parse_translation_file, write_translation_file, update_translation_file_surgical,
     resolve_path, load_update_json, find_languages, c
 )
 
@@ -40,19 +40,20 @@ from .common import (
 # =============================================================================
 
 def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = None,
-             update_dir: Optional[str] = None) -> Dict[str, Dict]:
+             update_dir: Optional[str] = None, backup_dir: Optional[str] = None) -> Dict[str, Dict]:
     """
     Synchronise les langues étrangères avec le fichier EN.
-    
+
     Modes:
         1. Avec --update: utilise UPDATE_en.json pour marquer les changements
         2. Sans --update: synchronisation simple des clés
-    
+
     Args:
         reference_path: Fichier EN de référence (ou répertoire)
         locales_dir: Répertoire des fichiers de langues
         update_dir: Répertoire contenant UPDATE_en.json (optionnel)
-    
+        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+
     Returns:
         Dict par langue avec les statistiques
     """
@@ -96,30 +97,36 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         deleted_keys = set(update_data.get('deleted', []))
     
     results = {}
-    
+
     for lang in sorted(other_languages):
         lang_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
         result = _sync_language(
             lang, lang_file, en_strings, en_keys,
             added_keys, changed_keys, deleted_keys,
-            locales_dir, update_data
+            locales_dir, update_data, backup_dir
         )
         results[lang] = result
-    
+
     return results
 
 
 def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
                    en_keys: Set[str], added_keys: Set[str], changed_keys: Set[str],
                    deleted_keys: Set[str], output_dir: str,
-                   update_data: Optional[Dict] = None) -> Dict:
+                   update_data: Optional[Dict] = None, backup_dir: Optional[str] = None) -> Dict:
     """Synchronise une langue avec le fichier EN."""
-    
+
     # Charger la langue actuelle
     if os.path.isfile(lang_file):
         lang_strings = parse_translation_file(lang_file)
         # Créer backup
-        shutil.copy2(lang_file, lang_file + '.bak')
+        if backup_dir:
+            os.makedirs(backup_dir, exist_ok=True)
+            backup_filename = os.path.basename(lang_file) + '.bak'
+            backup_path = os.path.join(backup_dir, backup_filename)
+            shutil.copy2(lang_file, backup_path)
+        else:
+            shutil.copy2(lang_file, lang_file + '.bak')
     else:
         lang_strings = {}
     
@@ -168,10 +175,10 @@ def _sync_language(lang: str, lang_file: str, en_strings: Dict[str, str],
         'changed_keys': stats['needs_review'],
         'source': 'SYNC'
     }
-    
-    # Écrire le fichier
+
+    # Écrire le fichier avec mise à jour chirurgicale
     output_file = os.path.join(output_dir, f'TranslatedStrings_{lang}.txt')
-    write_translation_file(output_file, lang, new_strings, markers, metadata)
+    update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata)
     
     return {
         'kept': stats['kept'],

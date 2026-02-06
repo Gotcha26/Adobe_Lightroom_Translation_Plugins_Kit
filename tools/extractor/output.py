@@ -62,9 +62,10 @@ TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------
 class OutputGenerator:
     """Gère la génération de tous les fichiers de sortie."""
 
-    def __init__(self, plugin_path: str, prefix: str):
+    def __init__(self, plugin_path: str, prefix: str, silent: bool = False):
         self.plugin_path = plugin_path
         self.prefix = prefix
+        self.silent = silent
 
     @staticmethod
     def _shorten_path(full_path: str, plugin_path: str) -> str:
@@ -113,8 +114,9 @@ class OutputGenerator:
 
                 f.write("\n")
 
-        short_path = self._shorten_path(output_path, self.plugin_path)
-        print(_("✓ PluginStrings généré  : {path} ({n} clés uniques)").format(path=short_path, n=len(unique_keys)))
+        if not self.silent:
+            short_path = self._shorten_path(output_path, self.plugin_path)
+            print(_("✓ PluginStrings généré  : {path} ({n} clés uniques)").format(path=short_path, n=len(unique_keys)))
 
     def generate_spacing_metadata(self, spacing_metadata: Dict[str, Dict], text_to_key: Dict[str, str],
                                    output_path: str):
@@ -129,8 +131,9 @@ class OutputGenerator:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        short_path = self._shorten_path(output_path, self.plugin_path)
-        print(_("✓ Spacing metadata      : {path} ({n} clés)").format(path=short_path, n=len(spacing_metadata)))
+        if not self.silent:
+            short_path = self._shorten_path(output_path, self.plugin_path)
+            print(_("✓ Spacing metadata      : {path} ({n} clés)").format(path=short_path, n=len(spacing_metadata)))
 
     def generate_replacements_json(self, extracted: List[ExtractedString], output_path: str,
                                    text_to_key: Dict[str, str]):
@@ -231,7 +234,8 @@ class OutputGenerator:
 
         total_replacements = sum(f['total_replacements'] for f in files_data.values())
         short_path = self._shorten_path(output_path, self.plugin_path)
-        print(_("✓ Replacements JSON     : {path} ({n} lignes à modifier)").format(path=short_path, n=total_replacements))
+        if not self.silent:
+            print(_("✓ Replacements JSON     : {path} ({n} lignes à modifier)").format(path=short_path, n=total_replacements))
 
     def _build_loc_call(self, entry: ExtractedString) -> str:
         """
