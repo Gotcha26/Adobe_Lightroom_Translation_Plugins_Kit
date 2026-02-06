@@ -259,7 +259,7 @@ TOTAL
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_sync.py` |
+| Module source | `sync.py` |
 | Fonction principale | `run_sync()` |
 | Fonction interne | `_sync_language()` |
 | Générateur rapport | `generate_sync_report()` |

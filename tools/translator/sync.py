@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_sync.py
+Nom du fichier : sync.py
 
-Dépendances : TM_common
+Dépendances : common
 
 Description :
 Module SYNC pour Translator.
@@ -84,20 +84,20 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
 
     # Trouver les langues étrangères
     other_languages = find_languages(locales_dir, exclude_reference=True)
-    
+
     if not other_languages:
         return {}
-    
+
     # Préparer les infos de changement depuis update_data
     added_keys = set()
     changed_keys = set()
     deleted_keys = set()
-    
+
     if update_data:
         added_keys = set(update_data.get('added', {}).keys())
         changed_keys = set(update_data.get('changed', {}).keys())
         deleted_keys = set(update_data.get('deleted', []))
-    
+
     results = {}
 
     for lang in sorted(other_languages):
@@ -138,18 +138,18 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
     missing_in_lang = ref_keys - lang_keys
     extra_in_lang = lang_keys - ref_keys
     common_keys = ref_keys & lang_keys
-    
+
     # Construire le nouveau dictionnaire
     new_strings = {}
     markers = {}
-    
+
     stats = {
         'kept': 0,
         'added': 0,
         'needs_review': 0,
         'removed': 0
     }
-    
+
     # Clés communes : garder la traduction existante
     for key in common_keys:
         new_strings[key] = lang_strings[key]
@@ -167,10 +167,10 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         if update_data:
             markers[key] = "-- [NEW] To translate"
         stats['added'] += 1
-    
+
     # Clés en trop : ne pas copier (= supprimées)
     stats['removed'] = len(extra_in_lang)
-    
+
     # Métadonnées pour l'entête
     metadata = {
         'new_keys': stats['added'],
@@ -182,7 +182,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
     # Écrire le fichier avec mise à jour chirurgicale
     output_file = os.path.join(output_dir, f'TranslatedStrings_{lang}.txt')
     update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata)
-    
+
     return {
         'kept': stats['kept'],
         'added': stats['added'],

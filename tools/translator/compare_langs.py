@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_compare_langs.py
+Nom du fichier : compare_langs.py
 
-Dépendances : TM_common
+Dépendances : common
 
 Description :
 Module COMPARE-LANGS pour Translator.

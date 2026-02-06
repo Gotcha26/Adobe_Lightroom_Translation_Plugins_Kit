@@ -282,7 +282,7 @@ Run EXTRACT then INJECT, or directly SYNC:
 
 | Element | Information |
 |---------|-------------|
-| Source module | `TM_compare.py` |
+| Source module | `compare.py` |
 | Main class | `VersionComparator` |
 | Main function | `run_compare()` |
 | Interactive menu | `menu_compare()` |

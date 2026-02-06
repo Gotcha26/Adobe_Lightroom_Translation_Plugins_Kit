@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_addlang.py
+Nom du fichier : addlang.py
 
 Dépendances : common.paths, common.colors
 
@@ -21,8 +21,8 @@ Modes disponibles :
   Mode B: Créer un nouveau fichier (basé sur le fichier EN de référence)
 
 Usage CLI :
-    python TM_addlang.py                    # Menu interactif
-    python TM_addlang.py /path/to/plugin    # Chemin direct du plugin
+    python addlang.py                    # Menu interactif
+    python addlang.py /path/to/plugin    # Chemin direct du plugin
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit

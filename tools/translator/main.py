@@ -2,7 +2,7 @@
 """
 Nom du fichier : Translator_main.py
 
-Dépendances : TM_common, TM_compare, TM_compare_langs, TM_extract, TM_inject, TM_sync, TM_install, TM_autosync, TM_addlang, common.paths, common.colors
+Dépendances : common, compare, compare_langs, extract, inject, sync, install, autosync, addlang, common.paths, common.colors
 
 Description :
 Gestionnaire de traductions multilingues pour plugins Adobe Lightroom Classic.

@@ -2,7 +2,7 @@
 """
 Nom du fichier : autosync.py
 
-Dépendances : extractor.main, TM_compare, TM_extract, TM_inject, TM_sync, common.paths, common.colors
+Dépendances : extractor.main, compare, extract, inject, sync, common.paths, common.colors
 
 Description :
 Orchestration automatique complète : EXTRACTOR → APPLICATOR → COMPARE → EXTRACT → INJECT → SYNC

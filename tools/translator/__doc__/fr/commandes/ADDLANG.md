@@ -373,7 +373,7 @@ flowchart LR
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_addlang.py` |
+| Module source | `addlang.py` |
 | Fonction principale (CLI) | `run_addlang_cli()` |
 | Menu interactif | `menu_addlang()` |
 | Fonction Mode A | `install_language_from_extraction()` |

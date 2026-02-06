@@ -139,7 +139,7 @@ flowchart TB
         SY["sync.py"]
     end
 
-    subgraph Common["TM_common.py"]
+    subgraph Common["common.py"]
         P["parse_translation_file()"]
         W["write_translation_file()"]
         U["Utilities"]
@@ -449,7 +449,7 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 |---------|------|---------------|
 | 7.0 | 2026-01-31 | Added INSTALL and AUTO-SYNC, documentation overhaul |
 | 6.0 | 2026-01-30 | Added terminal colors, `__i18n_tmp__` structure |
-| 5.0 | 2026-01-29 | Modular architecture TM_*.py |
+| 5.0 | 2026-01-29 | Modular architecture *.py |
 | 4.0 | 2026-01-25 | Out-of-string markers ([NEW], [NEEDS_REVIEW]) |
 | 3.0 | 2026-01-20 | INJECT command with EN fallback |
 | 2.0 | 2026-01-15 | EXTRACT command for partial files |

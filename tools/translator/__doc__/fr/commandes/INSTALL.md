@@ -182,7 +182,7 @@ Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_install.py` |
+| Module source | `install.py` |
 | Fonction principale | `run_install()` |
 | Menu interactif | `menu_install()` |
 

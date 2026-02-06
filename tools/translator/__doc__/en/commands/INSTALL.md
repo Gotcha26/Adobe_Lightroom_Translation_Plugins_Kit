@@ -182,7 +182,7 @@ Run Extractor first to generate TranslatedStrings_en.txt
 
 | Element | Information |
 |---------|-------------|
-| Source module | `TM_install.py` |
+| Source module | `install.py` |
 | Main function | `run_install()` |
 | Interactive menu | `menu_install()` |
 

@@ -242,7 +242,7 @@ INJECT **merges** translations, it doesn't replace the whole file:
 
 | Element | Information |
 |---------|-------------|
-| Source module | `TM_inject.py` |
+| Source module | `inject.py` |
 | File parser | `parse_translate_file()` |
 | Main function | `run_inject()` |
 | Batch function | `run_inject_from_dir()` |

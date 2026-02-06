@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_install.py
+Nom du fichier : install.py
 
 Dépendances : common.paths, common.colors
 
@@ -13,8 +13,8 @@ Elle copie les fichiers générés par Extractor vers le plugin pour les rendre 
 Permet de déployer les fichiers de traduction dans le plugin.
 
 Usage CLI :
-    python TM_install.py                    # Menu interactif
-    python TM_install.py /path/to/plugin    # Chemin direct du plugin
+    python install.py                    # Menu interactif
+    python install.py /path/to/plugin    # Chemin direct du plugin
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit

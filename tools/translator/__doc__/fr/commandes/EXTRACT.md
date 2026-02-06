@@ -247,7 +247,7 @@ Langue(s) à générer:
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_extract.py` |
+| Module source | `extract.py` |
 | Fonction principale | `run_extract()` |
 | Fonction batch | `run_extract_all()` |
 | Menu interactif | `menu_extract()` |

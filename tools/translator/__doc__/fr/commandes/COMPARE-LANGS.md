@@ -453,7 +453,7 @@ coverage_lang2_pct: 100.0%  → EN a 100% des clés totales (référence)
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_compare_langs.py` |
+| Module source | `compare_langs.py` |
 | Classe principale | `LanguageComparator` |
 | Fonction principale | `run_compare_langs()` |
 | Menu interactif | `menu_compare_langs()` |

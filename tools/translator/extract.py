@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_extract.py
+Nom du fichier : extract.py
 
-Dépendances : TM_common
+Dépendances : common
 
 Description :
 Module EXTRACT pour Translator.
@@ -53,25 +53,25 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
     if not update_data:
         update_filename = get_update_filename()
         raise FileNotFoundError(f"{update_filename} non trouvé dans: {update_dir}")
-    
+
     # Charger les traductions existantes si disponibles
     existing_translations = {}
     if locales_dir:
         existing_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
         if os.path.isfile(existing_file):
             existing_translations = parse_translation_file(existing_file)
-    
+
     # Répertoire de sortie
     if not output_dir:
         output_dir = update_dir
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # Générer le fichier TRANSLATE
     output_file = os.path.join(output_dir, f'TRANSLATE_{lang}.txt')
-    
+
     added_keys = update_data.get('added', {})
     changed_keys = update_data.get('changed', {})
-    
+
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write("# " + "=" * 70 + "\n")
         f.write(f"# FICHIER DE TRADUCTION - {lang.upper()}\n")
@@ -85,20 +85,20 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
         f.write("# 3. Les lignes commençant par # sont ignorées\n")
         f.write("#\n")
         f.write("# " + "=" * 70 + "\n\n")
-        
+
         # Section: Nouvelles clés
         if added_keys:
             f.write("# " + "-" * 70 + "\n")
             f.write(f"# NOUVELLES CLÉS ({len(added_keys)})\n")
             f.write("# " + "-" * 70 + "\n\n")
-            
+
             for key in sorted(added_keys.keys()):
                 en_value = added_keys[key]
                 f.write(f"[KEY] {key}\n")
                 f.write(f"[EN]  {en_value}\n")
                 f.write(f"[{lang.upper()}] → \n")
                 f.write("\n")
-        
+
         # Section: Clés modifiées
         if changed_keys:
             f.write("# " + "-" * 70 + "\n")
@@ -119,12 +119,12 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
                     f.write(f"[{lang.upper()} ACTUEL] {current_trans}\n")
                 f.write(f"[{lang.upper()}] → \n")
                 f.write("\n")
-        
+
         # Résumé
         f.write("# " + "=" * 70 + "\n")
         f.write(f"# TOTAL: {len(added_keys)} nouvelles + {len(changed_keys)} modifiées\n")
         f.write("# " + "=" * 70 + "\n")
-    
+
     return output_file
 
 
@@ -146,11 +146,11 @@ def run_extract_all(update_dir: str, locales_dir: Optional[str] = None,
 
     if locales_dir and os.path.isdir(locales_dir):
         languages = find_languages(locales_dir, exclude_reference=True)
-    
+
     # Si aucune langue trouvée, proposer français par défaut
     if not languages:
         languages = ['fr']
-    
+
     generated_files = []
     for lang in sorted(languages):
         try:
@@ -158,7 +158,7 @@ def run_extract_all(update_dir: str, locales_dir: Optional[str] = None,
             generated_files.append(output_file)
         except Exception as e:
             print(c.warning(f"Erreur pour {lang}: {e}"))
-    
+
     return generated_files
 
 

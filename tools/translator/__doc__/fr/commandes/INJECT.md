@@ -242,7 +242,7 @@ INJECT **fusionne** les traductions, elle ne remplace pas tout le fichier :
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `TM_inject.py` |
+| Module source | `inject.py` |
 | Parser fichier | `parse_translate_file()` |
 | Fonction principale | `run_inject()` |
 | Fonction batch | `run_inject_from_dir()` |

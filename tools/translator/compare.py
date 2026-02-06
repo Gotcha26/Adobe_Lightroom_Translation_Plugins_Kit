@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_compare.py
+Nom du fichier : compare.py
 
-Dépendances : TM_common
+Dépendances : common
 
 Description :
 Module COMPARE pour Translator.

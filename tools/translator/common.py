@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : TM_common.py
+Nom du fichier : common.py
 
 Dépendances : common.colors
 
@@ -77,29 +77,29 @@ TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------
 def parse_translation_file(file_path: str) -> Dict[str, str]:
     """
     Parse un fichier TranslatedStrings_*.txt
-    
+
     Format: "$$$/Key=Value"
-    
+
     Returns:
         Dict[str, str]: {clé: valeur}
     """
     strings = {}
-    
+
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            
+
             # Ignorer lignes vides et commentaires
             if not line or line.startswith('--'):
                 continue
-            
+
             # Parser: "$$$/Key=Value"
             match = re.match(r'"(\$\$\$/[^"=]+)=([^"]*)"', line)
             if match:
                 key = match.group(1)
                 value = match.group(2)
                 strings[key] = value
-    
+
     return strings
 
 
@@ -108,7 +108,7 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
                            metadata: Optional[Dict] = None):
     """
     Écrit un fichier TranslatedStrings_*.txt
-    
+
     Args:
         file_path: Chemin du fichier
         lang: Code langue
@@ -118,20 +118,20 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
     """
     markers = markers or {}
     metadata = metadata or {}
-    
+
     # Grouper par catégorie
     by_category = defaultdict(list)
     for key in sorted(translations.keys()):
         parts = key.split('/')
         category = parts[1] if len(parts) > 1 else 'General'
         by_category[category].append(key)
-    
+
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write("-- =============================================================================\n")
         f.write(f"-- Plugin Localization - {lang.upper()}\n")
         f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"-- Total keys: {len(translations)}\n")
-        
+
         # Infos supplémentaires depuis metadata
         if metadata.get('new_keys'):
             f.write(f"-- New keys: {metadata['new_keys']}\n")
@@ -139,7 +139,7 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
             f.write(f"-- Changed keys: {metadata['changed_keys']}\n")
         if metadata.get('source'):
             f.write(f"-- Source: {metadata['source']}\n")
-        
+
         f.write("-- =============================================================================\n\n")
 
         # Add translation warning note for translators
