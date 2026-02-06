@@ -59,18 +59,18 @@ During plugin development, text evolves:
 
 ```
 3_Translator/
-├── main.py                 ← Entry point (menu + CLI)
-├── common.py               ← Common functions (parser, utils)
-├── install.py              ← INSTALL command
-├── autosync.py             ← AUTO-SYNC command ⭐
-├── addlang.py              ← ADD LANGUAGE command
-├── compare.py              ← COMPARE command (advanced)
-├── extract.py              ← EXTRACT command (advanced)
-├── inject.py               ← INJECT command (advanced)
-├── sync.py                 ← SYNC command (advanced)
+├── main.py         ← Entry point (menu + CLI)
+├── common.py       ← Common functions (parser, utils)
+├── install.py      ← INSTALL command
+├── autosync.py     ← AUTO-SYNC command ⭐
+├── addlang.py      ← ADD LANGUAGE command
+├── compare.py      ← COMPARE command (advanced)
+├── extract.py      ← EXTRACT command (advanced)
+├── inject.py       ← INJECT command (advanced)
+├── sync.py         ← SYNC command (advanced)
 └── __doc/
     └── en/
-        ├── README.md       ← This file
+        ├── Translator_en.md   ← This file
         └── commands/
             ├── INSTALL.md
             ├── AUTOSYNC.md

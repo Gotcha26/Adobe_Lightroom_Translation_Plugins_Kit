@@ -59,19 +59,19 @@ Lors du développement d'un plugin, les textes évoluent :
 
 ```
 3_Translator/
-├── main.py                 ← Point d'entrée (menu + CLI)
-├── common.py               ← Fonctions communes (parser, utils)
-├── install.py              ← Commande INSTALL
-├── autosync.py             ← Commande AUTO-SYNC ⭐
-├── addlang.py              ← Commande ADD LANGUAGE
-├── compare.py              ← Commande COMPARE (avancé)
-├── compare_langs.py        ← Commande COMPARE-LANGS (avancé)
-├── extract.py              ← Commande EXTRACT (avancé)
-├── inject.py               ← Commande INJECT (avancé)
-├── sync.py                 ← Commande SYNC (avancé)
+├── main.py             ← Point d'entrée (menu + CLI)
+├── common.py           ← Fonctions communes (parser, utils)
+├── install.py          ← Commande INSTALL
+├── autosync.py         ← Commande AUTO-SYNC ⭐
+├── addlang.py          ← Commande ADD LANGUAGE
+├── compare.py          ← Commande COMPARE (avancé)
+├── compare_langs.py    ← Commande COMPARE-LANGS (avancé)
+├── extract.py          ← Commande EXTRACT (avancé)
+├── inject.py           ← Commande INJECT (avancé)
+├── sync.py             ← Commande SYNC (avancé)
 └── __doc/
     └── fr/
-        ├── Lisez-moi.md    ← Ce fichier
+        ├── Translator_fr.md    ← Ce fichier
         └── commandes/
             ├── INSTALL.md
             ├── AUTOSYNC.md

@@ -204,12 +204,25 @@ def _generate_json_output(output_dir: str, result: Dict, file1: str, file2: str,
         'lang1_name': lang1_name.upper(),
         'lang2_name': lang2_name.upper(),
         'comparison_mode': comparison_mode,
-        'statistics': result['statistics'],
-        'only_in_lang1': result['only_in_lang1'],
-        'only_in_lang2': result['only_in_lang2'],
-        'identical_values': result['identical_values'],
-        'different_values': result['different_values']
+        'statistics': result['statistics']
     }
+
+    # Adapter le contenu selon le mode
+    if comparison_mode == "keys":
+        # Mode CLÉS : focus sur les différences structurelles
+        data['only_in_lang1'] = result['only_in_lang1']
+        data['only_in_lang2'] = result['only_in_lang2']
+        data['in_both'] = result['in_both']
+    else:
+        # Mode VALEURS : focus sur les traductions
+        data['identical_values'] = result['identical_values']
+        data['different_values'] = result['different_values']
+        # Inclure les clés manquantes comme info contextuelle
+        if result['only_in_lang1'] or result['only_in_lang2']:
+            data['info_missing_keys'] = {
+                'only_in_lang1': result['only_in_lang1'],
+                'only_in_lang2': result['only_in_lang2']
+            }
 
     output_file = os.path.join(output_dir, 'COMPARE_LANGS_data.json')
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -254,18 +267,10 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
         f.write("\n")
 
         # Section adaptée au mode de comparaison
-        if comparison_mode == "values":
-            # Mode VALEURS : focus sur les traductions
-            f.write("-" * 80 + "\n")
-            f.write("ANALYSE DES TRADUCTIONS (parmi les clés communes)\n")
-            f.write("-" * 80 + "\n")
-            f.write(f"  Valeurs identiques (possibles oublis) : {stats['identical_values_count']:4d}\n")
-            f.write(f"  Valeurs différentes (traduites)       : {stats['different_values_count']:4d}\n")
-            f.write("\n")
-        else:
+        if comparison_mode == "keys":
             # Mode CLÉS : mettre en avant les différences structurelles
             f.write("-" * 80 + "\n")
-            f.write("ANALYSE DE LA STRUCTURE\n")
+            f.write("ANALYSE DE LA STRUCTURE (MODE CLÉS)\n")
             f.write("-" * 80 + "\n")
             if stats['only_lang1'] > 0 or stats['only_lang2'] > 0:
                 f.write(f"  ⚠ DÉSYNCHRONISATION DÉTECTÉE\n")
@@ -273,97 +278,119 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
                 f.write(f"  Clés manquantes dans {lang1_upper:<12s} : {stats['only_lang2']:4d}\n")
             else:
                 f.write(f"  ✓ FICHIERS SYNCHRONISÉS (même structure de clés)\n")
-            f.write(f"\n")
-            f.write(f"  Info: Valeurs identiques             : {stats['identical_values_count']:4d}\n")
-            f.write(f"  Info: Valeurs différentes            : {stats['different_values_count']:4d}\n")
             f.write("\n")
+        else:
+            # Mode VALEURS : focus sur les traductions
+            f.write("-" * 80 + "\n")
+            f.write("ANALYSE DES TRADUCTIONS (MODE VALEURS)\n")
+            f.write("-" * 80 + "\n")
+            f.write(f"  Clés communes analysées               : {stats['keys_in_both']:4d}\n")
+            f.write(f"  Valeurs identiques (possibles oublis) : {stats['identical_values_count']:4d}\n")
+            f.write(f"  Valeurs différentes (traduites)       : {stats['different_values_count']:4d}\n")
+            f.write("\n")
+            if stats['only_lang1'] > 0 or stats['only_lang2'] > 0:
+                f.write(f"  Info: Clés manquantes dans {lang2_upper:<8s} : {stats['only_lang1']:4d}\n")
+                f.write(f"  Info: Clés manquantes dans {lang1_upper:<8s} : {stats['only_lang2']:4d}\n")
+                f.write("\n")
 
-        # Section 1: Clés seulement dans Lang1
-        if result['only_in_lang1']:
-            f.write("=" * 80 + "\n")
-            f.write(f"CLÉS PRÉSENTES SEULEMENT DANS {lang1_upper} ({len(result['only_in_lang1'])})\n")
-            f.write(f"Ces clés existent dans {lang1_upper} mais sont absentes de {lang2_upper}.\n")
-            f.write("=" * 80 + "\n\n")
-            for key in result['only_in_lang1']:
-                value = lang1_strings[key]
-                f.write(f"  [ONLY-{lang1_upper}] {key}\n")
-                f.write(f"        {lang1_upper}: {value}\n\n")
+        # Sections adaptées au mode de comparaison
+        if comparison_mode == "keys":
+            # Mode CLÉS : focus sur les clés manquantes
+            if result['only_in_lang1']:
+                f.write("=" * 80 + "\n")
+                f.write(f"CLÉS PRÉSENTES SEULEMENT DANS {lang1_upper} ({len(result['only_in_lang1'])})\n")
+                f.write(f"Ces clés existent dans {lang1_upper} mais sont absentes de {lang2_upper}.\n")
+                f.write("=" * 80 + "\n\n")
+                for key in result['only_in_lang1']:
+                    value = lang1_strings[key]
+                    f.write(f"  [ONLY-{lang1_upper}] {key}\n")
+                    f.write(f"        {lang1_upper}: {value}\n\n")
 
-        # Section 2: Clés seulement dans Lang2
-        if result['only_in_lang2']:
-            f.write("=" * 80 + "\n")
-            f.write(f"CLÉS PRÉSENTES SEULEMENT DANS {lang2_upper} ({len(result['only_in_lang2'])})\n")
-            f.write(f"Ces clés existent dans {lang2_upper} mais sont absentes de {lang1_upper}.\n")
-            f.write("=" * 80 + "\n\n")
-            for key in result['only_in_lang2']:
-                value = lang2_strings[key]
-                f.write(f"  [ONLY-{lang2_upper}] {key}\n")
-                f.write(f"        {lang2_upper}: {value}\n\n")
+            if result['only_in_lang2']:
+                f.write("=" * 80 + "\n")
+                f.write(f"CLÉS PRÉSENTES SEULEMENT DANS {lang2_upper} ({len(result['only_in_lang2'])})\n")
+                f.write(f"Ces clés existent dans {lang2_upper} mais sont absentes de {lang1_upper}.\n")
+                f.write("=" * 80 + "\n\n")
+                for key in result['only_in_lang2']:
+                    value = lang2_strings[key]
+                    f.write(f"  [ONLY-{lang2_upper}] {key}\n")
+                    f.write(f"        {lang2_upper}: {value}\n\n")
 
-        # Section 3: Valeurs identiques (possibles oublis de traduction)
-        if result['identical_values']:
-            f.write("=" * 80 + "\n")
-            f.write(f"CLÉS AVEC VALEURS IDENTIQUES ({len(result['identical_values'])})\n")
-            f.write(f"Ces clés existent dans les deux langues avec la même valeur.\n")
+        else:
+            # Mode VALEURS : focus sur les traductions identiques/différentes
+            if result['identical_values']:
+                f.write("=" * 80 + "\n")
+                f.write(f"CLÉS AVEC VALEURS IDENTIQUES ({len(result['identical_values'])})\n")
+                f.write(f"Ces clés existent dans les deux langues avec la même valeur.\n")
 
-            # Avertissement si l'une des langues est EN
-            if lang1_name.lower() == 'en' or lang2_name.lower() == 'en':
-                f.write("⚠️  ATTENTION: Valeurs identiques à l'anglais = possibles oublis de traduction!\n")
+                # Avertissement si l'une des langues est EN
+                if lang1_name.lower() == 'en' or lang2_name.lower() == 'en':
+                    f.write("⚠️  ATTENTION: Valeurs identiques à l'anglais = possibles oublis de traduction!\n")
 
-            f.write("=" * 80 + "\n\n")
-            for key in sorted(result['identical_values'].keys()):
-                value = result['identical_values'][key]
-                f.write(f"  [IDENTICAL] {key}\n")
-                f.write(f"        Valeur commune: {value}\n\n")
+                f.write("=" * 80 + "\n\n")
+                for key in sorted(result['identical_values'].keys()):
+                    value = result['identical_values'][key]
+                    f.write(f"  [IDENTICAL] {key}\n")
+                    f.write(f"        Valeur commune: {value}\n\n")
 
-        # Section 4: Exemples de différences (max 20)
-        if result['different_values']:
-            f.write("=" * 80 + "\n")
-            f.write(f"CLÉS AVEC VALEURS DIFFÉRENTES ({len(result['different_values'])})\n")
-            f.write(f"Ces clés existent dans les deux langues avec des valeurs différentes.\n")
+            if result['different_values']:
+                f.write("=" * 80 + "\n")
+                f.write(f"CLÉS AVEC VALEURS DIFFÉRENTES ({len(result['different_values'])})\n")
+                f.write(f"Ces clés existent dans les deux langues avec des valeurs différentes.\n")
 
-            display_count = min(20, len(result['different_values']))
-            if len(result['different_values']) > 20:
-                f.write(f"(Affichage des {display_count} premières différences)\n")
+                display_count = min(20, len(result['different_values']))
+                if len(result['different_values']) > 20:
+                    f.write(f"(Affichage des {display_count} premières différences)\n")
 
-            f.write("=" * 80 + "\n\n")
-            for key in result['different_values'][:display_count]:
-                val1 = lang1_strings[key]
-                val2 = lang2_strings[key]
-                f.write(f"  [DIFFERENT] {key}\n")
-                f.write(f"        {lang1_upper}: {val1}\n")
-                f.write(f"        {lang2_upper}: {val2}\n\n")
+                f.write("=" * 80 + "\n\n")
+                for key in result['different_values'][:display_count]:
+                    val1 = lang1_strings[key]
+                    val2 = lang2_strings[key]
+                    f.write(f"  [DIFFERENT] {key}\n")
+                    f.write(f"        {lang1_upper}: {val1}\n")
+                    f.write(f"        {lang2_upper}: {val2}\n\n")
 
-            if len(result['different_values']) > 20:
-                f.write(f"  ... et {len(result['different_values']) - 20} autres différences\n")
-                f.write(f"  (voir COMPARE_LANGS_data.json pour la liste complète)\n\n")
+                if len(result['different_values']) > 20:
+                    f.write(f"  ... et {len(result['different_values']) - 20} autres différences\n")
+                    f.write(f"  (voir COMPARE_LANGS_data.json pour la liste complète)\n\n")
 
-        # Recommandations
+        # Recommandations adaptées au mode
         f.write("\n" + "=" * 80 + "\n")
         f.write("RECOMMANDATIONS\n")
         f.write("=" * 80 + "\n")
 
-        if stats['only_lang1'] > 0:
-            f.write(f"• {stats['only_lang1']} clé(s) manquante(s) dans {lang2_upper}\n")
-            f.write(f"  → Ajouter ces traductions dans {lang2_upper}\n\n")
+        if comparison_mode == "keys":
+            # Recommandations pour le mode CLÉS
+            if stats['only_lang1'] > 0:
+                f.write(f"• {stats['only_lang1']} clé(s) manquante(s) dans {lang2_upper}\n")
+                f.write(f"  → Ajouter ces traductions dans {lang2_upper}\n\n")
 
-        if stats['only_lang2'] > 0:
-            f.write(f"• {stats['only_lang2']} clé(s) manquante(s) dans {lang1_upper}\n")
-            f.write(f"  → Ajouter ces traductions dans {lang1_upper}\n\n")
+            if stats['only_lang2'] > 0:
+                f.write(f"• {stats['only_lang2']} clé(s) manquante(s) dans {lang1_upper}\n")
+                f.write(f"  → Ajouter ces traductions dans {lang1_upper}\n\n")
 
-        if stats['identical_values_count'] > 0:
-            # Avertissement spécial si comparaison avec EN
-            if lang1_name.lower() == 'en' or lang2_name.lower() == 'en':
-                f.write(f"⚠️  {stats['identical_values_count']} traduction(s) identique(s) à l'anglais détectée(s)!\n")
-                f.write(f"  → Vérifier si ces clés ont bien été traduites\n\n")
-            else:
-                f.write(f"• {stats['identical_values_count']} valeur(s) identique(s) entre les deux langues\n")
-                f.write(f"  → Vérifier si c'est intentionnel (noms propres, termes techniques)\n\n")
+            if stats['only_lang1'] == 0 and stats['only_lang2'] == 0:
+                f.write(f"✓ Les deux fichiers contiennent exactement les mêmes clés ({stats['keys_in_both']})\n")
+                f.write(f"  Structure synchronisée avec succès!\n\n")
 
-        if stats['different_values_count'] == 0 and stats['only_lang1'] == 0 and stats['only_lang2'] == 0:
-            f.write("✓ Les deux fichiers sont parfaitement identiques!\n\n")
-        elif stats['only_lang1'] == 0 and stats['only_lang2'] == 0:
-            f.write(f"✓ Les deux fichiers contiennent exactement les mêmes clés ({stats['keys_in_both']})\n\n")
+        else:
+            # Recommandations pour le mode VALEURS
+            if stats['identical_values_count'] > 0:
+                # Avertissement spécial si comparaison avec EN
+                if lang1_name.lower() == 'en' or lang2_name.lower() == 'en':
+                    f.write(f"⚠️  {stats['identical_values_count']} traduction(s) identique(s) à l'anglais détectée(s)!\n")
+                    f.write(f"  → Vérifier si ces clés ont bien été traduites\n\n")
+                else:
+                    f.write(f"• {stats['identical_values_count']} valeur(s) identique(s) entre les deux langues\n")
+                    f.write(f"  → Vérifier si c'est intentionnel (noms propres, termes techniques)\n\n")
+
+            if stats['different_values_count'] > 0:
+                f.write(f"✓ {stats['different_values_count']} traduction(s) différente(s) détectée(s)\n")
+                f.write(f"  Cela indique des traductions effectuées correctement.\n\n")
+
+            if stats['only_lang1'] > 0 or stats['only_lang2'] > 0:
+                f.write(f"\nInfo: Des clés sont manquantes dans l'un des fichiers.\n")
+                f.write(f"  Pour analyser la structure, relancez en mode CLÉS.\n\n")
 
 
 # =============================================================================
@@ -406,7 +433,9 @@ def menu_compare_langs(plugin_path: str = ""):
     print(f"  {c.YELLOW}1{c.RESET}. Par codes langue (ex: fr, de) - cherche dans un répertoire")
     print(f"  {c.YELLOW}2{c.RESET}. Par chemins de fichiers complets")
 
-    mode = input(c.prompt("Votre choix: (1-2): ")).strip()
+    mode = input(c.prompt("Votre choix (1-2, défaut=1): ")).strip()
+    if not mode:
+        mode = "1"  # Défaut: mode par codes langue
 
     file1 = None
     file2 = None
@@ -514,18 +543,15 @@ def menu_compare_langs(plugin_path: str = ""):
             print(f"  {c.KEY}Clés dans les deux langues  {c.RESET}: {c.GREEN}{stats['keys_in_both']:4d}{c.RESET}")
             print(f"  {c.KEY}Seulement dans {l1:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang1']:4d}{c.RESET}")
             print(f"  {c.KEY}Seulement dans {l2:<12s}{c.RESET}: {c.YELLOW}{stats['only_lang2']:4d}{c.RESET}")
-            print()
-            print(f"  {c.DIM}Valeurs identiques          : {stats['identical_values_count']:4d}{c.RESET}")
-            print(f"  {c.DIM}Valeurs différentes         : {stats['different_values_count']:4d}{c.RESET}")
         else:
             # Mode VALEURS : focus sur la qualité des traductions
+            print(f"  {c.KEY}Clés communes analysées     {c.RESET}: {c.VALUE}{stats['keys_in_both']:4d}{c.RESET}")
             print(f"  {c.KEY}Valeurs identiques          {c.RESET}: {c.WARNING}{stats['identical_values_count']:4d}{c.RESET}")
             print(f"  {c.KEY}Valeurs différentes         {c.RESET}: {c.GREEN}{stats['different_values_count']:4d}{c.RESET}")
             print()
-            print(f"  {c.DIM}Total de clés uniques       : {stats['total_unique_keys']:4d}{c.RESET}")
-            print(f"  {c.DIM}Clés dans les deux langues  : {stats['keys_in_both']:4d}{c.RESET}")
-            print(f"  {c.DIM}Seulement dans {l1:<12s}: {stats['only_lang1']:4d}{c.RESET}")
-            print(f"  {c.DIM}Seulement dans {l2:<12s}: {stats['only_lang2']:4d}{c.RESET}")
+            print(f"  {c.DIM}Info: Total de clés uniques : {stats['total_unique_keys']:4d}{c.RESET}")
+            print(f"  {c.DIM}Info: Seulement dans {l1:<8s}: {stats['only_lang1']:4d}{c.RESET}")
+            print(f"  {c.DIM}Info: Seulement dans {l2:<8s}: {stats['only_lang2']:4d}{c.RESET}")
 
         print()
 
@@ -537,7 +563,7 @@ def menu_compare_langs(plugin_path: str = ""):
         elif mode == "keys" and (stats['only_lang1'] > 0 or stats['only_lang2'] > 0):
             print(f"  {c.WARNING}⚠️  Fichiers désynchronisés : clés manquantes détectées{c.RESET}")
 
-        print(c.success(f"\nFichiers générés dans: {c.VALUE}{output_dir}{c.RESET}"))
+        print(f"\n{c.SUCCESS}Fichiers générés dans:{c.RESET} {c.VALUE}{output_dir}{c.RESET}")
         print(f"  {c.DIM}• COMPARE_LANGS_report.txt{c.RESET}")
         print(f"  {c.DIM}• COMPARE_LANGS_data.json{c.RESET}")
 

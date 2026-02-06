@@ -1,6 +1,6 @@
 # Commande COMPARE-LANGS
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -8,7 +8,14 @@
 
 **COMPARE-LANGS** analyse les différences entre deux fichiers de traduction (`TranslatedStrings_xx.txt`), qu'ils soient de langues différentes ou de versions différentes d'une même langue.
 
-> Cette commande est utile pour l'audit qualité, la vérification de cohérence et le suivi des traductions.
+> Cette commande propose deux modes de comparaison : **CLÉS** (structure) et **VALEURS** (traductions).
+
+### Modes de comparaison
+
+| Mode | Objectif | Cas d'usage |
+|------|----------|-------------|
+| **CLÉS** (par défaut) | Identifier les différences structurelles | Synchronisation, clés manquantes/ajoutées |
+| **VALEURS** | Analyser la qualité des traductions | Audit qualité, traductions oubliées |
 
 ---
 
@@ -148,14 +155,22 @@ python Translator_main.py compare-langs --lang1 it --lang2 en --locales ./plugin
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-Le menu propose deux modes :
+Le menu propose d'abord le choix du mode de comparaison :
 
-#### Mode 1 : Par codes langue
+#### Choix du mode de comparaison
+1. **Par clés** (défaut) - Identifie les clés manquantes/ajoutées (synchronisation)
+2. **Par valeurs** - Identifie les traductions identiques (audit qualité)
+
+#### Choix du mode de sélection
+1. **Par codes langue** (défaut) - Cherche dans un répertoire
+2. **Par chemins complets** - Spécifie les fichiers exacts
+
+##### Mode 1 : Par codes langue
 1. Répertoire contenant les fichiers de langue
 2. Code de la première langue (ex: `fr`, `de`, `en`)
 3. Code de la seconde langue (ex: `de`, `en`, `es`)
 
-#### Mode 2 : Par chemins complets
+##### Mode 2 : Par chemins complets
 1. Chemin complet du premier fichier
 2. Chemin complet du second fichier
 
@@ -196,16 +211,18 @@ python Translator_main.py compare-langs --file1 ./fr.txt --file2 ./de.txt --outp
 | `--locales` | Répertoire des traductions | Requis avec --lang1/--lang2 |
 | `--file1` | Premier fichier (ou répertoire) | Conditionnel |
 | `--file2` | Second fichier (ou répertoire) | Conditionnel |
+| `--mode` | Mode : `keys` (clés) ou `values` (valeurs) | ❌ Défaut: `keys` |
 | `--plugin-path` | Sortie dans `__i18n_tmp__/3_Translator/` | ❌ Non |
 | `--output` | Répertoire de sortie personnalisé | ❌ Non |
 
 > **Note** : Spécifiez soit `--lang1` + `--lang2` + `--locales`, soit `--file1` + `--file2`.
+> **Nouveau** : `--mode keys` se concentre sur les différences structurelles, `--mode values` sur les traductions.
 
 ---
 
 ## 📋 Exemple de session
 
-### Mode interactif - Comparer FR vs EN
+### Mode interactif - Comparer FR vs EN (mode CLÉS)
 
 ```
 COMPARE-LANGS: Comparer deux fichiers de traduction
@@ -216,17 +233,21 @@ Vous pouvez comparer:
   • Deux versions d'une même langue (ex: ancien FR vs nouveau FR)
   • Une langue vs EN (pour voir ce qui n'est pas traduit)
 
+Mode de comparaison:
+  1. Par clés - Identifie les clés manquantes/ajoutées (recommandé pour synchronisation)
+  2. Par valeurs - Identifie les traductions identiques (recommandé pour audit qualité)
+Mode de comparaison (1-2, défaut=1):
+
 Mode de sélection:
   1. Par codes langue (ex: fr, de) - cherche dans un répertoire
   2. Par chemins de fichiers complets
-
-  Votre choix (1-2): 1
+Votre choix (1-2, défaut=1):
 
 Répertoire contenant les fichiers de langue:
-  (ex: ./Locales ou chemin vers le plugin)
-  > ./plugin.lrplugin
+  (par défaut: ./plugin.lrplugin)
+  >
 
-[INFO] Langues disponibles: de, en, es, fr, it
+Langues disponibles: de, en, es, fr, it
 
 Code de la première langue (ex: fr, en, de):
   > fr
@@ -237,7 +258,7 @@ Code de la seconde langue (ex: fr, en, de):
 [INFO] Comparaison en cours...
 
 ══════════════════════════════════════════════════════════════════
-  RÉSUMÉ DE LA COMPARAISON
+  RÉSUMÉ DE LA COMPARAISON (CLÉS)
 ══════════════════════════════════════════════════════════════════
   Langue 1: FR  (142 clés)
   Langue 2: EN  (148 clés)
@@ -247,12 +268,42 @@ Code de la seconde langue (ex: fr, en, de):
   Seulement dans FR           :    2
   Seulement dans EN           :    8
 
+  ⚠️  Fichiers désynchronisés : clés manquantes détectées
+
+Fichiers générés dans: __i18n_tmp__/3_Translator/20260206_150125/
+  • COMPARE_LANGS_report.txt
+  • COMPARE_LANGS_data.json
+
+Appuyez sur Entrée pour continuer...
+```
+
+### Mode interactif - Comparer FR vs EN (mode VALEURS)
+
+```
+Mode de comparaison (1-2, défaut=1): 2
+
+[...sélection des langues...]
+
+[INFO] Comparaison en cours...
+
+══════════════════════════════════════════════════════════════════
+  RÉSUMÉ DE LA COMPARAISON (VALEURS)
+══════════════════════════════════════════════════════════════════
+  Langue 1: FR  (142 clés)
+  Langue 2: EN  (148 clés)
+
+  Clés communes analysées     :  140
   Valeurs identiques          :   12
   Valeurs différentes         :  128
 
-  ⚠️  12 traduction(s) identique(s) à EN détectée(s)!
+  Info: Total de clés uniques :  148
+  Info: Seulement dans FR     :    2
+  Info: Seulement dans EN     :    8
 
-✓ Fichiers générés dans: __i18n_tmp__/3_Translator/20260202_153000/
+  ⚠️  12 traduction(s) identique(s) détectée(s)!
+     Possibles traductions oubliées (identiques à EN)
+
+Fichiers générés dans: __i18n_tmp__/3_Translator/20260206_150230/
   • COMPARE_LANGS_report.txt
   • COMPARE_LANGS_data.json
 ```
@@ -287,13 +338,18 @@ Valeurs différentes     :   12
 
 ### COMPARE_LANGS_data.json
 
+Le contenu du JSON varie selon le mode choisi.
+
+#### Mode CLÉS (keys)
+
 ```json
 {
-  "generated": "2026-02-02T15:30:00",
+  "generated": "2026-02-06T15:01:25",
   "file1": "/path/to/TranslatedStrings_fr.txt",
   "file2": "/path/to/TranslatedStrings_en.txt",
   "lang1_name": "FR",
   "lang2_name": "EN",
+  "comparison_mode": "keys",
   "statistics": {
     "total_unique_keys": 148,
     "keys_in_lang1": 142,
@@ -313,6 +369,25 @@ Valeurs différentes     :   12
     "$$$/Plugin/NewFeature/Title",
     "$$$/Plugin/NewFeature/Description"
   ],
+  "in_both": [
+    "$$$/Plugin/Dialog/OK",
+    "$$$/Plugin/Dialog/Cancel",
+    "..."
+  ]
+}
+```
+
+#### Mode VALEURS (values)
+
+```json
+{
+  "generated": "2026-02-06T15:02:30",
+  "file1": "/path/to/TranslatedStrings_fr.txt",
+  "file2": "/path/to/TranslatedStrings_en.txt",
+  "lang1_name": "FR",
+  "lang2_name": "EN",
+  "comparison_mode": "values",
+  "statistics": { "..." },
   "identical_values": {
     "$$$/Plugin/Dialog/OK": "OK",
     "$$$/Plugin/Settings/API": "API"
@@ -320,18 +395,27 @@ Valeurs différentes     :   12
   "different_values": [
     "$$$/Plugin/Dialog/Cancel",
     "$$$/Plugin/Settings/Help"
-  ]
+  ],
+  "info_missing_keys": {
+    "only_in_lang1": ["..."],
+    "only_in_lang2": ["..."]
+  }
 }
 ```
 
 ### COMPARE_LANGS_report.txt
 
+Le rapport TXT varie selon le mode choisi.
+
+#### Mode CLÉS (keys)
+
 ```
 ================================================================================
-RAPPORT DE COMPARAISON DE LANGUES
+RAPPORT DE COMPARAISON DE LANGUES (MODE: CLÉS)
 ================================================================================
 
-Date: 2026-02-02 15:30:00
+Date: 2026-02-06 15:01:25
+Mode de comparaison: CLÉS
 Langue 1: FR
 Langue 2: EN
 Fichier 1: /path/to/TranslatedStrings_fr.txt
@@ -348,10 +432,11 @@ STATISTIQUES GLOBALES
   Clés seulement dans EN           :    8
 
 --------------------------------------------------------------------------------
-ANALYSE DES CLÉS COMMUNES
+ANALYSE DE LA STRUCTURE (MODE CLÉS)
 --------------------------------------------------------------------------------
-  Valeurs identiques               :   12
-  Valeurs différentes              :  128
+  ⚠ DÉSYNCHRONISATION DÉTECTÉE
+  Clés manquantes dans EN           :    2
+  Clés manquantes dans FR           :    8
 
 ================================================================================
 CLÉS PRÉSENTES SEULEMENT DANS EN (8)
@@ -363,6 +448,39 @@ Ces clés existent dans EN mais sont absentes de FR.
 
   [ONLY-EN] $$$/Plugin/NewFeature/Description
         EN: This is a new feature
+
+================================================================================
+RECOMMANDATIONS
+================================================================================
+• 8 clé(s) manquante(s) dans FR
+  → Ajouter ces traductions dans FR
+
+• 2 clé(s) manquante(s) dans EN
+  → Ajouter ces traductions dans EN
+```
+
+#### Mode VALEURS (values)
+
+```
+================================================================================
+RAPPORT DE COMPARAISON DE LANGUES (MODE: VALEURS)
+================================================================================
+
+Date: 2026-02-06 15:02:30
+Mode de comparaison: VALEURS
+Langue 1: FR
+Langue 2: EN
+[...]
+
+--------------------------------------------------------------------------------
+ANALYSE DES TRADUCTIONS (MODE VALEURS)
+--------------------------------------------------------------------------------
+  Clés communes analysées               :  140
+  Valeurs identiques (possibles oublis) :   12
+  Valeurs différentes (traduites)       :  128
+
+  Info: Clés manquantes dans EN       :    2
+  Info: Clés manquantes dans FR       :    8
 
 ================================================================================
 CLÉS AVEC VALEURS IDENTIQUES (12)
@@ -386,21 +504,19 @@ Ces clés existent dans les deux langues avec des valeurs différentes.
         FR: Annuler
         EN: Cancel
 
-  [DIFFERENT] $$$/Plugin/Settings/Help
-        FR: Aide
-        EN: Help
-
   ... et 108 autres différences
-  (voir COMPARE_LANGS_data.json pour la liste complète)
 
 ================================================================================
 RECOMMANDATIONS
 ================================================================================
-• 8 clé(s) manquante(s) dans FR
-  → Ajouter ces traductions dans FR
-
 ⚠️  12 traduction(s) identique(s) à l'anglais détectée(s)!
   → Vérifier si ces clés ont bien été traduites
+
+✓ 128 traduction(s) différente(s) détectée(s)
+  Cela indique des traductions effectuées correctement.
+
+Info: Des clés sont manquantes dans l'un des fichiers.
+  Pour analyser la structure, relancez en mode CLÉS.
 ```
 
 ---
@@ -494,7 +610,7 @@ Dans `COMPARE_LANGS_report.txt`, cherchez :
 
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
-| **Nom** | *COMPARE-LANGS.md* | **Version** | 1.0 |
+| **Nom** | *COMPARE-LANGS.md* | **Version** | 1.1 |
 | **Type** | Guide utilisateur - Avancé | **Langue** | FR - *[EN](../../en/commands/COMPARE-LANGS.md)* |
-| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
-| **Licence** | [MIT](../../../../../LICENSE) | | |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-06 |
+| **Licence** | [MIT](../../../../../LICENSE) | **Changelog** | Ajout modes CLÉS/VALEURS |
