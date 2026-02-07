@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalisationToolKit 2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-07 11:20\n"
+"POT-Creation-Date: 2026-02-07 13:07\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -521,7 +521,7 @@ msgid "Langue détectée: {lang}"
 msgstr ""
 
 #: core\i18n.py:374
-msgid " if mo_file.exists() else "
+msgid "défaut"
 msgstr ""
 
 #: core\i18n.py:375
@@ -656,122 +656,122 @@ msgstr ""
 
 #: tools\applicator\main.py:115
 msgid ""
-"RAPPORT DE LOCALISATION - PiwigoPublish Plugin\\n"
+"RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n"
 msgstr ""
 
 #: tools\applicator\main.py:118
 #: tools\translator\compare_langs.py:260
 msgid ""
-"STATISTIQUES GLOBALES\\n"
+"STATISTIQUES GLOBALES\n"
 msgstr ""
 
 #: tools\applicator\main.py:120
 msgid ""
-"Fichiers traites        : {var0}\\n"
+"Fichiers traites        : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:121
 msgid ""
-"Fichiers modifies       : {var0}\\n"
+"Fichiers modifies       : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:122
 msgid ""
-"Lignes modifiees        : {var0}\\n"
+"Lignes modifiees        : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:123
 msgid ""
-"Chaines remplacees      : {var0}\\n"
+"Chaines remplacees      : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:124
 msgid ""
-"Chaines ignorees        : {var0}\\n"
+"Chaines ignorees        : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:125
 msgid ""
-"Erreurs                 : {var0}\\n"
-"\\n"
+"Erreurs                 : {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\applicator\main.py:129
 msgid ""
-"MODIFICATIONS EFFECTUEES\\n"
+"MODIFICATIONS EFFECTUEES\n"
 msgstr ""
 
 #: tools\applicator\main.py:137
 msgid ""
-"Fichier: {var0}\\n"
+"Fichier: {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:140
 msgid ""
-"  Ligne {var0}:\\n"
+"  Ligne {var0}:\n"
 msgstr ""
 
 #: tools\applicator\main.py:141
 msgid ""
-"  AVANT : {var0}\\n"
+"  AVANT : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:142
 msgid ""
-"  APRES : {var0}\\n"
+"  APRES : {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:149
 msgid ""
-"CHAINES IGNOREES\\n"
+"CHAINES IGNOREES\n"
 msgstr ""
 
 #: tools\applicator\main.py:154
 msgid ""
-"    Raison: {var0}\\n"
+"    Raison: {var0}\n"
 msgstr ""
 
 #: tools\applicator\main.py:155
 msgid ""
-"    Contenu: {var0}\\n"
-"\\n"
+"    Contenu: {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\applicator\main.py:159
 msgid ""
-"ERREURS\\n"
+"ERREURS\n"
 msgstr ""
 
 #: tools\applicator\main.py:164
 msgid ""
-"    Erreur: {var0}\\n"
-"\\n"
+"    Erreur: {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\applicator\main.py:167
 msgid ""
-"RECOMMANDATIONS POST-TRAITEMENT\\n"
+"RECOMMANDATIONS POST-TRAITEMENT\n"
 msgstr ""
 
 #: tools\applicator\main.py:169
 msgid ""
-"1. Verifier les modifications avec Git diff\\n"
+"1. Verifier les modifications avec Git diff\n"
 msgstr ""
 
 #: tools\applicator\main.py:170
 msgid ""
-"2. REDEMARRER Lightroom Classic (reload ne suffit pas)\\n"
+"2. REDEMARRER Lightroom Classic (reload ne suffit pas)\n"
 msgstr ""
 
 #: tools\applicator\main.py:171
 msgid ""
-"3. Verifier que TranslatedStrings_fr.txt existe a la racine\\n"
+"3. Verifier que TranslatedStrings_fr.txt existe a la racine\n"
 msgstr ""
 
 #: tools\applicator\main.py:172
 msgid ""
-"4. Tester les textes dans l'interface\\n"
-"\\n"
+"4. Tester les textes dans l'interface\n"
+"\n"
 msgstr ""
 
 #: tools\applicator\main.py:180
@@ -1070,7 +1070,7 @@ msgid "venir enrichir la communauté autour de ce plugin."
 msgstr ""
 
 #: tools\applicator\main.py:780
-msgid "  →  <plugin>\\\\{template_name}"
+msgid "  →  <plugin>\\{template_name}"
 msgstr ""
 
 #: tools\applicator\main.py:784
@@ -1394,11 +1394,15 @@ msgstr ""
 
 #: tools\applicator\menu.py:368
 #: tools\extractor\menu.py:369
-msgid "Choix invalide: \\\"{choice}\\\""
+msgid "Choix invalide: \"{choice}\""
 msgstr ""
 
 #: tools\applicator\menu.py:75
 msgid "APPLICATOR - Application des localisations"
+msgstr ""
+
+#: tools\extractor\config.py:164
+msgid "']'),       # { field = "
 msgstr ""
 
 #: tools\extractor\engine.py:218
@@ -1671,26 +1675,19 @@ msgstr ""
 #: tools\extractor\output.py:100
 #: tools\translator\common.py:133
 msgid ""
-"-- Generated: {var0}\\n"
+"-- Generated: {var0}\n"
 msgstr ""
 
 #: tools\extractor\output.py:101
 #: tools\translator\common.py:134
 #: tools\translator\common.py:359
 msgid ""
-"-- Total keys: {var0}\\n"
+"-- Total keys: {var0}\n"
 msgstr ""
 
 #: tools\extractor\output.py:102
 msgid ""
-"-- SOURCE: Extractor\\n"
-msgstr ""
-
-#: tools\extractor\output.py:103
-#: tools\translator\common.py:144
-msgid ""
-"-- =============================================================================\\n"
-"\\n"
+"-- SOURCE: Extractor\n"
 msgstr ""
 
 #: tools\extractor\output.py:120
@@ -1713,167 +1710,161 @@ msgstr ""
 msgid "' + ' ' * entry.trailing_spaces + '"
 msgstr ""
 
-#: tools\extractor\output.py:98
-#: tools\translator\common.py:131
-msgid ""
-"-- =============================================================================\\n"
-msgstr ""
-
 #: tools\extractor\output.py:99
 #: tools\translator\common.py:132
 msgid ""
-"-- Plugin Localization - {var0}\\n"
+"-- Plugin Localization - {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:109
 msgid ""
-"CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx.txt)\\n"
+"CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx.txt)\n"
 msgstr ""
 
 #: tools\extractor\report.py:113
 msgid ""
-"     Clé    : {var0}\\n"
+"     Clé    : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:114
 msgid ""
-"     Valeur : {var0}\\n"
-"\\n"
+"     Valeur : {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:120
 msgid ""
-"DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \"REMPLACER\" si vide !\\n"
+"DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \"REMPLACER\" si vide !\n"
 msgstr ""
 
 #: tools\extractor\report.py:128
 msgid ""
-"Fichier: {file_path}\\n"
+"Fichier: {file_path}\n"
 msgstr ""
 
 #: tools\extractor\report.py:129
 msgid ""
-"Chaînes: {var0} ({unique_count} clés uniques)\\n"
+"Chaînes: {var0} ({unique_count} clés uniques)\n"
 msgstr ""
 
 #: tools\extractor\report.py:143
 msgid ""
-"  [Ligne {line_num}] Pattern: {var1} 🔗 CHAÎNE CONCATÉNÉE ({var2} membres)\\n"
+"  [Ligne {line_num}] Pattern: {var1} 🔗 CHAÎNE CONCATÉNÉE ({var2} membres)\n"
 msgstr ""
 
 #: tools\extractor\report.py:144
 msgid ""
-"  LIGNE    : {var0}\\n"
+"  LIGNE    : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:149
 msgid ""
-"\\n"
-"  MEMBRE {idx} : \"{original_text}\"{markers}\\n"
+"\n"
+"  MEMBRE {idx} : \"{original_text}\"{markers}\n"
 msgstr ""
 
 #: tools\extractor\report.py:150
 msgid ""
-"    BASE   : \"{var0}\"\\n"
+"    BASE   : \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:151
 msgid ""
-"    CLÉ    : {var0}\\n"
+"    CLÉ    : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:153
 msgid ""
-"    ESPACES: {var0} début, {var1} fin\\n"
+"    ESPACES: {var0} début, {var1} fin\n"
 msgstr ""
 
 #: tools\extractor\report.py:155
 msgid ""
-"    SUFFIXE: \"{var0}\"\\n"
+"    SUFFIXE: \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:162
 msgid ""
-"  [Ligne {line_num}] Pattern: {var1}{markers}\\n"
+"  [Ligne {line_num}] Pattern: {var1}{markers}\n"
 msgstr ""
 
 #: tools\extractor\report.py:163
 msgid ""
-"  CHERCHER : \"{var0}\"\\n"
+"  CHERCHER : \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:164
 msgid ""
-"  BASE     : \"{var0}\"\\n"
+"  BASE     : \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:165
 msgid ""
-"  CLÉ      : {var0}\\n"
+"  CLÉ      : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:167
 msgid ""
-"  ESPACES  : {var0} début, {var1} fin\\n"
+"  ESPACES  : {var0} début, {var1} fin\n"
 msgstr ""
 
 #: tools\extractor\report.py:169
 msgid ""
-"  SUFFIXE  : \"{var0}\"\\n"
+"  SUFFIXE  : \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:170
 msgid ""
-"  REMPLACER: {var0}\\n"
-"\\n"
+"  REMPLACER: {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:175
 msgid ""
-"CHAÎNES AVEC ESPACES OU SUFFIXES\\n"
+"CHAÎNES AVEC ESPACES OU SUFFIXES\n"
 msgstr ""
 
 #: tools\extractor\report.py:177
 msgid ""
-"Ces chaînes nécessitent une réinjection des espaces/suffixes.\\n"
-"\\n"
+"Ces chaînes nécessitent une réinjection des espaces/suffixes.\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:184
 msgid ""
-"     Original: \"{var0}\"\\n"
+"     Original: \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:185
 msgid ""
-"     Base: \"{var0}\"\\n"
+"     Base: \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:187
 msgid ""
-"     Espaces: {var0} début + {var1} fin\\n"
+"     Espaces: {var0} début + {var1} fin\n"
 msgstr ""
 
 #: tools\extractor\report.py:189
 msgid ""
-"     Suffixe: \"{var0}\"\\n"
+"     Suffixe: \"{var0}\"\n"
 msgstr ""
 
 #: tools\extractor\report.py:190
 msgid ""
-"     Fichier: {var0}:{var1}\\n"
-"\\n"
+"     Fichier: {var0}:{var1}\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:194
 msgid ""
-"LISTE DES CLÉS POUR TranslatedStrings_xx.txt\\n"
+"LISTE DES CLÉS POUR TranslatedStrings_xx.txt\n"
 msgstr ""
 
 #: tools\extractor\report.py:203
 msgid ""
-"-- {var0} clés uniques\\n"
-"\\n"
+"-- {var0} clés uniques\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:212
@@ -1882,122 +1873,122 @@ msgstr ""
 
 #: tools\extractor\report.py:65
 msgid ""
-"RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\\n"
+"RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n"
 msgstr ""
 
 #: tools\extractor\report.py:68
 #: tools\translator\compare.py:172
 #: tools\translator\compare_langs.py:251
 msgid ""
-"Date: {var0}\\n"
+"Date: {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:69
 msgid ""
-"Plugin: {var0}\\n"
+"Plugin: {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:70
 msgid ""
-"Préfixe: {var0}\\n"
-"\\n"
+"Préfixe: {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:73
 msgid ""
-"LÉGENDE:\\n"
+"LÉGENDE:\n"
 msgstr ""
 
 #: tools\extractor\report.py:74
 msgid ""
-"  ⬅️   = Espace(s) en DÉBUT de chaîne\\n"
+"  ⬅️   = Espace(s) en DÉBUT de chaîne\n"
 msgstr ""
 
 #: tools\extractor\report.py:75
 msgid ""
-"  ➡️   = Espace(s) en FIN de chaîne\\n"
+"  ➡️   = Espace(s) en FIN de chaîne\n"
 msgstr ""
 
 #: tools\extractor\report.py:76
 msgid ""
-"  ⬅️➡️ = Espaces des DEUX côtés\\n"
+"  ⬅️➡️ = Espaces des DEUX côtés\n"
 msgstr ""
 
 #: tools\extractor\report.py:77
 msgid ""
-"  🔚  = Suffixe détecté (\" - \", \" -\", \"...\")\\n"
+"  🔚  = Suffixe détecté (\" - \", \" -\", \"...\")\n"
 msgstr ""
 
 #: tools\extractor\report.py:78
 msgid ""
-"  🔗  = Membre d'une chaîne concaténée\\n"
-"\\n"
+"  🔗  = Membre d'une chaîne concaténée\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:81
 msgid ""
-"STATISTIQUES\\n"
+"STATISTIQUES\n"
 msgstr ""
 
 #: tools\extractor\report.py:83
 msgid ""
-"Fichiers analysés          : {var0}\\n"
+"Fichiers analysés          : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:84
 msgid ""
-"Fichiers avec chaînes      : {var0}\\n"
+"Fichiers avec chaînes      : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:85
 msgid ""
-"Total chaînes trouvées     : {var0}\\n"
+"Total chaînes trouvées     : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:86
 msgid ""
-"Clés uniques               : {var0}\\n"
+"Clés uniques               : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:87
 msgid ""
-"Lignes de log ignorées     : {var0}\\n"
+"Lignes de log ignorées     : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:88
 msgid ""
-"Chaînes techniques ignorées: {var0}\\n"
+"Chaînes techniques ignorées: {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:89
 msgid ""
-"Chaînes avec espaces       : {var0}\\n"
+"Chaînes avec espaces       : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:90
 msgid ""
-"Chaînes avec suffixes      : {var0}\\n"
+"Chaînes avec suffixes      : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:91
 msgid ""
-"Lignes concaténées         : {var0}\\n"
+"Lignes concaténées         : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:92
 msgid ""
-"Membres de concaténation   : {var0}\\n"
+"Membres de concaténation   : {var0}\n"
 msgstr ""
 
 #: tools\extractor\report.py:96
 msgid ""
-"Clés LOC existantes        : {existing_loc_count} (déjà localisées, non modifiées)\\n"
-"\\n"
+"Clés LOC existantes        : {existing_loc_count} (déjà localisées, non modifiées)\n"
+"\n"
 msgstr ""
 
 #: tools\extractor\report.py:99
 msgid ""
-"PATTERNS DÉTECTÉS\\n"
+"PATTERNS DÉTECTÉS\n"
 msgstr ""
 
 #: tools\toolbox\delete_temp_dir.py:166
@@ -2124,7 +2115,7 @@ msgstr ""
 
 #: tools\toolbox\delete_temp_dir.py:334
 msgid ""
-"\\n"
+"\n"
 "{var0}Étape 2/3: Confirmation de sécurité{var1}"
 msgstr ""
 
@@ -2138,7 +2129,7 @@ msgstr ""
 
 #: tools\toolbox\delete_temp_dir.py:340
 msgid ""
-"\\n"
+"\n"
 "{var0}Étape 3/3: Dernière chance{var1}"
 msgstr ""
 
@@ -2189,7 +2180,7 @@ msgstr ""
 #: tools\toolbox\delete_temp_dir.py:442
 #: tools\toolbox\delete_temp_dir.py:448
 msgid ""
-"\\n"
+"\n"
 "{var0}Appuyez sur ENTRÉE pour quitter...{var1}"
 msgstr ""
 
@@ -2378,7 +2369,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:231
 msgid ""
-"\\n"
+"\n"
 "{var0}[ATTENTION]{var1} Le fichier {var2}{source_filename}{var4} existe déjà dans le plugin."
 msgstr ""
 
@@ -2429,7 +2420,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:305
 msgid ""
-"\\n"
+"\n"
 "{var0}[ATTENTION]{var1} Le fichier {var2}{dest_filename}{var4} existe déjà dans le plugin."
 msgstr ""
 
@@ -2486,7 +2477,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:400
 msgid ""
-"\\n"
+"\n"
 "{var0}  ADD LANGUAGE - Ajouter une langue au plugin{var1}"
 msgstr ""
 
@@ -2502,13 +2493,13 @@ msgstr ""
 
 #: tools\translator\addlang.py:411
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Plugin: {var2}{plugin_name}{var4}"
 msgstr ""
 
 #: tools\translator\addlang.py:416
 msgid ""
-"\\n"
+"\n"
 "{var0}Langues actuellement installées:{var1}"
 msgstr ""
 
@@ -2518,7 +2509,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:420
 msgid ""
-"\\n"
+"\n"
 "{var0}Aucune langue installée dans le plugin{var1}"
 msgstr ""
 
@@ -2556,7 +2547,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:458
 msgid ""
-"\\n"
+"\n"
 "{var0}  MODE : Installer depuis Extractor{var1}"
 msgstr ""
 
@@ -2566,7 +2557,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:470
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Dernière extraction détectée:"
 msgstr ""
 
@@ -2596,7 +2587,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:524
 msgid ""
-"\\n"
+"\n"
 "{var0}  MODE : Créer un nouveau fichier de langue{var1}"
 msgstr ""
 
@@ -2610,7 +2601,7 @@ msgstr ""
 
 #: tools\translator\addlang.py:551
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Fichier EN de référence:"
 msgstr ""
 
@@ -2656,7 +2647,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:137
 msgid ""
-"\\n"
+"\n"
 "{var0}  AUTO-SYNC - Orchestration complète{var1}"
 msgstr ""
 
@@ -2670,7 +2661,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:155
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Fichiers de traduction détectés:"
 msgstr ""
 
@@ -2730,7 +2721,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:239
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 1/6 | EXTRACTOR]{var1} Extraction des clés depuis le code Lua"
 msgstr ""
 
@@ -2758,7 +2749,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:280
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 2/6 | APPLICATOR]{var1} Application des remplacements LOC"
 msgstr ""
 
@@ -2780,7 +2771,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:308
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 3/6 | COMPARE]{var1} Comparaison ANCIEN vs NOUVEAU"
 msgstr ""
 
@@ -2811,7 +2802,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:371
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 4/6 | EXTRACT]{var1} Extraction des clés modifiées"
 msgstr ""
 
@@ -2850,7 +2841,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:419
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 5/6 | INJECT]{var1} Injection des traductions"
 msgstr ""
 
@@ -2876,7 +2867,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:457
 msgid ""
-"\\n"
+"\n"
 "{var0}[Étape 6/6 | SYNC]{var1} Synchronisation finale"
 msgstr ""
 
@@ -2898,7 +2889,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:505
 msgid ""
-"\\n"
+"\n"
 "{var0}[Finalisation]{var1} Mise à jour du fichier EN"
 msgstr ""
 
@@ -2928,7 +2919,7 @@ msgstr ""
 
 #: tools\translator\autosync.py:552
 msgid ""
-"\\n"
+"\n"
 "{var0}Tous les fichiers TranslatedStrings_xx.txt à la racine plugin sont à jour.{var1}"
 msgstr ""
 
@@ -2936,21 +2927,21 @@ msgstr ""
 #: tools\translator\common.py:366
 #: tools\translator\common.py:391
 msgid ""
-"-- New keys: {var0}\\n"
+"-- New keys: {var0}\n"
 msgstr ""
 
 #: tools\translator\common.py:140
 #: tools\translator\common.py:371
 #: tools\translator\common.py:393
 msgid ""
-"-- Changed keys: {var0}\\n"
+"-- Changed keys: {var0}\n"
 msgstr ""
 
 #: tools\translator\common.py:142
 #: tools\translator\common.py:376
 #: tools\translator\common.py:395
 msgid ""
-"-- Source: {var0}\\n"
+"-- Source: {var0}\n"
 msgstr ""
 
 #: tools\translator\common.py:423
@@ -2971,126 +2962,126 @@ msgstr ""
 
 #: tools\translator\compare.py:169
 msgid ""
-"CHANGELOG - Modifications des traductions EN\\n"
+"CHANGELOG - Modifications des traductions EN\n"
 msgstr ""
 
 #: tools\translator\compare.py:173
 msgid ""
-"Ancien: {old_file}\\n"
+"Ancien: {old_file}\n"
 msgstr ""
 
 #: tools\translator\compare.py:174
 msgid ""
-"Nouveau: {new_file}\\n"
-"\\n"
+"Nouveau: {new_file}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare.py:177
 msgid ""
-"RÉSUMÉ\\n"
+"RÉSUMÉ\n"
 msgstr ""
 
 #: tools\translator\compare.py:179
 msgid ""
-"  Clés ajoutées    : {var0:4d}  [NEW]\\n"
+"  Clés ajoutées    : {var0:4d}  [NEW]\n"
 msgstr ""
 
 #: tools\translator\compare.py:180
 msgid ""
-"  Clés modifiées   : {var0:4d}  [CHANGED]\\n"
+"  Clés modifiées   : {var0:4d}  [CHANGED]\n"
 msgstr ""
 
 #: tools\translator\compare.py:181
 msgid ""
-"  Clés supprimées  : {var0:4d}  [DELETED]\\n"
+"  Clés supprimées  : {var0:4d}  [DELETED]\n"
 msgstr ""
 
 #: tools\translator\compare.py:182
 msgid ""
-"  Clés inchangées  : {var0:4d}\\n"
+"  Clés inchangées  : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare.py:187
 msgid ""
-"CLÉS AJOUTÉES ({var0})\\n"
+"CLÉS AJOUTÉES ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare.py:188
 msgid ""
-"Ces clés doivent être traduites dans toutes les langues.\\n"
+"Ces clés doivent être traduites dans toutes les langues.\n"
 msgstr ""
 
 #: tools\translator\compare.py:192
 msgid ""
-"  [NEW] {key}\\n"
+"  [NEW] {key}\n"
 msgstr ""
 
 #: tools\translator\compare.py:193
 msgid ""
-"        EN: {value}\\n"
-"\\n"
+"        EN: {value}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare.py:197
 msgid ""
-"CLÉS MODIFIÉES ({var0})\\n"
+"CLÉS MODIFIÉES ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare.py:198
 msgid ""
-"Le texte anglais a changé. Les traductions doivent être révisées.\\n"
+"Le texte anglais a changé. Les traductions doivent être révisées.\n"
 msgstr ""
 
 #: tools\translator\compare.py:202
 msgid ""
-"  [CHANGED] {key}\\n"
+"  [CHANGED] {key}\n"
 msgstr ""
 
 #: tools\translator\compare.py:203
 msgid ""
-"        AVANT: {var0}\\n"
+"        AVANT: {var0}\n"
 msgstr ""
 
 #: tools\translator\compare.py:204
 msgid ""
-"        APRÈS: {var0}\\n"
-"\\n"
+"        APRÈS: {var0}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare.py:208
 msgid ""
-"CLÉS SUPPRIMÉES ({var0})\\n"
+"CLÉS SUPPRIMÉES ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare.py:209
 msgid ""
-"Ces clés n'existent plus et seront retirées des traductions.\\n"
+"Ces clés n'existent plus et seront retirées des traductions.\n"
 msgstr ""
 
 #: tools\translator\compare.py:212
 msgid ""
-"  [DELETED] {key}\\n"
+"  [DELETED] {key}\n"
 msgstr ""
 
 #: tools\translator\compare.py:215
 msgid ""
-"PROCHAINE ÉTAPE\\n"
+"PROCHAINE ÉTAPE\n"
 msgstr ""
 
 #: tools\translator\compare.py:217
 msgid ""
-"Lancez EXTRACT puis INJECT, ou directement SYNC:\\n"
+"Lancez EXTRACT puis INJECT, ou directement SYNC:\n"
 msgstr ""
 
 #: tools\translator\compare.py:237
 msgid ""
-"\\n"
+"\n"
 "{var0}COMPARE{var1}: Comparer deux versions EN"
 msgstr ""
 
 #: tools\translator\compare.py:240
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichier ANCIEN{var1} (TranslatedStrings_en.txt ou répertoire):"
 msgstr ""
 
@@ -3125,20 +3116,20 @@ msgstr ""
 #: tools\translator\sync.py:291
 #: tools\translator\sync.py:298
 msgid ""
-"\\n"
+"\n"
 "Appuyez sur Entrée..."
 msgstr ""
 
 #: tools\translator\compare.py:247
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichier NOUVEAU{var1} (TranslatedStrings_en.txt ou répertoire):"
 msgstr ""
 
 #: tools\translator\compare.py:255
 #: tools\translator\compare_langs.py:510
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Comparaison en cours..."
 msgstr ""
 
@@ -3219,323 +3210,323 @@ msgstr ""
 #: tools\translator\inject.py:350
 #: tools\translator\sync.py:328
 msgid ""
-"\\n"
+"\n"
 "Appuyez sur Entrée pour continuer..."
 msgstr ""
 
 #: tools\translator\compare_langs.py:248
 msgid ""
-"RAPPORT DE COMPARAISON DE LANGUES (MODE: {mode_label})\\n"
+"RAPPORT DE COMPARAISON DE LANGUES (MODE: {mode_label})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:252
 msgid ""
-"Mode de comparaison: {mode_label}\\n"
+"Mode de comparaison: {mode_label}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:253
 msgid ""
-"Langue 1: {lang1_upper}\\n"
+"Langue 1: {lang1_upper}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:254
 msgid ""
-"Langue 2: {lang2_upper}\\n"
+"Langue 2: {lang2_upper}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:255
 msgid ""
-"Fichier 1: {file1}\\n"
+"Fichier 1: {file1}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:256
 msgid ""
-"Fichier 2: {file2}\\n"
-"\\n"
+"Fichier 2: {file2}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:262
 msgid ""
-"  Total de clés uniques            : {var0:4d}\\n"
+"  Total de clés uniques            : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:263
 msgid ""
-"  Clés dans {lang1_upper:<20s}     : {var1:4d}  ({var2:6.2f}%)\\n"
+"  Clés dans {lang1_upper:<20s}     : {var1:4d}  ({var2:6.2f}%)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:264
 msgid ""
-"  Clés dans {lang2_upper:<20s}     : {var1:4d}  ({var2:6.2f}%)\\n"
+"  Clés dans {lang2_upper:<20s}     : {var1:4d}  ({var2:6.2f}%)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:265
 msgid ""
-"  Clés présentes dans les deux     : {var0:4d}\\n"
+"  Clés présentes dans les deux     : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:266
 msgid ""
-"  Clés seulement dans {lang1_upper:<12s} : {var1:4d}\\n"
+"  Clés seulement dans {lang1_upper:<12s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:267
 msgid ""
-"  Clés seulement dans {lang2_upper:<12s} : {var1:4d}\\n"
+"  Clés seulement dans {lang2_upper:<12s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:274
 msgid ""
-"ANALYSE DE LA STRUCTURE (MODE CLÉS)\\n"
+"ANALYSE DE LA STRUCTURE (MODE CLÉS)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:277
 msgid ""
-"  ⚠ DÉSYNCHRONISATION DÉTECTÉE\\n"
+"  ⚠ DÉSYNCHRONISATION DÉTECTÉE\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:278
 msgid ""
-"  Clés manquantes dans {lang2_upper:<12s} : {var1:4d}\\n"
+"  Clés manquantes dans {lang2_upper:<12s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:279
 msgid ""
-"  Clés manquantes dans {lang1_upper:<12s} : {var1:4d}\\n"
+"  Clés manquantes dans {lang1_upper:<12s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:281
 msgid ""
-"  ✓ FICHIERS SYNCHRONISÉS (même structure de clés)\\n"
+"  ✓ FICHIERS SYNCHRONISÉS (même structure de clés)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:286
 msgid ""
-"ANALYSE DES TRADUCTIONS (MODE VALEURS)\\n"
+"ANALYSE DES TRADUCTIONS (MODE VALEURS)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:288
 msgid ""
-"  Clés communes analysées               : {var0:4d}\\n"
+"  Clés communes analysées               : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:289
 msgid ""
-"  Valeurs identiques (possibles oublis) : {var0:4d}\\n"
+"  Valeurs identiques (possibles oublis) : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:290
 msgid ""
-"  Valeurs différentes (traduites)       : {var0:4d}\\n"
+"  Valeurs différentes (traduites)       : {var0:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:293
 msgid ""
-"  Info: Clés manquantes dans {lang2_upper:<8s} : {var1:4d}\\n"
+"  Info: Clés manquantes dans {lang2_upper:<8s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:294
 msgid ""
-"  Info: Clés manquantes dans {lang1_upper:<8s} : {var1:4d}\\n"
+"  Info: Clés manquantes dans {lang1_upper:<8s} : {var1:4d}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:302
 msgid ""
-"CLÉS PRÉSENTES SEULEMENT DANS {lang1_upper} ({var1})\\n"
+"CLÉS PRÉSENTES SEULEMENT DANS {lang1_upper} ({var1})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:303
 msgid ""
-"Ces clés existent dans {lang1_upper} mais sont absentes de {lang2_upper}.\\n"
+"Ces clés existent dans {lang1_upper} mais sont absentes de {lang2_upper}.\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:307
 msgid ""
-"  [ONLY-{lang1_upper}] {key}\\n"
+"  [ONLY-{lang1_upper}] {key}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:308
 msgid ""
-"        {lang1_upper}: {value}\\n"
-"\\n"
+"        {lang1_upper}: {value}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:312
 msgid ""
-"CLÉS PRÉSENTES SEULEMENT DANS {lang2_upper} ({var1})\\n"
+"CLÉS PRÉSENTES SEULEMENT DANS {lang2_upper} ({var1})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:313
 msgid ""
-"Ces clés existent dans {lang2_upper} mais sont absentes de {lang1_upper}.\\n"
+"Ces clés existent dans {lang2_upper} mais sont absentes de {lang1_upper}.\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:317
 msgid ""
-"  [ONLY-{lang2_upper}] {key}\\n"
+"  [ONLY-{lang2_upper}] {key}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:318
 msgid ""
-"        {lang2_upper}: {value}\\n"
-"\\n"
+"        {lang2_upper}: {value}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:324
 msgid ""
-"CLÉS AVEC VALEURS IDENTIQUES ({var0})\\n"
+"CLÉS AVEC VALEURS IDENTIQUES ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:325
 msgid ""
-"Ces clés existent dans les deux langues avec la même valeur.\\n"
+"Ces clés existent dans les deux langues avec la même valeur.\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:329
 msgid ""
-"⚠️  ATTENTION: Valeurs identiques à l'anglais = possibles oublis de traduction!\\n"
+"⚠️  ATTENTION: Valeurs identiques à l'anglais = possibles oublis de traduction!\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:334
 msgid ""
-"  [IDENTICAL] {key}\\n"
+"  [IDENTICAL] {key}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:335
 msgid ""
-"        Valeur commune: {value}\\n"
-"\\n"
+"        Valeur commune: {value}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:339
 msgid ""
-"CLÉS AVEC VALEURS DIFFÉRENTES ({var0})\\n"
+"CLÉS AVEC VALEURS DIFFÉRENTES ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:340
 msgid ""
-"Ces clés existent dans les deux langues avec des valeurs différentes.\\n"
+"Ces clés existent dans les deux langues avec des valeurs différentes.\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:344
 msgid ""
-"(Affichage des {display_count} premières différences)\\n"
+"(Affichage des {display_count} premières différences)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:350
 msgid ""
-"  [DIFFERENT] {key}\\n"
+"  [DIFFERENT] {key}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:352
 msgid ""
-"        {lang2_upper}: {val2}\\n"
-"\\n"
+"        {lang2_upper}: {val2}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:355
 msgid ""
-"  ... et {var0} autres différences\\n"
+"  ... et {var0} autres différences\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:356
 msgid ""
-"  (voir COMPARE_LANGS_data.json pour la liste complète)\\n"
-"\\n"
+"  (voir COMPARE_LANGS_data.json pour la liste complète)\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:360
 msgid ""
-"RECOMMANDATIONS\\n"
+"RECOMMANDATIONS\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:366
 msgid ""
-"• {var0} clé(s) manquante(s) dans {lang2_upper}\\n"
+"• {var0} clé(s) manquante(s) dans {lang2_upper}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:367
 msgid ""
-"  → Ajouter ces traductions dans {lang2_upper}\\n"
-"\\n"
+"  → Ajouter ces traductions dans {lang2_upper}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:370
 msgid ""
-"• {var0} clé(s) manquante(s) dans {lang1_upper}\\n"
+"• {var0} clé(s) manquante(s) dans {lang1_upper}\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:371
 msgid ""
-"  → Ajouter ces traductions dans {lang1_upper}\\n"
-"\\n"
+"  → Ajouter ces traductions dans {lang1_upper}\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:374
 msgid ""
-"✓ Les deux fichiers contiennent exactement les mêmes clés ({var0})\\n"
+"✓ Les deux fichiers contiennent exactement les mêmes clés ({var0})\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:375
 msgid ""
-"  Structure synchronisée avec succès!\\n"
-"\\n"
+"  Structure synchronisée avec succès!\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:382
 msgid ""
-"⚠️  {var0} traduction(s) identique(s) à l'anglais détectée(s)!\\n"
+"⚠️  {var0} traduction(s) identique(s) à l'anglais détectée(s)!\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:383
 msgid ""
-"  → Vérifier si ces clés ont bien été traduites\\n"
-"\\n"
+"  → Vérifier si ces clés ont bien été traduites\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:385
 msgid ""
-"• {var0} valeur(s) identique(s) entre les deux langues\\n"
+"• {var0} valeur(s) identique(s) entre les deux langues\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:386
 msgid ""
-"  → Vérifier si c'est intentionnel (noms propres, termes techniques)\\n"
-"\\n"
+"  → Vérifier si c'est intentionnel (noms propres, termes techniques)\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:389
 msgid ""
-"✓ {var0} traduction(s) différente(s) détectée(s)\\n"
+"✓ {var0} traduction(s) différente(s) détectée(s)\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:390
 msgid ""
-"  Cela indique des traductions effectuées correctement.\\n"
-"\\n"
+"  Cela indique des traductions effectuées correctement.\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:393
 msgid ""
-"\\n"
-"Info: Des clés sont manquantes dans l'un des fichiers.\\n"
+"\n"
+"Info: Des clés sont manquantes dans l'un des fichiers.\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:394
 msgid ""
-"  Pour analyser la structure, relancez en mode CLÉS.\\n"
-"\\n"
+"  Pour analyser la structure, relancez en mode CLÉS.\n"
+"\n"
 msgstr ""
 
 #: tools\translator\compare_langs.py:412
 msgid ""
-"\\n"
+"\n"
 "{var0}COMPARE-LANGS{var1}: Comparer deux fichiers de traduction"
 msgstr ""
 
 #: tools\translator\compare_langs.py:415
 msgid ""
-"\\n"
+"\n"
 "{var0}Vous pouvez comparer:{var1}"
 msgstr ""
 
@@ -3545,7 +3536,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:420
 msgid ""
-"\\n"
+"\n"
 "{var0}Mode de comparaison:{var1}"
 msgstr ""
 
@@ -3569,7 +3560,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:433
 msgid ""
-"\\n"
+"\n"
 "{var0}Mode de sélection:{var1}"
 msgstr ""
 
@@ -3587,7 +3578,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:448
 msgid ""
-"\\n"
+"\n"
 "{var0}Répertoire contenant les fichiers de langue{var1}:"
 msgstr ""
 
@@ -3613,7 +3604,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:470
 msgid ""
-"\\n"
+"\n"
 "{var0}Code de la première langue{var1} (ex: fr, en, de):"
 msgstr ""
 
@@ -3623,7 +3614,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:477
 msgid ""
-"\\n"
+"\n"
 "{var0}Code de la seconde langue{var1} (ex: fr, en, de):"
 msgstr ""
 
@@ -3633,13 +3624,13 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:489
 msgid ""
-"\\n"
+"\n"
 "{var0}Chemin du PREMIER fichier{var1} (TranslatedStrings_*.txt ou répertoire):"
 msgstr ""
 
 #: tools\translator\compare_langs.py:496
 msgid ""
-"\\n"
+"\n"
 "{var0}Chemin du SECOND fichier{var1} (TranslatedStrings_*.txt ou répertoire):"
 msgstr ""
 
@@ -3709,7 +3700,7 @@ msgstr ""
 
 #: tools\translator\compare_langs.py:567
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichiers générés dans:{var1} {var2}{output_dir}{var4}"
 msgstr ""
 
@@ -3721,51 +3712,51 @@ msgstr ""
 msgid "  {var0}• COMPARE_LANGS_data.json{var1}"
 msgstr ""
 
-#: tools\translator\config_loader.py:167
+#: tools\translator\config_loader.py:187
 msgid "Configuration de la langue de référence:"
 msgstr ""
 
-#: tools\translator\config_loader.py:169
+#: tools\translator\config_loader.py:189
 msgid "  - Langue référence : {lang}"
 msgstr ""
 
-#: tools\translator\config_loader.py:170
+#: tools\translator\config_loader.py:190
 msgid "  - Fichier référence: {ref_file}"
 msgstr ""
 
-#: tools\translator\config_loader.py:171
+#: tools\translator\config_loader.py:191
 msgid "  - Fichier UPDATE   : {update_file}"
 msgstr ""
 
 #: tools\translator\extract.py:100
 #: tools\translator\extract.py:121
 msgid ""
-"[{var0}] → \\n"
+"[{var0}] → \n"
 msgstr ""
 
 #: tools\translator\extract.py:107
 msgid ""
-"# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\\n"
+"# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n"
 msgstr ""
 
 #: tools\translator\extract.py:117
 msgid ""
-"[{ref_lang} AVANT]  {old_ref}\\n"
+"[{ref_lang} AVANT]  {old_ref}\n"
 msgstr ""
 
 #: tools\translator\extract.py:118
 msgid ""
-"[{ref_lang} APRÈS]  {new_ref}\\n"
+"[{ref_lang} APRÈS]  {new_ref}\n"
 msgstr ""
 
 #: tools\translator\extract.py:120
 msgid ""
-"[{var0} ACTUEL] {current_trans}\\n"
+"[{var0} ACTUEL] {current_trans}\n"
 msgstr ""
 
 #: tools\translator\extract.py:126
 msgid ""
-"# TOTAL: {var0} nouvelles + {var1} modifiées\\n"
+"# TOTAL: {var0} nouvelles + {var1} modifiées\n"
 msgstr ""
 
 #: tools\translator\extract.py:161
@@ -3774,14 +3765,14 @@ msgstr ""
 
 #: tools\translator\extract.py:182
 msgid ""
-"\\n"
+"\n"
 "{var0}EXTRACT{var1}: Générer fichiers de traduction"
 msgstr ""
 
 #: tools\translator\extract.py:190
 #: tools\translator\sync.py:281
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}"
 msgstr ""
 
@@ -3797,7 +3788,7 @@ msgstr ""
 #: tools\translator\extract.py:197
 #: tools\translator\sync.py:287
 msgid ""
-"\\n"
+"\n"
 "{var0}Dossier UPDATE{var1} (contenant {update_filename}):"
 msgstr ""
 
@@ -3807,7 +3798,7 @@ msgstr ""
 
 #: tools\translator\extract.py:211
 msgid ""
-"\\n"
+"\n"
 "{var0}Répertoire des traductions existantes{var1} (Locales):"
 msgstr ""
 
@@ -3821,7 +3812,7 @@ msgstr ""
 
 #: tools\translator\extract.py:216
 msgid ""
-"\\n"
+"\n"
 "{var0}Langue(s) à générer{var1}:"
 msgstr ""
 
@@ -3835,7 +3826,7 @@ msgstr ""
 
 #: tools\translator\extract.py:222
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Génération en cours..."
 msgstr ""
 
@@ -3869,76 +3860,70 @@ msgstr ""
 
 #: tools\translator\extract.py:78
 msgid ""
-"# FICHIER DE TRADUCTION - {var0}\\n"
+"# FICHIER DE TRADUCTION - {var0}\n"
 msgstr ""
 
 #: tools\translator\extract.py:79
 msgid ""
-"# Généré: {var0}\\n"
+"# Généré: {var0}\n"
 msgstr ""
 
 #: tools\translator\extract.py:80
 msgid ""
-"# Source: {update_dir}\\n"
-msgstr ""
-
-#: tools\translator\extract.py:82
-#: tools\translator\extract.py:87
-msgid ""
-"#\\n"
+"# Source: {update_dir}\n"
 msgstr ""
 
 #: tools\translator\extract.py:83
 msgid ""
-"# INSTRUCTIONS:\\n"
+"# INSTRUCTIONS:\n"
 msgstr ""
 
 #: tools\translator\extract.py:84
 msgid ""
-"# 1. Pour chaque entrée, écrivez la traduction après le symbole →\\n"
+"# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n"
 msgstr ""
 
 #: tools\translator\extract.py:85
 msgid ""
-"# 2. Laissez vide pour garder la valeur EN par défaut\\n"
+"# 2. Laissez vide pour garder la valeur EN par défaut\n"
 msgstr ""
 
 #: tools\translator\extract.py:86
 msgid ""
-"# 3. Les lignes commençant par # sont ignorées\\n"
+"# 3. Les lignes commençant par # sont ignorées\n"
 msgstr ""
 
 #: tools\translator\extract.py:93
 msgid ""
-"# NOUVELLES CLÉS ({var0})\\n"
+"# NOUVELLES CLÉS ({var0})\n"
 msgstr ""
 
 #: tools\translator\extract.py:98
 #: tools\translator\extract.py:116
 msgid ""
-"[KEY] {key}\\n"
+"[KEY] {key}\n"
 msgstr ""
 
 #: tools\translator\extract.py:99
 msgid ""
-"[EN]  {en_value}\\n"
+"[EN]  {en_value}\n"
 msgstr ""
 
 #: tools\translator\inject.py:253
 msgid ""
-"\\n"
+"\n"
 "{var0}INJECT{var1}: Réinjecter les traductions"
 msgstr ""
 
 #: tools\translator\inject.py:255
 msgid ""
-"\\n"
+"\n"
 "{var0}[ATTENTION]{var1} Les clés non traduites (→ vide) recevront la valeur EN"
 msgstr ""
 
 #: tools\translator\inject.py:257
 msgid ""
-"\\n"
+"\n"
 "{var0}Mode{var1}:"
 msgstr ""
 
@@ -3948,13 +3933,13 @@ msgstr ""
 
 #: tools\translator\inject.py:260
 msgid ""
-"\\n"
+"\n"
 "{var0}  Choix (1-2): {var1}"
 msgstr ""
 
 #: tools\translator\inject.py:263
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichier TRANSLATE_xx.txt{var1}:"
 msgstr ""
 
@@ -3964,14 +3949,14 @@ msgstr ""
 
 #: tools\translator\inject.py:270
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichier cible TranslatedStrings_xx.txt{var1}:"
 msgstr ""
 
 #: tools\translator\inject.py:277
 #: tools\translator\inject.py:316
 msgid ""
-"\\n"
+"\n"
 "{var0}Dossier UPDATE{var1} (contenant UPDATE_{lang}.json):"
 msgstr ""
 
@@ -3983,7 +3968,7 @@ msgstr ""
 #: tools\translator\inject.py:282
 #: tools\translator\inject.py:321
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Injection en cours..."
 msgstr ""
 
@@ -4018,13 +4003,13 @@ msgstr ""
 
 #: tools\translator\inject.py:302
 msgid ""
-"\\n"
+"\n"
 "{var0}Dossier contenant les fichiers TRANSLATE_*.txt{var1}:"
 msgstr ""
 
 #: tools\translator\inject.py:309
 msgid ""
-"\\n"
+"\n"
 "{var0}Répertoire des fichiers de langue{var1} (Locales):"
 msgstr ""
 
@@ -4051,13 +4036,13 @@ msgstr ""
 
 #: tools\translator\install.py:130
 msgid ""
-"\\n"
+"\n"
 "{var0}  INSTALL - Installation des fichiers de traduction{var1}"
 msgstr ""
 
 #: tools\translator\install.py:142
 msgid ""
-"\\n"
+"\n"
 "{var0}[ATTENTION]{var1} Des fichiers de traduction existent déjà:"
 msgstr ""
 
@@ -4079,7 +4064,7 @@ msgstr ""
 
 #: tools\translator\install.py:163
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Dernière extraction:"
 msgstr ""
 
@@ -4118,7 +4103,7 @@ msgstr ""
 
 #: tools\translator\main.py:112
 msgid ""
-"\\n"
+"\n"
 "{var0}Appuyez sur Entrée pour revenir au menu...{var1}"
 msgstr ""
 
@@ -4134,13 +4119,13 @@ msgstr ""
 
 #: tools\translator\main.py:132
 msgid ""
-"\\n"
+"\n"
 "{var0}Configuration initiale{var1}"
 msgstr ""
 
 #: tools\translator\main.py:134
 msgid ""
-"\\n"
+"\n"
 "{var0}Chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:"
 msgstr ""
 
@@ -4151,7 +4136,7 @@ msgstr ""
 
 #: tools\translator\main.py:139
 msgid ""
-"\\n"
+"\n"
 "{var0}Annulation{var1}"
 msgstr ""
 
@@ -4170,7 +4155,7 @@ msgstr ""
 
 #: tools\translator\main.py:164
 msgid ""
-"\\n"
+"\n"
 "{var0}  Options essentielles:{var1}"
 msgstr ""
 
@@ -4200,13 +4185,13 @@ msgstr ""
 
 #: tools\translator\main.py:190
 msgid ""
-"\\n"
+"\n"
 "{var0}Changement de plugin{var1}"
 msgstr ""
 
 #: tools\translator\main.py:192
 msgid ""
-"\\n"
+"\n"
 "{var0}Nouveau chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:"
 msgstr ""
 
@@ -4220,13 +4205,13 @@ msgstr ""
 
 #: tools\translator\main.py:211
 msgid ""
-"\\n"
+"\n"
 "{var0}Appuyez sur Entrée pour continuer...{var1}"
 msgstr ""
 
 #: tools\translator\main.py:213
 msgid ""
-"\\n"
+"\n"
 "{var0}Au revoir !{var1}"
 msgstr ""
 
@@ -4320,13 +4305,13 @@ msgstr ""
 
 #: tools\translator\main.py:418
 msgid ""
-"\\n"
+"\n"
 "{var0}⚠️  {var1} traduction(s) identique(s) à EN détectée(s)!{var2}"
 msgstr ""
 
 #: tools\translator\main.py:420
 msgid ""
-"\\n"
+"\n"
 "Fichiers générés dans: {var0}{output_dir}{var2}"
 msgstr ""
 
@@ -4353,7 +4338,7 @@ msgstr ""
 
 #: tools\translator\main.py:451
 msgid ""
-"\\n"
+"\n"
 "{var0}[OK]{var1} {var2}{var3}{var4} fichier(s) généré(s):"
 msgstr ""
 
@@ -4397,7 +4382,7 @@ msgstr ""
 
 #: tools\translator\main.py:74
 msgid ""
-"\\n"
+"\n"
 "{var0}  OPTIONS AVANCÉES{var1}"
 msgstr ""
 
@@ -4408,20 +4393,20 @@ msgstr ""
 #: tools\translator\main.py:80
 #: tools\translator\main.py:160
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Plugin: {var2}{var3}{var4}"
 msgstr ""
 
 #: tools\translator\main.py:82
 #: tools\translator\main.py:162
 msgid ""
-"\\n"
+"\n"
 "{var0}[ATTENTION]{var1} Aucun plugin configuré - utilise répertoires locaux"
 msgstr ""
 
 #: tools\translator\main.py:84
 msgid ""
-"\\n"
+"\n"
 "{var0}  Commandes:{var1}"
 msgstr ""
 
@@ -4520,13 +4505,13 @@ msgstr ""
 
 #: tools\translator\sync.py:265
 msgid ""
-"\\n"
+"\n"
 "{var0}SYNC{var1}: Synchroniser les langues étrangères"
 msgstr ""
 
 #: tools\translator\sync.py:268
 msgid ""
-"\\n"
+"\n"
 "{var0}Avez-vous un dossier UPDATE{var1} (généré par COMPARE) ?"
 msgstr ""
 
@@ -4540,13 +4525,13 @@ msgstr ""
 
 #: tools\translator\sync.py:294
 msgid ""
-"\\n"
+"\n"
 "{var0}Fichier EN de référence{var1} (ou répertoire):"
 msgstr ""
 
 #: tools\translator\sync.py:301
 msgid ""
-"\\n"
+"\n"
 "{var0}Répertoire des fichiers de langues{var1} (Locales):"
 msgstr ""
 
@@ -4556,7 +4541,7 @@ msgstr ""
 
 #: tools\translator\sync.py:306
 msgid ""
-"\\n"
+"\n"
 "{var0}[INFO]{var1} Synchronisation en cours..."
 msgstr ""
 
