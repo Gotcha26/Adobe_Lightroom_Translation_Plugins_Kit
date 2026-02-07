@@ -140,9 +140,9 @@ class OutputFormatter:
             relative = output_dir.replace(plugin_path, "").lstrip(os.sep)
             # Normaliser les slashes en forward slashes
             relative = relative.replace("\\", "/")
-            display_path = _("<plugin>/{relative}").format(relative=relative)
+            display_path = "<plugin>/{relative}".format(relative=relative)
 
-        print(_("\n  [") + _("Sortie") + f"] {c.VALUE}{display_path}{c.RESET}\n")
+        print("\n  [" + _("Sortie") + f"] {c.VALUE}{display_path}{c.RESET}\n")
 
         # Afficher la liste des fichiers
         if files:

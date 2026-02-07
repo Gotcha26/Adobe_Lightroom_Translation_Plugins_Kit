@@ -98,7 +98,7 @@ def check_existing_language(plugin_path: str, lang_code: str) -> Tuple[bool, Opt
     if not os.path.isdir(plugin_path):
         return False, None
 
-    filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+    filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
     file_path = os.path.join(plugin_path, filename)
 
     if os.path.isfile(file_path):
@@ -215,7 +215,7 @@ def install_language_from_extraction(plugin_path: str, lang_code: str,
             return False
 
     # Vérifier que le fichier source existe
-    source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+    source_filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
     source_path = os.path.join(extraction_dir, source_filename)
 
     if not os.path.isfile(source_path):
@@ -297,7 +297,7 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
         return False
 
     # Vérifier si le fichier existe déjà
-    dest_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+    dest_filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
     dest_path = os.path.join(plugin_path, dest_filename)
     exists = os.path.isfile(dest_path)
 
@@ -364,7 +364,7 @@ def create_backup(plugin_path: str, lang_code: str) -> Optional[str]:
     Returns:
         Chemin du backup créé ou None si erreur
     """
-    source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+    source_filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
     source_path = os.path.join(plugin_path, source_filename)
 
     if not os.path.isfile(source_path):
@@ -415,7 +415,7 @@ def menu_addlang(plugin_path: str):
     if installed_langs:
         print(_("\n{var0}Langues actuellement installées:{var1}").format(var0=c.INFO, var1=c.RESET))
         for lang in installed_langs:
-            print(_("  {var0}✓{var1} {var2}{lang}{var4} (TranslatedStrings_{lang}.txt)").format(var0=c.OK, var1=c.RESET, var2=c.VALUE, lang=lang, var4=c.RESET, lang=lang))
+            print(_("  {var0}✓{var1} {var2}{lang}{var4} (TranslatedStrings_{lang}.txt)").format(var0=c.OK, var1=c.RESET, var2=c.VALUE, lang=lang, var4=c.RESET))
     else:
         print(_("\n{var0}Aucune langue installée dans le plugin{var1}").format(var0=c.WARNING, var1=c.RESET))
 
@@ -567,7 +567,7 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     print()
     print(c.separator())
     print(_("{var0}Fichier qui sera créé:{var1}").format(var0=c.INFO, var1=c.RESET))
-    dest_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+    dest_filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
     print(f"  → {c.VALUE}{os.path.join(os.path.basename(plugin_path), dest_filename)}{c.RESET}")
     print()
     print(_("{var0}Contenu:{var1}").format(var0=c.INFO, var1=c.RESET))
@@ -628,7 +628,7 @@ def run_addlang_cli(plugin_path: str, lang_code: str, mode: str = 'auto',
             extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
 
         if extraction_dir:
-            source_filename = _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code)
+            source_filename = "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code)
             source_path = os.path.join(extraction_dir, source_filename)
             if os.path.isfile(source_path):
                 return install_language_from_extraction(plugin_path, lang_code, extraction_dir, force)

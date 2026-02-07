@@ -72,10 +72,11 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
     added_keys = update_data.get('added', {})
     changed_keys = update_data.get('changed', {})
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    from core.i18n import debug_i18n_context
+    with debug_i18n_context(), open(output_file, 'w', encoding='utf-8') as f:
         f.write("# " + "=" * 70 + "\n")
         f.write(_("# FICHIER DE TRADUCTION - {var0}\n").format(var0=lang.upper()))
-        f.write(f"# Généré: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(_("# Généré: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("# Source: {update_dir}\n").format(update_dir=update_dir))
         f.write("# " + "=" * 70 + "\n")
         f.write(_("#\n"))
@@ -189,7 +190,7 @@ def menu_extract(plugin_path: str = ""):
             print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
         else:
             print(c.warning(_("Aucun dossier Translator sélectionné")))
-            print(f"{c.DIM}  Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement{c.RESET}")
+            print(f"{c.DIM}  " + _("Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement") + f"{c.RESET}")
 
     if not update_dir:
         update_filename = get_update_filename()

@@ -240,14 +240,15 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
 
     report_file = os.path.join(output_dir, 'COMPARE_LANGS_report.txt')
 
-    with open(report_file, 'w', encoding='utf-8') as f:
+    from core.i18n import debug_i18n_context
+    with debug_i18n_context(), open(report_file, 'w', encoding='utf-8') as f:
         # En-tête
         f.write("=" * 80 + "\n")
         mode_label = "CLÉS" if comparison_mode == "keys" else "VALEURS"
         f.write(_("RAPPORT DE COMPARAISON DE LANGUES (MODE: {mode_label})\n").format(mode_label=mode_label))
         f.write("=" * 80 + "\n\n")
 
-        f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(_("Date: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("Mode de comparaison: {mode_label}\n").format(mode_label=mode_label))
         f.write(_("Langue 1: {lang1_upper}\n").format(lang1_upper=lang1_upper))
         f.write(_("Langue 2: {lang2_upper}\n").format(lang2_upper=lang2_upper))
@@ -378,7 +379,7 @@ def _generate_text_report(output_dir: str, result: Dict, file1: str, file2: str,
             if stats['identical_values_count'] > 0:
                 # Avertissement spécial si comparaison avec EN
                 if lang1_name.lower() == 'en' or lang2_name.lower() == 'en':
-                    f.write(f"⚠️  {stats['identical_values_count']} traduction(s) identique(s) à l'anglais détectée(s)!\n")
+                    f.write(_("⚠️  {var0} traduction(s) identique(s) à l'anglais détectée(s)!\n").format(var0=stats['identical_values_count']))
                     f.write(_("  → Vérifier si ces clés ont bien été traduites\n\n"))
                 else:
                     f.write(_("• {var0} valeur(s) identique(s) entre les deux langues\n").format(var0=stats['identical_values_count']))

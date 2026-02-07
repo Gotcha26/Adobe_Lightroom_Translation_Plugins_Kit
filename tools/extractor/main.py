@@ -85,7 +85,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     extractor.extract_all()
 
     # Chemins des fichiers de sortie dans le sous-dossier timestampé
-    strings_file = os.path.join(timestamped_output_dir, _("TranslatedStrings_{lang}.txt").format(lang=lang))
+    strings_file = os.path.join(timestamped_output_dir, "TranslatedStrings_{lang}.txt".format(lang=lang))
     spacing_file = os.path.join(timestamped_output_dir, "spacing_metadata.json")
     replacements_file = os.path.join(timestamped_output_dir, "replacements.json")
     report_file = os.path.join(timestamped_output_dir, f"extraction_report.txt")
@@ -137,7 +137,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     # Afficher les fichiers générés (sauf si silent)
     if not silent:
         files_generated = [
-            (_("TranslatedStrings_{lang}.txt").format(lang=lang), _("{n} clés").format(n=extractor.stats.unique_strings), _("Fichier de chaînes")),
+            ("TranslatedStrings_{lang}.txt".format(lang=lang), _("{n} clés").format(n=extractor.stats.unique_strings), _("Fichier de chaînes")),
             ("spacing_metadata.json", _("{n} entrées").format(n=len(extractor.spacing_metadata)), _("Métadonnées d'espaces/suffixes")),
             ("replacements.json", _("pour Applicator"), _("Remplacement des chaînes")),
             ("extraction_report.txt", _("rapport détaillé"), _("Analyse complète")),

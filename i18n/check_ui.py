@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Script utilitaire pour identifier les chaînes non traduites dans le code Python.
+Nom du fichier : check_ui.py
 
-Détecte les chaînes littérales qui devraient probablement être enrobées de _()
-mais ne le sont pas encore.
+Description :
+Détecte les chaînes non traduites dans l'interface console (print, input, prompts, erreurs).
+Les chaînes dans les fichiers générés (f.write) sont gérées par check_reports.py.
 
 Usage:
-    python i18n/find_untranslated_strings.py
-    python i18n/find_untranslated_strings.py --file tools/translator/compare_langs.py
-    python i18n/find_untranslated_strings.py --verbose
+    python i18n/check_ui.py
+    python i18n/check_ui.py --file tools/translator/compare_langs.py
+    python i18n/check_ui.py --verbose
 """
 
 import ast
@@ -58,11 +59,11 @@ IGNORE_PATTERNS = [
 # Longueur minimale pour considérer une chaîne
 MIN_STRING_LENGTH = 3
 
-# Mots-clés indiquant des messages utilisateur
+# Mots-clés indiquant des messages utilisateur (UI console uniquement)
+# Note : 'write' et 'append' sont gérés par check_reports.py
 USER_MESSAGE_INDICATORS = [
     'print', 'input', 'error', 'warning', 'info', 'message',
     'prompt', 'label', 'title', 'description', 'help',
-    'write', 'append'
 ]
 
 
@@ -77,13 +78,15 @@ class UntranslatedString:
 
 
 class StringExtractor(ast.NodeVisitor):
-    """Visiteur AST pour extraire les chaînes littérales."""
+    """Visiteur AST pour extraire les chaînes littérales (UI console uniquement)."""
 
     def __init__(self, filepath: Path):
         self.filepath = filepath
         self.strings: List[UntranslatedString] = []
         self.current_function = None
         self.source_lines = []
+        self._file_write_vars: Set[str] = set()  # variables fichier (with open() as f)
+        self._in_file_write = False  # True quand on est dans un f.write()
 
         # Charger le contenu source
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -95,6 +98,19 @@ class StringExtractor(ast.NodeVisitor):
         self.current_function = node.name
         self.generic_visit(node)
         self.current_function = old_function
+
+    def visit_With(self, node):
+        """Détecter les blocs with open(...) as f: pour exclure f.write()."""
+        old_vars = self._file_write_vars.copy()
+        for item in node.items:
+            # Détecter: with open(...) as <var>
+            if (isinstance(item.context_expr, ast.Call) and
+                isinstance(item.context_expr.func, ast.Name) and
+                item.context_expr.func.id == 'open' and
+                item.optional_vars and isinstance(item.optional_vars, ast.Name)):
+                self._file_write_vars.add(item.optional_vars.id)
+        self.generic_visit(node)
+        self._file_write_vars = old_vars
 
     def visit_Str(self, node):
         """Visiter les chaînes (Python < 3.8)."""
@@ -111,6 +127,10 @@ class StringExtractor(ast.NodeVisitor):
         """Traite une chaîne découverte."""
         # Ignorer les chaînes vides ou trop courtes
         if not text or len(text.strip()) < MIN_STRING_LENGTH:
+            return
+
+        # Ignorer les chaînes dans un contexte f.write() (géré par check_reports.py)
+        if self._is_in_file_write_context(node):
             return
 
         # Ignorer les chaînes purement techniques
@@ -168,9 +188,21 @@ class StringExtractor(ast.NodeVisitor):
 
         return False
 
+    def _is_in_file_write_context(self, node) -> bool:
+        """Vérifie si la chaîne est dans un appel f.write() d'un fichier ouvert."""
+        if not self._file_write_vars:
+            return False
+        # Vérifier si la ligne contient <var>.write( où <var> est une variable fichier
+        if node.lineno <= len(self.source_lines):
+            line = self.source_lines[node.lineno - 1]
+            for var in self._file_write_vars:
+                if f'{var}.write(' in line or f'{var}.writelines(' in line:
+                    return True
+        return False
+
     def _calculate_confidence(self, node, text: str) -> str:
         """Calcule le niveau de confiance que c'est un message utilisateur."""
-        # HIGH: dans print(), input(), f.write() avec texte long
+        # HIGH: dans print(), input() avec texte long
         # MEDIUM: dans assignments, f-strings
         # LOW: autres cas
 
@@ -342,7 +374,7 @@ def main():
     print(c.separator())
     print()
     print(f"1. Examiner les chaînes {c.ERROR}HIGH{c.RESET} en priorité:")
-    print(f"   python i18n/find_untranslated_strings.py --confidence HIGH --verbose")
+    print(f"   python i18n/check_ui.py --confidence HIGH --verbose")
     print()
     print(f"2. Pour chaque chaîne, enrober de _():")
     print(f"   {c.DIM}Avant:{c.RESET} print(\"Message\")")

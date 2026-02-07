@@ -279,8 +279,8 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
         print(c.separator())
         print()
         print(_("{var0}Répertoire du plugin à restaurer:{var1}").format(var0=c.DIM, var1=c.RESET))
-        print(_("{var0}  Exemples: ./piwigoPublish.lrplugin{var1}").format(var0=c.DIM, var1=c.RESET))
-        print(_("{var0}            D:\\Lightroom\\plugin.lrplugin{var1}").format(var0=c.DIM, var1=c.RESET))
+        print("{var0}  Exemples: ./piwigoPublish.lrplugin{var1}".format(var0=c.DIM, var1=c.RESET))
+        print("{var0}            D:\\Lightroom\\plugin.lrplugin{var1}".format(var0=c.DIM, var1=c.RESET))
         print()
 
         while True:

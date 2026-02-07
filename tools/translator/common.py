@@ -126,10 +126,11 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
         category = parts[1] if len(parts) > 1 else 'General'
         by_category[category].append(key)
 
-    with open(file_path, 'w', encoding='utf-8') as f:
+    from core.i18n import debug_i18n_context
+    with debug_i18n_context(), open(file_path, 'w', encoding='utf-8') as f:
         f.write(_("-- =============================================================================\n"))
         f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-        f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("-- Total keys: {var0}\n").format(var0=len(translations)))
 
         # Infos supplémentaires depuis metadata
@@ -472,8 +473,10 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def print_header(version: str = _("6.0")):
+def print_header(version: str = None):
     """Affiche l'entete du menu avec couleurs."""
+    if version is None:
+        version = "6.0"
     print()
     print(c.HEADER + "=" * 70 + c.RESET)
     title = _("  TRANSLATION MANAGER v{version}").format(version=version).center(70)

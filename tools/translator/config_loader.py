@@ -28,6 +28,16 @@ DEFAULT_REFERENCE_LANG = "en"  # Fallback si config.json absent ou invalide
 # FONCTIONS DE CHARGEMENT
 # =============================================================================
 
+def _get_root_dir() -> str:
+    """
+    Retourne le répertoire racine du projet (où se trouvent config.json / config.local.json).
+
+    Structure : tools/translator/config_loader.py → remonter 2 niveaux.
+    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.dirname(os.path.dirname(current_dir))
+
+
 def get_config_path() -> Optional[str]:
     """
     Trouve le fichier config.json en remontant depuis le module actuel.
@@ -35,18 +45,12 @@ def get_config_path() -> Optional[str]:
     Returns:
         Chemin vers config.json ou None si non trouvé
     """
-    # Partir du répertoire du module actuel
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Remonter jusqu'à la racine du projet (où se trouve config.json)
-    # Structure : tools/translator/config_loader.py → remonter 2 niveaux
-    root_dir = os.path.dirname(os.path.dirname(current_dir))
+    root_dir = _get_root_dir()
 
     config_path = os.path.join(root_dir, "config.json")
     if os.path.isfile(config_path):
         return config_path
 
-    # Essayer aussi config.local.json (prioritaire)
     config_local_path = os.path.join(root_dir, "config.local.json")
     if os.path.isfile(config_local_path):
         return config_local_path
@@ -56,20 +60,36 @@ def get_config_path() -> Optional[str]:
 
 def load_config() -> dict:
     """
-    Charge la configuration depuis config.json (ou config.local.json).
+    Charge la configuration avec merge config.json + config.local.json.
+
+    Ordre de priorité : config.json < config.local.json
+    (config.local.json surcharge les valeurs de config.json)
 
     Returns:
-        Dictionnaire de configuration (vide si fichier absent)
+        Dictionnaire de configuration (vide si aucun fichier trouvé)
     """
-    config_path = get_config_path()
-    if not config_path:
-        return {}
+    root_dir = _get_root_dir()
+    config = {}
 
-    try:
-        with open(config_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
-        return {}
+    # 1) Charger config.json (base partagée)
+    config_path = os.path.join(root_dir, "config.json")
+    if os.path.isfile(config_path):
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+        except Exception:
+            pass
+
+    # 2) Surcharger avec config.local.json (local, non versionné)
+    config_local_path = os.path.join(root_dir, "config.local.json")
+    if os.path.isfile(config_local_path):
+        try:
+            with open(config_local_path, 'r', encoding='utf-8') as f:
+                config = {**config, **json.load(f)}
+        except Exception:
+            pass
+
+    return config
 
 
 def get_reference_lang() -> str:
@@ -131,6 +151,20 @@ def is_reference_lang(lang_code: str) -> bool:
         True si c'est la langue de référence
     """
     return lang_code.lower() == get_reference_lang().lower()
+
+
+def get_debug_i18n() -> bool:
+    """
+    Récupère le flag debug_i18n depuis config.json.
+
+    Quand activé, les fichiers générés (rapports, CHANGELOG) utilisent l'anglais
+    au lieu du français pour tester les traductions.
+
+    Returns:
+        True si le mode debug i18n est activé
+    """
+    config = load_config()
+    return config.get("debug_i18n", False)
 
 
 # =============================================================================

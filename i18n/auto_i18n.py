@@ -63,14 +63,29 @@ def is_user_facing_string(text: str, parent_context: str = "") -> bool:
         r'^\.',        # .txt, .json
         r'^/',         # /path/
         r'\\\\',       # chemins Windows
+        r'^[A-Z]:\\\\', # chemins Windows absolus C:\\...
         r'^\d+$',      # nombres seuls
         r'^[\s\-=_*#:;,.!?]+$',  # séparateurs seuls
         r'^[=\-*#]{2,}$',  # séparateurs répétés
         r'^utf-8$',    # encodings
         r'^LC_MESSAGES$',
         r'messages\.po',
+        r'messages\.pot',
+        r'messages\.mo',
         r'TranslatedStrings_',
         r'^%[YmdHMS\-:% ]+$',  # formats de date strftime
+        r'^\$\$\$/',            # clés SDK Lightroom $$$/Key=Value
+        r'^<plugin>',           # templates chemins <plugin>/...
+        r'^<temp_dir>',         # templates chemins <temp_dir>/...
+        r'^\{DOMAIN\}',         # {DOMAIN}.mo, {DOMAIN}.po
+        r'^\.lrplugin$',        # extension seule
+        r'^\./\w+\.',           # chemins relatifs ./xxx.ext
+        r'^\.\.\./\{',          # templates .../{var}
+        r'^  python\s',         # commandes shell
+        r'^python\s+\w+',       # commandes python xxx
+        r'^\(auto\)$',          # marqueur (auto)
+        r're\.escape',          # regex Python
+        r'\[\^[^\]]*\]',        # character classes regex [^=]+
     ]
 
     for pattern in technical_patterns:
@@ -85,8 +100,9 @@ def is_user_facing_string(text: str, parent_context: str = "") -> bool:
     if text.strip() and all(c == text.strip()[0] for c in text.strip()):
         return False
 
-    # Mots-clés indiquant des messages utilisateur
-    user_indicators = ['print', 'input', 'write', 'error', 'warning', 'message', 'prompt']
+    # Mots-clés indiquant des messages utilisateur (UI console uniquement)
+    # Note: 'write' est exclu — les f.write() dans les fichiers sont gérés par check_reports.py
+    user_indicators = ['print', 'input', 'error', 'warning', 'message', 'prompt']
     if any(ind in parent_context.lower() for ind in user_indicators):
         return True
 
@@ -185,14 +201,13 @@ def transform_fstring_to_translatable(line: str) -> str:
 
         # Si pas de parties statiques significatives, ignorer
         static_parts = re.split(r'\{[^}]+\}', content)
-        has_significant_text = any(len(part.strip()) >= 3 for part in static_parts)
+        has_significant_text = any(
+            len(part.strip()) >= 3 and is_user_facing_string(part.strip(), line)
+            for part in static_parts
+        )
 
         if not has_significant_text:
             return match.group(0)
-
-        # Vérifier si la f-string contient principalement des codes couleur (ex: c.DIM, c.RESET)
-        # Mais on garde quand même la traduction si il y a du texte significatif
-        # (commenté car l'utilisateur préfère avoir toutes les chaînes traduites)
 
         # Créer des noms de variables simples
         template = content
@@ -263,13 +278,36 @@ def process_file_smart(filepath: Path, apply: bool = False) -> Tuple[int, List[d
     modifications = []
     modified_lines = []
 
+    # Détecter les blocs "with open(...) as f:" pour ignorer les f.write()
+    in_write_block = False
+    write_block_indent = 0
+
     for i, line in enumerate(lines, 1):
         original_line = line
         modified_line = line
         modified = False
 
-        # Ignorer les commentaires et docstrings
         stripped = line.strip()
+
+        # Tracking des blocs with open() — les .write() dedans ne sont pas de l'UI
+        current_indent = len(line) - len(line.lstrip())
+        if re.search(r'with\s+open\s*\(', line):
+            in_write_block = True
+            write_block_indent = current_indent
+        elif in_write_block and current_indent <= write_block_indent and stripped:
+            in_write_block = False
+
+        # Ignorer les lignes .write() dans un bloc fichier
+        if in_write_block and '.write(' in line:
+            modified_lines.append(line)
+            continue
+
+        # Ignorer les lignes .write() même hors contexte détecté (sécurité)
+        if re.search(r'\.\s*write\s*\(', stripped):
+            modified_lines.append(line)
+            continue
+
+        # Ignorer les commentaires et docstrings
         if stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
             modified_lines.append(line)
             continue
@@ -294,6 +332,11 @@ def process_file_smart(filepath: Path, apply: bool = False) -> Tuple[int, List[d
 
         # Ignorer les noms de fichiers/dossiers avec timestamp ou variables
         if re.search(r'f["\'][a-z_]+_\{', line):  # ex: f"compare_langs_{timestamp}"
+            modified_lines.append(line)
+            continue
+
+        # Ignorer les lignes json.dump / json.load
+        if 'json.dump' in line or 'json.load' in line:
             modified_lines.append(line)
             continue
 
@@ -369,7 +412,7 @@ def main():
         print()
 
         # Importer l'outil de scan
-        from find_untranslated_strings import scan_directory
+        from check_ui import scan_directory
 
         all_strings = {}
         for directory in SCAN_DIRS:

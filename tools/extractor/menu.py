@@ -92,7 +92,7 @@ class InteractiveMenu:
             else:
                 status = f"{c.ERROR}" + _("INTROUVABLE") + f"{c.RESET}"
             short_path = os.path.basename(self.plugin_path)
-            print(c.config_line("1. " + _("Plugin ciblé"), _(".../{short_path} {var1}[{var2}{status}{var4}]{var5}").format(short_path=short_path, var1=c.VALUE, var2=c.RESET, status=status, var4=c.VALUE, var5=c.RESET)))
+            print(c.config_line("1. " + _("Plugin ciblé"), ".../{short_path} {var1}[{var2}{status}{var4}]{var5}".format(short_path=short_path, var1=c.VALUE, var2=c.RESET, status=status, var4=c.VALUE, var5=c.RESET)))
         else:
             print(c.config_line("1. " + _("Plugin ciblé"), f"{c.ERROR}" + _("(non défini - REQUIS)") + f"{c.RESET}"))
 
@@ -101,7 +101,7 @@ class InteractiveMenu:
             print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
             default_output = f"<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
-            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
+            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + "(auto)" + f"{c.RESET}"))
 
         # Autres options
         print(c.config_line("3. " + _("Préfixe LOC"), self.prefix))
@@ -138,8 +138,8 @@ class InteractiveMenu:
         print(c.title("1. " + _("Chemin du plugin Lightroom")))
         print(c.separator())
         print(_("Exemples:"))
-        print(_("  {var0}C:/Users/User/Lightroom/plugin.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
-        print(_("  {var0}./piwigoPublish.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
+        print("  {var0}C:/Users/User/Lightroom/plugin.lrplugin{var1}".format(var0=c.VALUE, var1=c.RESET))
+        print("  {var0}./piwigoPublish.lrplugin{var1}".format(var0=c.VALUE, var1=c.RESET))
         print()
 
         if self.plugin_path:

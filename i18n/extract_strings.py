@@ -72,6 +72,55 @@ GETTEXT_PATTERN = re.compile(
 # EXTRACTION
 # =============================================================================
 
+def _is_inside_docstring(content: str, pos: int) -> bool:
+    """Vérifie si une position est à l'intérieur d'une docstring.
+
+    Heuristique : compte les triple-quotes avant la position.
+    Un nombre impair signifie qu'on est dans une docstring.
+    """
+    before = content[:pos]
+    # Compter les triple-quotes (""" ou ''')
+    count_dq = len(re.findall(r'"""', before))
+    count_sq = len(re.findall(r"'''", before))
+    return (count_dq % 2 == 1) or (count_sq % 2 == 1)
+
+
+# Chaînes techniques à exclure du .pot
+_EXCLUDE_PATTERNS = [
+    re.compile(r'^[\s\[\]\(\)\{\}=<>→,;:.\-+*/\\|!?@#~`]+$'),  # Symboles purs
+    re.compile(r'^\$\$\$/'),          # Clés SDK Lightroom $$$/Key=Value
+    re.compile(r're\.escape'),        # Regex Python
+    re.compile(r'\[\^[^\]]*\]'),      # Character classes regex [^=]+
+    re.compile(r"\\'\]"),             # Fragments de regex
+    re.compile(r'^<plugin>'),         # Templates de chemins <plugin>/...
+    re.compile(r'^<temp_dir>'),       # Templates <temp_dir>/...
+    re.compile(r'^TranslatedStrings_'),  # Noms de fichiers techniques
+    re.compile(r'^\{DOMAIN\}'),       # {DOMAIN}.mo / {DOMAIN}.po
+    re.compile(r'^  python\s'),       # Commandes shell
+    re.compile(r'\.lrplugin$'),       # Chemins seuls finissant par .lrplugin
+    re.compile(r'^[A-Z]:\\\\'),       # Chemins Windows C:\\...
+    re.compile(r'^\./\w+\.'),         # Chemins relatifs ./xxx.xxx
+    re.compile(r'^\.\.\./\{'),        # Templates .../{var}
+]
+
+
+def _is_technical_string(text: str) -> bool:
+    """Vérifie si une chaîne est technique et ne devrait pas être traduite."""
+    stripped = text.strip()
+    if not stripped:
+        return True
+
+    # Pas de lettres alphabétiques → technique
+    if not any(c.isalpha() for c in stripped):
+        return True
+
+    for pattern in _EXCLUDE_PATTERNS:
+        if pattern.search(stripped):
+            return True
+
+    return False
+
+
 def extract_strings_from_file(filepath: Path) -> List[Tuple[int, str]]:
     """Extrait les chaînes _() d'un fichier Python.
 
@@ -86,7 +135,6 @@ def extract_strings_from_file(filepath: Path) -> List[Tuple[int, str]]:
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-            lines = content.split('\n')
     except Exception as e:
         print(f"{c.WARNING}[!] Impossible de lire {filepath}: {e}{c.RESET}")
         return []
@@ -97,6 +145,18 @@ def extract_strings_from_file(filepath: Path) -> List[Tuple[int, str]]:
         text = match.group(1) or match.group(2) or match.group(3) or match.group(4)
 
         if text:
+            # Ignorer les _() dans les docstrings
+            if _is_inside_docstring(content, match.start()):
+                continue
+
+            # Interpréter les séquences d'échappement Python littérales
+            # (la regex capture \n comme 2 chars, pas comme un vrai saut de ligne)
+            text = unescape_python_string(text)
+
+            # Ignorer les chaînes techniques
+            if _is_technical_string(text):
+                continue
+
             # Calculer le numéro de ligne
             line_num = content[:match.start()].count('\n') + 1
             strings.append((line_num, text))
@@ -132,6 +192,28 @@ def scan_directory(directory: Path) -> dict:
                 results[str(rel_path)] = strings
 
     return results
+
+
+def unescape_python_string(s: str) -> str:
+    """Interprète les séquences d'échappement Python littérales.
+
+    La regex capture le contenu brut du code source, donc \\n est
+    2 caractères (backslash + n) au lieu d'un vrai saut de ligne.
+    Cette fonction les convertit en vrais caractères.
+
+    Args:
+        s: Chaîne avec séquences littérales
+
+    Returns:
+        Chaîne avec vrais caractères
+    """
+    s = s.replace('\\n', '\n')
+    s = s.replace('\\r', '\r')
+    s = s.replace('\\t', '\t')
+    s = s.replace('\\"', '"')
+    s = s.replace("\\'", "'")
+    s = s.replace('\\\\', '\\')
+    return s
 
 
 def escape_string(s: str) -> str:

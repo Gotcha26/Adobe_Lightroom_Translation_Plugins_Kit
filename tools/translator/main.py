@@ -113,7 +113,7 @@ def advanced_menu(plugin_path: str):
         elif choice == '0':
             return  # Retour au menu principal
         else:
-            print(c.error(_("Choix invalide : \"){choice}\""))
+            print(c.error(_('Choix invalide : "{choice}"').format(choice=choice)))
             input(_("{var0}Appuyez sur Entrée...{var1}").format(var0=c.DIM, var1=c.RESET))
 
 
@@ -213,7 +213,7 @@ def main_menu(default_plugin_path: str = ""):
             print(_("\n{var0}Au revoir !{var1}").format(var0=c.DIM, var1=c.RESET))
             break  # Sortir du menu principal
         else:
-            print(c.error(_("Choix invalide : \"){choice}\""))
+            print(c.error(_('Choix invalide : "{choice}"').format(choice=choice)))
             input(_("{var0}Appuyez sur Entrée...{var1}").format(var0=c.DIM, var1=c.RESET))
 
 

@@ -47,7 +47,7 @@ class ReportGenerator:
             relative = full_path.replace(plugin_path, "").lstrip(os.sep)
             # Normaliser les slashes en forward slashes
             relative = relative.replace("\\", "/")
-            return _("<plugin>/{relative}").format(relative=relative)
+            return "<plugin>/{relative}".format(relative=relative)
         return full_path
 
     def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict],
@@ -58,13 +58,14 @@ class ReportGenerator:
         for entry in extracted:
             by_file[entry.file_path].append(entry)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        from core.i18n import debug_i18n_context
+        with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
             # En-tête
             f.write("=" * 80 + "\n")
             f.write(_("RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n"))
             f.write("=" * 80 + "\n\n")
 
-            f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(_("Date: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             f.write(_("Plugin: {var0}\n").format(var0=self.plugin_path))
             f.write(_("Préfixe: {var0}\n\n").format(var0=self.prefix))
 
@@ -73,7 +74,7 @@ class ReportGenerator:
             f.write(_("  ⬅️   = Espace(s) en DÉBUT de chaîne\n"))
             f.write(_("  ➡️   = Espace(s) en FIN de chaîne\n"))
             f.write(_("  ⬅️➡️ = Espaces des DEUX côtés\n"))
-            f.write(_("  🔚  = Suffixe détecté (\") - \", \" -\", \"...\_(")\n"))
+            f.write(_('  🔚  = Suffixe détecté (" - ", " -", "...")\n'))
             f.write(_("  🔗  = Membre d'une chaîne concaténée\n\n"))
 
             # Statistiques
@@ -105,7 +106,7 @@ class ReportGenerator:
             existing_entries = [e for e in extracted if e.pattern_name == "existing_loc"]
             if existing_entries:
                 f.write("=" * 80 + "\n")
-                f.write("CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx.txt)\n")
+                f.write(_("CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx.txt)\n"))
                 f.write("=" * 80 + "\n\n")
                 for entry in existing_entries:
                     f.write(f"  🔒 {entry.file_path}:{entry.line_num}\n")
@@ -116,7 +117,7 @@ class ReportGenerator:
             # Détail par fichier (pour remplacement)
             # → Ne pas tenir compte du champs vide "REMPLACER" si vide !
             f.write("=" * 80 + "\n")
-            f.write(_("DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs \")REMPLACER\_(" si vide !\n"))
+            f.write(_('DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs "REMPLACER" si vide !\n'))
             f.write("=" * 80 + "\n")
 
             for file_path in sorted(by_file.keys()):
@@ -140,18 +141,18 @@ class ReportGenerator:
                     # Afficher l'en-tête de la ligne
                     if first_entry.is_concat_member and len(line_entries) > 1:
                         f.write(_("  [Ligne {line_num}] Pattern: {var1} 🔗 CHAÎNE CONCATÉNÉE ({var2} membres)\n").format(line_num=line_num, var1=first_entry.pattern_name, var2=len(line_entries)))
-                        f.write(_("  LIGNE    : {var0:100]}\n").format(var0=first_entry.line_content[))
+                        f.write(_("  LIGNE    : {var0}\n").format(var0=first_entry.line_content[:100]))
 
                         # Afficher chaque membre
                         for idx, entry in enumerate(line_entries, 1):
                             markers = self._get_markers(entry)
-                            f.write(_("\n  MEMBRE {idx} : \").format(idx=idx){entry.original_text}\"{markers}\n")
-                            f.write(_("    BASE   : \"){entry.base_text}\"\n")
+                            f.write(_('\n  MEMBRE {idx} : "{original_text}"{markers}\n').format(idx=idx, original_text=entry.original_text, markers=markers))
+                            f.write(_('    BASE   : "{var0}"\n').format(var0=entry.base_text))
                             f.write(_("    CLÉ    : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
                                 f.write(_("    ESPACES: {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(_("    SUFFIXE: \"){entry.suffix}\"\n")
+                                f.write(_('    SUFFIXE: "{var0}"\n').format(var0=entry.suffix))
 
                         f.write("\n")
                     else:
@@ -159,13 +160,13 @@ class ReportGenerator:
                         for entry in line_entries:
                             markers = self._get_markers(entry)
                             f.write(_("  [Ligne {line_num}] Pattern: {var1}{markers}\n").format(line_num=line_num, var1=entry.pattern_name, markers=markers))
-                            f.write(_("  CHERCHER : \"){entry.original_text}\"\n")
-                            f.write(_("  BASE     : \"){entry.base_text}\"\n")
+                            f.write(_('  CHERCHER : "{var0}"\n').format(var0=entry.original_text))
+                            f.write(_('  BASE     : "{var0}"\n').format(var0=entry.base_text))
                             f.write(_("  CLÉ      : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
                                 f.write(_("  ESPACES  : {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(_("  SUFFIXE  : \"){entry.suffix}\"\n")
+                                f.write(_('  SUFFIXE  : "{var0}"\n').format(var0=entry.suffix))
                             f.write(_("  REMPLACER: {var0}\n\n").format(var0=entry.replacement_code))
 
             # Chaînes avec espaces ou suffixes (résumé)
@@ -180,17 +181,17 @@ class ReportGenerator:
                     emoji_str = "".join(emojis)
 
                     f.write(f"  {i}. {emoji_str} {key}\n")
-                    f.write(_("     Original: \"){meta['original_text']}\"\n")
-                    f.write(_("     Base: \"){meta.get('base_text', meta['clean_text'])}\"\n")
+                    f.write(_('     Original: "{var0}"\n').format(var0=meta['original_text']))
+                    f.write(_('     Base: "{var0}"\n').format(var0=meta.get('base_text', meta['clean_text'])))
                     if meta['leading_spaces'] > 0 or meta['trailing_spaces'] > 0:
                         f.write(_("     Espaces: {var0} début + {var1} fin\n").format(var0=meta['leading_spaces'], var1=meta['trailing_spaces']))
                     if meta.get('suffix'):
-                        f.write(_("     Suffixe: \"){meta['suffix']}\"\n")
+                        f.write(_('     Suffixe: "{var0}"\n').format(var0=meta['suffix']))
                     f.write(_("     Fichier: {var0}:{var1}\n\n").format(var0=meta['file'], var1=meta['line']))
 
             # Liste des clés uniques pour PluginStrings
             f.write("=" * 80 + "\n")
-            f.write("LISTE DES CLÉS POUR TranslatedStrings_xx.txt\n")
+            f.write(_("LISTE DES CLÉS POUR TranslatedStrings_xx.txt\n"))
             f.write("=" * 80 + "\n\n")
 
             # Construire la liste des clés uniques

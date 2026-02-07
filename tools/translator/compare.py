@@ -30,6 +30,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 from .common import parse_translation_file, resolve_path, c
+from core.i18n import _
 
 
 # =============================================================================
@@ -161,13 +162,14 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
 
 def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: str):
     """Génère le fichier CHANGELOG lisible."""
+    from core.i18n import debug_i18n_context
 
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with debug_i18n_context(), open(file_path, 'w', encoding='utf-8') as f:
         f.write("=" * 80 + "\n")
         f.write(_("CHANGELOG - Modifications des traductions EN\n"))
         f.write("=" * 80 + "\n\n")
 
-        f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(_("Date: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("Ancien: {old_file}\n").format(old_file=old_file))
         f.write(_("Nouveau: {new_file}\n\n").format(new_file=new_file))
 
@@ -213,8 +215,8 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
         f.write(_("PROCHAINE ÉTAPE\n"))
         f.write("=" * 80 + "\n")
         f.write(_("Lancez EXTRACT puis INJECT, ou directement SYNC:\n"))
-        f.write(_("  python Translator_main.py extract --update {var0}\n").format(var0=os.path.dirname(file_path)))
-        f.write(_("  python Translator_main.py sync --update {var0}\n").format(var0=os.path.dirname(file_path)))
+        f.write("  python Translator_main.py extract --update {var0}\n".format(var0=os.path.dirname(file_path)))
+        f.write("  python Translator_main.py sync --update {var0}\n".format(var0=os.path.dirname(file_path)))
 
 
 # =============================================================================

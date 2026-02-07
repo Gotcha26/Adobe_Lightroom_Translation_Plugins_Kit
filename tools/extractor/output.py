@@ -74,7 +74,7 @@ class OutputGenerator:
             relative = full_path.replace(plugin_path, "").lstrip(os.sep)
             # Normaliser les slashes en forward slashes
             relative = relative.replace("\\", "/")
-            return _("<plugin>/{relative}").format(relative=relative)
+            return "<plugin>/{relative}".format(relative=relative)
         return full_path
 
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
@@ -93,10 +93,11 @@ class OutputGenerator:
             category = parts[2] if len(parts) >= 3 else 'General'
             by_category[category].append(entry)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        from core.i18n import debug_i18n_context
+        with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
             f.write(_("-- =============================================================================\n"))
             f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-            f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             f.write(_("-- Total keys: {var0}\n").format(var0=len(unique_keys)))
             f.write(_("-- SOURCE: Extractor\n"))
             f.write(_("-- =============================================================================\n\n"))

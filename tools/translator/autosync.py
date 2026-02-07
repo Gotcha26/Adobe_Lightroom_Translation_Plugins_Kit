@@ -351,8 +351,11 @@ def run_autosync(plugin_path: str) -> Dict:
 
                 # Afficher résumé des changements
                 if added or changed or deleted:
-                    print(_("{var0}  Changements : {var1}{added} ajoutées{var3}, ").format(var0=c.DIM, var1=c.GREEN, added=added, var3=c.RESET)
-                          _("{var0}{changed} modifiées{var2}, {var3}{deleted} supprimées{var5}").format(var0=c.YELLOW, changed=changed, var2=c.RESET, var3=c.RED, deleted=deleted, var5=c.RESET))
+                    print(_("{var0}  Changements : {var1}{added} ajoutées{var3}, "
+                          "{var4}{changed} modifiées{var5}, {var6}{deleted} supprimées{var7}").format(
+                          var0=c.DIM, var1=c.GREEN, added=added, var3=c.RESET,
+                          var4=c.YELLOW, changed=changed, var5=c.RESET,
+                          var6=c.RED, deleted=deleted, var7=c.RESET))
 
                 rel_compare = os.path.relpath(compare_dir, plugin_path).replace('\\', '/')
                 print(_("{var0}  Détails     : {var1}{plugin_name}/{rel_compare}{var4}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_compare=rel_compare, var4=c.RESET))
@@ -425,7 +428,7 @@ def run_autosync(plugin_path: str) -> Dict:
         for lang_code, translate_file in translate_files:
             try:
                 # Cibler directement le fichier du plugin
-                plugin_target = os.path.join(plugin_path, _("TranslatedStrings_{lang_code}.txt").format(lang_code=lang_code))
+                plugin_target = os.path.join(plugin_path, "TranslatedStrings_{lang_code}.txt".format(lang_code=lang_code))
 
                 # Injecter directement (crée le fichier s'il n'existe pas)
                 inject_result = run_inject(
@@ -476,9 +479,12 @@ def run_autosync(plugin_path: str) -> Dict:
             added = sync_stats.get('added', 0)
             modified = sync_stats.get('needs_review', 0)
             removed = sync_stats.get('removed', 0)
-            print(_("{var0}  {lang_code}: {var2}{added}{var4} ajoutées, ").format(var0=c.DIM, lang_code=lang_code, var2=c.GREEN, added=added, var4=c.RESET)
-                  _("{var0}{modified}{var2} modifiées, ").format(var0=c.YELLOW, modified=modified, var2=c.RESET)
-                  _("{var0}{removed}{var2} supprimées").format(var0=c.RED, removed=removed, var2=c.RESET))
+            print(_("{var0}  {lang_code}: {var2}{added}{var4} ajoutées, "
+                  "{var5}{modified}{var6} modifiées, "
+                  "{var7}{removed}{var8} supprimées").format(
+                  var0=c.DIM, lang_code=lang_code, var2=c.GREEN, added=added, var4=c.RESET,
+                  var5=c.YELLOW, modified=modified, var6=c.RESET,
+                  var7=c.RED, removed=removed, var8=c.RESET))
             results['sync'][lang_code] = sync_stats
 
         # Afficher le lien vers CHANGELOG

@@ -140,11 +140,11 @@ def _load_translator(language: str) -> Callable[[str], str]:
         return lambda s: s
 
     # Vérifier si la traduction existe
-    mo_file = locale_dir / language / "LC_MESSAGES" / _("{DOMAIN}.mo").format(DOMAIN=DOMAIN)
+    mo_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.mo".format(DOMAIN=DOMAIN)
 
     if not mo_file.exists():
         # Pas de fichier .mo, essayer avec le .po (moins performant)
-        po_file = locale_dir / language / "LC_MESSAGES" / _("{DOMAIN}.po").format(DOMAIN=DOMAIN)
+        po_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.po".format(DOMAIN=DOMAIN)
         if not po_file.exists():
             # Aucune traduction disponible
             return lambda s: s
@@ -288,6 +288,67 @@ def get_toolkit_root() -> Path:
     return _get_toolkit_root()
 
 
+class temporary_language:
+    """Context manager pour changer temporairement la langue i18n.
+
+    Usage:
+        with temporary_language("en"):
+            print(_("Bonjour"))  # Affiche "Hello"
+        print(_("Bonjour"))      # Affiche "Bonjour" (langue d'origine restaurée)
+    """
+
+    def __init__(self, language: str):
+        """
+        Args:
+            language: Code langue temporaire (ex: "en", "fr")
+        """
+        self.temp_language = language
+        self.original_language = None
+
+    def __enter__(self):
+        """Active la langue temporaire."""
+        self.original_language = get_current_language()
+        set_language(self.temp_language)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Restaure la langue d'origine."""
+        if self.original_language:
+            set_language(self.original_language)
+
+
+def debug_i18n_context():
+    """Context manager pour le mode debug i18n (génération de fichiers en anglais).
+
+    Lit config.json["debug_i18n"] et, si activé, force la langue EN pendant
+    la génération de fichiers (rapports, CHANGELOG, etc.).
+
+    Usage (dans les modules qui génèrent des fichiers):
+        from core.i18n import debug_i18n_context
+
+        with debug_i18n_context():
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(_("Date: {var0}\\n").format(var0=...))
+                # Écrit "Date: ..." si debug_i18n=false
+                # Écrit "Date: ..." en EN si debug_i18n=true
+
+    Returns:
+        Context manager (temporary_language ou no-op)
+    """
+    try:
+        # Import local pour éviter la dépendance circulaire
+        from tools.translator.config_loader import get_debug_i18n
+
+        if get_debug_i18n():
+            return temporary_language("en")
+    except Exception:
+        pass
+
+    # Si le flag n'est pas activé ou config indisponible, no-op context
+    from contextlib import nullcontext
+    return nullcontext()
+
+
 def debug_language_detection() -> str:
     """Affiche les informations de détection de langue (pour le debugging).
 
@@ -309,8 +370,8 @@ def debug_language_detection() -> str:
     info.append(_("Langue détectée: {lang}").format(lang=_current_language))
 
     locale_dir = _get_locale_dir()
-    mo_file = locale_dir / _current_language / "LC_MESSAGES" / _("{DOMAIN}.mo").format(DOMAIN=DOMAIN)
-    mo_status = "OK_(" if mo_file.exists() else ")introuvable"
+    mo_file = locale_dir / _current_language / "LC_MESSAGES" / "{DOMAIN}.mo".format(DOMAIN=DOMAIN)
+    mo_status = "✓ OK" if mo_file.exists() else "✓ " + _("défaut")
     info.append(_("Fichier .mo chargé: {status}").format(status=mo_status))
 
     return "\n".join(info)

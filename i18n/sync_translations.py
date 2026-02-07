@@ -6,9 +6,9 @@ Dépendances : core.colors
 
 Description :
 Orchestrateur de la synchronisation complète des traductions.
-Lance automatiquement les trois étapes successives : extraction des chaînes,
-mise à jour des fichiers .po, et compilation en fichiers .mo binaires.
-Peut cibler une langue spécifique ou traiter toutes les langues.
+Lance automatiquement les quatre étapes successives : pré-vérification des chaînes
+non traduites, extraction des chaînes, mise à jour des fichiers .po, et compilation
+en fichiers .mo binaires. Peut cibler une langue spécifique ou traiter toutes les langues.
 
 Usage CLI :
     python i18n/sync_translations.py              # Toutes les langues
@@ -33,6 +33,59 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.colors import Colors
 
 c = Colors()
+
+
+def run_checks() -> int:
+    """Lance les pré-vérifications (check_ui + check_reports).
+
+    Returns:
+        Nombre total de chaînes HIGH détectées (0 = tout est bon)
+    """
+    i18n_dir = Path(__file__).parent
+    project_root = i18n_dir.parent
+
+    scan_dirs = [project_root / "tools", project_root / "core"]
+    high_count = 0
+
+    # Check UI (print, input, etc.)
+    try:
+        from check_ui import scan_directory as scan_ui
+        print(f"  {c.DIM}check_ui ...{c.RESET}", end=" ", flush=True)
+        ui_results = {}
+        for d in scan_dirs:
+            if d.exists():
+                ui_results.update(scan_ui(d))
+        ui_high = sum(
+            1 for strings in ui_results.values()
+            for s in strings if s.confidence == "HIGH"
+        )
+        high_count += ui_high
+        total = sum(len(v) for v in ui_results.values())
+        print(f"{total} chaînes ({c.ERROR}{ui_high} HIGH{c.RESET})" if ui_high
+              else f"{c.SUCCESS}{total} chaînes (0 HIGH){c.RESET}")
+    except Exception as e:
+        print(f"  {c.WARNING}[!] check_ui indisponible: {e}{c.RESET}")
+
+    # Check reports (f.write dans with open)
+    try:
+        from check_reports import scan_directory as scan_reports
+        print(f"  {c.DIM}check_reports ...{c.RESET}", end=" ", flush=True)
+        report_results = {}
+        for d in scan_dirs:
+            if d.exists():
+                report_results.update(scan_reports(d))
+        report_high = sum(
+            1 for strings in report_results.values()
+            for s in strings if s.confidence == "HIGH"
+        )
+        high_count += report_high
+        total = sum(len(v) for v in report_results.values())
+        print(f"{total} chaînes ({c.ERROR}{report_high} HIGH{c.RESET})" if report_high
+              else f"{c.SUCCESS}{total} chaînes (0 HIGH){c.RESET}")
+    except Exception as e:
+        print(f"  {c.WARNING}[!] check_reports indisponible: {e}{c.RESET}")
+
+    return high_count
 
 
 def run_command(script_name: str, args: Optional[list] = None) -> bool:
@@ -79,9 +132,25 @@ def main():
 
     print()
 
+    # Étape 0: Pré-vérification
+    print(c.separator("-", 70))
+    print(f"{c.HEADER}ÉTAPE 0/4: PRÉ-VÉRIFICATION DES CHAÎNES{c.RESET}")
+    print(c.separator("-", 70))
+
+    warnings = run_checks()
+    if warnings:
+        print()
+        print(f"{c.WARNING}[!] {warnings} chaîne(s) HIGH non enrobée(s) de _(){c.RESET}")
+        print(f"{c.DIM}    Détails : python i18n/check_ui.py --confidence HIGH -v{c.RESET}")
+        print(f"{c.DIM}             python i18n/check_reports.py --confidence HIGH -v{c.RESET}")
+    else:
+        print(f"{c.SUCCESS}[OK] Aucune chaîne HIGH détectée{c.RESET}")
+
+    print()
+
     # Étape 1: Extraction
     print(c.separator("-", 70))
-    print(f"{c.HEADER}ÉTAPE 1/3: EXTRACTION DES CHAÎNES{c.RESET}")
+    print(f"{c.HEADER}ÉTAPE 1/4: EXTRACTION DES CHAÎNES{c.RESET}")
     print(c.separator("-", 70))
 
     if not run_command("extract_strings.py"):
@@ -93,7 +162,7 @@ def main():
 
     # Étape 2: Mise à jour
     print(c.separator("-", 70))
-    print(f"{c.HEADER}ÉTAPE 2/3: MISE À JOUR DES TRADUCTIONS{c.RESET}")
+    print(f"{c.HEADER}ÉTAPE 2/4: MISE À JOUR DES TRADUCTIONS{c.RESET}")
     print(c.separator("-", 70))
 
     args = [target_lang] if target_lang else []
@@ -106,7 +175,7 @@ def main():
 
     # Étape 3: Compilation
     print(c.separator("-", 70))
-    print(f"{c.HEADER}ÉTAPE 3/3: COMPILATION DES TRADUCTIONS{c.RESET}")
+    print(f"{c.HEADER}ÉTAPE 3/4: COMPILATION DES TRADUCTIONS{c.RESET}")
     print(c.separator("-", 70))
 
     args = [target_lang] if target_lang else []
@@ -117,7 +186,10 @@ def main():
 
     print()
     print(c.separator("=", 70))
-    print(c.success("[OK] SYNCHRONISATION TERMINEE AVEC SUCCES"))
+    if warnings:
+        print(c.warning(f"[OK] SYNCHRONISATION TERMINÉE ({warnings} alerte(s) HIGH)"))
+    else:
+        print(c.success("[OK] SYNCHRONISATION TERMINÉE AVEC SUCCÈS"))
     print(c.separator("=", 70))
     print()
 

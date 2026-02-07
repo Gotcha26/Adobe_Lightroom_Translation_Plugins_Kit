@@ -175,8 +175,8 @@ def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:
     print(c.title(_("Chemin du plugin Lightroom")))
     print(c.separator())
     print(_("Exemples:"))
-    print(_("  {var0}D:\\Lightroom\\plugin.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
-    print(_("  {var0}./piwigoPublish.lrplugin{var1}").format(var0=c.VALUE, var1=c.RESET))
+    print("  {var0}D:\\Lightroom\\plugin.lrplugin{var1}".format(var0=c.VALUE, var1=c.RESET))
+    print("  {var0}./piwigoPublish.lrplugin{var1}".format(var0=c.VALUE, var1=c.RESET))
     print()
 
     path = input(c.prompt(_("Chemin du plugin: "))).strip()

@@ -253,6 +253,8 @@ def main():
     # Analyser chaque langue
     total_translated = 0
     total_untranslated = 0
+    total_fuzzy = 0
+    last_checker = None
 
     for lang_code, po_file in languages:
         checker = POChecker()
@@ -260,6 +262,8 @@ def main():
             print_stats(lang_code, checker, verbose)
             total_translated += checker.translated
             total_untranslated += checker.untranslated
+            total_fuzzy += checker.fuzzy
+            last_checker = checker
 
     # Résumé global
     if len(languages) > 1:
@@ -278,6 +282,35 @@ def main():
         print()
         print(c.info("💡 Conseil: Utilisez Poedit pour traduire rapidement"))
         print(f"   https://poedit.net/")
+
+    # Proposition d'export si chaînes à traduire
+    if len(languages) == 1 and (total_untranslated > 0 or total_fuzzy > 0):
+        print()
+        print(c.separator("─", 70))
+        lang_code = languages[0][0]
+
+        if total_untranslated > 0 and total_fuzzy > 0:
+            msg = f"📤 {total_untranslated} non traduites + {total_fuzzy} fuzzy détectées"
+        elif total_untranslated > 0:
+            msg = f"📤 {total_untranslated} chaînes non traduites détectées"
+        else:
+            msg = f"📤 {total_fuzzy} chaînes fuzzy détectées"
+
+        print(c.info(msg))
+        print()
+
+        response = input(f"{c.INFO}Exporter pour traduction ? (o/n): {c.RESET}").strip().lower()
+
+        if response in ['o', 'oui', 'y', 'yes']:
+            print()
+            print(c.info("🚀 Lancement de l'export..."))
+            print()
+            import subprocess
+            result = subprocess.run(
+                [sys.executable, str(Path(__file__).parent / "export_untranslated_chains.py"), lang_code],
+                cwd=Path(__file__).parent.parent
+            )
+            return result.returncode
 
     return 0
 

@@ -11,7 +11,8 @@ Ce dossier contient les outils pour gérer automatiquement les traductions du pr
 5. [Workflow complet](#workflow-complet)
 6. [Traductions externes](#traductions-externes)
 7. [Vérifier l'état](#vérifier-létat-des-traductions)
-8. [Dépannage](#dépannage)
+8. [Traduction assistée par IA](#traduction-assistée-par-ia-claude-gpt-etc-) ⭐ NOUVEAU
+9. [Dépannage](#dépannage)
 
 ---
 
@@ -21,19 +22,22 @@ Ce dossier contient les outils pour gérer automatiquement les traductions du pr
 
 **Outils d'automatisation (NOUVEAUX)** ⭐
 ```
-├── find_untranslated_strings.py  # Localise les chaînes sans _()
+├── check_ui.py                   # Détecte les chaînes UI console sans _()
+├── check_reports.py              # Détecte les chaînes fichiers générés sans _()
 ├── auto_i18n.py                  # Enrobe automatiquement (gère f-strings)
 └── auto_wrap_strings.py          # Enrobe simplement (fichier par fichier)
 ```
 
 **Outils de traduction (essentiels)**
 ```
-├── extract_strings.py        # Extrait les chaînes du code
-├── update_po.py              # Met à jour les traductions
-├── compile_po.py             # Compile en fichiers binaires
-├── init_language.py          # Initialise une nouvelle langue
-├── sync_translations.py       # Fait tout en une seule commande (3 étapes)
-└── check_translations.py      # Vérifie l'état des traductions
+├── extract_strings.py           # Extrait les chaînes du code
+├── update_po.py                 # Met à jour les traductions
+├── compile_po.py                # Compile en fichiers binaires
+├── init_language.py             # Initialise une nouvelle langue
+├── sync_translations.py         # Fait tout en une seule commande (4 étapes)
+├── check_translations.py        # Vérifie l'état des traductions
+├── export_untranslated_chains.py  # Exporte fuzzy/non traduites pour IA ⭐ NOUVEAU
+└── import_translated_chains.py    # Réimporte traductions depuis IA ⭐ NOUVEAU
 ```
 
 ### Structure des fichiers de traduction
@@ -54,17 +58,24 @@ locale/
 
 ## Démarrage rapide
 
-**Vous modifiez le code ?** C'est simple en 3 étapes :
+**Vous modifiez le code ?** C'est simple :
 
 ```bash
 # 1. Modifiez votre code (enrobez les chaînes de _())
-# 2. Synchronisez tout en une commande
+# 2. Synchronisez tout en une commande (4 étapes automatiques)
 python i18n/sync_translations.py
+
+# Étape 0: Pré-vérifie les chaînes non traduites (informatif)
+# Étape 1: Extrait les chaînes _(...)
+# Étape 2: Met à jour les .po
+# Étape 3: Compile les .mo
 
 # 3. C'est fait ! ✨
 ```
 
 Ou sur Windows, double-clic sur `sync_translations.bat`.
+
+> **Note** : L'étape 0 vérifie automatiquement les chaînes non traduites via `check_ui.py` et `check_reports.py`. Si des chaînes HIGH sont détectées, elles sont listées (mais le processus continue).
 
 ### 🚀 5 minutes pour traiter TOUT le projet
 
@@ -72,7 +83,7 @@ Vous avez ajouté du code et voulez que tout soit traduit d'un coup ?
 
 ```bash
 # 1. Scanner pour voir ce qui doit être traduit
-python i18n/find_untranslated_strings.py --confidence HIGH
+python i18n/check_ui.py --confidence HIGH
 
 # 2. Enrober automatiquement tout
 python i18n/auto_i18n.py --all --apply
@@ -206,22 +217,45 @@ Vous pouvez aussi utiliser [Poedit](https://poedit.net/) pour éditer graphiquem
 
 ### 🔍 1. Trouver les chaînes non traduites
 
+Deux outils complémentaires analysent différents scopes du code :
+
+#### `check_ui.py` — Interface console (print, input, erreurs)
+
 ```bash
 # Scanner global
-python i18n/find_untranslated_strings.py
+python i18n/check_ui.py
 
 # Avec détails (liste complète)
-python i18n/find_untranslated_strings.py --verbose
+python i18n/check_ui.py --verbose
 
 # Fichier spécifique
-python i18n/find_untranslated_strings.py --file tools/translator/compare_langs.py
+python i18n/check_ui.py --file tools/translator/compare_langs.py
 
-# Filtrer par confiance
-python i18n/find_untranslated_strings.py --confidence HIGH
+# Filtrer par confiance (uniquement HIGH)
+python i18n/check_ui.py --confidence HIGH
 ```
 
-Affiche :
-- Nombre de chaînes non traduites par fichier
+**Scope** : Détecte les chaînes dans `print()`, `input()`, `c.error()`, `c.warning()`, etc.
+
+#### `check_reports.py` — Fichiers générés (f.write dans with open)
+
+```bash
+# Scanner global
+python i18n/check_reports.py
+
+# Avec détails
+python i18n/check_reports.py --verbose
+
+# Uniquement HIGH
+python i18n/check_reports.py --confidence HIGH
+```
+
+**Scope** : Détecte les chaînes dans `f.write()` au sein de blocs `with open(...) as f:` (rapports CHANGELOG, TRANSLATE_xx.txt, etc.).
+
+> **Note** : `sync_translations.py` exécute automatiquement ces deux checks en **étape 0** (pré-vérification).
+
+**Résultat** : Affiche par fichier :
+- Nombre de chaînes non traduites
 - Niveau de confiance (HIGH/MEDIUM/LOW)
 - Contexte et numéro de ligne
 
@@ -263,7 +297,7 @@ python i18n/auto_wrap_strings.py --file tools/translator/compare_langs.py --conf
 
 ```bash
 # 1. Trouver les chaînes
-python i18n/find_untranslated_strings.py --confidence HIGH
+python i18n/check_ui.py --confidence HIGH
 
 # 2. Aperçu des modifications
 python i18n/auto_i18n.py --file tools/translator/compare_langs.py --preview
@@ -284,7 +318,7 @@ python i18n/check_translations.py --verbose
 
 ```bash
 # 1. Scanner pour voir ce qui doit être traduit
-python i18n/find_untranslated_strings.py --file tools/new_feature.py --verbose
+python i18n/check_ui.py --file tools/new_feature.py --verbose
 
 # 2. Voir les modifications proposées
 python i18n/auto_i18n.py --file tools/new_feature.py --preview
@@ -300,24 +334,34 @@ python i18n/sync_translations.py fr en
 
 ## Workflow complet
 
-### Les 3 commandes de base
+### Les 4 étapes de synchronisation
 
 ```bash
-# 1. Extraire les chaînes du code dans messages.pot
+# Étape 0: Pré-vérifier les chaînes non traduites (automatique)
+python i18n/check_ui.py --confidence HIGH
+python i18n/check_reports.py --confidence HIGH
+
+# Étape 1: Extraire les chaînes du code dans messages.pot
 python i18n/extract_strings.py
 
-# 2. Mettre à jour les fichiers .po avec les nouvelles chaînes
+# Étape 2: Mettre à jour les fichiers .po avec les nouvelles chaînes
 python i18n/update_po.py
 
-# 3. Compiler en fichiers .mo (utilisés à l'exécution)
+# Étape 3: Compiler en fichiers .mo (utilisés à l'exécution)
 python i18n/compile_po.py
 ```
 
-Ou tous en une fois (recommandé) :
+**Ou tout en une fois (recommandé)** :
 
 ```bash
 python i18n/sync_translations.py
 ```
+
+Ce script exécute automatiquement les **4 étapes** dans l'ordre :
+- **Étape 0** : Pré-vérification (`check_ui` + `check_reports`) — informatif, ne bloque pas
+- **Étape 1** : Extraction des chaînes `_()` → `.pot`
+- **Étape 2** : Mise à jour `.po`
+- **Étape 3** : Compilation `.mo`
 
 Vous pouvez aussi limiter à une langue :
 
@@ -383,6 +427,160 @@ python i18n/check_translations.py fr -v
 
 Vous obtenez un résumé avec pourcentage de traduction et liste des chaînes `fuzzy` à revoir.
 
+**Mode interactif** : Si chaînes fuzzy ou non traduites détectées, proposition d'export automatique pour traduction par IA.
+
+---
+
+## Traduction assistée par IA (Claude, GPT, etc.) 🤖
+
+**Nouveau !** Workflow interactif pour traduire rapidement via IA (Claude, ChatGPT, DeepL, etc.).
+
+### Workflow complet automatisé
+
+```bash
+# 1. Vérifier l'état (propose automatiquement l'export si problèmes)
+python i18n/check_translations.py fr -v
+
+# → Répondre "o" pour exporter
+# → Fichier généré : tmp_chains_tofrom_translation.txt
+
+# 2. Faire traduire le fichier par Claude/GPT
+#    (Instructions incluses dans le fichier)
+
+# 3. Import automatique (mode interactif)
+python i18n/import_translated_chains.py
+
+# → Détecte automatiquement la langue
+# → Importe les traductions
+# → Propose de vérifier
+
+# 4. Vérification automatique
+# → Lance check_translations.py avec -v
+```
+
+### Export manuel des chaînes à traduire
+
+```bash
+# Export tout (fuzzy + non traduites)
+python i18n/export_untranslated_chains.py fr
+
+# Seulement les fuzzy
+python i18n/export_untranslated_chains.py fr --fuzzy-only
+
+# Seulement les non traduites
+python i18n/export_untranslated_chains.py fr --untranslated-only
+```
+
+**Résultat** : Génère `tmp_chains_tofrom_translation.txt` formaté avec :
+- Instructions complètes pour l'IA
+- Blocs msgid/msgstr structurés
+- Préservation des codes de formatage ({1}, ^1, \n, etc.)
+
+### Import des traductions
+
+```bash
+# Mode interactif (détecte la langue automatiquement)
+python i18n/import_translated_chains.py
+
+# Mode CLI classique
+python i18n/import_translated_chains.py fr
+
+# Sans backup
+python i18n/import_translated_chains.py fr --no-backup
+
+# Garder le fichier tmp
+python i18n/import_translated_chains.py fr --keep-tmp
+```
+
+**Fonctionnalités** :
+- Détection automatique de la langue depuis le fichier tmp
+- Backup automatique (.po.backup)
+- Recherche par correspondance exacte de msgid
+- Suppression automatique des marqueurs fuzzy
+- Proposition de vérification après import
+- Proposition de suppression du fichier tmp
+
+### Exemple pratique complet
+
+```bash
+# Scénario : 50 chaînes fuzzy en français à traduire
+
+# 1. Check (interactif)
+python i18n/check_translations.py fr -v
+# → "Exporter pour traduction ? (o/n): o"
+
+# 2. Ouvrir tmp_chains_tofrom_translation.txt
+#    Copier le contenu dans Claude/GPT avec le prompt :
+#    "Traduis ces chaînes .po en français selon les instructions"
+
+# 3. Copier les traductions dans tmp_chains_tofrom_translation.txt
+
+# 4. Import (interactif)
+python i18n/import_translated_chains.py
+# → Détecte "fr" automatiquement
+# → "Lancer la vérification maintenant ? (o/n): o"
+
+# 5. Vérification lancée automatiquement
+# → Affiche les nouvelles stats avec -v
+```
+
+### Format du fichier tmp_chains_tofrom_translation.txt
+
+```
+════════════════════════════════════════════
+INSTRUCTIONS POUR IA - TRADUCTION FICHIER .PO (FR)
+════════════════════════════════════════════
+
+[Instructions détaillées pour l'IA...]
+
+════════════════════════════════════════════
+DÉBUT DES CHAÎNES À TRADUIRE
+════════════════════════════════════════════
+
+────────────────────────────────────────────
+ENTRÉE 1/50
+────────────────────────────────────────────
+
+msgid "Welcome to the application"
+msgstr ""
+
+────────────────────────────────────────────
+ENTRÉE 2/50
+────────────────────────────────────────────
+
+msgid "File not found: {filename}"
+msgstr ""
+
+[...]
+```
+
+**Important** :
+- Ne modifier QUE les lignes msgstr
+- Ne PAS toucher aux msgid
+- Préserver les codes {1}, ^1, \n, etc.
+- Ne pas supprimer les lignes vides
+
+### Chaîne interactive complète
+
+Les trois scripts sont chainés interactivement :
+
+```
+check_translations.py
+    ↓ (propose export)
+export_untranslated_chains.py
+    ↓ (propose import)
+import_translated_chains.py
+    ↓ (propose vérification)
+check_translations.py -v
+```
+
+Une seule commande pour démarrer :
+```bash
+python i18n/check_translations.py fr -v
+```
+
+Puis répondre "o" à chaque étape pour workflow fluide.
+
 ---
 
 ## Points importants
@@ -404,14 +602,15 @@ filename = "data.json"                      # Fichier technique, pas traduire
 ### Ordre d'exécution standard
 
 1. Modifiez le code
-2. Lancez `python i18n/find_untranslated_strings.py` (optionnel, pour vérifier)
-3. Lancez `python i18n/auto_i18n.py --file <path> --preview` (optionnel, pour aperçu)
-4. Lancez `python i18n/auto_i18n.py --file <path> --apply` (automatise les _())
-5. Lancez `python i18n/sync_translations.py`
+2. Lancez `python i18n/check_ui.py` (optionnel, pour vérifier l'UI)
+3. Lancez `python i18n/check_reports.py` (optionnel, pour vérifier les fichiers générés)
+4. Lancez `python i18n/auto_i18n.py --file <path> --preview` (optionnel, pour aperçu)
+5. Lancez `python i18n/auto_i18n.py --file <path> --apply` (automatise les _())
+6. Lancez `python i18n/sync_translations.py`
 
-C'est tout ! Les trois étapes (extract → update → compile) se font automatiquement.
+C'est tout ! Les quatre étapes (check → extract → update → compile) se font automatiquement via `sync_translations.py`.
 
-**Note:** Les étapes 2-4 sont optionnelles si vous avez déjà enrobé vos chaînes de `_()` manuellement.
+**Note:** Les étapes 2-5 sont optionnelles si vous avez déjà enrobé vos chaînes de `_()` manuellement. `sync_translations.py` exécute toujours l'étape 2+3 (checks) automatiquement en mode informatif.
 
 ### Fichiers à ne pas toucher
 
@@ -426,11 +625,16 @@ C'est tout ! Les trois étapes (extract → update → compile) se font automati
 | Problème | Cause | Solution |
 |----------|-------|----------|
 | Le `.pot` ne change pas | Chaînes non enrobées de `_()` | Lancer `python i18n/auto_i18n.py --file <path> --apply` |
-| Trop de chaînes techniques détectées | Patterns non reconnus | Ajouter patterns à ignorer dans `find_untranslated_strings.py` |
+| Trop de chaînes UI détectées | Patterns non reconnus | Ajouter patterns à ignorer dans `check_ui.py` |
+| Trop de chaînes reports détectées | Séparateurs ou JSON détectés | Ajouter patterns à `TECHNICAL_PATTERNS` dans `check_reports.py` |
 | F-string pas enrobée correctement | Auto i18n ne gère pas ce cas | Modifier manuellement ou signaler l'issue |
 | Traductions non à jour dans l'appli | `.po` modifiés mais pas compilés | Lancer `python i18n/compile_po.py` |
 | Fichier `.po` corrompu | Édition incorrecte | Restaurer depuis `.po.bak` |
 | Auto wrap ne trouve pas la chaîne | Guillemets imbriqués ou f-string | Utiliser `auto_i18n.py` à la place |
+| Warnings HIGH dans sync_translations | Chaînes non enrobées de `_()` | Consulter `check_ui.py --confidence HIGH -v` ou `check_reports.py --confidence HIGH -v` |
+| Import ne trouve pas le msgid | msgid modifié manuellement | Vérifier correspondance exacte avec `messages.po` |
+| Langue non détectée en mode interactif | Fichier tmp corrompu | Lancer `python i18n/import_translated_chains.py <lang>` en mode CLI |
+| Traductions IA incorrectes | Prompt ou contexte insuffisant | Ajouter contexte dans instructions du fichier tmp |
 
 ---
 

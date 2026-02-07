@@ -109,7 +109,8 @@ class LocalizationReport:
         })
 
     def generate(self, output_path: str):
-        with open(output_path, 'w', encoding='utf-8') as f:
+        from core.i18n import debug_i18n_context
+        with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
             f.write(_("RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n"))
             f.write("=" * 80 + "\n\n")
@@ -167,7 +168,7 @@ class LocalizationReport:
             f.write("=" * 80 + "\n\n")
             f.write(_("1. Verifier les modifications avec Git diff\n"))
             f.write(_("2. REDEMARRER Lightroom Classic (reload ne suffit pas)\n"))
-            f.write("3. Verifier que TranslatedStrings_fr.txt existe a la racine\n")
+            f.write(_("3. Verifier que TranslatedStrings_fr.txt existe a la racine\n"))
             f.write(_("4. Tester les textes dans l'interface\n\n"))
 
 
@@ -429,7 +430,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     report.generate(report_path)
 
     if not silent:
-        print(_("\n_(") + c.separator(")─", 70))
+        print("\n" + c.separator("─", 70))
         print(c.header(_("RÉSUMÉ")))
         print(c.separator("─", 70))
         print(c.config_line(_("Fichiers traités"),    str(report.stats['files_processed'])))
@@ -444,9 +445,9 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print(c.config_line(_("Rapport détaillé"),    _shorten(report_path, plugin_path)))
 
         if dry_run:
-            print(_("\n_(") + c.warning(_(")MODE DRY-RUN: Aucun fichier n'a été modifié")))
+            print("\n" + c.warning(_("MODE DRY-RUN: Aucun fichier n'a été modifié")))
 
-        print(_("\n_(") + c.separator(")═", 70))
+        print("\n" + c.separator("═", 70))
         print(c.warning(_("IMPORTANT: Redémarrez Lightroom après les modifications!")))
         print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
         print(c.separator("═", 70))
@@ -500,7 +501,7 @@ def _launch_autosync(plugin_path: str) -> None:
     """Lance run_autosync() depuis tools.translator.autosync."""
     try:
         from tools.translator.autosync import run_autosync
-        print(_("\n_(") + c.info(_(")Lancement de AUTOSYNC...")))
+        print("\n" + c.info(_("Lancement de AUTOSYNC...")))
         run_autosync(plugin_path)
     except ImportError:
         # Fallback : appel via subprocess sur le fichier autosync.py
@@ -510,7 +511,7 @@ def _launch_autosync(plugin_path: str) -> None:
             "autosync.py"
         )
         if os.path.exists(autosync_script):
-            print(_("\n_(") + c.info(_(")Lancement de AUTOSYNC...")))
+            print("\n" + c.info(_("Lancement de AUTOSYNC...")))
             try:
                 subprocess.run(
                     [sys.executable, autosync_script, plugin_path],
@@ -675,7 +676,7 @@ def _select_and_copy_template(plugin_path: str, extraction_dir: Optional[str]) -
     """
     templates = find_all_translation_templates(extraction_dir) if extraction_dir else []
 
-    print(_("\n_(") + c.separator(")─", 70))
+    print("\n" + c.separator("─", 70))
     print(c.title(_("Que voulez-vous faire ?")))
     print()
 
@@ -696,7 +697,7 @@ def _select_and_copy_template(plugin_path: str, extraction_dir: Optional[str]) -
             # Extraire les 2 derniers niveaux du chemin (timestamp/nomfichier)
             path_parts = t.replace('\\', '/').split('/')
             if len(path_parts) >= 2:
-                display_path = _("<temp_dir>/{var0}/{var1}").format(var0=path_parts[-2], var1=path_parts[-1])
+                display_path = "<temp_dir>/{var0}/{var1}".format(var0=path_parts[-2], var1=path_parts[-1])
             else:
                 display_path = os.path.basename(t)
             print(c.menu_option(str(i), display_path))
@@ -742,7 +743,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
       2. Un fichier avec même langue         → mise à jour, proposition de remplacement
       3. Plusieurs langues détectées         → mise à jour manuelle détectée, lancement AUTOSYNC
     """
-    print(_("\n_(") + c.separator(")─", 70))
+    print("\n" + c.separator("─", 70))
     print(c.header(_("GESTION DES TRADUCTIONS")))
     print(c.separator("─", 70))
 
@@ -767,16 +768,15 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
 
         template_name = os.path.basename(template_file)
 
-        print("\n" + _(
-            _("Il semble que ce soit votre première installation d'une langue à traduire.")))
+        print("\n" + _("Il semble que ce soit votre première installation d'une langue à traduire."))
         print(_("Utiliseriez-vous le dernier fichier extrait depuis Extractor comme référence ?"))
         print()
-        print(_("Il sera alors simplement mis en place à la racine du plugin,\n"
-                _("prêt pour de futurs traductions.")))
-        print(_("Rien d'autre à faire si ce n'est d'inciter des contributeurs à\n"
-                _("venir enrichir la communauté autour de ce plugin.")))
+        print(_("Il sera alors simplement mis en place à la racine du plugin,"))
+        print(_("prêt pour de futurs traductions."))
+        print(_("Rien d'autre à faire si ce n'est d'inciter des contributeurs à"))
+        print(_("venir enrichir la communauté autour de ce plugin."))
         print()
-        print(f"  {c.VALUE}{template_name}{c.RESET}"
+        print(f"  {c.VALUE}{template_name}{c.RESET}" +
               _("  →  <plugin>\\{template_name}").format(template_name=template_name))
         print()
 
@@ -803,7 +803,7 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
 
     # --- CAS 3 : Plusieurs langues détectées → AUTOSYNC ---
     if len(existing_langs) > 1:
-        print(_("\n_(") + c.warning(_(")Plusieurs langues détectées à la racine du plugin :")))
+        print("\n" + c.warning(_("Plusieurs langues détectées à la racine du plugin :")))
         for code, f in sorted(existing_langs.items()):
             print(f"  - {c.VALUE}{os.path.basename(f)}{c.RESET}")
         print()
@@ -833,10 +833,10 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
         if choice in ['o', 'oui', 'y', 'yes', '']:
             try:
                 shutil.copy2(template_file, existing_langs[template_lang])
-                print(_("\n_(") + c.success(_(")Fichier remplacé : {name}").format(name=existing_name)))
+                print("\n" + c.success(_("Fichier remplacé : {name}").format(name=existing_name)))
                 _propose_additional_langs(template_file, plugin_path, template_lang)
             except Exception as e:
-                print(_("\n_(") + c.error(_(")Impossible de remplacer le fichier: {error}").format(error=e)))
+                print("\n" + c.error(_("Impossible de remplacer le fichier: {error}").format(error=e)))
         else:
             print(c.info(_("Fichier non remplacé")))
         return
