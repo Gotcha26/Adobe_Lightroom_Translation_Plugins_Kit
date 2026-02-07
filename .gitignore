@@ -3,5 +3,6 @@
 .vscode/
 *.code-workspace
 __pycache__/
+i18n/
 *.bak
 config.local.json
