@@ -45,6 +45,7 @@ from typing import Optional, Dict, List, Tuple
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path
 from core.colors import Colors
+from core.i18n import _
 from tools.extractor.main import run_extraction
 from tools.applicator.main import process_plugin_directory
 from .compare import run_compare

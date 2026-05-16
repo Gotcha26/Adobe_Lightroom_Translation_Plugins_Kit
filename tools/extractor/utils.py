@@ -19,7 +19,11 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import re
 import os
+import sys
 from typing import Tuple, List, Optional, Dict, Set
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from core.i18n import _
 
 from .config import (
     COMMON_SUFFIXES, IGNORE_EXACT, TECHNICAL_PATTERNS, STOP_WORDS,

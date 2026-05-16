@@ -22,6 +22,8 @@ import os
 from datetime import datetime
 from typing import Optional, List
 
+from .i18n import _
+
 
 # Nom du dossier racine par défaut pour tous les outils i18n
 DEFAULT_I18N_DIR = "__i18n_tmp__"
