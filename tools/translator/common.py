@@ -95,7 +95,12 @@ def parse_translation_file(file_path: str) -> Dict[str, str]:
                 continue
 
             # Parser: "$$$/Key=Value"
-            match = re.match(r'"(\$\$\$/[^"=]+)=([^"]*)"', line)
+            # La valeur peut contenir des guillemets échappés (\") et des
+            # backslashes échappés (\\) ; on accepte donc soit un caractère
+            # non spécial, soit une séquence d'échappement \X. Les escapes
+            # sont conservés tels quels dans la valeur — l'écriture symétrique
+            # via write_translation_file les préserve.
+            match = re.match(r'"(\$\$\$/[^"=]+)=((?:[^"\\]|\\.)*)"', line)
             if match:
                 key = match.group(1)
                 value = match.group(2)
