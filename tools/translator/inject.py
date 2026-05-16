@@ -275,7 +275,7 @@ def menu_inject(plugin_path: str = ""):
             input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_{lang}.json):").format(var0=c.KEY, var1=c.RESET, lang=lang))
+        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_xx.json):").format(var0=c.KEY, var1=c.RESET))
         print(_("{var0}  (Entrée = même dossier que TRANSLATE){var1}").format(var0=c.DIM, var1=c.RESET))
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
@@ -314,7 +314,7 @@ def menu_inject(plugin_path: str = ""):
             input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_{lang}.json):").format(var0=c.KEY, var1=c.RESET, lang=lang))
+        print(_("\n{var0}Dossier UPDATE{var1} (contenant UPDATE_xx.json):").format(var0=c.KEY, var1=c.RESET))
         print(_("{var0}  (Entrée = même dossier que TRANSLATE){var1}").format(var0=c.DIM, var1=c.RESET))
         update_dir = input(f"{c.PROMPT}  > {c.RESET}").strip() or None
 
