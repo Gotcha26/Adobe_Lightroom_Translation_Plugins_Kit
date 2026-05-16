@@ -287,12 +287,17 @@ def validate_plugin_path(path: str) -> tuple:
 
     Returns:
         Tuple (is_valid, normalized_path, warning_message)
-        - is_valid: True si valide
-        - normalized_path: Chemin normalisé
-        - warning_message: Message d'avertissement ou None
+        - is_valid: True si le chemin est utilisable (répertoire existant).
+          Peut rester True quand le dossier n'a pas l'extension .lrplugin,
+          auquel cas warning_message est non-None ("soft validation").
+          Les appelants vérifient is_valid pour décider d'avorter,
+          puis affichent warning_message s'il est présent.
+        - normalized_path: Chemin normalisé (None si is_valid=False et path vide,
+          sinon le chemin tel que retourné par os.path.normpath).
+        - warning_message: Message à afficher (erreur ou avertissement) ou None.
     """
     if not path:
-        return False, None, "Chemin vide"
+        return False, None, _("Chemin vide")
 
     normalized = os.path.normpath(path)
 
