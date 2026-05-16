@@ -28,6 +28,7 @@ from typing import Dict, List, Optional
 
 from .common import parse_translation_file, load_update_json, find_languages, c
 from .config_loader import get_update_filename, get_reference_lang
+from core.i18n import _
 
 
 # =============================================================================

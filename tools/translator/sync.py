@@ -34,6 +34,7 @@ from .common import (
     resolve_path, load_update_json, find_languages, c
 )
 from .config_loader import get_reference_filename
+from core.i18n import _
 
 
 # =============================================================================

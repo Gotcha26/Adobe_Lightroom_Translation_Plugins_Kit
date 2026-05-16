@@ -33,6 +33,7 @@ from typing import Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path
 from core.colors import Colors
+from core.i18n import _
 
 c = Colors()
 

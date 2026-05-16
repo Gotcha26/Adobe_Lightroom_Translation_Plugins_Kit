@@ -36,6 +36,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.colors import Colors
+from core.i18n import _
 from .config_loader import get_reference_lang, get_reference_filename, get_update_filename, is_reference_lang
 
 # Instance couleurs
