@@ -748,23 +748,26 @@ class MainMenu:
         print(_("Exemples:") + f" {c.VALUE}__i18n_tmp__{c.RESET}, {c.VALUE}__i18n_kit__{c.RESET}, {c.VALUE}.i18n_work{c.RESET}")
         print()
 
-        name = input(c.prompt(_("Nouveau nom (ENTRÉE pour garder):") + " ")).strip()
+        invalid_chars = '<>:"/\\|?*'
+        while True:
+            name = input(c.prompt(_("Nouveau nom (ENTRÉE pour garder):") + " ")).strip()
 
-        if name:
-            # Valider le nom (pas de caractères invalides)
-            invalid_chars = '<>:"/\\|?*'
+            if not name:
+                print(c.success(_("Nom inchangé")))
+                return
+
             if any(char in name for char in invalid_chars):
                 print(c.error(_("Caractères invalides dans le nom: {chars}").format(chars=invalid_chars)))
-            else:
-                self.config.set("temp_dir", name)
-                set_i18n_dir(name)
-                print(c.success(_("Dossier temporaire: {name}").format(name=name)))
+                continue
 
-                plugin_path = self.config.get("plugin_path", "")
-                if plugin_path:
-                    print(f"     " + _("Nouveau chemin:") + f" {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
-        else:
-            print(c.success(_("Nom inchangé")))
+            self.config.set("temp_dir", name)
+            set_i18n_dir(name)
+            print(c.success(_("Dossier temporaire: {name}").format(name=name)))
+
+            plugin_path = self.config.get("plugin_path", "")
+            if plugin_path:
+                print(f"     " + _("Nouveau chemin:") + f" {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
+            return
 
     def configure_paths(self):
         """Menu de configuration avec affichage et édition des paramètres."""
