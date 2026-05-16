@@ -473,7 +473,7 @@ class ToolLauncher:
             plugin_path = self.config.get("plugin_path")
             prefix = self.config.get("prefix", "$$$/Piwigo")
             lang = self.config.get("lang", "en")
-            output_dir = self.config.get("output_base_dir") or os.path.dirname(script)
+            output_dir = self.config.get("output_base_dir")
 
             args = [
                 "--plugin-path", plugin_path,
