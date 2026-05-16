@@ -312,7 +312,6 @@ The `config.json` file stores your preferences:
   "enable_flip_anim": false,
   "prefix": "$$$/Piwigo",
   "lang": "en",
-  "last_extraction_dir": "",
   "last_used": ""
 }
 ```
@@ -328,7 +327,6 @@ The `config.json` file stores your preferences:
 | `enable_flip_anim` | Display animation on menu startup | `true` |
 | `prefix` | Prefix for localization keys (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Default language of target LrC plugin source code | `en` |
-| `last_extraction_dir` | Path of last extraction (internal use) | *(empty)* |
 | `last_used` | Timestamp of last use (internal use) | *(empty)* |
 
 Editable via: `[Option 6] Configure Plugin`

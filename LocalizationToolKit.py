@@ -73,7 +73,6 @@ DEFAULT_CONFIG = {
     "prefix": "$$$/Piwigo",
     "lang": "en",
     "temp_dir": DEFAULT_I18N_DIR,  # Nom du dossier temporaire (__i18n_tmp__ par défaut)
-    "last_extraction_dir": "",
     "last_used": "",
     "enable_flip_anim": True,  # 🎬 Lancer Flip-anim.py au démarrage (true = activé, false = désactivé)
     "auto_add_gitignore": True,  # Ajouter automatiquement le dossier temporaire au .gitignore du plugin
@@ -501,7 +500,7 @@ class ToolLauncher:
             return self._run_script(script)
         else:
             plugin_path = self.config.get("plugin_path")
-            extraction_dir = self.config.get("last_extraction_dir")
+            extraction_dir = self.find_latest_extraction()
 
             if not extraction_dir:
                 print(_("[ERREUR] Aucune extraction précédente. Lancez d'abord l'Extractor."))
