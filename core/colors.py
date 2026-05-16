@@ -57,7 +57,7 @@ def supports_color() -> bool:
             # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
             kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
             return True
-        except:
+        except Exception:
             pass
         return False
 

@@ -545,7 +545,7 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     try:
         ref_translations = parse_translation_file(ref_file)
         key_count = len(ref_translations)
-    except:
+    except Exception:
         key_count = "?"
 
     print(_("\n{var0}[INFO]{var1} Fichier EN de référence:").format(var0=c.INFO, var1=c.RESET))
