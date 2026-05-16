@@ -24,6 +24,7 @@ Developed to simplify multilingual management, this kit automates the extraction
 
 - **Does not modify the original language**: The Adobe SDK requires that a default string remains hardcoded in `.lua` files for fallback.
 - **Does not translate automatically**: Translation remains manual (and that's better, context matters!).
+- **Quotation marks `"` vs apostrophe `'`**: The Adobe SDK allows both, but for extraction, only strings enclosed in quotation marks `"` are targeted.
 - **Does not fix plumbing**: And doesn't make you rich either.
 
 ---
@@ -441,5 +442,5 @@ Contributions are welcome and feedback is encouraged!
 |--|--|--|--|
 | **Name** | *README.md* | **Version** | 3.1 |
 | **Type** | Presentation - global view | **Language** | EN - *[FR](../fr/Lisez-moi.md)* |
-| **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-08 |
 | **License** | Open source | | |

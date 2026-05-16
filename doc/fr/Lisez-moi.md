@@ -24,6 +24,7 @@ Développé pour simplifier la gestion du multilingue, ce kit automatise l'extra
 
 - **Ne modifie pas la langue d'origine** : Le SDK Adobe impose qu'une chaîne par défaut reste hardcodée dans les fichiers `.lua` pour le fallback.
 - **Ne traduit pas automatiquement** : La traduction reste manuelle (et c'est mieux ainsi, le contexte compte !).
+- **Guillemets `"` vs apostrophe `'`** : Le SDK Adobe autorise les 2 mais pour l'extraction, seuls les chaînes entre guillemets `"` sont ciblées.
 - **Ne répare pas la plomberie** : Et ne rend pas riche non plus.
 
 ---
@@ -446,5 +447,5 @@ Les contributions sont bienvenues et les retours encouragés !
 |--|--|--|--|
 | **Nom** | *Lisez-moi.md* | **Version** | 3.1 |
 | **Type** | Présentation - Vue globale | **Langue** | FR - *[EN](README.md)* |
-| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
+| **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-08 |
 | **Licence** | [MIT](../../LICENSE) | | |
