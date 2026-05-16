@@ -195,7 +195,7 @@ class ConfigManager:
             date_part = timestamp[:8]
             time_part = timestamp[9:15]
             return f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:8]} {time_part[:2]}:{time_part[2:4]}:{time_part[4:6]}"
-        except:
+        except (IndexError, TypeError):
             return timestamp
 
     def add_temp_dir_to_gitignore(self, plugin_path: str) -> bool:
