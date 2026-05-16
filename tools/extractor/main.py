@@ -200,7 +200,7 @@ Exemples:
         try:
             from tools.translator.config_loader import get_reference_lang
             default_lang = get_reference_lang()
-        except:
+        except Exception:
             default_lang = 'en'
 
         parser.add_argument('--lang', default=default_lang,

@@ -49,7 +49,7 @@ class InteractiveMenu:
             sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))))
             from tools.translator.config_loader import get_reference_lang
             default_lang = get_reference_lang()
-        except:
+        except Exception:
             default_lang = "en"
 
         self.plugin_path = default_plugin_path
