@@ -185,8 +185,8 @@ class OutputFormatter:
 
         # Statistiques principales
         print()
-        main_stats[_("Clés LOC existantes")] = existing_loc_count
-        self.print_summary_stats(main_stats)
+        stats_with_loc = {**main_stats, _("Clés LOC existantes"): existing_loc_count}
+        self.print_summary_stats(stats_with_loc)
 
         # Détails supplémentaires
         if detail_stats:
