@@ -253,8 +253,9 @@ def get_translator_backup_dir(plugin_path: str) -> Optional[str]:
     """
     Dossier de sauvegarde d'une opération Translator : `<sortie Translator>/backups`.
 
-    Renvoie None si `plugin_path` est vide (le `.bak` ira alors dans `backups/`
-    à côté du fichier cible). Le dossier n'est créé qu'au moment de la copie.
+    Renvoie None si `plugin_path` est vide (le `.bak` ira alors dans le repli
+    `<temp_dir>/backups` du dossier du fichier cible, voir `fallback_backup_dir`).
+    Le dossier n'est créé qu'au moment de la copie.
     """
     if not plugin_path:
         return None
@@ -286,11 +287,43 @@ def count_bak_files(directory: str) -> int:
     )
 
 
-def format_backup_message(backup_dir: str, plugin_path: str = "") -> str:
-    """Message « .bak créés » précis : nombre de fichiers et dossier, en chemin relatif au plugin."""
+class BackupReport:
+    """
+    Sauvegardes réellement écrites par une opération (INJECT, SYNC, Applicator…).
+
+    Passé en paramètre `backups=` aux fonctions qui sauvegardent : seuls les `.bak`
+    effectivement créés y sont enregistrés (un `.bak` déjà présent, conservé par
+    `backup_once`, n'est pas compté). `directory` est le dossier de sauvegarde réellement utilisé.
+    """
+
+    def __init__(self) -> None:
+        self.directory: Optional[str] = None
+        self.files: List[str] = []
+
+    def record(self, backup_path: str, directory: str) -> None:
+        if self.directory is None:
+            self.directory = directory
+        if backup_path not in self.files:
+            self.files.append(backup_path)
+
+
+def backup_to_fallback(file_path: str, backups: Optional[BackupReport] = None) -> str:
+    """Copie `file_path` vers son `.bak` de repli (voir `fallback_backup_dir`) et l'enregistre dans `backups`."""
+    backup_path = local_backup_path(file_path)
+    os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+    shutil.copy2(file_path, backup_path)
+    if backups is not None:
+        backups.record(backup_path, os.path.dirname(backup_path))
+    return backup_path
+
+
+def format_backup_message(backups: BackupReport, plugin_path: str = "") -> str:
+    """Message de sauvegarde précis : fichiers réellement sauvegardés et dossier, relatif au plugin."""
+    if not backups.files:
+        return _("Aucune nouvelle sauvegarde .bak (déjà sauvegardés ou fichiers absents)")
     return _("Sauvegardes .bak : {count} fichier(s) dans {folder}").format(
-        count=count_bak_files(backup_dir),
-        folder=display_relative(backup_dir, plugin_path),
+        count=len(backups.files),
+        folder=display_relative(backups.directory, plugin_path),
     )
 
 
@@ -378,13 +411,17 @@ def backup_path_for(file_path: str, plugin_path: str, backup_dir: str) -> str:
     return os.path.join(backup_dir, rel_path + '.bak')
 
 
-def backup_once(file_path: str, plugin_path: str, backup_dir: str) -> str:
+def backup_once(file_path: str, plugin_path: str, backup_dir: str,
+                backups: Optional[BackupReport] = None) -> str:
     """
     Sauvegarde `file_path` dans `backup_dir`, sauf si un backup existe déjà.
 
     Dans une même session (même `backup_dir`), le premier écrivain gagne : le
     `.bak` conserve l'état d'origine du fichier, même si plusieurs étapes
     (Applicator, INJECT, SYNC…) le modifient successivement.
+
+    Args:
+        backups: Si fourni, y enregistre le backup uniquement quand il vient d'être créé
 
     Returns:
         Chemin du backup (existant ou nouvellement créé)
@@ -393,6 +430,8 @@ def backup_once(file_path: str, plugin_path: str, backup_dir: str) -> str:
     if not os.path.exists(backup_path):
         os.makedirs(os.path.dirname(backup_path), exist_ok=True)
         shutil.copy2(file_path, backup_path)
+        if backups is not None:
+            backups.record(backup_path, backup_dir)
     return backup_path
 
 

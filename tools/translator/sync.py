@@ -25,7 +25,6 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 
 import os
-import shutil
 from typing import Dict, Set, Optional
 
 from .common import (
@@ -34,8 +33,10 @@ from .common import (
 )
 from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
-from core.paths import backup_once, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
-from core.paths import fallback_backup_dir, format_backup_message
+from core.paths import (
+    BackupReport, backup_once, backup_to_fallback, find_latest_update_dir, find_update_dir_in,
+    format_backup_message, get_translator_backup_dir,
+)
 
 
 # =============================================================================
@@ -43,7 +44,8 @@ from core.paths import fallback_backup_dir, format_backup_message
 # =============================================================================
 
 def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = None,
-             update_dir: Optional[str] = None, backup_dir: Optional[str] = None) -> Dict[str, Dict]:
+             update_dir: Optional[str] = None, backup_dir: Optional[str] = None,
+             backups: Optional[BackupReport] = None) -> Dict[str, Dict]:
     """
     Synchronise les langues étrangères avec le fichier de référence.
 
@@ -56,6 +58,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         locales_dir: Répertoire des fichiers de langues
         update_dir: Répertoire contenant UPDATE_{lang}.json (optionnel)
         backup_dir: Répertoire pour les backups (si None, repli sous <temp_dir>/backups du dossier du fichier, jamais à la racine du plugin)
+        backups: Collecte les .bak réellement créés par cette opération, avec le dossier utilisé (optionnel)
 
     Returns:
         Dict par langue avec les statistiques
@@ -107,7 +110,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         result = _sync_language(
             lang, lang_file, ref_strings, ref_keys,
             added_keys, changed_keys, deleted_keys,
-            locales_dir, update_data, backup_dir
+            locales_dir, update_data, backup_dir, backups
         )
         results[lang] = result
 
@@ -117,7 +120,8 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
 def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
                    ref_keys: Set[str], added_keys: Set[str], changed_keys: Set[str],
                    deleted_keys: Set[str], output_dir: str,
-                   update_data: Optional[Dict] = None, backup_dir: Optional[str] = None) -> Dict:
+                   update_data: Optional[Dict] = None, backup_dir: Optional[str] = None,
+                   backups: Optional[BackupReport] = None) -> Dict:
     """Synchronise une langue avec le fichier de référence."""
 
     # Charger la langue actuelle
@@ -126,11 +130,10 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         # Créer backup
         if backup_dir:
             # Backup de session : ne jamais écraser l'original déjà sauvegardé
-            backup_once(lang_file, os.path.dirname(lang_file), backup_dir)
+            backup_once(lang_file, os.path.dirname(lang_file), backup_dir, backups)
         else:
-            backup_path = local_backup_path(lang_file)
-            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-            shutil.copy2(lang_file, backup_path)
+            # Repli : <temp_dir>/backups du dossier de la langue, jamais à la racine du plugin
+            backup_to_fallback(lang_file, backups)
     else:
         lang_strings = {}
 
@@ -324,7 +327,8 @@ def menu_sync(plugin_path: str = ""):
 
     try:
         print(_("\n{var0}[INFO]{var1} Synchronisation en cours...").format(var0=c.INFO, var1=c.RESET))
-        results = run_sync(ref_path, locales_dir, update_dir, get_translator_backup_dir(plugin_path))
+        backups = BackupReport()
+        results = run_sync(ref_path, locales_dir, update_dir, get_translator_backup_dir(plugin_path), backups)
 
         if not results:
             print(c.warning(_("Aucune langue étrangère trouvée.")))
@@ -333,9 +337,7 @@ def menu_sync(plugin_path: str = ""):
             print(generate_sync_report(results))
             print()
             print(c.success(_("Fichiers mis à jour")))
-            backup_dir = get_translator_backup_dir(plugin_path) or fallback_backup_dir(
-                locales_dir or (resolve_path(ref_path)[0] if ref_path else update_dir))
-            print(f"{c.DIM}  {format_backup_message(backup_dir, plugin_path)}{c.RESET}")
+            print(f"{c.DIM}  {format_backup_message(backups, plugin_path)}{c.RESET}")
             print()
             print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
             print(_("{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}").format(var0=c.DIM, var1=c.RESET))

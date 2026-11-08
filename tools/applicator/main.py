@@ -347,9 +347,11 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 # Backup de session : le premier écrivain gagne (état d'origine)
                 backup_once(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
             else:
-                # Repli : sous <temp_dir>/backups, jamais un .bak à côté du fichier (#36)
-                backup_once(file_path, os.path.dirname(file_path),
-                            fallback_backup_dir(os.path.dirname(file_path)))
+                # Repli : un seul <plugin>/<temp_dir>/backups (arborescence relative conservée),
+                # jamais un .bak ni un dossier de repli dans les sous-dossiers du plugin (#36).
+                # Dernier recours sans plugin_path : le dossier du fichier.
+                base_dir = plugin_path or os.path.dirname(file_path)
+                backup_once(file_path, base_dir, fallback_backup_dir(base_dir))
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 
