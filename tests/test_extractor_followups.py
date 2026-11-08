@@ -287,3 +287,29 @@ def test_code_after_block_comment_close_end_to_end(tmp_path, isolated_config):
             ' --[[ title = "Reopened old"\n') in lua
     assert '  title = "Old label two"\n' in lua
     assert '  title = "Still comment"\n' in lua
+
+
+# --- Point 4 : une seule forme dans le rapport ---------------------------------
+
+def test_report_shows_real_text_except_key_value_lines(tmp_path, isolated_config):
+    plugin = _plugin_with(tmp_path, (
+        'local t = { title = "Cannot open \\"file\\" - " }\n'
+        'local u = { title = "Line one\\nLine two" }\n'
+        'local v = { title = LOC "$$$/Test/PWExport/Quoted=Say \\"hi\\"" }\n'
+    ))
+    run_extraction(plugin, "", "$$$/Test", "en", [], 3, True, silent=True)
+    report = _extraction_file(plugin, "extraction_report.txt")
+    lines = report.splitlines()
+
+    # Texte réel pour l'humain : membre recherché, base, valeur existante
+    assert '"Cannot open "file" - "' in report
+    assert '"Cannot open "file""' in report
+    assert any(line.rstrip().endswith(': Say "hi"') for line in lines)
+    # Caractère de contrôle rendu visible : le champ reste sur une ligne
+    assert '"Line one\\nLine two"' in report
+    assert not any(line.startswith("Line two") for line in lines)
+    # Forme échappée uniquement dans les lignes clé=valeur et le code Lua (REMPLACER)
+    escaped_lines = [line for line in lines if '\\"' in line]
+    assert escaped_lines
+    assert all("$$$/" in line for line in escaped_lines), escaped_lines
+    assert '"$$$/Test/PWExport/CannotOpenFile=Cannot open \\"file\\""' in report
