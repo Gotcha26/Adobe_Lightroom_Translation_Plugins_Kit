@@ -9,3 +9,6 @@ config.local.json
 .superpowers/
 .pytest_cache/
 .ruff_cache/
+
+# ====== Git Worktrees ======
+.worktrees/
