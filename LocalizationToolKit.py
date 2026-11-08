@@ -141,13 +141,15 @@ class ConfigManager:
         return config
 
     def _target(self) -> tuple:
-        """Renvoie (dictionnaire, chemin) du fichier où écrire les modifications."""
-        if os.path.exists(self.config_local_path):
-            return self.local, self.config_local_path
-        return self.shared, self.config_path
+        """Renvoie (dictionnaire, chemin) du fichier où écrire les modifications.
+
+        Toujours config.local.json (créé au besoin) : config.json est versionné
+        et n'est jamais réécrit par l'application.
+        """
+        return self.local, self.config_local_path
 
     def save(self):
-        """Sauvegarde uniquement le fichier cible (local s'il existe, sinon config.json)."""
+        """Sauvegarde uniquement config.local.json (jamais config.json)."""
         data, path = self._target()
         try:
             with open(path, 'w', encoding='utf-8') as f:

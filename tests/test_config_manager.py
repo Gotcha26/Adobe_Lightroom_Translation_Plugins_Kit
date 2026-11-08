@@ -26,19 +26,26 @@ def test_set_with_local_file_leaves_shared_untouched(tmp_path):
     assert cm.get("lang") == "fr"
 
 
-def test_set_without_local_file_writes_shared(tmp_path):
+def test_set_without_local_file_creates_local_shared_untouched(tmp_path):
     _write(tmp_path / "config.json", {"lang": "fr"})
+    before = (tmp_path / "config.json").read_text(encoding="utf-8")
 
     cm = ConfigManager(str(tmp_path))
     cm.set("enable_flip_anim", False)
 
-    assert not (tmp_path / "config.local.json").exists()
-    shared = json.loads((tmp_path / "config.json").read_text(encoding="utf-8"))
-    assert shared["enable_flip_anim"] is False
-    assert shared["lang"] == "fr"
-    assert "last_used" not in shared
-    # Les valeurs par défaut ne sont pas recopiées dans le fichier
-    assert "plugin_path" not in shared
+    assert (tmp_path / "config.json").read_text(encoding="utf-8") == before
+    local = json.loads((tmp_path / "config.local.json").read_text(encoding="utf-8"))
+    # Seule la valeur modifiée est écrite : ni config.json ni les défauts ne sont recopiés
+    assert local == {"enable_flip_anim": False}
+    assert cm.get("enable_flip_anim") is False
+    assert cm.get("lang") == "fr"
+
+
+def test_tracked_config_uses_generic_prefix(toolkit_root):
+    import os
+
+    with open(os.path.join(toolkit_root, "config.json"), encoding="utf-8") as f:
+        assert json.load(f)["prefix"] == "$$$/Plugin"
 
 
 def test_default_plugin_path_is_empty():

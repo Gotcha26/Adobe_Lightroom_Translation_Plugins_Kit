@@ -1,7 +1,7 @@
 {
   "plugin_path": "",
   "output_base_dir": "",
-  "prefix": "$$$/Piwigo",
+  "prefix": "$$$/Plugin",
   "lang": "en",
   "temp_dir": "__i18n_tmp__",
   "enable_flip_anim": false,
