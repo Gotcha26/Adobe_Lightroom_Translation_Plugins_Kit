@@ -15,7 +15,7 @@ from tools.extractor.main import run_extraction
 from tools.extractor.models import ExtractedString
 from tools.extractor.output import OutputGenerator
 from tools.extractor.utils import (
-    VERBATIM_BACKSLASH, code_span, escape_lua_string, find_literal_positions,
+    VERBATIM_BACKSLASH, comment_spans, escape_lua_string, find_literal_positions,
     log_call_spans, unescape_lua_string
 )
 
@@ -268,22 +268,45 @@ def test_log_literals_skipped_in_multiline_block(tmp_path):
 
 # --- Point 2 : code après la fermeture d'un commentaire bloc --------------------
 
-def test_code_span():
-    assert code_span("  title = 1\n", None) == (0, 11)
-    assert code_span("  -- line comment", None) is None
-    assert code_span("   \n", None) is None
-    assert code_span("still inside", "") is None
-    assert code_span("  ]] title = 1", "") == (4, 14)
-    assert code_span("]] -- then a line comment", "") is None
-    assert code_span("]==] x", "==") == (4, 6)
-    assert code_span("x ]] y ]==] z", "==") == (11, 13)
-    line = '--[[ c ]] --[==[ d ]==] title = "X"'
-    assert code_span(line, None) == (line.index("]==]") + 4, len(line))
-    assert code_span("--[[ never closed", None) is None
-    # Le code s'arrête au commentaire suivant (bloc ou ligne), hors chaînes
+def test_comment_spans():
+    assert comment_spans("  title = 1\n", None) == []
+    assert comment_spans("  -- line comment\n", None) == [(2, 17)]
+    assert comment_spans("still inside", "") == [(0, 12)]
+    assert comment_spans("  ]] title = 1", "") == [(0, 4)]
+    assert comment_spans("]] -- then a line comment", "") == [(0, 2), (3, 25)]
+    assert comment_spans("]==] x", "==") == [(0, 4)]
+    assert comment_spans("x ]] y ]==] z", "==") == [(0, 11)]
+    assert comment_spans('--[[ c ]] --[==[ d ]==] title = "X"', None) == [(0, 9), (10, 23)]
+    assert comment_spans("--[[ never closed", None) == [(0, 17)]
+    # Commentaires hors chaînes uniquement
     line = ']] t = "a -- b" --[[ title = "old"'
-    assert code_span(line, "") == (2, line.index("--[["))
-    assert code_span('t = "x" -- "y"', None) == (0, 8)
+    assert comment_spans(line, "") == [(0, 2), (line.index("--[["), len(line))]
+    assert comment_spans('t = "x" -- "y"', None) == [(8, 14)]
+    # Bloc ouvert et fermé au milieu de la ligne : le code qui suit reste analysé
+    assert comment_spans('f{ title = "A" --[[c]], tooltip = "Export file" }', None) == [(15, 22)]
+    assert comment_spans('title = --[[ old ]] "Export"', None) == [(8, 19)]
+    line = 'a --[[ x ]] b --[==[ y ]] still'
+    assert comment_spans(line, None) == [(2, 11), (14, len(line))]
+
+
+def test_code_after_mid_line_block_comment_is_extracted(tmp_path):
+    plugin = _plugin_with(tmp_path, (
+        'f{ title = "A" --[[c]], tooltip = "Export file" }\n'
+        'title = --[[ old ]] "Export"\n'
+        'local t = { title = "Kept" --[[ title = "Gone" ]] }\n'
+    ))
+    entries = _extract(plugin).extracted
+    assert [e.base_text for e in entries] == ["Export file", "Export", "Kept"]
+    # Colonnes de la ligne source (le commentaire effacé garde sa largeur)
+    assert entries[0].column == entries[0].line_content.index('"Export file"')
+    assert entries[1].column == entries[1].line_content.index('"Export"')
+
+
+def test_code_after_mid_line_block_comment_end_to_end(tmp_path, isolated_config):
+    plugin = _plugin_with(tmp_path, '  f{ title = "A" --[[c]], tooltip = "Export file" }\n')
+    lua = _run_pipeline(plugin)
+    assert lua == ('  f{ title = "A" --[[c]], '
+                   'tooltip = LOC "$$$/Test/PWExport/ExportFile=Export file" }\n')
 
 
 _CLOSING_SOURCE = (

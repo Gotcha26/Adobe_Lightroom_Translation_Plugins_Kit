@@ -35,7 +35,7 @@ from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
     is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape,
-    find_literal_positions, log_call_spans, blank_spans, code_span
+    find_literal_positions, log_call_spans, blank_spans, comment_spans
 )
 
 
@@ -227,17 +227,15 @@ class LocalizableStringExtractor:
         for line_num, line in enumerate(lines, 1):
             line_stripped = line.strip()
 
-            # Commentaires Lua : seule la zone de code de la ligne est analysée,
-            # le reste (fin d'un commentaire bloc ouvert plus haut, commentaire
-            # de ligne ou bloc ouvert après le code) est effacé par des espaces
-            # pour garder les colonnes de la ligne source.
+            # Commentaires Lua : seul le code de la ligne est analysé. Les
+            # commentaires (fin d'un bloc ouvert plus haut, bloc ouvert et fermé
+            # sur la ligne, bloc resté ouvert ou commentaire de ligne) sont
+            # effacés par des espaces pour garder les colonnes de la ligne source.
             level_at_start = block_comment_level
             block_comment_level = block_comment_state(line, level_at_start)
-            span = code_span(line, level_at_start)
-            if span is None:
-                continue  # Ligne entièrement en commentaire
-            code_start, code_end = span
-            code_line = blank_spans(line, [(0, code_start), (code_end, len(line.rstrip('\r\n')))])
+            code_line = blank_spans(line, comment_spans(line, level_at_start))
+            if not code_line.strip():
+                continue  # Ligne vide ou entièrement en commentaire
 
             # Gestion du contexte multi-ligne en cours
             if self.multi_line_ctx.active:

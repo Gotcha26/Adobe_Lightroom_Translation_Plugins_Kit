@@ -310,16 +310,19 @@ def block_comment_state(line: str, open_level: str | None) -> str | None:
         pos += opening.end()
 
 
-def code_span(line: str, open_level: str | None) -> Tuple[int, int] | None:
+def comment_spans(line: str, open_level: str | None) -> List[Tuple[int, int]]:
     """
-    Zone de code (début, fin) d'une ligne, hors commentaires.
+    Zones (début, fin) des commentaires Lua d'une ligne, hors chaînes.
 
-    Le début suit les commentaires de tête : fin du commentaire bloc ouvert
-    au début de la ligne (`]]`, `]=*]` de même niveau), puis d'éventuels
-    commentaires bloc ouverts et fermés avant le code. La fin est le premier
-    commentaire (`--`, bloc ou ligne) hors chaîne qui suit le code, ou la fin
-    de la ligne. Le code éventuel après un second commentaire bloc fermé sur
-    la même ligne n'est pas inclus.
+    - Fin d'un commentaire bloc ouvert au début de la ligne : de 0 au
+      délimiteur fermant `]=*]` de même niveau inclus.
+    - Commentaire bloc `--[=*[ … ]=*]` ouvert et fermé sur la ligne : zone
+      du `--` au délimiteur fermant ; le code qui suit reste du code.
+    - Commentaire bloc qui reste ouvert, ou commentaire de ligne `--` : zone
+      jusqu'à la fin de la ligne (saut de ligne exclu).
+
+    Effacer ces zones par des espaces (blank_spans) donne le code seul,
+    aux mêmes colonnes que la ligne source.
 
     Args:
         line: La ligne de code Lua
@@ -327,28 +330,31 @@ def code_span(line: str, open_level: str | None) -> Tuple[int, int] | None:
                     (voir block_comment_state), ou None
 
     Returns:
-        (début, fin) en positions de la ligne, ou None si la ligne ne
-        contient aucun code
+        Liste de (début, fin) en positions de la ligne, par ordre croissant
     """
+    end_of_line = len(line.rstrip('\r\n'))
+    spans = []
     pos = 0
+    start = 0  # Début du commentaire bloc en cours
     while True:
         if open_level is not None:
             close_end = block_comment_close_end(line, open_level, pos)
             if close_end is None:
-                return None
+                spans.append((start, end_of_line))
+                return spans
+            spans.append((start, close_end))
             pos = close_end
             open_level = None
 
         rest = _mask_string_literals(line[pos:])
         dash = rest.find('--')
-        end = pos + dash if dash != -1 else len(line.rstrip('\r\n'))
-        if line[pos:end].strip():
-            return pos, end
         if dash == -1:
-            return None
+            return spans
+        start = pos + dash
         opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
         if not opening:
-            return None  # Commentaire de ligne : le reste est ignoré
+            spans.append((start, end_of_line))  # Commentaire de ligne
+            return spans
         open_level = opening.group(1)
         pos += opening.end()
 
