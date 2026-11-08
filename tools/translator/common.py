@@ -63,6 +63,26 @@ def translate_after_marker(lang: str) -> str:
 def translate_target_marker(lang: str) -> str:
     return f"[{lang.upper()}] {TRANSLATE_ARROW} "
 
+
+# =============================================================================
+# EN-TÊTE DES FICHIERS TranslatedStrings_xx.txt (jamais traduit : relu par la machine)
+# =============================================================================
+
+HEADER_SEPARATOR = "-- " + "=" * 77
+HEADER_SEPARATOR_PREFIX = "-- ===="
+HEADER_TITLE_PREFIX = "-- Plugin Localization -"
+HEADER_GENERATED_PREFIX = "-- Generated:"
+HEADER_TOTAL_KEYS_PREFIX = "-- Total keys:"
+HEADER_NEW_KEYS_PREFIX = "-- New keys:"
+HEADER_CHANGED_KEYS_PREFIX = "-- Changed keys:"
+HEADER_SOURCE_PREFIX = "-- Source:"
+
+
+def _header_line(prefix: str, value) -> str:
+    """Ligne d'en-tête « prefix value » terminée par un saut de ligne."""
+    return f"{prefix} {value}\n"
+
+
 # Instance couleurs
 c = Colors()
 
@@ -162,22 +182,21 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
     for key in sorted(translations.keys()):
         by_category[section_for_key(key)].append(key)
 
-    from core.i18n import debug_i18n_context
-    with debug_i18n_context(), open(file_path, 'w', encoding='utf-8') as f:
-        f.write(_("-- =============================================================================\n"))
-        f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-        f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        f.write(_("-- Total keys: {var0}\n").format(var0=len(translations)))
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(HEADER_SEPARATOR + "\n")
+        f.write(_header_line(HEADER_TITLE_PREFIX, lang.upper()))
+        f.write(_header_line(HEADER_GENERATED_PREFIX, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        f.write(_header_line(HEADER_TOTAL_KEYS_PREFIX, len(translations)))
 
         # Infos supplémentaires depuis metadata
         if metadata.get('new_keys'):
-            f.write(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+            f.write(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
         if metadata.get('changed_keys'):
-            f.write(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
+            f.write(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
         if metadata.get('source'):
-            f.write(_("-- Source: {var0}\n").format(var0=metadata['source']))
+            f.write(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
 
-        f.write(_("-- =============================================================================\n\n"))
+        f.write(HEADER_SEPARATOR + "\n\n")
 
         # Add translation warning note for translators
         f.write(TRANSLATION_WARNING_NOTE)
@@ -352,7 +371,7 @@ def _locate_header_and_note(lines: List[str]) -> Tuple[int, int]:
     header_end = 0
     separators = 0
     for idx, line in enumerate(lines):
-        if line.strip().startswith('-- ===='):
+        if line.strip().startswith(HEADER_SEPARATOR_PREFIX):
             separators += 1
             if separators == 2:
                 header_end = idx + 1
@@ -405,29 +424,29 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
         stripped = line.strip()
 
         # Remplacer Generated
-        if stripped.startswith('-- Generated:'):
-            updated.append(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        if stripped.startswith(HEADER_GENERATED_PREFIX):
+            updated.append(_header_line(HEADER_GENERATED_PREFIX, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         # Remplacer Total keys
-        elif stripped.startswith('-- Total keys:'):
+        elif stripped.startswith(HEADER_TOTAL_KEYS_PREFIX):
             if metadata.get('total_keys') is not None:
-                updated.append(_("-- Total keys: {var0}\n").format(var0=metadata['total_keys']))
+                updated.append(_header_line(HEADER_TOTAL_KEYS_PREFIX, metadata['total_keys']))
             else:
                 updated.append(line)
         # Remplacer ou supprimer New keys
-        elif stripped.startswith('-- New keys:'):
+        elif stripped.startswith(HEADER_NEW_KEYS_PREFIX):
             new_keys_found = True
             if metadata.get('new_keys'):
-                updated.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+                updated.append(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
         # Remplacer ou supprimer Changed keys
-        elif stripped.startswith('-- Changed keys:'):
+        elif stripped.startswith(HEADER_CHANGED_KEYS_PREFIX):
             changed_keys_found = True
             if metadata.get('changed_keys'):
-                updated.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
-        # Remplacer Source
-        elif stripped.startswith('-- Source:') or stripped.startswith('-- SOURCE:'):
+                updated.append(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
+        # Remplacer Source (« -- SOURCE: » : graphie écrite par l'Extractor)
+        elif stripped.startswith(HEADER_SOURCE_PREFIX) or stripped.startswith(HEADER_SOURCE_PREFIX.upper()):
             source_found = True
             if metadata.get('source'):
-                updated.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
+                updated.append(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
             else:
                 updated.append(line)
         else:
@@ -436,17 +455,17 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
     # Ajouter les métadonnées manquantes (avant la ligne de séparation finale)
     insert_index = len(updated)
     for i in range(len(updated) - 1, -1, -1):
-        if updated[i].strip().startswith('-- ='):
+        if updated[i].strip().startswith(HEADER_SEPARATOR_PREFIX):
             insert_index = i
             break
 
     additions = []
     if not new_keys_found and metadata.get('new_keys'):
-        additions.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+        additions.append(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
     if not changed_keys_found and metadata.get('changed_keys'):
-        additions.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
+        additions.append(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
     if not source_found and metadata.get('source'):
-        additions.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
+        additions.append(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
 
     if additions:
         updated = updated[:insert_index] + additions + updated[insert_index:]

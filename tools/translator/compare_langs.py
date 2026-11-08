@@ -412,14 +412,14 @@ def menu_compare_langs(plugin_path: str = ""):
 
     print(_("\n{var0}Vous pouvez comparer:{var1}").format(var0=c.DIM, var1=c.RESET))
     print(_("  {var0}• Deux langues différentes (ex: FR vs DE){var1}").format(var0=c.DIM, var1=c.RESET))
-    print(f"  {c.DIM}• Deux versions d'une même langue (ex: ancien FR vs nouveau FR){c.RESET}")
-    print(f"  {c.DIM}• Une langue vs EN (pour voir ce qui n'est pas traduit){c.RESET}")
+    print(_("  {var0}• Deux versions d'une même langue (ex: ancien FR vs nouveau FR){var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("  {var0}• Une langue vs EN (pour voir ce qui n'est pas traduit){var1}").format(var0=c.DIM, var1=c.RESET))
 
     print(_("\n{var0}Mode de comparaison:{var1}").format(var0=c.KEY, var1=c.RESET))
     print(_("  {var0}1{var1}. {var2}Par clés{var3} - Identifie les clés manquantes/ajoutées (recommandé pour synchronisation)").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
     print(_("  {var0}2{var1}. {var2}Par valeurs{var3} - Identifie les traductions identiques (recommandé pour audit qualité)").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
 
-    comparison_mode = input(c.prompt(_("Mode de comparaison") + " (1-2, défaut=1): ")).strip()
+    comparison_mode = input(c.prompt(_("Mode de comparaison (1-2, défaut=1): "))).strip()
     if not comparison_mode:
         comparison_mode = "1"  # Défaut: mode clés
 
@@ -463,7 +463,8 @@ def menu_compare_langs(plugin_path: str = ""):
             input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.INFO}Langues disponibles{c.RESET}: {c.VALUE}{', '.join(available_langs)}{c.RESET}")
+        print(_("\n{var0}Langues disponibles{var1}: {var2}{langs}{var3}").format(
+            var0=c.INFO, var1=c.RESET, var2=c.VALUE, langs=', '.join(available_langs), var3=c.RESET))
 
         print(_("\n{var0}Code de la première langue{var1} (ex: fr, en, de):").format(var0=c.KEY, var1=c.RESET))
         lang1_name = input(f"{c.PROMPT}  > {c.RESET}").strip().lower()

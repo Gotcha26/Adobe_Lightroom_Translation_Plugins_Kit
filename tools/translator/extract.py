@@ -86,12 +86,12 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
         f.write(_("# Généré: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("# Source: {update_dir}\n").format(update_dir=update_dir))
         f.write("# " + "=" * 70 + "\n")
-        f.write(_("#\n"))
+        f.write("#\n")
         f.write(_("# INSTRUCTIONS:\n"))
         f.write(_("# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n"))
         f.write(_("# 2. Laissez vide pour garder la valeur EN par défaut\n"))
         f.write(_("# 3. Les lignes commençant par # sont ignorées\n"))
-        f.write(_("#\n"))
+        f.write("#\n")
         f.write("# " + "=" * 70 + "\n\n")
 
         # Section: Nouvelles clés

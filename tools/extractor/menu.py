@@ -102,7 +102,7 @@ class InteractiveMenu:
             print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
             default_output = "<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
-            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + "(auto)" + f"{c.RESET}"))
+            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
 
         # Autres options
         print(c.config_line("3. " + _("Préfixe LOC"), self.prefix))

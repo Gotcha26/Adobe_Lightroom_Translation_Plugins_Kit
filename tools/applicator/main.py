@@ -59,6 +59,7 @@ import glob
 import subprocess
 
 from tools.extractor.utils import build_loc_call as _build_loc_call
+from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
 c = Colors()
@@ -648,7 +649,7 @@ def _propose_additional_langs(template_file: str, plugin_path: str, installed_la
             # Ligne 2 : "-- Plugin Localization - XX" → remplacer XX par le nouveau code
             if len(lines) >= 2:
                 lines[1] = re.sub(
-                    r'^(-- Plugin Localization - )\w+',
+                    r'^(' + re.escape(HEADER_TITLE_PREFIX) + r' )\w+',
                     rf'\g<1>{lang_code.upper()}',
                     lines[1]
                 )
@@ -866,7 +867,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=_("Applique les localisations generees par Extractor au plugin"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        epilog=_("""
 Exemples:
   # Mode interactif (menu)
   python -m tools.applicator.main
@@ -881,7 +882,7 @@ Exemples:
   python -m tools.applicator.main --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
 
 Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments invalides.
-        """
+        """)
     )
 
     parser.add_argument('--default-plugin', default="",
@@ -891,11 +892,11 @@ Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments inv
     parser.add_argument('--yes', action='store_true',
                         help=_("Aucune question : ne pas lancer la gestion des fichiers de traduction"))
     parser.add_argument('--extraction-dir', default=None,
-                        help='Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)')
+                        help=_("Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)"))
     parser.add_argument('--dry-run', action='store_true',
-                        help='Mode simulation (affiche sans modifier)')
+                        help=_("Mode simulation (affiche sans modifier)"))
     parser.add_argument('--no-backup', action='store_true',
-                        help='Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)')
+                        help=_("Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)"))
     return parser
 
 

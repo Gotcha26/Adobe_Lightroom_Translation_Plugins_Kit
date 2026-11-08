@@ -73,11 +73,12 @@ def get_dir_size(path: str) -> Tuple[int, int]:
 def format_size(size_bytes: int) -> str:
     """Formate une taille en octets en format lisible."""
     size: float = float(size_bytes)
-    for unit in ['octets', 'Ko', 'Mo', 'Go']:
+    for unit in [_("octets"), _("Ko"), _("Mo"), _("Go")]:
         if size < 1024:
             return f"{size:.1f} {unit}"
         size /= 1024
-    return f"{size:.1f} To"
+    unit = _("To")
+    return f"{size:.1f} {unit}"
 
 
 def list_subdirs(path: str) -> list:

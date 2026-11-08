@@ -12,7 +12,7 @@ locale/<lang>/LC_MESSAGES/ et chargées dynamiquement selon la langue sélection
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -55,6 +55,9 @@ _locale_dir: Optional[Path] = None
 
 # Langue actuelle (initialisée plus tard)
 _current_language: str = "fr"
+
+# Catalogue gettext chargé (None pour la langue source : pas de traduction)
+_translation: Optional[gettext.NullTranslations] = None
 
 # Fonction de traduction active
 _translator: Callable[[str], str] = lambda s: s  # Par défaut: pas de traduction
@@ -149,33 +152,39 @@ def _get_initial_language() -> str:
         return FALLBACK_LANGUAGE
 
 
-def _load_translator(language: str) -> Callable[[str], str]:
-    """Charge le traducteur pour une langue donnée.
+def _load_translation(language: str) -> Optional[gettext.NullTranslations]:
+    """Charge le catalogue gettext d'une langue donnée.
 
     Args:
         language: Code langue (ex: "en", "fr", "es")
 
     Returns:
-        Fonction de traduction
+        Objet de traduction gettext (NullTranslations si aucun .mo n'est trouvé),
+        ou None pour la langue source (français) ou en cas d'erreur de lecture.
     """
-    locale_dir = _get_locale_dir()
-
     # Si c'est la langue source (français), pas de traduction
     if language == "fr":
-        return lambda s: s
+        return None
 
     try:
-        # Charger les traductions
-        translation = gettext.translation(
+        return gettext.translation(
             DOMAIN,
-            localedir=str(locale_dir),
+            localedir=str(_get_locale_dir()),
             languages=[language],
             fallback=True
         )
-        return translation.gettext
-    except Exception:
-        # En cas d'erreur, retourner la fonction identité
-        return lambda s: s
+    except Exception as exc:
+        # Catalogue illisible : on continue en langue source, mais on le signale
+        print("[i18n] {lang}: {error}".format(lang=language, error=exc))
+        return None
+
+
+def _activate(language: str) -> None:
+    """Active une langue : charge son catalogue et met à jour le traducteur."""
+    global _current_language, _translation, _translator
+    _current_language = language
+    _translation = _load_translation(language)
+    _translator = _translation.gettext if _translation is not None else (lambda s: s)
 
 
 def init(language: Optional[str] = None) -> str:
@@ -187,8 +196,6 @@ def init(language: Optional[str] = None) -> str:
     Returns:
         Code de la langue initialisée
     """
-    global _current_language, _translator
-
     if language is None:
         language = _get_initial_language()
 
@@ -199,8 +206,7 @@ def init(language: Optional[str] = None) -> str:
     if language not in SUPPORTED_LANGUAGES:
         language = FALLBACK_LANGUAGE
 
-    _current_language = language
-    _translator = _load_translator(language)
+    _activate(language)
 
     return _current_language
 
@@ -214,8 +220,6 @@ def set_language(language: str) -> bool:
     Returns:
         True si la langue a été changée, False sinon
     """
-    global _current_language, _translator
-
     # Normaliser
     language = language.lower().split("_")[0]
 
@@ -225,8 +229,7 @@ def set_language(language: str) -> bool:
     if language == _current_language:
         return True
 
-    _current_language = language
-    _translator = _load_translator(language)
+    _activate(language)
     return True
 
 
@@ -262,23 +265,26 @@ def _(message: str) -> str:
 def ngettext(singular: str, plural: str, n: int) -> str:
     """Traduction avec support du pluriel.
 
-    Usage:
-        print(ngettext(_("{n} fichier"), _("{n} fichiers"), count).format(n=count))
+    Usage (les deux formes sont des littéraux, sans _() autour) :
+        print(ngettext("{n} fichier", "{n} fichiers", count).format(n=count))
+
+    Quand un catalogue est chargé, la forme est choisie par
+    gettext.GNUTranslations.ngettext selon l'en-tête Plural-Forms du .po
+    (entrée msgid/msgid_plural/msgstr[N]) ; sans entrée plurielle dans le
+    catalogue, gettext applique la règle anglaise (n == 1 → singulier).
+    Pour la langue source (français, pas de catalogue) : règle n == 1.
 
     Args:
-        singular: Forme singulière
-        plural: Forme plurielle
+        singular: Forme singulière (français)
+        plural: Forme plurielle (français)
         n: Nombre pour déterminer la forme
 
     Returns:
         Message traduit avec la forme appropriée
     """
-    # Pour l'instant, implémentation simple basée sur n
-    # TODO: Utiliser gettext.ngettext quand les traductions seront prêtes
-    if n == 1:
-        return _translator(singular)
-    else:
-        return _translator(plural)
+    if _translation is not None:
+        return _translation.ngettext(singular, plural, n)
+    return singular if n == 1 else plural
 
 
 # =============================================================================

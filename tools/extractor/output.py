@@ -28,7 +28,10 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
-from tools.translator.common import section_for_key
+from tools.translator.common import (
+    section_for_key, HEADER_SEPARATOR, HEADER_TITLE_PREFIX, HEADER_GENERATED_PREFIX,
+    HEADER_TOTAL_KEYS_PREFIX, HEADER_SOURCE_PREFIX,
+)
 
 from .models import ExtractedString
 from .utils import build_loc_call, escape_lua_string
@@ -93,14 +96,14 @@ class OutputGenerator:
         for entry in unique_keys.values():
             by_category[section_for_key(entry.suggested_key)].append(entry)
 
-        from core.i18n import debug_i18n_context
-        with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
-            f.write(_("-- =============================================================================\n"))
-            f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-            f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            f.write(_("-- Total keys: {var0}\n").format(var0=len(unique_keys)))
-            f.write(_("-- SOURCE: Extractor\n"))
-            f.write(_("-- =============================================================================\n\n"))
+        # En-tête relu par le Translator : jamais traduit
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(HEADER_SEPARATOR + "\n")
+            f.write(f"{HEADER_TITLE_PREFIX} {lang.upper()}\n")
+            f.write(f"{HEADER_GENERATED_PREFIX} {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"{HEADER_TOTAL_KEYS_PREFIX} {len(unique_keys)}\n")
+            f.write(f"{HEADER_SOURCE_PREFIX.upper()} Extractor\n")
+            f.write(HEADER_SEPARATOR + "\n\n")
 
             # Add translation warning note for translators
             f.write(TRANSLATION_WARNING_NOTE)

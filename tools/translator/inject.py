@@ -272,7 +272,7 @@ def menu_inject(plugin_path: str = ""):
 
     print(_("\n{var0}Mode{var1}:").format(var0=c.KEY, var1=c.RESET))
     print(_("  {var0}1{var1}. Injecter un fichier TRANSLATE_xx.txt spécifique").format(var0=c.YELLOW, var1=c.RESET))
-    print(f"  {c.YELLOW}2{c.RESET}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier")
+    print(_("  {var0}2{var1}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier").format(var0=c.YELLOW, var1=c.RESET))
     mode = input(_("\n{var0}  Choix (1-2): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
     if mode == '1':

@@ -139,7 +139,7 @@ def main_menu(default_plugin_path: str = ""):
         print(_("\n{var0}Configuration initiale{var1}").format(var0=c.INFO, var1=c.RESET))
         print(c.separator())
         print(_("\n{var0}Chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=c.RESET))
-        print(f"{c.DIM}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){c.RESET}")
+        print(_("{var0}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){var1}").format(var0=c.DIM, var1=c.RESET))
         print(_("{var0}  (Entrée pour ignorer - utilise répertoires locaux){var1}").format(var0=c.DIM, var1=c.RESET))
         plugin_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
         if plugin_path.lower() == 'x':
@@ -238,33 +238,33 @@ def main():
     parser = argparse.ArgumentParser(
         description=_("Gestionnaire de traductions multilingues"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        epilog=_("""
 Exemples:
   # Mode interactif
-  python Translator_main.py
+  python -m tools.translator.main
 
   # Avec --plugin-path (structure __i18n_tmp__):
-  python Translator_main.py compare --old ./old/en.txt --new ./new/en.txt --plugin-path ./plugin.lrplugin
-  python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin --plugin-path ./plugin.lrplugin
-  python Translator_main.py extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
-  python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+  python -m tools.translator.main compare --old ./old/en.txt --new ./new/en.txt --plugin-path ./plugin.lrplugin
+  python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin --plugin-path ./plugin.lrplugin
+  python -m tools.translator.main extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+  python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
   # Mode legacy (sans plugin-path):
-  python Translator_main.py compare --old ./v1/en.txt --new ./v2/en.txt
-  python Translator_main.py compare-langs --file1 ./Locales/fr.txt --file2 ./Locales/de.txt
-  python Translator_main.py extract --update ./20260128_143000 --locales ./Locales
-  python Translator_main.py sync --update ./20260128_143000 --locales ./Locales
+  python -m tools.translator.main compare --old ./v1/en.txt --new ./v2/en.txt
+  python -m tools.translator.main compare-langs --file1 ./Locales/fr.txt --file2 ./Locales/de.txt
+  python -m tools.translator.main extract --update ./20260128_143000 --locales ./Locales
+  python -m tools.translator.main sync --update ./20260128_143000 --locales ./Locales
 
   # Commandes essentielles:
   python -m tools.translator.main install --plugin-path ./plugin.lrplugin
   python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de
   python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin --yes
-        """
+        """)
     )
     parser.add_argument('--default-plugin', default="",
                         help=_("Plugin pré-configuré pour le menu interactif"))
 
-    subparsers = parser.add_subparsers(dest='command', help='Commande')
+    subparsers = parser.add_subparsers(dest='command', help=_("Commande"))
 
     # install
     install_parser = subparsers.add_parser('install', help=_("Première installation des fichiers de traduction"))
@@ -288,45 +288,45 @@ Exemples:
                                  help=_("Appliquer les remplacements Lua sans confirmation"))
 
     # compare
-    compare_parser = subparsers.add_parser('compare', help='Compare deux versions EN')
-    compare_parser.add_argument('--old', required=True, help='Ancien fichier EN')
-    compare_parser.add_argument('--new', required=True, help='Nouveau fichier EN')
-    compare_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/3_Translator/)')
-    compare_parser.add_argument('--output', help='Override repertoire de sortie')
+    compare_parser = subparsers.add_parser('compare', help=_("Compare deux versions EN"))
+    compare_parser.add_argument('--old', required=True, help=_("Ancien fichier EN"))
+    compare_parser.add_argument('--new', required=True, help=_("Nouveau fichier EN"))
+    compare_parser.add_argument('--plugin-path', help=_("Chemin plugin (sortie: __i18n_tmp__/3_Translator/)"))
+    compare_parser.add_argument('--output', help=_("Override repertoire de sortie"))
 
     # compare-langs
-    compare_langs_parser = subparsers.add_parser('compare-langs', help='Compare deux fichiers de langues')
-    compare_langs_parser.add_argument('--file1', help='Premier fichier (ou repertoire)')
-    compare_langs_parser.add_argument('--file2', help='Second fichier (ou repertoire)')
-    compare_langs_parser.add_argument('--lang1', help='Code langue 1 (ex: fr) - cherche dans --locales')
-    compare_langs_parser.add_argument('--lang2', help='Code langue 2 (ex: de) - cherche dans --locales')
-    compare_langs_parser.add_argument('--locales', help='Repertoire des traductions (requis avec --lang1/--lang2)')
-    compare_langs_parser.add_argument('--plugin-path', help='Chemin plugin (sortie: __i18n_tmp__/3_Translator/)')
-    compare_langs_parser.add_argument('--output', help='Override repertoire de sortie')
+    compare_langs_parser = subparsers.add_parser('compare-langs', help=_("Compare deux fichiers de langues"))
+    compare_langs_parser.add_argument('--file1', help=_("Premier fichier (ou repertoire)"))
+    compare_langs_parser.add_argument('--file2', help=_("Second fichier (ou repertoire)"))
+    compare_langs_parser.add_argument('--lang1', help=_("Code langue 1 (ex: fr) - cherche dans --locales"))
+    compare_langs_parser.add_argument('--lang2', help=_("Code langue 2 (ex: de) - cherche dans --locales"))
+    compare_langs_parser.add_argument('--locales', help=_("Repertoire des traductions (requis avec --lang1/--lang2)"))
+    compare_langs_parser.add_argument('--plugin-path', help=_("Chemin plugin (sortie: __i18n_tmp__/3_Translator/)"))
+    compare_langs_parser.add_argument('--output', help=_("Override repertoire de sortie"))
 
     # extract
-    extract_parser = subparsers.add_parser('extract', help='Genere fichiers TRANSLATE_*.txt')
-    extract_parser.add_argument('--update', help='Dossier UPDATE (ou auto-detection si --plugin-path)')
-    extract_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
-    extract_parser.add_argument('--locales', help='Repertoire des traductions existantes')
-    extract_parser.add_argument('--lang', help='Langue specifique (defaut: toutes)')
-    extract_parser.add_argument('--output', help='Override repertoire de sortie')
+    extract_parser = subparsers.add_parser('extract', help=_("Genere fichiers TRANSLATE_*.txt"))
+    extract_parser.add_argument('--update', help=_("Dossier UPDATE (ou auto-detection si --plugin-path)"))
+    extract_parser.add_argument('--plugin-path', help=_("Chemin plugin (auto-detection __i18n_tmp__/)"))
+    extract_parser.add_argument('--locales', help=_("Repertoire des traductions existantes"))
+    extract_parser.add_argument('--lang', help=_("Langue specifique (defaut: toutes)"))
+    extract_parser.add_argument('--output', help=_("Override repertoire de sortie"))
 
     # inject
-    inject_parser = subparsers.add_parser('inject', help='Injecte les traductions')
-    inject_parser.add_argument('--translate', help='Fichier TRANSLATE_xx.txt')
-    inject_parser.add_argument('--target', help='Fichier TranslatedStrings_xx.txt cible')
-    inject_parser.add_argument('--translate-dir', help='Dossier contenant TRANSLATE_*.txt')
-    inject_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
-    inject_parser.add_argument('--locales', help='Dossier des fichiers de langue')
-    inject_parser.add_argument('--update', help='Dossier UPDATE (pour valeurs EN)')
+    inject_parser = subparsers.add_parser('inject', help=_("Injecte les traductions"))
+    inject_parser.add_argument('--translate', help=_("Fichier TRANSLATE_xx.txt"))
+    inject_parser.add_argument('--target', help=_("Fichier TranslatedStrings_xx.txt cible"))
+    inject_parser.add_argument('--translate-dir', help=_("Dossier contenant TRANSLATE_*.txt"))
+    inject_parser.add_argument('--plugin-path', help=_("Chemin plugin (auto-detection __i18n_tmp__/)"))
+    inject_parser.add_argument('--locales', help=_("Dossier des fichiers de langue"))
+    inject_parser.add_argument('--update', help=_("Dossier UPDATE (pour valeurs EN)"))
 
     # sync
-    sync_parser = subparsers.add_parser('sync', help='Synchronise les langues')
-    sync_parser.add_argument('--ref', help='Fichier EN de reference')
-    sync_parser.add_argument('--plugin-path', help='Chemin plugin (auto-detection __i18n_tmp__/)')
-    sync_parser.add_argument('--locales', help='Repertoire des fichiers de langues')
-    sync_parser.add_argument('--update', help='Dossier UPDATE (avec UPDATE_en.json)')
+    sync_parser = subparsers.add_parser('sync', help=_("Synchronise les langues"))
+    sync_parser.add_argument('--ref', help=_("Fichier EN de reference"))
+    sync_parser.add_argument('--plugin-path', help=_("Chemin plugin (auto-detection __i18n_tmp__/)"))
+    sync_parser.add_argument('--locales', help=_("Repertoire des fichiers de langues"))
+    sync_parser.add_argument('--update', help=_("Dossier UPDATE (avec UPDATE_en.json)"))
 
     args = parser.parse_args()
 
@@ -474,7 +474,7 @@ Exemples:
                 if not update_dir:
                     print(c.error(_("Aucun dossier Translator contenant {update_filename} trouvé dans __i18n_tmp__/").format(
                         update_filename=get_update_filename())))
-                    print(f"{c.DIM}        Lancez d'abord la commande 'compare'.{c.RESET}")
+                    print(_("{var0}        Lancez d'abord la commande 'compare'.{var1}").format(var0=c.DIM, var1=c.RESET))
                     sys.exit(1)
                 print(_("{var0}[INFO]{var1} Auto-détection: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
 

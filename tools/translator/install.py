@@ -157,7 +157,7 @@ def menu_install(plugin_path: str):
     if not latest_extraction:
         print(c.error(_("Aucune extraction trouvée.")))
         print()
-        print("Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt")
+        print(_("Lancez d'abord l'Extractor pour générer TranslatedStrings_en.txt"))
         return
 
     print(_("\n{var0}[INFO]{var1} Dernière extraction:").format(var0=c.INFO, var1=c.RESET))
@@ -168,7 +168,7 @@ def menu_install(plugin_path: str):
     files = find_translation_files_in_extraction(latest_extraction)
 
     if not files:
-        print(c.error("Aucun fichier TranslatedStrings_xx.txt trouvé dans l'extraction."))
+        print(c.error(_("Aucun fichier TranslatedStrings_xx.txt trouvé dans l'extraction.")))
         return
 
     print(_("{var0}Fichiers à installer:{var1}").format(var0=c.INFO, var1=c.RESET))
@@ -199,7 +199,7 @@ def menu_install(plugin_path: str):
         print(_("{var0}Prochaines étapes:{var1}").format(var0=c.INFO, var1=c.RESET))
         print(_("  1. Lancez l'Applicator pour remplacer les chaînes en dur par LOC()"))
         print(_("  2. Testez le plugin dans Lightroom"))
-        print("  3. Créez des copies pour d'autres langues (TranslatedStrings_fr.txt, etc.)")
+        print(_("  3. Créez des copies pour d'autres langues (TranslatedStrings_fr.txt, etc.)"))
     else:
         print(c.error(_("Installation échouée")))
 
@@ -231,16 +231,16 @@ def run_install(plugin_path: str, source_dir: Optional[str] = None,
     # Vérifier si des fichiers existent déjà
     has_files, existing = check_existing_translation_files(plugin_path)
     if has_files:
-        print(c.warning(f"Des fichiers existent déjà: {', '.join(existing)}"))
+        print(c.warning(_("Des fichiers existent déjà: {files}").format(files=', '.join(existing))))
 
     # Installer
     success, installed = install_translation_files(plugin_path, source_dir, dry_run)
 
     if success:
         if dry_run:
-            print(c.info(f"[DRY RUN] Fichiers qui seraient installés: {', '.join(installed)}"))
+            print(c.info(_("[DRY RUN] Fichiers qui seraient installés: {files}").format(files=', '.join(installed))))
         else:
-            print(c.success(f"✓ {len(installed)} fichier(s) installé(s): {', '.join(installed)}"))
+            print(c.success(_("✓ {n} fichier(s) installé(s): {files}").format(n=len(installed), files=', '.join(installed))))
         return True
     else:
         print(c.error(_("Installation échouée")))

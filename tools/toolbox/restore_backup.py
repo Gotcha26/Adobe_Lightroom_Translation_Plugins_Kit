@@ -423,7 +423,7 @@ def main():
     # Restaurer
     print()
     print(c.separator("=", 60))
-    print(c.title("RESTAURATION"))
+    print(c.title(_("RESTAURATION")))
     print(c.separator("=", 60))
     print()
 

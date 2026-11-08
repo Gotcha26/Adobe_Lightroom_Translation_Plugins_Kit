@@ -202,7 +202,7 @@ def debug_config_info() -> str:
 
     lines = [
         _("Configuration de la langue de référence:"),
-        f"  - Fichier config   : {config_path or '(non trouvé)'}",
+        _("  - Fichier config   : {config_path}").format(config_path=config_path or _("(non trouvé)")),
         _("  - Langue référence : {lang}").format(lang=lang),
         _("  - Fichier référence: {ref_file}").format(ref_file=ref_file),
         _("  - Fichier UPDATE   : {update_file}").format(update_file=update_file)

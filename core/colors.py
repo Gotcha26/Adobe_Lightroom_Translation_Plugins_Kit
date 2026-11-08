@@ -22,6 +22,8 @@ import os
 import sys
 from typing import Optional
 
+from core.i18n import _
+
 
 def stdin_is_interactive() -> bool:
     """
@@ -216,19 +218,19 @@ class Colors:
     # Méthodes pour formater du texte
     def success(self, text: str) -> str:
         """Formate un texte de succès (vert)."""
-        return "{var0}[OK]{var1} {text}".format(var0=self.OK, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.OK, tag=_("OK"), var1=self.RESET, text=text)
 
     def error(self, text: str) -> str:
         """Formate un texte d'erreur (rouge)."""
-        return "{var0}[ERREUR]{var1} {text}".format(var0=self.ERROR, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.ERROR, tag=_("ERREUR"), var1=self.RESET, text=text)
 
     def warning(self, text: str) -> str:
         """Formate un texte d'avertissement (jaune)."""
-        return "{var0}[ATTENTION]{var1} {text}".format(var0=self.WARNING, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.WARNING, tag=_("ATTENTION"), var1=self.RESET, text=text)
 
     def info(self, text: str) -> str:
         """Formate un texte d'information (bleu)."""
-        return "{var0}[INFO]{var1} {text}".format(var0=self.INFO, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.INFO, tag=_("INFO"), var1=self.RESET, text=text)
 
     def header(self, text: str) -> str:
         """Formate un titre/header (cyan gras)."""
@@ -252,15 +254,15 @@ class Colors:
 
     def ok_marker(self) -> str:
         """Retourne un marqueur OK vert."""
-        return "{var0}[OK]{var1}".format(var0=self.OK, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.OK, tag=_("OK"), var1=self.RESET)
 
     def error_marker(self) -> str:
         """Retourne un marqueur ERREUR rouge."""
-        return "{var0}[ERREUR]{var1}".format(var0=self.ERROR, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.ERROR, tag=_("ERREUR"), var1=self.RESET)
 
     def warn_marker(self) -> str:
         """Retourne un marqueur ATTENTION jaune."""
-        return "{var0}[ATTENTION]{var1}".format(var0=self.WARNING, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.WARNING, tag=_("ATTENTION"), var1=self.RESET)
 
     def menu_option(self, number: str, text: str) -> str:
         """Formate une option de menu."""

@@ -27,6 +27,7 @@ from typing import List, Set
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.defaults import PLUGIN_RULES_FILE
+from core.i18n import _
 
 
 # =============================================================================
@@ -223,7 +224,7 @@ def _str_list(data: dict, key: str, path: str) -> List[str]:
     """Lit une liste de chaînes dans le JSON ; avertit et ignore si invalide."""
     value = data.get(key, [])
     if not isinstance(value, list) or not all(isinstance(v, str) for v in value):
-        print(f"AVERTISSEMENT: '{key}' doit être une liste de chaînes ({path})")
+        print(_("AVERTISSEMENT: '{key}' doit être une liste de chaînes ({path})").format(key=key, path=path))
         return []
     return value
 
@@ -235,7 +236,8 @@ def _compile_list(patterns: List[str], key: str, path: str) -> List[re.Pattern]:
         try:
             compiled.append(re.compile(pattern))
         except re.error as exc:
-            print(f"AVERTISSEMENT: regex invalide dans '{key}' ({pattern!r}): {exc} ({path})")
+            print(_("AVERTISSEMENT: regex invalide dans '{key}' ({pattern}): {error} ({path})").format(
+                key=key, pattern=repr(pattern), error=exc, path=path))
     return compiled
 
 
@@ -256,10 +258,10 @@ def load_plugin_rules(plugin_path: str) -> PluginRules:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except (OSError, ValueError) as exc:
-        print(f"AVERTISSEMENT: impossible de lire {path}: {exc}")
+        print(_("AVERTISSEMENT: impossible de lire {path}: {error}").format(path=path, error=exc))
         return rules
     if not isinstance(data, dict):
-        print(f"AVERTISSEMENT: {path} doit contenir un objet JSON")
+        print(_("AVERTISSEMENT: {path} doit contenir un objet JSON").format(path=path))
         return rules
 
     rules.ignore_exact |= set(_str_list(data, "ignore_exact", path))

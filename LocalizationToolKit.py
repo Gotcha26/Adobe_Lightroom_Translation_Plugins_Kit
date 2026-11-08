@@ -271,7 +271,7 @@ class ConfigManager:
                 # Ajouter une ligne vide si le fichier n'est pas vide et ne se termine pas par une ligne vide
                 if existing_lines and existing_lines[-1].strip():
                     f.write('\n')
-                f.write(f"# {_('Dossier temporaire pour les outils de localisation')}\n")
+                f.write("# " + _("Dossier temporaire pour les outils de localisation") + "\n")
                 f.write(f"{ignore_line}\n")
 
             print(f"     {c.OK}[OK]{c.RESET} " + _("Ajouté '{line}' au .gitignore").format(line=ignore_line))
@@ -711,7 +711,7 @@ class MainMenu:
         print(c.separator())
         if self.has_translated_strings():
             print(c.menu_option("6", _("AUTO-SYNC ⭐    - Maintenir à jour")))
-            print(f"                       {_('(code lua + traductions)')}")
+            print("                       " + _("(code lua + traductions)"))
         else:
             print(f"  {c.DIM}6. " + _("AUTO-SYNC      - Maintenir à jour") + " "
                   + _("(aucun TranslatedStrings)") + f"{c.RESET}")
@@ -813,7 +813,7 @@ class MainMenu:
         # Afficher la configuration actuelle
         plugin_path = self.config.get('plugin_path', '')
         temp_dir = self.config.get('temp_dir', DEFAULT_I18N_DIR)
-        i18n_path = get_i18n_kit_path(plugin_path) if plugin_path else '(non défini)'
+        i18n_path = get_i18n_kit_path(plugin_path) if plugin_path else _('(non défini)')
         prefix = self.config.get('prefix', DEFAULT_PREFIX)
         lang = self.config.get('lang', 'en')
         auto_gitignore = self.config.get("auto_add_gitignore", True)
@@ -854,7 +854,7 @@ class MainMenu:
                     formatted = self.config._format_timestamp(timestamp)
                     print(f"     {c.KEY}{tool:20}{c.RESET} : {c.VALUE}{formatted}{c.RESET}")
                 else:
-                    print(f"     {c.KEY}{tool:20}{c.RESET} : {c.DIM}(aucune){c.RESET}")
+                    print(f"     {c.KEY}{tool:20}{c.RESET} : {c.DIM}" + _("(aucune)") + f"{c.RESET}")
             print()
 
         print(c.separator())

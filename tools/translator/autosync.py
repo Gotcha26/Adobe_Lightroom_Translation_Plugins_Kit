@@ -148,7 +148,7 @@ def menu_autosync(plugin_path: str):
     translation_files = find_all_translation_files(plugin_path)
 
     if not translation_files:
-        print(c.warning("Aucun fichier TranslatedStrings_xx.txt trouvé dans le plugin."))
+        print(c.warning(_("Aucun fichier TranslatedStrings_xx.txt trouvé dans le plugin.")))
         print()
         print(_("{var0}Première installation ?{var1}").format(var0=c.INFO, var1=c.RESET))
         print(_("  → Utilisez la commande INSTALL pour installer les fichiers depuis l'extraction"))

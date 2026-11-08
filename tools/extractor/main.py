@@ -155,7 +155,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=_("Extrait les chaînes localisables d'un plugin Lightroom Classic"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        epilog=_("""
 Exemples:
   # Mode interactif (menu)
   python -m tools.extractor.main
@@ -164,7 +164,7 @@ Exemples:
   # Mode CLI
   python -m tools.extractor.main --plugin-path ./piwigoPublish.lrplugin
   python -m tools.extractor.main --plugin-path ./plugin --output-dir ./output
-        """
+        """)
     )
 
     parser.add_argument('--default-plugin', default="",
@@ -174,9 +174,9 @@ Exemples:
     parser.add_argument('--yes', action='store_true',
                         help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
     parser.add_argument('--output-dir', default=None,
-                        help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
+                        help=_("Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)"))
     parser.add_argument('--prefix', default=DEFAULT_PREFIX,
-                        help=f'Préfixe des clés LOC (défaut: {DEFAULT_PREFIX})')
+                        help=_("Préfixe des clés LOC (défaut: {prefix})").format(prefix=DEFAULT_PREFIX))
     # Charger la langue par défaut depuis config.json
     try:
         from tools.translator.config_loader import get_reference_lang
@@ -186,13 +186,13 @@ Exemples:
         default_lang = 'en'
 
     parser.add_argument('--lang', default=default_lang,
-                        help=f'Code langue (défaut: {default_lang})')
+                        help=_("Code langue (défaut: {lang})").format(lang=default_lang))
     parser.add_argument('--exclude', action='append', default=[],
-                        help='Fichiers à exclure (répétable)')
+                        help=_("Fichiers à exclure (répétable)"))
     parser.add_argument('--min-length', type=int, default=3,
-                        help='Longueur minimale des chaînes (défaut: 3)')
+                        help=_("Longueur minimale des chaînes (défaut: 3)"))
     parser.add_argument('--no-ignore-log', action='store_true',
-                        help='NE PAS ignorer les lignes de log')
+                        help=_("NE PAS ignorer les lignes de log"))
     return parser
 
 
