@@ -52,7 +52,7 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative, fallback_backup_dir
 from core.colors import c, stdin_is_interactive
 from core.i18n import _
 import glob
@@ -347,7 +347,9 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 # Backup de session : le premier écrivain gagne (état d'origine)
                 backup_once(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
             else:
-                shutil.copy2(file_path, file_path + '.bak')
+                # Repli : sous <temp_dir>/backups, jamais un .bak à côté du fichier (#36)
+                backup_once(file_path, os.path.dirname(file_path),
+                            fallback_backup_dir(os.path.dirname(file_path)))
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 

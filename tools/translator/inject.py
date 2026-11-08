@@ -34,6 +34,7 @@ from .common import (
 from .config_loader import get_reference_lang
 from core.i18n import _
 from core.paths import backup_once, local_backup_path, get_translator_backup_dir
+from core.paths import fallback_backup_dir, format_backup_message
 
 
 def _marker_value(line, markers):
@@ -141,7 +142,7 @@ def run_inject(translate_file: str, target_file: str,
         target_file: Fichier TranslatedStrings_xx.txt cible
         update_dir: Répertoire contenant UPDATE_{lang}.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
-        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, repli sous <temp_dir>/backups du dossier du fichier, jamais à la racine du plugin)
 
     Returns:
         Statistiques d'injection
@@ -224,7 +225,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
         locales_dir: Répertoire des fichiers TranslatedStrings_*.txt
         update_dir: Répertoire UPDATE (défaut: translate_dir)
         create_backup: Créer des sauvegardes .bak
-        backup_dir: Répertoire des sauvegardes (défaut: backups/ à côté de chaque fichier cible)
+        backup_dir: Répertoire des sauvegardes (défaut: repli sous <temp_dir>/backups du dossier de chaque fichier cible)
 
     Returns:
         Statistiques par langue
@@ -307,7 +308,8 @@ def menu_inject(plugin_path: str = ""):
             print(_("  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=stats['total'], var4=c.RESET))
             print()
             print(c.success(_("Fichier mis à jour: {var0}{target_file}{var2}").format(var0=c.VALUE, target_file=target_file, var2=c.RESET)))
-            print(_("{var0}  (Backup .bak créé dans backups/){var1}").format(var0=c.DIM, var1=c.RESET))
+            backup_dir = get_translator_backup_dir(plugin_path) or fallback_backup_dir(os.path.dirname(target_file))
+            print(f"{c.DIM}  {format_backup_message(backup_dir, plugin_path)}{c.RESET}")
 
             return stats
 
@@ -350,7 +352,9 @@ def menu_inject(plugin_path: str = ""):
                         from_ref = stats['from_ref']
                         print(_("  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} traduites + {var8}{from_ref}{var10} EN par défaut").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, translated=translated, var7=c.RESET, var8=c.CYAN, from_ref=from_ref, var10=c.RESET))
                 print()
-                print(c.success(_("Fichiers mis à jour (backups .bak créés)")))
+                print(c.success(_("Fichiers mis à jour")))
+                backup_dir = get_translator_backup_dir(plugin_path) or fallback_backup_dir(locales_dir)
+                print(f"{c.DIM}  {format_backup_message(backup_dir, plugin_path)}{c.RESET}")
 
                 return results
             else:

@@ -35,6 +35,7 @@ from .common import (
 from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
 from core.paths import backup_once, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
+from core.paths import fallback_backup_dir, format_backup_message
 
 
 # =============================================================================
@@ -54,7 +55,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         reference_path: Fichier de référence (ou répertoire)
         locales_dir: Répertoire des fichiers de langues
         update_dir: Répertoire contenant UPDATE_{lang}.json (optionnel)
-        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, repli sous <temp_dir>/backups du dossier du fichier, jamais à la racine du plugin)
 
     Returns:
         Dict par langue avec les statistiques
@@ -331,7 +332,10 @@ def menu_sync(plugin_path: str = ""):
             print()
             print(generate_sync_report(results))
             print()
-            print(c.success(_("Fichiers mis à jour (backups .bak créés)")))
+            print(c.success(_("Fichiers mis à jour")))
+            backup_dir = get_translator_backup_dir(plugin_path) or fallback_backup_dir(
+                locales_dir or (resolve_path(ref_path)[0] if ref_path else update_dir))
+            print(f"{c.DIM}  {format_backup_message(backup_dir, plugin_path)}{c.RESET}")
             print()
             print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
             print(_("{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}").format(var0=c.DIM, var1=c.RESET))

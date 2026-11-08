@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalizationToolKit 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:22+0100\n"
+"POT-Creation-Date: 2026-11-08 16:26+0100\n"
 "PO-Revision-Date: 2026-11-08 15:15+0100\n"
 "Last-Translator: Julien Moreau <contact@julien-moreau.fr>\n"
 "Language-Team: English\n"
@@ -60,12 +60,12 @@ msgstr "Plugin path"
 
 #: LocalizationToolKit.py:198 LocalizationToolKit.py:811
 #: tools/extractor/menu.py:113 tools/extractor/menu.py:116
-#: tools/extractor/menu.py:196 tools/toolbox/delete_temp_dir.py:216
+#: tools/extractor/menu.py:196 tools/toolbox/delete_temp_dir.py:205
 msgid "Dossier temporaire"
 msgstr "Temporary folder"
 
 #: LocalizationToolKit.py:199 LocalizationToolKit.py:812
-#: tools/toolbox/delete_temp_dir.py:217
+#: tools/toolbox/delete_temp_dir.py:206
 msgid "Chemin complet"
 msgstr "Full path"
 
@@ -251,7 +251,7 @@ msgstr "(no TranslatedStrings)"
 msgid "CONFIGURATION"
 msgstr "SETTINGS"
 
-#: LocalizationToolKit.py:705 tools/toolbox/restore_backup.py:291
+#: LocalizationToolKit.py:705 tools/toolbox/restore_backup.py:266
 msgid "Configuration du plugin"
 msgstr "Plugin settings"
 
@@ -274,7 +274,7 @@ msgstr "Current:"
 #: LocalizationToolKit.py:897 tools/applicator/menu.py:171
 #: tools/extractor/menu.py:152 tools/extractor/menu.py:223
 #: tools/extractor/menu.py:239 tools/extractor/menu.py:257
-#: tools/toolbox/delete_temp_dir.py:178
+#: tools/toolbox/delete_temp_dir.py:167
 msgid "Exemples:"
 msgstr "Examples:"
 
@@ -385,9 +385,9 @@ msgstr "Enter the number of a setting to modify, or 0 to go back"
 
 #: LocalizationToolKit.py:848 LocalizationToolKit.py:922
 #: core/menu_helpers.py:81 core/menu_helpers.py:115
-#: tools/applicator/main.py:712 tools/applicator/main.py:730
+#: tools/applicator/main.py:714 tools/applicator/main.py:732
 #: tools/applicator/menu.py:318 tools/extractor/menu.py:332
-#: tools/toolbox/delete_temp_dir.py:283 tools/translator/addlang.py:441
+#: tools/toolbox/delete_temp_dir.py:272 tools/translator/addlang.py:441
 #: tools/translator/main.py:102 tools/translator/main.py:181
 msgid "Votre choix:"
 msgstr "Your choice:"
@@ -670,16 +670,21 @@ msgstr "Existing LOC keys"
 msgid "Détails"
 msgstr "Details"
 
-#: core/paths.py:286
+#: core/paths.py:291
+#, python-brace-format
+msgid "Sauvegardes .bak : {count} fichier(s) dans {folder}"
+msgstr ".bak backups: {count} file(s) in {folder}"
+
+#: core/paths.py:332
 msgid "Chemin vide"
 msgstr "Empty path"
 
-#: core/paths.py:291
+#: core/paths.py:337
 #, python-brace-format
 msgid "Répertoire introuvable: {normalized}"
 msgstr "Directory not found: {normalized}"
 
-#: core/paths.py:294
+#: core/paths.py:340
 msgid "Ce dossier ne se termine pas par .lrplugin"
 msgstr "This folder does not end with .lrplugin"
 
@@ -829,7 +834,7 @@ msgstr "  - {n} files with replacements"
 msgid "  - {n} remplacements prévus"
 msgstr "  - {n} replacements planned"
 
-#: tools/applicator/main.py:295 tools/applicator/main.py:448
+#: tools/applicator/main.py:295 tools/applicator/main.py:450
 msgid "Fichier introuvable"
 msgstr "File not found"
 
@@ -842,357 +847,357 @@ msgstr "Not UTF-8 encoded, file skipped: {error}"
 msgid "Chaine non trouvee ou deja localisee"
 msgstr "String not found or already localized"
 
-#: tools/applicator/main.py:376
+#: tools/applicator/main.py:378
 #, python-brace-format
 msgid "ERREUR: Répertoire du plugin introuvable: {path}"
 msgstr "ERROR: Plugin directory not found: {path}"
 
-#: tools/applicator/main.py:383
+#: tools/applicator/main.py:385
 msgid "ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"
 msgstr "ERROR: No extraction found in __i18n_tmp__/Extractor/"
 
-#: tools/applicator/main.py:384
+#: tools/applicator/main.py:386
 msgid "        Lancez d'abord Extractor sur ce plugin."
 msgstr "        Run Extractor on this plugin first."
 
-#: tools/applicator/main.py:386
+#: tools/applicator/main.py:388
 #, python-brace-format
 msgid "* Auto-détection: {dir}"
 msgstr "* Auto-detection: {dir}"
 
-#: tools/applicator/main.py:389
+#: tools/applicator/main.py:391
 #, python-brace-format
 msgid "ERREUR: Répertoire Extractor introuvable: {dir}"
 msgstr "ERROR: Extractor directory not found: {dir}"
 
-#: tools/applicator/main.py:411
+#: tools/applicator/main.py:413
 msgid "ERREUR: Impossible de charger les remplacements"
 msgstr "ERROR: Cannot load replacements"
 
-#: tools/applicator/main.py:418
+#: tools/applicator/main.py:420
 msgid "Aucun remplacement à effectuer"
 msgstr "No replacements to perform"
 
-#: tools/applicator/main.py:429
+#: tools/applicator/main.py:431
 #, python-brace-format
 msgid "Traitement de {file}..."
 msgstr "Processing {file}..."
 
-#: tools/applicator/main.py:441
+#: tools/applicator/main.py:443
 #, python-brace-format
 msgid "  * {n} chaîne(s) remplacée(s)"
 msgstr "  * {n} string(s) replaced"
 
-#: tools/applicator/main.py:444
+#: tools/applicator/main.py:446
 msgid "  - Aucun remplacement"
 msgstr "  - No replacements"
 
-#: tools/applicator/main.py:447
+#: tools/applicator/main.py:449
 #, python-brace-format
 msgid "  ! Fichier introuvable: {file}"
 msgstr "  ! File not found: {file}"
 
-#: tools/applicator/main.py:456 tools/toolbox/delete_temp_dir.py:472
-#: tools/toolbox/restore_backup.py:460
+#: tools/applicator/main.py:458 tools/toolbox/delete_temp_dir.py:461
+#: tools/toolbox/restore_backup.py:435
 msgid "RÉSUMÉ"
 msgstr "SUMMARY"
 
-#: tools/applicator/main.py:458
+#: tools/applicator/main.py:460
 msgid "Fichiers traités"
 msgstr "Files processed"
 
-#: tools/applicator/main.py:459
+#: tools/applicator/main.py:461
 msgid "Fichiers modifiés"
 msgstr "Files modified"
 
-#: tools/applicator/main.py:460
+#: tools/applicator/main.py:462
 msgid "Lignes modifiées"
 msgstr "Lines modified"
 
-#: tools/applicator/main.py:461
+#: tools/applicator/main.py:463
 msgid "Chaînes remplacées"
 msgstr "Strings replaced"
 
-#: tools/applicator/main.py:462
+#: tools/applicator/main.py:464
 msgid "Chaînes ignorées"
 msgstr "Strings skipped"
 
-#: tools/applicator/main.py:464
+#: tools/applicator/main.py:466
 msgid "Sortie Applicator"
 msgstr "Applicator output"
 
-#: tools/applicator/main.py:466
+#: tools/applicator/main.py:468
 msgid "Backups"
 msgstr "Backups"
 
-#: tools/applicator/main.py:467
+#: tools/applicator/main.py:469
 msgid "Rapport détaillé"
 msgstr "Detailed report"
 
-#: tools/applicator/main.py:470
+#: tools/applicator/main.py:472
 msgid "MODE DRY-RUN: Aucun fichier n'a été modifié"
 msgstr "DRY-RUN MODE: No files were modified"
 
-#: tools/applicator/main.py:473
+#: tools/applicator/main.py:475
 msgid "IMPORTANT: Redémarrez Lightroom après les modifications!"
 msgstr "IMPORTANT: Restart Lightroom after modifications!"
 
-#: tools/applicator/main.py:474
+#: tools/applicator/main.py:476
 msgid "           (le rechargement du plugin ne suffit pas)"
 msgstr "           (reloading the plugin is not enough)"
 
-#: tools/applicator/main.py:527 tools/applicator/main.py:537
+#: tools/applicator/main.py:529 tools/applicator/main.py:539
 msgid "Lancement de AUTOSYNC..."
 msgstr "Launching AUTOSYNC..."
 
-#: tools/applicator/main.py:544
+#: tools/applicator/main.py:546
 #, python-brace-format
 msgid "Impossible de lancer AUTOSYNC: {error}"
 msgstr "Cannot start AUTOSYNC: {error}"
 
-#: tools/applicator/main.py:546
+#: tools/applicator/main.py:548
 #, python-brace-format
 msgid "autosync.py introuvable: {path}"
 msgstr "autosync.py not found: {path}"
 
-#: tools/applicator/main.py:548
+#: tools/applicator/main.py:550
 #, python-brace-format
 msgid "Erreur lors du lancement de AUTOSYNC: {error}"
 msgstr "Error starting AUTOSYNC: {error}"
 
-#: tools/applicator/main.py:595
+#: tools/applicator/main.py:597
 msgid "Préparer d'autres langues ?"
 msgstr "Prepare other languages?"
 
-#: tools/applicator/main.py:598
+#: tools/applicator/main.py:600
 msgid "Le fichier qui vient d'être installé ne contient aucune traduction :"
 msgstr ""
 "The file that has just been installed does not contain any translations:"
 
-#: tools/applicator/main.py:599
+#: tools/applicator/main.py:601
 msgid "il sert de base pour que des traducteurs puissent le remplir."
 msgstr "it serves as a basis for translators to fill in."
 
-#: tools/applicator/main.py:600
+#: tools/applicator/main.py:602
 msgid ""
 "On peut en créer un par langue supplémentaire, pour leur simplifier la vie."
 msgstr ""
 "You can create one for each additional language to make their lives easier."
 
-#: tools/applicator/main.py:602
+#: tools/applicator/main.py:604
 msgid "Langues proposées :"
 msgstr "Languages offered:"
 
-#: tools/applicator/main.py:613
+#: tools/applicator/main.py:615
 msgid "Entrez les codes séparés par des virgules, ou ENTRÉE pour passer :"
 msgstr "Enter codes separated by commas, or press ENTER to skip:"
 
-#: tools/applicator/main.py:614
+#: tools/applicator/main.py:616
 msgid "Exemple : de, it, es"
 msgstr "Example: fr, de, it, es"
 
-#: tools/applicator/main.py:617
+#: tools/applicator/main.py:619
 msgid "Langues :"
 msgstr "Languages:"
 
-#: tools/applicator/main.py:637
+#: tools/applicator/main.py:639
 #, python-brace-format
 msgid "Ignoré(s) : {codes}"
 msgstr "Ignored: {codes}"
 
-#: tools/applicator/main.py:651
+#: tools/applicator/main.py:653
 #, python-brace-format
 msgid "  {name} existe déjà — ignoré"
 msgstr "  {name} already exists — ignored"
 
-#: tools/applicator/main.py:671
+#: tools/applicator/main.py:673
 #, python-brace-format
 msgid "  {name} — créé"
 msgstr "  {name} — created"
 
-#: tools/applicator/main.py:673
+#: tools/applicator/main.py:675
 #, python-brace-format
 msgid "  {name} — erreur : {error}"
 msgstr "  {name} — error: {error}"
 
-#: tools/applicator/main.py:685
+#: tools/applicator/main.py:687
 #, python-brace-format
 msgid "Fichier mis en place : {name}"
 msgstr "File placed: {name}"
 
-#: tools/applicator/main.py:688
+#: tools/applicator/main.py:690
 #, python-brace-format
 msgid "Impossible de copier le fichier: {error}"
 msgstr "Cannot copy file: {error}"
 
-#: tools/applicator/main.py:703
+#: tools/applicator/main.py:705
 msgid "Que voulez-vous faire ?"
 msgstr "What would you like to do?"
 
-#: tools/applicator/main.py:707
+#: tools/applicator/main.py:709
 msgid "Choisir un autre fichier depuis une extraction précédente."
 msgstr "Select another file from a previous extraction."
 
-#: tools/applicator/main.py:708
+#: tools/applicator/main.py:710
 msgid "Importer un fichier depuis l'extérieur"
 msgstr "Import a file from outside"
 
-#: tools/applicator/main.py:709
+#: tools/applicator/main.py:711
 msgid "Sortir sans copier"
 msgstr "Exit without copying"
 
-#: tools/applicator/main.py:717
+#: tools/applicator/main.py:719
 msgid "Fichiers disponibles dans l'extraction :"
 msgstr "Available files in the extraction:"
 
-#: tools/applicator/main.py:727
+#: tools/applicator/main.py:729
 msgid "Retour"
 msgstr "Back"
 
-#: tools/applicator/main.py:736 tools/applicator/main.py:738
-#: tools/applicator/main.py:746 tools/applicator/main.py:757
+#: tools/applicator/main.py:738 tools/applicator/main.py:740
+#: tools/applicator/main.py:748 tools/applicator/main.py:759
 msgid "Rien copié"
 msgstr "Nothing copied"
 
-#: tools/applicator/main.py:744
+#: tools/applicator/main.py:746
 msgid "Chemin du fichier TranslatedStrings_xx.txt :"
 msgstr "TranslatedStrings_xx.txt file path:"
 
-#: tools/applicator/main.py:751
+#: tools/applicator/main.py:753
 #, python-brace-format
 msgid "Fichier introuvable: {path}"
 msgstr "File not found: {path}"
 
-#: tools/applicator/main.py:770
+#: tools/applicator/main.py:772
 msgid "GESTION DES TRADUCTIONS"
 msgstr "TRANSLATION MANAGEMENT"
 
-#: tools/applicator/main.py:785
+#: tools/applicator/main.py:787
 msgid "Aucun fichier TranslatedStrings_xx.txt à la racine."
 msgstr "No TranslatedStrings_xx.txt file at plugin root."
 
-#: tools/applicator/main.py:786
+#: tools/applicator/main.py:788
 msgid "  1. Lancez l'Extractor sur le plugin"
 msgstr "  1. Run Extractor on the plugin"
 
-#: tools/applicator/main.py:787
+#: tools/applicator/main.py:789
 msgid "  2. Copiez le fichier TranslatedStrings_xx.txt"
 msgstr "  2. Copy the TranslatedStrings_xx.txt file"
 
-#: tools/applicator/main.py:788
+#: tools/applicator/main.py:790
 msgid "     généré à la racine du plugin"
 msgstr "     generated to the plugin root"
 
-#: tools/applicator/main.py:789
+#: tools/applicator/main.py:791
 msgid "  3. Éditez le fichier pour ajouter vos traductions"
 msgstr "  3. Edit the file to add your translations"
 
-#: tools/applicator/main.py:794
+#: tools/applicator/main.py:796
 msgid ""
 "Il semble que ce soit votre première installation d'une langue à traduire."
 msgstr "It seems this is your first language installation for translation."
 
-#: tools/applicator/main.py:795
+#: tools/applicator/main.py:797
 msgid ""
 "Utiliseriez-vous le dernier fichier extrait depuis Extractor comme "
 "référence ?"
 msgstr "Would you use the last file extracted from Extractor as a reference?"
 
-#: tools/applicator/main.py:797
+#: tools/applicator/main.py:799
 msgid "Il sera alors simplement mis en place à la racine du plugin,"
 msgstr "It will then simply be placed at the root of the plugin,"
 
-#: tools/applicator/main.py:798
+#: tools/applicator/main.py:800
 msgid "prêt pour de futurs traductions."
 msgstr "ready for future translations."
 
-#: tools/applicator/main.py:799
+#: tools/applicator/main.py:801
 msgid "Rien d'autre à faire si ce n'est d'inciter des contributeurs à"
 msgstr "Nothing else to do except encourage contributors to"
 
-#: tools/applicator/main.py:800
+#: tools/applicator/main.py:802
 msgid "venir enrichir la communauté autour de ce plugin."
 msgstr "contribute to the community around this plugin."
 
-#: tools/applicator/main.py:803
+#: tools/applicator/main.py:805
 #, python-brace-format
 msgid "  →  <plugin>\\{template_name}"
 msgstr "  →  <plugin>\\{template_name}"
 
-#: tools/applicator/main.py:807
+#: tools/applicator/main.py:809
 msgid "Copier le fichier? [O/n]:"
 msgstr "Copy the file? [Y/n]:"
 
-#: tools/applicator/main.py:829
+#: tools/applicator/main.py:831
 msgid "Plusieurs langues détectées à la racine du plugin :"
 msgstr "Multiple languages detected at the plugin root:"
 
-#: tools/applicator/main.py:833
+#: tools/applicator/main.py:835
 msgid ""
 "Cela indique une mise à jour manuelle sans passer par les outils standard."
 msgstr "This indicates a manual update without using the standard tools."
 
-#: tools/applicator/main.py:834
+#: tools/applicator/main.py:836
 msgid "Lancement automatique de AUTOSYNC pour synchroniser l'ensemble."
 msgstr "Automatic AUTOSYNC launch to synchronize everything."
 
-#: tools/applicator/main.py:837
+#: tools/applicator/main.py:839
 msgid "Lancer AUTOSYNC ? [O/n]:"
 msgstr "Run AUTOSYNC? [Y/n]:"
 
-#: tools/applicator/main.py:841
+#: tools/applicator/main.py:843
 msgid "AUTOSYNC non lancé"
 msgstr "AUTOSYNC not started"
 
-#: tools/applicator/main.py:848
+#: tools/applicator/main.py:850
 msgid "Vous venez certainement de mettre à jour vos clés dans votre lua."
 msgstr "You have likely just updated your keys in your lua."
 
-#: tools/applicator/main.py:849
+#: tools/applicator/main.py:851
 #, python-brace-format
 msgid "Un fichier {name} se trouve déjà à la racine de votre plugin."
 msgstr "A {name} file already exists at your plugin root."
 
-#: tools/applicator/main.py:850
+#: tools/applicator/main.py:852
 msgid ""
 "Il est très fortement conseillé de le remplacer afin de le mettre à jour avec"
 msgstr "It is strongly recommended to replace it in order to update it with"
 
-#: tools/applicator/main.py:851
+#: tools/applicator/main.py:853
 msgid "votre dernière mise à jour."
 msgstr "your latest update."
 
-#: tools/applicator/main.py:854
+#: tools/applicator/main.py:856
 msgid "Remplacer le fichier déjà présent? [O/n]:"
 msgstr "Replace the existing file? [Y/n]:"
 
-#: tools/applicator/main.py:859
+#: tools/applicator/main.py:861
 #, python-brace-format
 msgid "Fichier remplacé : {name}"
 msgstr "File replaced: {name}"
 
-#: tools/applicator/main.py:862
+#: tools/applicator/main.py:864
 #, python-brace-format
 msgid "Impossible de remplacer le fichier: {error}"
 msgstr "Unable to replace file: {error}"
 
-#: tools/applicator/main.py:864
+#: tools/applicator/main.py:866
 msgid "Fichier non remplacé"
 msgstr "File not replaced"
 
-#: tools/applicator/main.py:868
+#: tools/applicator/main.py:870
 msgid "Fichier(s) de traduction trouvé(s) à la racine du plugin :"
 msgstr "Translation file(s) found at plugin root:"
 
-#: tools/applicator/main.py:872
+#: tools/applicator/main.py:874
 msgid "Aucun template d'extraction ne correspond. Rien à faire."
 msgstr "No matching extraction template. Nothing to do."
 
-#: tools/applicator/main.py:878
+#: tools/applicator/main.py:880
 msgid "Applique les localisations generees par Extractor au plugin"
 msgstr "Apply localizations generated by Extractor to the plugin"
 
-#: tools/applicator/main.py:880
+#: tools/applicator/main.py:882
 msgid ""
 "\n"
 "Exemples:\n"
@@ -1232,33 +1237,33 @@ msgstr ""
 "arguments.\n"
 "        "
 
-#: tools/applicator/main.py:899 tools/extractor/main.py:171
+#: tools/applicator/main.py:901 tools/extractor/main.py:171
 #: tools/translator/main.py:263
 msgid "Plugin pré-configuré pour le menu interactif"
 msgstr "Pre-configured plugin for the interactive menu"
 
-#: tools/applicator/main.py:901 tools/extractor/main.py:173
+#: tools/applicator/main.py:903 tools/extractor/main.py:173
 msgid "Chemin vers le répertoire du plugin (active le mode CLI)"
 msgstr "Path to the plugin directory (enables CLI mode)"
 
-#: tools/applicator/main.py:903
+#: tools/applicator/main.py:905
 msgid "Aucune question : ne pas lancer la gestion des fichiers de traduction"
 msgstr "No questions: do not launch translation file management"
 
-#: tools/applicator/main.py:905
+#: tools/applicator/main.py:907
 msgid "Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)"
 msgstr ""
 "Extractor directory (default: auto-detection of __i18n_tmp__/Extractor/)"
 
-#: tools/applicator/main.py:907
+#: tools/applicator/main.py:909
 msgid "Mode simulation (affiche sans modifier)"
 msgstr "Simulation mode (display without modifying)"
 
-#: tools/applicator/main.py:909
+#: tools/applicator/main.py:911
 msgid "Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)"
 msgstr "Do not create .bak backup files (default: backup enabled)"
 
-#: tools/applicator/main.py:926
+#: tools/applicator/main.py:928
 msgid "Application annulée"
 msgstr "Application cancelled"
 
@@ -1342,7 +1347,7 @@ msgid "Modifier une option"
 msgstr "Modify an option"
 
 #: tools/applicator/menu.py:169 tools/extractor/menu.py:150
-#: tools/toolbox/delete_temp_dir.py:176
+#: tools/toolbox/delete_temp_dir.py:165
 msgid "Chemin du plugin Lightroom"
 msgstr "Lightroom plugin path"
 
@@ -2198,67 +2203,67 @@ msgstr "GB"
 msgid "To"
 msgstr "TB"
 
-#: tools/toolbox/delete_temp_dir.py:167 tools/toolbox/restore_backup.py:280
+#: tools/toolbox/delete_temp_dir.py:156 tools/toolbox/restore_backup.py:255
 #, python-brace-format
 msgid "Plugin: {var0}{var1}{var2}"
 msgstr "Plugin: {var0}{var1}{var2}"
 
-#: tools/toolbox/delete_temp_dir.py:168 tools/toolbox/restore_backup.py:281
+#: tools/toolbox/delete_temp_dir.py:157 tools/toolbox/restore_backup.py:256
 #, python-brace-format
 msgid "{var0}  Chemin: {normalized}{var2}"
 msgstr "{var0}  Path: {normalized}{var2}"
 
-#: tools/toolbox/delete_temp_dir.py:172 tools/toolbox/restore_backup.py:285
+#: tools/toolbox/delete_temp_dir.py:161 tools/toolbox/restore_backup.py:260
 #, python-brace-format
 msgid "Plugin par défaut invalide: {warning}"
 msgstr "Invalid default plugin: {warning}"
 
-#: tools/toolbox/delete_temp_dir.py:183
+#: tools/toolbox/delete_temp_dir.py:172
 msgid "Chemin du plugin: "
 msgstr "Plugin path: "
 
-#: tools/toolbox/delete_temp_dir.py:197
+#: tools/toolbox/delete_temp_dir.py:186
 msgid "            Êtes-vous sûr que c'est un plugin Lightroom?"
 msgstr "            Are you sure this is a Lightroom plugin?"
 
-#: tools/toolbox/delete_temp_dir.py:198
+#: tools/toolbox/delete_temp_dir.py:187
 msgid "Continuer quand même? [o/N]: "
 msgstr "Continue anyway? [y/N]: "
 
-#: tools/toolbox/delete_temp_dir.py:221
+#: tools/toolbox/delete_temp_dir.py:210
 msgid "Le dossier temporaire n'existe pas."
 msgstr "Temporary folder does not exist."
 
-#: tools/toolbox/delete_temp_dir.py:222
+#: tools/toolbox/delete_temp_dir.py:211
 msgid "       Rien à supprimer."
 msgstr "       Nothing to delete."
 
-#: tools/toolbox/delete_temp_dir.py:229
+#: tools/toolbox/delete_temp_dir.py:218
 msgid "CONTENU DU DOSSIER TEMPORAIRE"
 msgstr "TEMPORARY FOLDER CONTENTS"
 
-#: tools/toolbox/delete_temp_dir.py:234
+#: tools/toolbox/delete_temp_dir.py:223
 #, python-brace-format
 msgid ""
 "  {var0}{var1:25}{var2} : {var3}{var4:4}{var5} fichiers, {var6}{var7}{var8}"
 msgstr ""
 "  {var0}{var1:25}{var2} : {var3}{var4:4}{var5} files, {var6}{var7}{var8}"
 
-#: tools/toolbox/delete_temp_dir.py:238
+#: tools/toolbox/delete_temp_dir.py:227
 #, python-brace-format
 msgid "{var0}TOTAL: {total_files} fichiers, {var2}{var3}"
 msgstr "{var0}TOTAL: {total_files} files, {var2}{var3}"
 
-#: tools/toolbox/delete_temp_dir.py:258
+#: tools/toolbox/delete_temp_dir.py:247
 msgid "Que voulez-vous supprimer?"
 msgstr "What do you want to delete?"
 
-#: tools/toolbox/delete_temp_dir.py:266
+#: tools/toolbox/delete_temp_dir.py:255
 #, python-brace-format
 msgid "  {var0}1{var1}. {var2}Supprimer UNIQUEMENT les backups{var3}"
 msgstr "  {var0}1{var1}. {var2}Delete ONLY backups{var3}"
 
-#: tools/toolbox/delete_temp_dir.py:267
+#: tools/toolbox/delete_temp_dir.py:256
 #, python-brace-format
 msgid ""
 "     {var0}{var1} session(s) de backup • {total_backup_files} fichiers • "
@@ -2267,76 +2272,76 @@ msgstr ""
 "     {var0}{var1} backup session(s) • {total_backup_files} files • {var3}"
 "{var4}"
 
-#: tools/toolbox/delete_temp_dir.py:269
+#: tools/toolbox/delete_temp_dir.py:258
 #, python-brace-format
 msgid "  {var0}1. Supprimer UNIQUEMENT les backups (aucun backup trouvé){var1}"
 msgstr "  {var0}1. Delete ONLY backups (no backup found){var1}"
 
-#: tools/toolbox/delete_temp_dir.py:274
+#: tools/toolbox/delete_temp_dir.py:263
 #, python-brace-format
 msgid "  {var0}2{var1}. {var2}Supprimer TOUT le dossier temporaire{var3}"
 msgstr "  {var0}2{var1}. {var2}Delete ENTIRE temporary folder{var3}"
 
-#: tools/toolbox/delete_temp_dir.py:275
+#: tools/toolbox/delete_temp_dir.py:264
 #, python-brace-format
 msgid "     {var0}Tout le contenu • {total_files} fichiers • {var2}{var3}"
 msgstr "     {var0}All contents • {total_files} files • {var2}{var3}"
 
-#: tools/toolbox/delete_temp_dir.py:279 tools/toolbox/restore_backup.py:236
+#: tools/toolbox/delete_temp_dir.py:268 tools/toolbox/restore_backup.py:211
 #, python-brace-format
 msgid "  {var0}0{var1}. {var2}Annuler{var3}"
 msgstr "  {var0}0{var1}. {var2}Cancel{var3}"
 
-#: tools/toolbox/delete_temp_dir.py:289
+#: tools/toolbox/delete_temp_dir.py:278
 msgid "Aucun backup à supprimer"
 msgstr "No backup to delete"
 
-#: tools/toolbox/delete_temp_dir.py:296
+#: tools/toolbox/delete_temp_dir.py:285
 msgid "Choix invalide. Entrez 0, 1 ou 2"
 msgstr "Invalid choice. Enter 0, 1 or 2"
 
-#: tools/toolbox/delete_temp_dir.py:314
+#: tools/toolbox/delete_temp_dir.py:303
 #, python-brace-format
 msgid "{var0}{var1}!!! ATTENTION - OPÉRATION IRRÉVERSIBLE !!!{var2}"
 msgstr "{var0}{var1}!!! WARNING - IRREVERSIBLE OPERATION !!!{var2}"
 
-#: tools/toolbox/delete_temp_dir.py:319
+#: tools/toolbox/delete_temp_dir.py:308
 #, python-brace-format
 msgid "Cette opération va {var0}SUPPRIMER DÉFINITIVEMENT{var1}:"
 msgstr "This operation will {var0}PERMANENTLY DELETE{var1}:"
 
-#: tools/toolbox/delete_temp_dir.py:322
+#: tools/toolbox/delete_temp_dir.py:311
 #, python-brace-format
 msgid "{var0}Vous perdrez:{var1}"
 msgstr "{var0}You will lose:{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:323
+#: tools/toolbox/delete_temp_dir.py:312
 msgid "  - Toutes les extractions précédentes"
 msgstr "  - All previous extractions"
 
-#: tools/toolbox/delete_temp_dir.py:324
+#: tools/toolbox/delete_temp_dir.py:313
 msgid "  - Tous les fichiers de backup (.bak)"
 msgstr "  - All backup files (.bak)"
 
-#: tools/toolbox/delete_temp_dir.py:325
+#: tools/toolbox/delete_temp_dir.py:314
 msgid "  - Toutes les sorties des outils"
 msgstr "  - All tool outputs"
 
-#: tools/toolbox/delete_temp_dir.py:329
+#: tools/toolbox/delete_temp_dir.py:318
 #, python-brace-format
 msgid "{var0}Étape 1/3: Confirmation initiale{var1}"
 msgstr "{var0}Step 1/3: Initial confirmation{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:330
+#: tools/toolbox/delete_temp_dir.py:319
 msgid "Voulez-vous vraiment supprimer ce dossier? [o/N]: "
 msgstr "Do you really want to delete this folder? [y/N]: "
 
-#: tools/toolbox/delete_temp_dir.py:332 tools/toolbox/delete_temp_dir.py:344
-#: tools/toolbox/delete_temp_dir.py:361
+#: tools/toolbox/delete_temp_dir.py:321 tools/toolbox/delete_temp_dir.py:333
+#: tools/toolbox/delete_temp_dir.py:350
 msgid "Suppression annulée."
 msgstr "Deletion cancelled."
 
-#: tools/toolbox/delete_temp_dir.py:335
+#: tools/toolbox/delete_temp_dir.py:324
 #, python-brace-format
 msgid ""
 "\n"
@@ -2345,16 +2350,16 @@ msgstr ""
 "\n"
 "{var0}Step 2/3: Security confirmation{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:336
+#: tools/toolbox/delete_temp_dir.py:325
 #, python-brace-format
 msgid "Tapez '{var0}SUPPRIMER{var1}{var2}' pour confirmer: "
 msgstr "Type '{var0}DELETE{var1}{var2}' to confirm: "
 
-#: tools/toolbox/delete_temp_dir.py:338
+#: tools/toolbox/delete_temp_dir.py:327
 msgid "Suppression annulée (mot de confirmation incorrect)."
 msgstr "Deletion cancelled (incorrect confirmation word)."
 
-#: tools/toolbox/delete_temp_dir.py:341
+#: tools/toolbox/delete_temp_dir.py:330
 #, python-brace-format
 msgid ""
 "\n"
@@ -2363,55 +2368,55 @@ msgstr ""
 "\n"
 "{var0}Step 3/3: Last chance{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:342
+#: tools/toolbox/delete_temp_dir.py:331
 msgid "Dernière confirmation - Êtes-vous ABSOLUMENT sûr? [o/N]: "
 msgstr "Final confirmation - Are you ABSOLUTELY sure? [y/N]: "
 
-#: tools/toolbox/delete_temp_dir.py:348
+#: tools/toolbox/delete_temp_dir.py:337
 #, python-brace-format
 msgid "Cette opération va {var0}SUPPRIMER{var1} les backups suivants:"
 msgstr "This operation will {var0}DELETE{var1} the following backups:"
 
-#: tools/toolbox/delete_temp_dir.py:355
+#: tools/toolbox/delete_temp_dir.py:344
 #, python-brace-format
 msgid "{var0}Les autres fichiers du dossier temporaire seront conservés.{var1}"
 msgstr "{var0}Other files in the temporary folder will be preserved.{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:359
+#: tools/toolbox/delete_temp_dir.py:348
 msgid "Confirmer la suppression des backups? [o/N]: "
 msgstr "Confirm backup deletion? [y/N]: "
 
-#: tools/toolbox/delete_temp_dir.py:384
+#: tools/toolbox/delete_temp_dir.py:373
 #, python-brace-format
 msgid "  {var0}Suppression:{var1} {var2}{name}{var4}..."
 msgstr "  {var0}Deleting:{var1} {var2}{name}{var4}..."
 
-#: tools/toolbox/delete_temp_dir.py:386
+#: tools/toolbox/delete_temp_dir.py:375
 #, python-brace-format
 msgid "{var0}[OK]{var1}"
 msgstr "{var0}[OK]{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:389 tools/toolbox/delete_temp_dir.py:393
+#: tools/toolbox/delete_temp_dir.py:378 tools/toolbox/delete_temp_dir.py:382
 #, python-brace-format
 msgid "{var0}[ERREUR]{var1}"
 msgstr "{var0}[ERROR]{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:390
+#: tools/toolbox/delete_temp_dir.py:379
 #, python-brace-format
 msgid "    {var0}Permission refusée: {e}{var2}"
 msgstr "    {var0}Permission denied: {e}{var2}"
 
-#: tools/toolbox/delete_temp_dir.py:419
+#: tools/toolbox/delete_temp_dir.py:408
 #, python-brace-format
 msgid "NETTOYAGE DU DOSSIER TEMPORAIRE (v{version})"
 msgstr "TEMPORARY FOLDER CLEANUP (v{version})"
 
-#: tools/toolbox/delete_temp_dir.py:426 tools/toolbox/delete_temp_dir.py:442
+#: tools/toolbox/delete_temp_dir.py:415 tools/toolbox/delete_temp_dir.py:431
 msgid "Opération annulée."
 msgstr "Operation cancelled."
 
-#: tools/toolbox/delete_temp_dir.py:427 tools/toolbox/delete_temp_dir.py:434
-#: tools/toolbox/delete_temp_dir.py:443 tools/toolbox/delete_temp_dir.py:449
+#: tools/toolbox/delete_temp_dir.py:416 tools/toolbox/delete_temp_dir.py:423
+#: tools/toolbox/delete_temp_dir.py:432 tools/toolbox/delete_temp_dir.py:438
 #, python-brace-format
 msgid ""
 "\n"
@@ -2420,62 +2425,62 @@ msgstr ""
 "\n"
 "{var0}Press ENTER to quit...{var1}"
 
-#: tools/toolbox/delete_temp_dir.py:455
+#: tools/toolbox/delete_temp_dir.py:444
 msgid "NETTOYAGE EN COURS"
 msgstr "CLEANUP IN PROGRESS"
 
-#: tools/toolbox/delete_temp_dir.py:476
+#: tools/toolbox/delete_temp_dir.py:465
 #, python-brace-format
 msgid "{success_count} élément(s) supprimé(s) avec succès!"
 msgstr "{success_count} item(s) successfully deleted!"
 
-#: tools/toolbox/delete_temp_dir.py:479
+#: tools/toolbox/delete_temp_dir.py:468
 msgid "Les autres fichiers du dossier temporaire ont été conservés."
 msgstr "Other files in the temporary folder have been preserved."
 
-#: tools/toolbox/delete_temp_dir.py:481
+#: tools/toolbox/delete_temp_dir.py:470
 #, python-brace-format
 msgid "{var0}Succès{var1}: {var2}{success_count}{var4}"
 msgstr "{var0}Success{var1}: {var2}{success_count}{var4}"
 
-#: tools/toolbox/delete_temp_dir.py:482
+#: tools/toolbox/delete_temp_dir.py:471
 #, python-brace-format
 msgid "{var0}Échecs{var1}: {var2}{failure_count}{var4}"
 msgstr "{var0}Failures{var1}: {var2}{failure_count}{var4}"
 
-#: tools/toolbox/delete_temp_dir.py:484
+#: tools/toolbox/delete_temp_dir.py:473
 msgid "Certains fichiers n'ont pas pu être supprimés."
 msgstr "Some files could not be deleted."
 
-#: tools/toolbox/delete_temp_dir.py:485
+#: tools/toolbox/delete_temp_dir.py:474
 msgid "         Fermez tous les programmes qui utilisent ces fichiers."
 msgstr "         Close all programs using these files."
 
-#: tools/toolbox/restore_backup.py:157
+#: tools/toolbox/restore_backup.py:132
 #, python-brace-format
 msgid "  {var0}[OK]{var1} {rel_path}"
 msgstr "  {var0}[OK]{var1} {rel_path}"
 
-#: tools/toolbox/restore_backup.py:160 tools/toolbox/restore_backup.py:182
+#: tools/toolbox/restore_backup.py:135 tools/toolbox/restore_backup.py:157
 #, python-brace-format
 msgid "  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}"
 msgstr "  {var0}[FAIL]{var1} {rel_path} {var3}- Error: {e}{var5}"
 
-#: tools/toolbox/restore_backup.py:179
+#: tools/toolbox/restore_backup.py:154
 #, python-brace-format
 msgid "  {var0}[OK]{var1} Supprimé: {rel_path}"
 msgstr "  {var0}[OK]{var1} Deleted: {rel_path}"
 
-#: tools/toolbox/restore_backup.py:219
+#: tools/toolbox/restore_backup.py:194
 msgid "Sessions Applicator avec backups disponibles"
 msgstr "Applicator sessions with available backups"
 
-#: tools/toolbox/restore_backup.py:230
+#: tools/toolbox/restore_backup.py:205
 #, python-brace-format
 msgid "{var0}[DERNIÈRE]{var1} "
 msgstr "{var0}[LATEST]{var1} "
 
-#: tools/toolbox/restore_backup.py:234
+#: tools/toolbox/restore_backup.py:209
 #, python-brace-format
 msgid ""
 "  {var0}{i}{var2}. {marker}{var4}{formatted}{var6} {var7}({bak_count} "
@@ -2484,7 +2489,7 @@ msgstr ""
 "  {var0}{i}{var2}. {marker}{var4}{formatted}{var6} {var7}({bak_count} "
 "file(s)){var9}"
 
-#: tools/toolbox/restore_backup.py:244
+#: tools/toolbox/restore_backup.py:219
 #, python-brace-format
 msgid ""
 "{var0}Choisir une session [{var1}{default_choice}{var3}{var4} par défaut]"
@@ -2492,149 +2497,149 @@ msgid ""
 msgstr ""
 "{var0}Choose a session [{var1}{default_choice}{var3}{var4} default]{var5}: "
 
-#: tools/toolbox/restore_backup.py:257
+#: tools/toolbox/restore_backup.py:232
 #, python-brace-format
 msgid "Choix invalide. Entrez un nombre entre 0 et {var0}"
 msgstr "Invalid choice. Enter a number between 0 and {var0}"
 
-#: tools/toolbox/restore_backup.py:259
+#: tools/toolbox/restore_backup.py:234
 msgid "Entrez un nombre valide"
 msgstr "Enter a valid number"
 
-#: tools/toolbox/restore_backup.py:273
+#: tools/toolbox/restore_backup.py:248
 msgid "RESTAURATION DES FICHIERS .bak"
 msgstr "RESTORE .bak FILES"
 
-#: tools/toolbox/restore_backup.py:294
+#: tools/toolbox/restore_backup.py:269
 #, python-brace-format
 msgid "{var0}Répertoire du plugin à restaurer:{var1}"
 msgstr "{var0}Plugin directory to restore:{var1}"
 
-#: tools/toolbox/restore_backup.py:300
+#: tools/toolbox/restore_backup.py:275
 #, python-brace-format
 msgid "{var0}Chemin du plugin: {var1}"
 msgstr "{var0}Plugin path: {var1}"
 
-#: tools/toolbox/restore_backup.py:303
+#: tools/toolbox/restore_backup.py:278
 msgid "Chemin obligatoire"
 msgstr "Path required"
 
-#: tools/toolbox/restore_backup.py:318
+#: tools/toolbox/restore_backup.py:293
 #, python-brace-format
 msgid "{var0}Continuer quand même? [o/N]: {var1}"
 msgstr "{var0}Continue anyway? [y/N]: {var1}"
 
-#: tools/toolbox/restore_backup.py:326
+#: tools/toolbox/restore_backup.py:301
 #, python-brace-format
 msgid "Plugin: {var0}{normalized}{var2}"
 msgstr "Plugin: {var0}{normalized}{var2}"
 
-#: tools/toolbox/restore_backup.py:337
+#: tools/toolbox/restore_backup.py:312
 #, python-brace-format
 msgid "{var0} session(s) Applicator trouvée(s) dans {var1}/"
 msgstr "{var0} Applicator session(s) found in {var1}/"
 
-#: tools/toolbox/restore_backup.py:344
+#: tools/toolbox/restore_backup.py:319
 #, python-brace-format
 msgid "Session sélectionnée: {var0}{var1}{var2}"
 msgstr "Selected session: {var0}{var1}{var2}"
 
-#: tools/toolbox/restore_backup.py:347 tools/toolbox/restore_backup.py:432
+#: tools/toolbox/restore_backup.py:322 tools/toolbox/restore_backup.py:407
 msgid "Restauration annulée"
 msgstr "Restore cancelled"
 
-#: tools/toolbox/restore_backup.py:350
+#: tools/toolbox/restore_backup.py:325
 #, python-brace-format
 msgid "Aucune session Applicator trouvée dans {var0}/"
 msgstr "No Applicator session found in {var0}/"
 
-#: tools/toolbox/restore_backup.py:351
+#: tools/toolbox/restore_backup.py:326
 #, python-brace-format
 msgid ""
 "{var0}Recherche des backups legacy (.lua.bak à côté des fichiers)...{var1}"
 msgstr "{var0}Searching for legacy backups (.lua.bak next to files)...{var1}"
 
-#: tools/toolbox/restore_backup.py:382
+#: tools/toolbox/restore_backup.py:357
 #, python-brace-format
 msgid "Répertoire introuvable: {directory}"
 msgstr "Directory not found: {directory}"
 
-#: tools/toolbox/restore_backup.py:389
+#: tools/toolbox/restore_backup.py:364
 #, python-brace-format
 msgid "Session Applicator trouvée: {var0}{var1}{var2}"
 msgstr "Applicator session found: {var0}{var1}{var2}"
 
-#: tools/toolbox/restore_backup.py:396
+#: tools/toolbox/restore_backup.py:371
 msgid "RECHERCHE DES FICHIERS .bak"
 msgstr "SEARCHING FOR .bak FILES"
 
-#: tools/toolbox/restore_backup.py:398
+#: tools/toolbox/restore_backup.py:373
 #, python-brace-format
 msgid "{var0}Plugin{var1}: {var2}{directory}{var4}"
 msgstr "{var0}Plugin{var1}: {var2}{directory}{var4}"
 
-#: tools/toolbox/restore_backup.py:401
+#: tools/toolbox/restore_backup.py:376
 #, python-brace-format
 msgid "{var0}Source{var1}: {var2}{backup_dir}{var4}"
 msgstr "{var0}Source{var1}: {var2}{backup_dir}{var4}"
 
-#: tools/toolbox/restore_backup.py:404
+#: tools/toolbox/restore_backup.py:379
 #, python-brace-format
 msgid "{var0}Source{var1}: {var2}Legacy (fichiers .bak à côté des .lua){var3}"
 msgstr "{var0}Source{var1}: {var2}Legacy (.bak files next to .lua files){var3}"
 
-#: tools/toolbox/restore_backup.py:410
+#: tools/toolbox/restore_backup.py:385
 msgid "Aucun fichier .bak trouvé"
 msgstr "No .bak file found"
 
-#: tools/toolbox/restore_backup.py:412
+#: tools/toolbox/restore_backup.py:387
 msgid "Rien à restaurer"
 msgstr "Nothing to restore"
 
-#: tools/toolbox/restore_backup.py:416
+#: tools/toolbox/restore_backup.py:391
 #, python-brace-format
 msgid "Fichiers trouvés: {var0}{var1}{var2}"
 msgstr "Files found: {var0}{var1}{var2}"
 
-#: tools/toolbox/restore_backup.py:422
+#: tools/toolbox/restore_backup.py:397
 #, python-brace-format
 msgid "{var0}[REMPLACER]{var1}"
 msgstr "{var0}[REPLACE]{var1}"
 
-#: tools/toolbox/restore_backup.py:424
+#: tools/toolbox/restore_backup.py:399
 #, python-brace-format
 msgid "{var0}[NOUVEAU]{var1}"
 msgstr "{var0}[NEW]{var1}"
 
-#: tools/toolbox/restore_backup.py:429
+#: tools/toolbox/restore_backup.py:404
 #, python-brace-format
 msgid "{var0}Restaurer ces {var1} fichier(s) ? [o/N]: {var2}"
 msgstr "{var0}Restore these {var1} file(s)? [y/N]: {var2}"
 
-#: tools/toolbox/restore_backup.py:438
+#: tools/toolbox/restore_backup.py:413
 msgid "RESTAURATION"
 msgstr "RESTORE"
 
-#: tools/toolbox/restore_backup.py:447
+#: tools/toolbox/restore_backup.py:422
 #, python-brace-format
 msgid "{var0}Supprimer les fichiers .bak ? [o/N]: {var1}"
 msgstr "{var0}Delete .bak files? [y/N]: {var1}"
 
-#: tools/toolbox/restore_backup.py:451
+#: tools/toolbox/restore_backup.py:426
 msgid "Suppression des .bak"
 msgstr "Deleting .bak files"
 
-#: tools/toolbox/restore_backup.py:455
+#: tools/toolbox/restore_backup.py:430
 #, python-brace-format
 msgid "{deleted} fichier(s) .bak supprimé(s)"
 msgstr "{deleted} .bak file(s) deleted"
 
-#: tools/toolbox/restore_backup.py:463
+#: tools/toolbox/restore_backup.py:438
 #, python-brace-format
 msgid "{var0}Fichiers restaurés{var1}: {var2}{restored}{var4}"
 msgstr "{var0}Files restored{var1}: {var2}{restored}{var4}"
 
-#: tools/toolbox/restore_backup.py:466
+#: tools/toolbox/restore_backup.py:441
 msgid "Terminé!"
 msgstr "Done!"
 
@@ -3576,7 +3581,7 @@ msgstr ""
 
 #: tools/translator/compare.py:245 tools/translator/compare.py:252
 #: tools/translator/compare_langs.py:491 tools/translator/compare_langs.py:498
-#: tools/translator/inject.py:288 tools/translator/sync.py:316
+#: tools/translator/inject.py:289 tools/translator/sync.py:317
 msgid "Chemin requis."
 msgstr "Path required."
 
@@ -3587,10 +3592,10 @@ msgstr "Path required."
 #: tools/translator/compare_langs.py:499 tools/translator/compare_langs.py:504
 #: tools/translator/compare_langs.py:575 tools/translator/compare_langs.py:580
 #: tools/translator/extract.py:215 tools/translator/extract.py:222
-#: tools/translator/inject.py:282 tools/translator/inject.py:289
-#: tools/translator/inject.py:322 tools/translator/inject.py:329
-#: tools/translator/inject.py:364 tools/translator/sync.py:310
-#: tools/translator/sync.py:317
+#: tools/translator/inject.py:283 tools/translator/inject.py:290
+#: tools/translator/inject.py:324 tools/translator/inject.py:331
+#: tools/translator/inject.py:368 tools/translator/sync.py:311
+#: tools/translator/sync.py:318
 msgid ""
 "\n"
 "Appuyez sur Entrée..."
@@ -3663,7 +3668,7 @@ msgid "    {var0}• CHANGELOG.txt{var1}"
 msgstr "    {var0}• CHANGELOG.txt{var1}"
 
 #: tools/translator/compare.py:287 tools/translator/extract.py:254
-#: tools/translator/sync.py:336
+#: tools/translator/sync.py:340
 #, python-brace-format
 msgid "{var0}[INFO]{var1} PROCHAINE ÉTAPE:"
 msgstr "{var0}[INFO]{var1} NEXT STEP:"
@@ -3679,24 +3684,24 @@ msgid "  {var0}• ou SYNC directement pour utiliser EN par défaut{var1}"
 msgstr "  {var0}• or SYNC directly to use EN defaults{var1}"
 
 #: tools/translator/compare.py:294 tools/translator/compare_langs.py:574
-#: tools/translator/sync.py:343
+#: tools/translator/sync.py:347
 #, python-brace-format
 msgid "Fichier non trouvé: {e}"
 msgstr "File not found: {e}"
 
 #: tools/translator/compare.py:296 tools/translator/compare_langs.py:577
-#: tools/translator/extract.py:264 tools/translator/inject.py:315
-#: tools/translator/inject.py:360 tools/translator/main.py:379
+#: tools/translator/extract.py:264 tools/translator/inject.py:317
+#: tools/translator/inject.py:364 tools/translator/main.py:379
 #: tools/translator/main.py:460 tools/translator/main.py:494
 #: tools/translator/main.py:527 tools/translator/main.py:554
-#: tools/translator/sync.py:345
+#: tools/translator/sync.py:349
 #, python-brace-format
 msgid "Erreur: {e}"
 msgstr "Error: {e}"
 
 #: tools/translator/compare.py:298 tools/translator/compare_langs.py:570
-#: tools/translator/extract.py:266 tools/translator/inject.py:367
-#: tools/translator/sync.py:347
+#: tools/translator/extract.py:266 tools/translator/inject.py:371
+#: tools/translator/sync.py:351
 msgid ""
 "\n"
 "Appuyez sur Entrée pour continuer..."
@@ -4101,7 +4106,7 @@ msgid "Mode de comparaison (1-2, défaut=1): "
 msgstr "Comparison mode (1-2, default=1): "
 
 #: tools/translator/compare_langs.py:427 tools/translator/compare_langs.py:503
-#: tools/translator/inject.py:363
+#: tools/translator/inject.py:367
 msgid "Choix invalide."
 msgstr "Invalid choice."
 
@@ -4153,8 +4158,8 @@ msgstr ""
 "{var0}  Press Enter to use the default directory, or enter another path{var1}"
 
 #: tools/translator/compare_langs.py:455 tools/translator/extract.py:214
-#: tools/translator/inject.py:321 tools/translator/inject.py:328
-#: tools/translator/sync.py:309
+#: tools/translator/inject.py:323 tools/translator/inject.py:330
+#: tools/translator/sync.py:310
 msgid "Répertoire invalide."
 msgstr "Invalid directory."
 
@@ -4419,7 +4424,7 @@ msgstr ""
 "\n"
 "{var0}EXTRACT{var1}: Generate translation files"
 
-#: tools/translator/extract.py:204 tools/translator/sync.py:300
+#: tools/translator/extract.py:204 tools/translator/sync.py:301
 #, python-brace-format
 msgid ""
 "\n"
@@ -4428,7 +4433,7 @@ msgstr ""
 "\n"
 "{var0}[INFO]{var1} Selected folder: {var2}{update_dir}{var4}"
 
-#: tools/translator/extract.py:206 tools/translator/sync.py:302
+#: tools/translator/extract.py:206 tools/translator/sync.py:303
 msgid "Aucun dossier Translator sélectionné"
 msgstr "No Translator folder selected"
 
@@ -4436,7 +4441,7 @@ msgstr "No Translator folder selected"
 msgid "Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement"
 msgstr "Run COMPARE first or specify the UPDATE directory manually"
 
-#: tools/translator/extract.py:211 tools/translator/sync.py:306
+#: tools/translator/extract.py:211 tools/translator/sync.py:307
 #, python-brace-format
 msgid ""
 "\n"
@@ -4527,7 +4532,7 @@ msgstr "  {var0}3. Run SYNC to finalize{var1}"
 msgid "Aucun fichier généré"
 msgstr "No file generated"
 
-#: tools/translator/inject.py:268
+#: tools/translator/inject.py:269
 #, python-brace-format
 msgid ""
 "\n"
@@ -4536,7 +4541,7 @@ msgstr ""
 "\n"
 "{var0}INJECT{var1}: Re-inject translations"
 
-#: tools/translator/inject.py:270
+#: tools/translator/inject.py:271
 #, python-brace-format
 msgid ""
 "\n"
@@ -4546,7 +4551,7 @@ msgstr ""
 "\n"
 "{var0}[WARNING]{var1} Untranslated keys (→ empty) will receive the EN value"
 
-#: tools/translator/inject.py:272
+#: tools/translator/inject.py:273
 #, python-brace-format
 msgid ""
 "\n"
@@ -4555,18 +4560,18 @@ msgstr ""
 "\n"
 "{var0}Mode{var1}:"
 
-#: tools/translator/inject.py:273
+#: tools/translator/inject.py:274
 #, python-brace-format
 msgid "  {var0}1{var1}. Injecter un fichier TRANSLATE_xx.txt spécifique"
 msgstr "  {var0}1{var1}. Inject a specific TRANSLATE_xx.txt file"
 
-#: tools/translator/inject.py:274
+#: tools/translator/inject.py:275
 #, python-brace-format
 msgid ""
 "  {var0}2{var1}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier"
 msgstr "  {var0}2{var1}. Inject all TRANSLATE_*.txt files from a folder"
 
-#: tools/translator/inject.py:275
+#: tools/translator/inject.py:276
 #, python-brace-format
 msgid ""
 "\n"
@@ -4575,7 +4580,7 @@ msgstr ""
 "\n"
 "{var0}  Choice (1-2): {var1}"
 
-#: tools/translator/inject.py:278
+#: tools/translator/inject.py:279
 #, python-brace-format
 msgid ""
 "\n"
@@ -4584,11 +4589,11 @@ msgstr ""
 "\n"
 "{var0}TRANSLATE_xx.txt file{var1}:"
 
-#: tools/translator/inject.py:281
+#: tools/translator/inject.py:282
 msgid "Fichier invalide."
 msgstr "Invalid file."
 
-#: tools/translator/inject.py:285
+#: tools/translator/inject.py:286
 #, python-brace-format
 msgid ""
 "\n"
@@ -4597,7 +4602,7 @@ msgstr ""
 "\n"
 "{var0}Target TranslatedStrings_xx.txt file{var1}:"
 
-#: tools/translator/inject.py:292 tools/translator/inject.py:332
+#: tools/translator/inject.py:293 tools/translator/inject.py:334
 #, python-brace-format
 msgid ""
 "\n"
@@ -4606,12 +4611,12 @@ msgstr ""
 "\n"
 "{var0}UPDATE folder{var1} (containing UPDATE_xx.json):"
 
-#: tools/translator/inject.py:293 tools/translator/inject.py:333
+#: tools/translator/inject.py:294 tools/translator/inject.py:335
 #, python-brace-format
 msgid "{var0}  (Entrée = même dossier que TRANSLATE){var1}"
 msgstr "{var0}  (Enter = same folder as TRANSLATE){var1}"
 
-#: tools/translator/inject.py:297 tools/translator/inject.py:337
+#: tools/translator/inject.py:298 tools/translator/inject.py:339
 #, python-brace-format
 msgid ""
 "\n"
@@ -4620,42 +4625,37 @@ msgstr ""
 "\n"
 "{var0}[INFO]{var1} Injecting..."
 
-#: tools/translator/inject.py:302 tools/translator/inject.py:343
+#: tools/translator/inject.py:303 tools/translator/inject.py:345
 #, python-brace-format
 msgid "{var0}  RÉSULTAT{var1}"
 msgstr "{var0}  RESULT{var1}"
 
-#: tools/translator/inject.py:304
+#: tools/translator/inject.py:305
 #, python-brace-format
 msgid "  {var0}Traductions injectées  {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Translations injected   {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/inject.py:305
+#: tools/translator/inject.py:306
 #, python-brace-format
 msgid "  {var0}Valeurs EN par défaut  {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Default EN values       {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/inject.py:306
+#: tools/translator/inject.py:307
 #, python-brace-format
 msgid "  {var0}Entrées ignorées       {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Entries ignored          {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/inject.py:307
+#: tools/translator/inject.py:308
 #, python-brace-format
 msgid "  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Total keys in file      {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/inject.py:309
+#: tools/translator/inject.py:310
 #, python-brace-format
 msgid "Fichier mis à jour: {var0}{target_file}{var2}"
 msgstr "File updated: {var0}{target_file}{var2}"
 
-#: tools/translator/inject.py:310
-#, python-brace-format
-msgid "{var0}  (Backup .bak créé dans backups/){var1}"
-msgstr "{var0}  (.bak backup created in backups/){var1}"
-
-#: tools/translator/inject.py:318
+#: tools/translator/inject.py:320
 #, python-brace-format
 msgid ""
 "\n"
@@ -4664,7 +4664,7 @@ msgstr ""
 "\n"
 "{var0}Folder containing TRANSLATE_*.txt files{var1}:"
 
-#: tools/translator/inject.py:325
+#: tools/translator/inject.py:327
 #, python-brace-format
 msgid ""
 "\n"
@@ -4673,12 +4673,12 @@ msgstr ""
 "\n"
 "{var0}Language files directory{var1} (Locales):"
 
-#: tools/translator/inject.py:347
+#: tools/translator/inject.py:349
 #, python-brace-format
 msgid "  {var0}[{var1}]{var2} {var3}[ERREUR]{var4} {var5}"
 msgstr "  {var0}[{var1}]{var2} {var3}[ERROR]{var4} {var5}"
 
-#: tools/translator/inject.py:351
+#: tools/translator/inject.py:353
 #, python-brace-format
 msgid ""
 "  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} traduites + "
@@ -4687,11 +4687,11 @@ msgstr ""
 "  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} translated "
 "+ {var8}{from_ref}{var10} EN default"
 
-#: tools/translator/inject.py:353 tools/translator/sync.py:334
-msgid "Fichiers mis à jour (backups .bak créés)"
-msgstr "Files updated (backups .bak created)"
+#: tools/translator/inject.py:355 tools/translator/sync.py:335
+msgid "Fichiers mis à jour"
+msgstr "Files updated"
 
-#: tools/translator/inject.py:357
+#: tools/translator/inject.py:361
 msgid "Aucun fichier TRANSLATE_*.txt trouvé"
 msgstr "No TRANSLATE_*.txt file found"
 
@@ -5476,33 +5476,33 @@ msgstr "--ref, --update or --plugin-path required"
 msgid "{var0}[INFO]{var1} Synchronisation..."
 msgstr "{var0}[INFO]{var1} Synchronizing..."
 
-#: tools/translator/main.py:548 tools/translator/sync.py:329
+#: tools/translator/main.py:548 tools/translator/sync.py:330
 msgid "Aucune langue étrangère trouvée."
 msgstr "No foreign language found."
 
-#: tools/translator/sync.py:74
+#: tools/translator/sync.py:75
 msgid "Chemin de référence requis (--ref ou via --update)"
 msgstr "Reference path required (--ref or via --update)"
 
-#: tools/translator/sync.py:161
+#: tools/translator/sync.py:162
 msgid "Texte de référence modifié"
 msgstr "Reference text was modified"
 
-#: tools/translator/sync.py:169
+#: tools/translator/sync.py:170
 msgid "À traduire"
 msgstr "To translate"
 
-#: tools/translator/sync.py:206
+#: tools/translator/sync.py:207
 #, python-brace-format
 msgid "{var0}RAPPORT DE SYNCHRONISATION{var1}"
 msgstr "{var0}SYNC REPORT{var1}"
 
-#: tools/translator/sync.py:220
+#: tools/translator/sync.py:221
 #, python-brace-format
 msgid "  {var0}Clés conservées  {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Keys kept        {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/sync.py:221
+#: tools/translator/sync.py:222
 #, python-brace-format
 msgid ""
 "  {var0}Clés ajoutées    {var1}: {var2}{var3}{var4}  {var5}[NEW] à "
@@ -5511,7 +5511,7 @@ msgstr ""
 "  {var0}Keys added       {var1}: {var2}{var3}{var4}  {var5}[NEW] to "
 "translate{var6}"
 
-#: tools/translator/sync.py:222
+#: tools/translator/sync.py:223
 #, python-brace-format
 msgid ""
 "  {var0}Clés à réviser   {var1}: {var2}{var3}{var4}  {var5}[NEEDS_REVIEW]"
@@ -5520,57 +5520,57 @@ msgstr ""
 "  {var0}Keys to review   {var1}: {var2}{var3}{var4}  {var5}[NEEDS_REVIEW]"
 "{var6}"
 
-#: tools/translator/sync.py:223
+#: tools/translator/sync.py:224
 #, python-brace-format
 msgid "  {var0}Clés supprimées  {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Keys deleted      {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/sync.py:224
+#: tools/translator/sync.py:225
 #, python-brace-format
 msgid "  {var0}Total            {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Total             {var1}: {var2}{var3}{var4}"
 
-#: tools/translator/sync.py:227
+#: tools/translator/sync.py:228
 #, python-brace-format
 msgid "  {var0}Nouvelles clés:{var1}"
 msgstr "  {var0}New keys:{var1}"
 
-#: tools/translator/sync.py:231 tools/translator/sync.py:238
+#: tools/translator/sync.py:232 tools/translator/sync.py:239
 #, python-brace-format
 msgid "    {var0}... et {var1} autres{var2}"
 msgstr "    {var0}... and {var1} more{var2}"
 
-#: tools/translator/sync.py:234
+#: tools/translator/sync.py:235
 #, python-brace-format
 msgid "  {var0}Clés à réviser:{var1}"
 msgstr "  {var0}Keys to review:{var1}"
 
-#: tools/translator/sync.py:243
+#: tools/translator/sync.py:244
 #, python-brace-format
 msgid "{var0}TOTAL{var1}"
 msgstr "{var0}TOTAL{var1}"
 
-#: tools/translator/sync.py:245
+#: tools/translator/sync.py:246
 #, python-brace-format
 msgid "  {var0}Langues traitées {var1}: {var2}{var3}{var4}"
 msgstr "  {var0}Languages processed{var1}: {var2}{var3}{var4}"
 
-#: tools/translator/sync.py:246
+#: tools/translator/sync.py:247
 #, python-brace-format
 msgid "  {var0}Clés ajoutées    {var1}: {var2}{total_added}{var4}"
 msgstr "  {var0}Keys added        {var1}: {var2}{total_added}{var4}"
 
-#: tools/translator/sync.py:247
+#: tools/translator/sync.py:248
 #, python-brace-format
 msgid "  {var0}Clés à réviser   {var1}: {var2}{total_review}{var4}"
 msgstr "  {var0}Keys to review    {var1}: {var2}{total_review}{var4}"
 
-#: tools/translator/sync.py:248
+#: tools/translator/sync.py:249
 #, python-brace-format
 msgid "  {var0}Clés supprimées  {var1}: {var2}{total_removed}{var4}"
 msgstr "  {var0}Keys deleted      {var1}: {var2}{total_removed}{var4}"
 
-#: tools/translator/sync.py:278
+#: tools/translator/sync.py:279
 #, python-brace-format
 msgid ""
 "\n"
@@ -5579,7 +5579,7 @@ msgstr ""
 "\n"
 "{var0}SYNC{var1}: Synchronize foreign languages"
 
-#: tools/translator/sync.py:281
+#: tools/translator/sync.py:282
 #, python-brace-format
 msgid ""
 "\n"
@@ -5588,17 +5588,17 @@ msgstr ""
 "\n"
 "{var0}Do you have an UPDATE folder{var1} (generated by COMPARE)?"
 
-#: tools/translator/sync.py:282
+#: tools/translator/sync.py:283
 #, python-brace-format
 msgid "{var0}  (Permet de marquer les clés [NEEDS_REVIEW]){var1}"
 msgstr "{var0}  (Allows marking [NEEDS_REVIEW] keys){var1}"
 
-#: tools/translator/sync.py:283
+#: tools/translator/sync.py:284
 #, python-brace-format
 msgid "{var0}  [O/n]: {var1}"
 msgstr "{var0}  [Y/n]: {var1}"
 
-#: tools/translator/sync.py:313
+#: tools/translator/sync.py:314
 #, python-brace-format
 msgid ""
 "\n"
@@ -5607,7 +5607,7 @@ msgstr ""
 "\n"
 "{var0}EN reference file{var1} (or directory):"
 
-#: tools/translator/sync.py:320
+#: tools/translator/sync.py:321
 #, python-brace-format
 msgid ""
 "\n"
@@ -5616,12 +5616,12 @@ msgstr ""
 "\n"
 "{var0}Language files directory{var1} (Locales):"
 
-#: tools/translator/sync.py:321
+#: tools/translator/sync.py:322
 #, python-brace-format
 msgid "{var0}  (Entrée = même répertoire que la référence){var1}"
 msgstr "{var0}  (Enter = same directory as reference){var1}"
 
-#: tools/translator/sync.py:325
+#: tools/translator/sync.py:326
 #, python-brace-format
 msgid ""
 "\n"
@@ -5630,15 +5630,22 @@ msgstr ""
 "\n"
 "{var0}[INFO]{var1} Synchronizing..."
 
-#: tools/translator/sync.py:337
+#: tools/translator/sync.py:341
 #, python-brace-format
 msgid "{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}"
 msgstr "{var0}  Search for [NEW] and [NEEDS_REVIEW] in the files{var1}"
 
-#: tools/translator/sync.py:338
+#: tools/translator/sync.py:342
 #, python-brace-format
 msgid "{var0}  pour compléter les traductions.{var1}"
 msgstr "{var0}  to complete the translations.{var1}"
+
+#, python-brace-format
+#~ msgid "{var0}  (Backup .bak créé dans backups/){var1}"
+#~ msgstr "{var0}  (.bak backup created in backups/){var1}"
+
+#~ msgid "Fichiers mis à jour (backups .bak créés)"
+#~ msgstr "Files updated (backups .bak created)"
 
 #~ msgid "-- [NEEDS_REVIEW] Reference text was modified"
 #~ msgstr "-- [NEEDS_REVIEW] Reference text was modified"
