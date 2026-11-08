@@ -375,22 +375,28 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     """
     report = LocalizationReport(os.path.basename(os.path.normpath(plugin_path)))
 
-    if not os.path.isdir(plugin_path):
-        print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
+    def fail(message: str, *details: str) -> Tuple[bool, LocalizationReport]:
+        """Échec : erreur consignée dans le rapport, affichée sauf en mode silencieux."""
+        report.add_error(plugin_path, 0, message)
+        if not silent:
+            for line in (message, *details):
+                print(line)
         return False, report
+
+    if not os.path.isdir(plugin_path):
+        return fail(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
 
     # Auto-détection du dossier d'extraction si non spécifié
     if not extraction_dir:
         extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not extraction_dir:
-            print(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"))
-            print(_("        Lancez d'abord Extractor sur ce plugin."))
-            return False, report
-        print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
+            return fail(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"),
+                        _("        Lancez d'abord Extractor sur ce plugin."))
+        if not silent:
+            print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
 
     if not os.path.isdir(extraction_dir):
-        print(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
-        return False, report
+        return fail(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
 
     if backup_dir:
         # Session Applicator fournie par l'appelant : ne pas en créer une seconde
@@ -451,7 +457,9 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
             report.add_error(file_rel_path, 0, _("Fichier introuvable"))
 
     # Generer le rapport dans le dossier Applicator
-    report_path = os.path.join(applicator_output, "application_report.txt")
+    # Le rapport de la passe à blanc ne doit pas écraser celui de la passe réelle
+    report_name = "application_report_dry_run.txt" if dry_run else "application_report.txt"
+    report_path = os.path.join(applicator_output, report_name)
     report.generate(report_path)
 
     if not silent:

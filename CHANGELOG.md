@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extractor: a line holding both a log call and a UI label (`log:info("x"); title = "Export"`) was skipped entirely. Only the arguments of the log call are now ignored and the rest of the line is analysed; a log call is no longer detected inside a string (`title = "See log(s)"`). `replacements.json` members carry the literal's `column`, so the Applicator replaces the UI literal even when the log call holds the same text (#34)
 - Extractor: the line closing a block comment (`]]`, `]==]`) was skipped entirely, as was a line starting with a block comment closed on the same line (`--[[ x ]] title = "X"`). The code after the closing delimiter is now analysed; strings in a comment that follows the code on the same line (`-- …` or `--[[ …`) are no longer extracted (#34)
 - Extractor report mixed the escaped form (searched text, original) and the real text (base, value). It now shows a single form, the real text with control characters made visible (`\n`, `\t`); only the key=value section and the Lua code shown as such (line, replacement) stay escaped (#34)
+- AUTOSYNC: the dry-run report no longer gets overwritten by the real run's report; they are now written side by side in the session as `application_report_dry_run.txt` and `application_report.txt` (#37)
+- AUTOSYNC: declining the confirmation (or closed stdin) now removes the sessions created by that run (Extractor, Applicator, Translator, including the `_original_TranslatedStrings_xx.txt` copy) and lists what was cleaned; sessions that existed before are never touched (#37)
+- `process_plugin_directory(..., silent=True)` printed messages when `extraction_dir` was auto-detected or invalid; it now prints nothing and records those errors in `report.errors` (#37)
+- AUTOSYNC tests now cover the accepted-confirmation path (Lua modified, both reports present) (#37)
 
 ---
 

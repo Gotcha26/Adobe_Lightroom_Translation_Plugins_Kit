@@ -213,3 +213,89 @@ def test_autosync_inject_uses_reference_values(plugin_dir, isolated_config):
     assert results["errors"] == []
     assert results["inject"]["fr"]["from_ref"] > 0, results["inject"]
 
+
+def _session_names(plugin_dir, tool_folder):
+    root = os.path.join(plugin_dir, "__i18n_tmp__", tool_folder)
+    if not os.path.isdir(root):
+        return set()
+    return {d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))}
+
+
+def test_autosync_accepted_confirmation_applies_and_writes_both_reports(
+        plugin_dir, isolated_config, monkeypatch, distinct_timestamps):
+    """#37 : « o » à la confirmation modifie les .lua ; les deux rapports coexistent."""
+    before = _lua_contents(plugin_dir)
+    monkeypatch.setattr("builtins.input", lambda *_args: "o")
+
+    results = run_autosync(plugin_dir)
+
+    assert results["errors"] == []
+    assert results["applicator"]["lines_to_modify"] > 0
+    assert _lua_contents(plugin_dir) != before
+
+    applicator_root = os.path.join(plugin_dir, "__i18n_tmp__", "2_Applicator")
+    (session,) = os.listdir(applicator_root)
+    assert os.path.isfile(os.path.join(applicator_root, session, "application_report_dry_run.txt"))
+    assert os.path.isfile(os.path.join(applicator_root, session, "application_report.txt"))
+
+
+def test_autosync_refusal_removes_only_the_session_it_created(plugin_dir, isolated_config, monkeypatch,
+                                                              distinct_timestamps):
+    """#37 : après un refus, ni session neuve ni artefact ; les sessions antérieures restent."""
+    old = {}
+    for tool_folder in ("1_Extractor", "2_Applicator", "3_Translator"):
+        old_session = os.path.join(plugin_dir, "__i18n_tmp__", tool_folder, "20200101_000000")
+        os.makedirs(old_session)
+        with open(os.path.join(old_session, "keep.txt"), "w", encoding="utf-8") as f:
+            f.write("ancien")
+        old[tool_folder] = old_session
+    before = {folder: _session_names(plugin_dir, folder) for folder in old}
+    lua_before = _lua_contents(plugin_dir)
+    monkeypatch.setattr("builtins.input", lambda *_args: "n")
+
+    results = run_autosync(plugin_dir)
+
+    assert _("Annulé par l'utilisateur") in results["errors"]
+    assert _lua_contents(plugin_dir) == lua_before
+    for folder, session in old.items():
+        assert _session_names(plugin_dir, folder) == before[folder]
+        assert os.path.isfile(os.path.join(session, "keep.txt"))
+
+
+def test_autosync_refusal_reports_what_was_cleaned(plugin_dir, isolated_config, monkeypatch, capsys):
+    monkeypatch.setattr("builtins.input", lambda *_args: "n")
+
+    run_autosync(plugin_dir)
+
+    out = capsys.readouterr().out
+    assert _("Session temporaire supprimée") in out
+
+
+def test_silent_process_plugin_directory_prints_nothing(plugin_dir, isolated_config, capsys):
+    """#37 : en mode silencieux, auto-détection ou extraction invalide n'affichent rien."""
+    from tools.applicator.main import process_plugin_directory
+    from tools.extractor.main import run_extraction
+
+    # Aucune extraction à auto-détecter
+    ok, report = process_plugin_directory(plugin_dir, silent=True)
+    assert not ok and report.errors
+
+    # Dossier d'extraction invalide
+    ok, report = process_plugin_directory(plugin_dir, extraction_dir=os.path.join(plugin_dir, "absent"),
+                                          silent=True)
+    assert not ok and report.errors
+
+    # Plugin introuvable
+    ok, report = process_plugin_directory(os.path.join(plugin_dir, "absent"), silent=True)
+    assert not ok and report.errors
+
+    assert capsys.readouterr().out == ""
+
+    # Extraction auto-détectée
+    run_extraction(plugin_dir, "", "$$$/Test", "en", [], 3, True, silent=True)
+    capsys.readouterr()  # la sortie de l'Extractor n'est pas l'objet du test
+    ok, _report = process_plugin_directory(plugin_dir, dry_run=True, silent=True)
+    assert ok
+
+    assert capsys.readouterr().out == ""
+
