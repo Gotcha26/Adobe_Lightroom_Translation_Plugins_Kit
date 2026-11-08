@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from .config import (
     COMMON_SUFFIXES, STOP_WORDS,
-    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN,
+    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN, LOG_LINE_REGEX,
     PluginRules
 )
 
@@ -35,6 +35,7 @@ _LUA_SIMPLE_ESCAPES = {
     '\\': '\\', '"': '"', "'": "'",
     'n': '\n', 'r': '\r', 't': '\t',
     'a': '\a', 'b': '\b', 'f': '\f', 'v': '\v',
+    '\n': '\n',  # \ suivi d'un vrai saut de ligne
 }
 # Caractères à ré-échapper dans un littéral Lua entre guillemets doubles
 _LUA_ESCAPE_OUT = {
@@ -42,33 +43,113 @@ _LUA_ESCAPE_OUT = {
     '\n': '\\n', '\r': '\\r', '\t': '\\t',
     '\a': '\\a', '\b': '\\b', '\f': '\\f', '\v': '\\v',
 }
-_LUA_ESCAPE_SEQ = re.compile(r'\\(.)', re.DOTALL)
+# Morceaux d'un littéral : séquence \ddd, autre \c, texte brut, ou \ final isolé.
+# \xXX et \u{...} n'existent pas en Lua 5.1 (celui de Lightroom) : ils tombent
+# dans « autre \c » et sont conservés tels quels.
+_LUA_ESCAPE_TOKEN = re.compile(r'\\(?:(\d{1,3})|(.))|([^\\]+)|\\', re.DOTALL)
+
+# Marque le `\` d'une séquence conservée telle quelle par unescape_lua_string
+# (non décodable sans ambiguïté). Surrogate isolé : n'apparaît jamais dans un
+# texte lu depuis un fichier ni dans une séquence décodée, donc aucune confusion
+# avec une barre oblique réelle. escape_lua_string le rend en `\` simple.
+# Un texte qui le contient n'est pas représentable dans un fichier UTF-8 :
+# l'Extractor ignore la chaîne (voir has_undecoded_escape).
+VERBATIM_BACKSLASH = '\udc5c'
+
+
+def _verbatim(sequence: str) -> str:
+    """Séquence source conservée : chaque `\\` devient VERBATIM_BACKSLASH."""
+    return sequence.replace('\\', VERBATIM_BACKSLASH)
 
 
 def unescape_lua_string(text: str) -> str:
     """
     Dés-échappe le contenu d'un littéral Lua (forme source -> texte réel).
 
-    Seuls les échappements simples sont décodés (\\\\, \\", \\', \\n, \\r, \\t,
-    \\a, \\b, \\f, \\v). Les autres séquences (\\ddd, \\xXX, \\z, \\u{...}) sont
-    conservées telles quelles.
+    Lightroom exécute Lua 5.1 : seuls les échappements de Lua 5.1 sont décodés.
+
+    - Échappements simples (\\\\, \\", \\', \\n, \\r, \\t, \\a, \\b, \\f, \\v,
+      \\ + saut de ligne) : décodés.
+    - \\ddd (<= 255) : octets. Une suite contiguë de ces séquences est décodée
+      en UTF-8 (« \\195\\169 » -> « é ») ; si la suite n'est pas de l'UTF-8
+      valide, elle est conservée telle quelle.
+    - \\xXX, \\u{X...}, \\z, \\ddd > 255 et tout autre échappement : conservés
+      tels quels. \\xXX, \\u{...} et \\z n'existent qu'à partir de Lua 5.2/5.3 :
+      en Lua 5.1, « \\x41 » s'affiche « x41 » ; les décoder changerait le texte
+      que Lightroom affiche.
+
+    Une séquence conservée garde son texte source, son `\\` remplacé par
+    VERBATIM_BACKSLASH : escape_lua_string la restitue à l'identique, sans
+    la confondre avec une barre oblique réelle. L'aller-retour
+    escape_lua_string(unescape_lua_string(s)) donne donc toujours un
+    littéral de même valeur Lua.
     """
     if '\\' not in text:
         return text
 
-    def _decode(match: re.Match) -> str:
-        char = match.group(1)
-        return _LUA_SIMPLE_ESCAPES.get(char, match.group(0))
+    out: List[str] = []
+    run_bytes = bytearray()   # Octets \ddd contigus en attente
+    run_source: List[str] = []
 
-    return _LUA_ESCAPE_SEQ.sub(_decode, text)
+    def _flush_run():
+        if not run_bytes:
+            return
+        try:
+            out.append(run_bytes.decode('utf-8'))
+        except UnicodeDecodeError:
+            out.append(_verbatim(''.join(run_source)))
+        run_bytes.clear()
+        run_source.clear()
+
+    for match in _LUA_ESCAPE_TOKEN.finditer(text):
+        decimal, other, plain = match.groups()
+        source = match.group(0)
+
+        if decimal is not None and int(decimal) <= 255:
+            run_bytes.append(int(decimal))
+            run_source.append(source)
+            continue
+
+        _flush_run()
+        if plain is not None:
+            out.append(plain)
+        elif other is not None and other in _LUA_SIMPLE_ESCAPES:
+            out.append(_LUA_SIMPLE_ESCAPES[other])
+        else:
+            # \xXX, \u{...}, \z, \ddd > 255, échappement inconnu, \ final isolé
+            out.append(_verbatim(source))
+
+    _flush_run()
+    return ''.join(out)
+
+
+def has_undecoded_escape(text: str) -> bool:
+    """Vrai si le texte réel contient une séquence Lua conservée telle quelle."""
+    return VERBATIM_BACKSLASH in text
+
+
+def _escape_char(ch: str) -> str:
+    if ch == VERBATIM_BACKSLASH:
+        return '\\'
+    escaped = _LUA_ESCAPE_OUT.get(ch)
+    if escaped is not None:
+        return escaped
+    if ord(ch) < 0x20 or ch == '\x7f':
+        # Toujours 3 chiffres : un chiffre qui suit ne prolonge pas la séquence
+        return '\\%03d' % ord(ch)
+    return ch
 
 
 def escape_lua_string(text: str) -> str:
     """
     Échappe un texte pour l'insérer entre guillemets doubles Lua
-    (inverse de unescape_lua_string pour les échappements simples).
+    (inverse de unescape_lua_string).
+
+    `"` et `\\` réels sont échappés, les caractères de contrôle sans
+    échappement simple deviennent \\ddd, et une séquence conservée par
+    unescape_lua_string (VERBATIM_BACKSLASH) ressort telle qu'elle était.
     """
-    return ''.join(_LUA_ESCAPE_OUT.get(ch, ch) for ch in text)
+    return ''.join(_escape_char(ch) for ch in text)
 
 
 # Littéraux Lua d'une ligne : "…", '…' (échappements tolérés) et chaînes longues
@@ -80,9 +161,117 @@ _ANY_LUA_LITERAL_PATTERN = re.compile(
 )
 
 
+def find_literal_positions(line: str, original_text: str) -> List[int]:
+    """
+    Positions des littéraux entiers "…" de la ligne dont le contenu source
+    (forme échappée) vaut original_text.
+
+    La recherche est ancrée sur les bornes des littéraux énumérés : elle ne
+    trouve jamais `"X"` à l'intérieur d'un autre littéral (ex. la fin de
+    `"Open \\"X\\""`), ni entre la fin d'un littéral et le début du suivant.
+
+    Returns:
+        Positions (guillemet ouvrant) par ordre croissant
+    """
+    quoted = f'"{original_text}"'
+    return [match.start() for match in _ANY_LUA_LITERAL_PATTERN.finditer(line)
+            if match.group(0) == quoted]
+
+
+# Après « log: » : nom de méthode éventuel, puis l'argument
+_LOG_METHOD_TAIL = re.compile(r'\s*(?:\w+\s*)?')
+
+
+def log_call_spans(line: str) -> List[Tuple[int, int]]:
+    """
+    Zones (début, fin) des arguments d'appels de log d'une ligne.
+
+    Un appel de log est repéré par LOG_LINE_REGEX (la même notion que
+    l'option « ignorer les logs » de l'Extractor), cherché hors des
+    littéraux : « log( » à l'intérieur d'une chaîne n'en est pas un.
+    La zone va de la parenthèse ouvrante à la parenthèse fermante
+    correspondante (fin de ligne si l'appel continue sur la ligne suivante).
+    Pour un appel sans parenthèses (sucre Lua), c'est le littéral argument
+    (`log:trace "msg"`) ou la table argument, de `{` à l'accolade fermante
+    correspondante (`log:info{ ... }`). Un littéral qui commence dans une zone
+    est un argument de log.
+
+    Returns:
+        Liste de (début, fin) en positions de la ligne
+    """
+    masked = _mask_string_literals(line)
+    spans = []
+    for match in LOG_LINE_REGEX.finditer(masked):
+        if masked[match.end() - 1] == '(':
+            open_pos = match.end() - 1
+        else:
+            # « log: » : sauter le nom de méthode jusqu'à l'argument
+            open_pos = _LOG_METHOD_TAIL.match(line, match.end()).end()
+            if not line.startswith(('(', '{'), open_pos):
+                literal = _ANY_LUA_LITERAL_PATTERN.match(line, open_pos)
+                if literal:
+                    spans.append(literal.span())
+                continue
+
+        opening = masked[open_pos]
+        closing = ')' if opening == '(' else '}'
+        depth = 0
+        close_pos = len(line.rstrip('\r\n'))
+        for index in range(open_pos, len(masked)):
+            if masked[index] == opening:
+                depth += 1
+            elif masked[index] == closing:
+                depth -= 1
+                if depth == 0:
+                    close_pos = index + 1
+                    break
+        spans.append((open_pos, close_pos))
+    return spans
+
+
+def blank_spans(line: str, spans: List[Tuple[int, int]]) -> str:
+    """Remplace les zones par des espaces : même longueur, colonnes inchangées."""
+    for start, end in spans:
+        line = line[:start] + ' ' * (end - start) + line[end:]
+    return line
+
+
+def pick_literal_position(line: str, original_text: str, used: set,
+                          preferred: int | None = None) -> int | None:
+    """
+    Choisit le littéral entier "original_text" à remplacer dans la ligne.
+
+    Parmi les littéraux non encore utilisés (`used`), prend celui qui commence
+    à `preferred` (colonne relevée par l'Extractor) s'il existe, sinon le
+    premier. La position choisie est ajoutée à `used`.
+
+    Returns:
+        Position du guillemet ouvrant, ou None si aucun littéral ne convient
+    """
+    positions = [pos for pos in find_literal_positions(line, original_text) if pos not in used]
+    if not positions:
+        return None
+    position = preferred if preferred in positions else positions[0]
+    used.add(position)
+    return position
+
+
 def _mask_string_literals(text: str) -> str:
     """Remplace chaque littéral Lua de la ligne par des espaces (même longueur)."""
     return _ANY_LUA_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
+
+
+def block_comment_close_end(line: str, open_level: str, start: int = 0) -> int | None:
+    """
+    Offset de fin d'un commentaire bloc de niveau open_level dans la ligne.
+
+    Returns:
+        Position qui suit le délimiteur fermant `]=*]` (à partir de start),
+        ou None si le commentaire ne se ferme pas sur cette ligne
+    """
+    closing = ']' + open_level + ']'
+    idx = line.find(closing, start)
+    return None if idx == -1 else idx + len(closing)
 
 
 def block_comment_state(line: str, open_level: str | None) -> str | None:
@@ -104,11 +293,10 @@ def block_comment_state(line: str, open_level: str | None) -> str | None:
     pos = 0
     while True:
         if open_level is not None:
-            closing = ']' + open_level + ']'
-            idx = line.find(closing, pos)
-            if idx == -1:
+            close_end = block_comment_close_end(line, open_level, pos)
+            if close_end is None:
                 return open_level
-            pos = idx + len(closing)
+            pos = close_end
             open_level = None
 
         rest = _mask_string_literals(line[pos:])
@@ -118,6 +306,55 @@ def block_comment_state(line: str, open_level: str | None) -> str | None:
         opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
         if not opening:
             return None  # Commentaire de ligne : le reste est ignoré
+        open_level = opening.group(1)
+        pos += opening.end()
+
+
+def comment_spans(line: str, open_level: str | None) -> List[Tuple[int, int]]:
+    """
+    Zones (début, fin) des commentaires Lua d'une ligne, hors chaînes.
+
+    - Fin d'un commentaire bloc ouvert au début de la ligne : de 0 au
+      délimiteur fermant `]=*]` de même niveau inclus.
+    - Commentaire bloc `--[=*[ … ]=*]` ouvert et fermé sur la ligne : zone
+      du `--` au délimiteur fermant ; le code qui suit reste du code.
+    - Commentaire bloc qui reste ouvert, ou commentaire de ligne `--` : zone
+      jusqu'à la fin de la ligne (saut de ligne exclu).
+
+    Effacer ces zones par des espaces (blank_spans) donne le code seul,
+    aux mêmes colonnes que la ligne source.
+
+    Args:
+        line: La ligne de code Lua
+        open_level: Niveau du commentaire bloc ouvert au début de la ligne
+                    (voir block_comment_state), ou None
+
+    Returns:
+        Liste de (début, fin) en positions de la ligne, par ordre croissant
+    """
+    end_of_line = len(line.rstrip('\r\n'))
+    spans = []
+    pos = 0
+    start = 0  # Début du commentaire bloc en cours
+    while True:
+        if open_level is not None:
+            close_end = block_comment_close_end(line, open_level, pos)
+            if close_end is None:
+                spans.append((start, end_of_line))
+                return spans
+            spans.append((start, close_end))
+            pos = close_end
+            open_level = None
+
+        rest = _mask_string_literals(line[pos:])
+        dash = rest.find('--')
+        if dash == -1:
+            return spans
+        start = pos + dash
+        opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
+        if not opening:
+            spans.append((start, end_of_line))  # Commentaire de ligne
+            return spans
         open_level = opening.group(1)
         pos += opening.end()
 

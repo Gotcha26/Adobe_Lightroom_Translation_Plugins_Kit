@@ -1,6 +1,6 @@
 # INSTALL Command
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -96,10 +96,10 @@ flowchart TD
 
 ```bash
 # Standard installation
-python Translator_main.py install --plugin-path ./plugin.lrplugin
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin
 
 # From a specific source folder
-python Translator_main.py install --plugin-path ./plugin.lrplugin --source ./custom_extraction/
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin --source ./custom_extraction/
 ```
 
 ### CLI Options
@@ -191,6 +191,6 @@ Run Extractor first to generate TranslatedStrings_en.txt
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *INSTALL.md* | **Version** | 1.0 |
-| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commands/INSTALL.md)* |
+| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commandes/INSTALL.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

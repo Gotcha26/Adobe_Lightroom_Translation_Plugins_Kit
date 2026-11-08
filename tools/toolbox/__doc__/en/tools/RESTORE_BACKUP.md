@@ -92,7 +92,7 @@ flowchart TD
 ### Interactive Mode (Recommended)
 
 ```bash
-python Restore_backup.py
+python -m tools.toolbox.restore_backup
 ```
 
 The interactive menu guides the user through:
@@ -105,10 +105,10 @@ The interactive menu guides the user through:
 
 ```bash
 # Restore latest session
-python Restore_backup.py /path/to/plugin.lrplugin
+python -m tools.toolbox.restore_backup /path/to/plugin.lrplugin
 
 # With pre-configured plugin (via LocalisationToolKit)
-python Restore_backup.py --default-plugin /path/to/plugin.lrplugin
+python -m tools.toolbox.restore_backup --default-plugin /path/to/plugin.lrplugin
 ```
 
 ### CLI Options
@@ -291,7 +291,7 @@ flowchart LR
         B["Backup Creation"]
     end
 
-    subgraph Tools["9_Tools"]
+    subgraph Tools["tools/toolbox"]
         C["Restore_backup"]
         D["Delete_temp_dir"]
     end
@@ -315,7 +315,7 @@ flowchart LR
 
 | Element | Information |
 |---------|-------------|
-| Source module | `Restore_backup.py` |
+| Source module | `restore_backup.py` |
 | Main function | `main()` |
 | Session search | `find_applicator_sessions()` |
 | File pairs | `find_backup_pairs_in_dir()` |

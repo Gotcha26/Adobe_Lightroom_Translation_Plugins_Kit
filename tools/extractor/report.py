@@ -30,7 +30,27 @@ from core.i18n import _
 from core.paths import display_relative
 
 from .models import ExtractedString, ExtractionStats
-from .utils import escape_lua_string
+from .utils import escape_lua_string, unescape_lua_string
+
+# Forme affichée des caractères de contrôle : un champ reste sur une ligne
+_CONTROL_DISPLAY = {'\n': '\\n', '\r': '\\r', '\t': '\\t'}
+
+
+def _display_text(text: str) -> str:
+    """
+    Forme affichée d'un texte réel (dés-échappé) dans le rapport.
+
+    Le rapport s'adresse à un humain : il montre une seule forme, le texte
+    réel (`"` et `\\` tels quels, sans échappement Lua). Seuls les
+    caractères de contrôle sont rendus visibles (\\n, \\t, \\ddd) pour ne pas
+    casser la mise en page. Exceptions, qui restent du Lua échappé : la
+    section clé=valeur (format du fichier TranslatedStrings) et le code Lua
+    affiché tel quel (LIGNE, REMPLACER).
+    """
+    return ''.join(
+        _CONTROL_DISPLAY.get(ch, '\\%03d' % ord(ch)) if ord(ch) < 0x20 or ch == '\x7f' else ch
+        for ch in text
+    )
 
 
 class ReportGenerator:
@@ -108,7 +128,7 @@ class ReportGenerator:
                 for entry in existing_entries:
                     f.write(f"  🔒 {entry.file_path}:{entry.line_num}\n")
                     f.write(_("     Clé    : {var0}\n").format(var0=entry.suggested_key))
-                    f.write(_("     Valeur : {var0}\n\n").format(var0=entry.base_text))
+                    f.write(_("     Valeur : {var0}\n\n").format(var0=_display_text(entry.base_text)))
                 f.write("\n")
 
             # Détail par fichier (pour remplacement)
@@ -143,13 +163,15 @@ class ReportGenerator:
                         # Afficher chaque membre
                         for idx, entry in enumerate(line_entries, 1):
                             markers = self._get_markers(entry)
-                            f.write(_('\n  MEMBRE {idx} : "{original_text}"{markers}\n').format(idx=idx, original_text=entry.original_text, markers=markers))
-                            f.write(_('    BASE   : "{var0}"\n').format(var0=entry.base_text))
+                            f.write(_('\n  MEMBRE {idx} : "{original_text}"{markers}\n').format(
+                                idx=idx, original_text=_display_text(unescape_lua_string(entry.original_text)),
+                                markers=markers))
+                            f.write(_('    BASE   : "{var0}"\n').format(var0=_display_text(entry.base_text)))
                             f.write(_("    CLÉ    : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
                                 f.write(_("    ESPACES: {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(_('    SUFFIXE: "{var0}"\n').format(var0=entry.suffix))
+                                f.write(_('    SUFFIXE: "{var0}"\n').format(var0=_display_text(entry.suffix)))
 
                         f.write("\n")
                     else:
@@ -157,13 +179,15 @@ class ReportGenerator:
                         for entry in line_entries:
                             markers = self._get_markers(entry)
                             f.write(_("  [Ligne {line_num}] Pattern: {var1}{markers}\n").format(line_num=line_num, var1=entry.pattern_name, markers=markers))
-                            f.write(_('  CHERCHER : "{var0}"\n').format(var0=entry.original_text))
-                            f.write(_('  BASE     : "{var0}"\n').format(var0=entry.base_text))
+                            f.write(_('  CHERCHER : "{var0}"\n').format(
+                                var0=_display_text(unescape_lua_string(entry.original_text))))
+                            f.write(_('  BASE     : "{var0}"\n').format(var0=_display_text(entry.base_text)))
                             f.write(_("  CLÉ      : {var0}\n").format(var0=entry.suggested_key))
                             if entry.has_spacing():
                                 f.write(_("  ESPACES  : {var0} début, {var1} fin\n").format(var0=entry.leading_spaces, var1=entry.trailing_spaces))
                             if entry.has_suffix():
-                                f.write(_('  SUFFIXE  : "{var0}"\n').format(var0=entry.suffix))
+                                f.write(_('  SUFFIXE  : "{var0}"\n').format(var0=_display_text(entry.suffix)))
+                            # Code Lua à écrire dans le source : reste sous forme échappée
                             f.write(_("  REMPLACER: {var0}\n\n").format(var0=entry.replacement_code))
 
             # Chaînes avec espaces ou suffixes (résumé)
@@ -178,12 +202,14 @@ class ReportGenerator:
                     emoji_str = "".join(emojis)
 
                     f.write(f"  {i}. {emoji_str} {key}\n")
-                    f.write(_('     Original: "{var0}"\n').format(var0=meta['original_text']))
-                    f.write(_('     Base: "{var0}"\n').format(var0=meta.get('base_text', meta['clean_text'])))
+                    f.write(_('     Original: "{var0}"\n').format(
+                        var0=_display_text(unescape_lua_string(meta['original_text']))))
+                    f.write(_('     Base: "{var0}"\n').format(
+                        var0=_display_text(meta.get('base_text', meta['clean_text']))))
                     if meta['leading_spaces'] > 0 or meta['trailing_spaces'] > 0:
                         f.write(_("     Espaces: {var0} début + {var1} fin\n").format(var0=meta['leading_spaces'], var1=meta['trailing_spaces']))
                     if meta.get('suffix'):
-                        f.write(_('     Suffixe: "{var0}"\n').format(var0=meta['suffix']))
+                        f.write(_('     Suffixe: "{var0}"\n').format(var0=_display_text(meta['suffix'])))
                     f.write(_("     Fichier: {var0}:{var1}\n\n").format(var0=meta['file'], var1=meta['line']))
 
             # Liste des clés uniques pour PluginStrings

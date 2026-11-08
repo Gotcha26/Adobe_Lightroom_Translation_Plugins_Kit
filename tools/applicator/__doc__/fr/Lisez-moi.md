@@ -53,17 +53,17 @@ flowchart LR
 
 ### Prérequis
 
-- **Python 3.8+** installé sur votre système
+- **Python 3.10+** installé sur votre système
 - ***Extractor*** doit avoir été exécuté au préalable (génère `replacements.json`)
 - Aucune dépendance externe requise (bibliothèque standard uniquement)
 
 ### Structure des fichiers
 
 ```
-2_Applicator/
-├── Applicator_main.py     ← Point d'entrée, logique principale
-├── Applicator_menu.py     ← Interface interactive
-└── __doc/
+tools/applicator/
+├── main.py  ← Point d'entrée, logique principale
+├── menu.py  ← Interface interactive
+└── __doc__/
     └── fr/
         └── Lisez-moi.md   ← Ce fichier
 ```
@@ -72,8 +72,8 @@ L'architecture est volontairement simple : un seul fichier principal contient to
 
 | Module | Responsabilité |
 |--------|----------------|
-| `Applicator_main.py` | Chargement JSON, application des remplacements, génération rapport |
-| `Applicator_menu.py` | Interface menu interactif "Ready to go" |
+| `main.py` | Chargement JSON, application des remplacements, génération rapport |
+| `menu.py` | Interface menu interactif "Ready to go" |
 
 ### Utilisation standalone vs lanceur du toolkit
 
@@ -88,7 +88,7 @@ Cependant, l'utilisation via le lanceur central ***LocalizationToolKit.py*** est
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Mode standalone"]
-        S["python Applicator_main.py<br/>--plugin-path ..."]
+        S["python -m tools.applicator.main<br/>--plugin-path ..."]
     end
 
     subgraph Lanceur["🚀 Mode lanceur (recommandé)"]
@@ -110,7 +110,7 @@ flowchart TB
 Lancez simplement le script sans argument :
 
 ```bash
-python Applicator_main.py
+python -m tools.applicator.main
 ```
 
 Un menu "Ready to go" s'affiche avec la configuration actuelle :
@@ -123,10 +123,10 @@ Un menu "Ready to go" s'affiche avec la configuration actuelle :
 Configuration:
 
   1. Plugin             : D:\plugins\monPlugin.lrplugin [OK]
-  2. Extraction         : <plugin>/__i18n_tmp__/Extractor/20260130_150000 [OK]
+  2. Extraction         : <plugin>/__i18n_tmp__/1_Extractor/20260130_150000 [OK]
   3. Mode simulation    : Non (modifications réelles)
   4. Sauvegardes .bak   : Oui (recommandé)
-     Sortie             : <plugin>/__i18n_tmp__/Applicator/<timestamp>/
+     Sortie             : <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/
 
 ──────────────────────────────────────────────────────────────
   ENTRÉE  Lancer l'application
@@ -139,7 +139,7 @@ Configuration:
 Pour une utilisation scriptée ou automatisée :
 
 ```bash
-python Applicator_main.py --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
+python -m tools.applicator.main --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
 ```
 
 #### Options disponibles
@@ -147,26 +147,27 @@ python Applicator_main.py --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
 | Option | Description | Défaut | Exemple |
 |--------|-------------|--------|---------|
 | `--plugin-path` | Chemin du plugin **(obligatoire)** | — | `./monPlugin.lrplugin` |
-| `--extraction-dir` | Dossier Extractor spécifique | Auto-détection | `./plugin/__i18n_tmp__/Extractor/20260130_150000/` |
+| `--extraction-dir` | Dossier Extractor spécifique | Auto-détection | `./plugin/__i18n_tmp__/1_Extractor/20260130_150000/` |
 | `--dry-run` | Mode simulation (pas de modification) | `false` | `--dry-run` |
 | `--no-backup` | Ne pas créer de backups `.bak` | `false` | `--no-backup` |
+| `--yes` | Aucune question : ne pas proposer la gestion des fichiers de traduction ensuite | `false` | `--yes` |
 
 #### Exemples
 
 ```bash
 # Application standard avec auto-détection
-python Applicator_main.py --plugin-path ./piwigoPublish.lrplugin
+python -m tools.applicator.main --plugin-path ./piwigoPublish.lrplugin
 
 # Mode dry-run (simulation)
-python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
+python -m tools.applicator.main --plugin-path ./plugin.lrplugin --dry-run
 
 # Application avec extraction spécifique
-python Applicator_main.py \
+python -m tools.applicator.main \
   --plugin-path ./plugin.lrplugin \
-  --extraction-dir ./plugin/__i18n_tmp__/Extractor/20260128_120000/
+  --extraction-dir ./plugin/__i18n_tmp__/1_Extractor/20260128_120000/
 
 # Sans backup (déconseillé)
-python Applicator_main.py --plugin-path ./plugin.lrplugin --no-backup
+python -m tools.applicator.main --plugin-path ./plugin.lrplugin --no-backup
 ```
 
 ---
@@ -177,8 +178,8 @@ python Applicator_main.py --plugin-path ./plugin.lrplugin --no-backup
 
 ```
 monPlugin.lrplugin/
-├── MyDialog.lua                     ← Fichier modifié
-├── Settings.lua                     ← Fichier modifié
+├── MyDialog.lua  ← Fichier modifié
+├── Settings.lua  ← Fichier modifié
 └── __i18n_tmp__/
     ├── 1_Extractor/
     │   └── 20260130_143022/         ← Source des remplacements
@@ -195,7 +196,11 @@ monPlugin.lrplugin/
 
 ### Rapport d'application
 
-Le fichier `application_report.txt` documente toutes les modifications :
+Chaque exécution écrit son rapport dans son propre dossier de session : `application_report.txt` pour une exécution réelle, `application_report_dry_run.txt` pour une simulation (`--dry-run`). Les deux fichiers coexistent et ne s'écrasent jamais.
+
+Les sauvegardes sont rangées dans le dossier `backups/` de la session. Sans dossier de session, les `.bak` de repli vont dans `<plugin>/__i18n_tmp__/backups/` (le nom du dossier temporaire vient de la configuration), jamais à côté du fichier modifié ni à la racine du plugin.
+
+Le rapport documente toutes les modifications :
 
 ```
 ================================================================================
@@ -249,7 +254,7 @@ cp monPlugin.lrplugin/__i18n_tmp__/2_Applicator/20260130_150000/backups/MyDialog
 git checkout HEAD -- monPlugin.lrplugin/MyDialog.lua
 ```
 
-> Voir aussi : [Restore_backup](../../9_Tools/__doc/fr/outils/RESTORE_BACKUP.md)
+> Voir aussi : [Restore_backup](../../../toolbox/__doc__/fr/outils/RESTORE_BACKUP.md)
 
 ---
 
@@ -318,7 +323,7 @@ L'application se déroule en **3 phases** successives :
 ```mermaid
 flowchart TD
     subgraph Detection["1️⃣ Auto-détection"]
-        A["Plugin .lrplugin"] --> B{"__i18n_tmp__/Extractor/<br/>existe ?"}
+        A["Plugin .lrplugin"] --> B{"__i18n_tmp__/1_Extractor/<br/>existe ?"}
         B -->|Oui| C["Lister les dossiers<br/>horodatés"]
         B -->|Non| D["❌ Erreur:<br/>Lancer Extractor d'abord"]
         C --> E["Trier par timestamp<br/>décroissant"]
@@ -595,7 +600,7 @@ flowchart TD
 **Solution :**
 ```bash
 # Lancer Extractor d'abord
-python 1_Extractor/Extractor_main.py --plugin-path ./plugin.lrplugin
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin
 ```
 
 ### Erreur : "Fichier replacements.json introuvable"

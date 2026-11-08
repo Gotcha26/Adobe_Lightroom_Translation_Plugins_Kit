@@ -28,15 +28,14 @@ from typing import Dict, List, Tuple, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
 
-from .config import (
-    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, load_plugin_rules
-)
+from .config import UI_CONTEXT_PATTERNS, load_plugin_rules
 from core.defaults import DEFAULT_PREFIX
 from .models import ExtractedString, ExtractionStats
 from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
-    is_in_technical_context, unescape_lua_string, block_comment_state
+    is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape,
+    find_literal_positions, log_call_spans, blank_spans, comment_spans
 )
 
 
@@ -119,16 +118,10 @@ class MultiLineContext:
         Returns:
             Le numéro de ligne où la chaîne a été trouvée, ou start_line par défaut
         """
-        # Chercher la chaîne exacte (avec guillemets) dans chaque ligne
-        search_quoted = f'"{search_text}"'
-
+        # Littéral entier uniquement (recherche ancrée) : un littéral Lua entre
+        # guillemets ne s'étend jamais sur deux lignes
         for line_num, line_content in self.lines_with_numbers:
-            if search_quoted in line_content:
-                return line_num
-
-        # Si pas trouvé avec guillemets doubles, essayer sans (cas des concaténations)
-        for line_num, line_content in self.lines_with_numbers:
-            if search_text in line_content:
+            if find_literal_positions(line_content, search_text):
                 return line_num
 
         # Par défaut, retourner la première ligne
@@ -158,6 +151,25 @@ class LocalizableStringExtractor:
 
         # Contexte multi-ligne
         self.multi_line_ctx = MultiLineContext()
+
+    def _blank_log_calls(self, text: str) -> str:
+        """Efface (espaces) les arguments des appels de log et compte la ligne."""
+        spans = log_call_spans(text)
+        if not spans:
+            return text
+        self.stats.log_lines_ignored += 1
+        return blank_spans(text, spans)
+
+    def _is_ignored_text(self, real_text: str, line_context: Optional[str]) -> bool:
+        """
+        Vrai si une chaîne (texte réel) ne doit pas être extraite.
+
+        Chaîne technique, ou chaîne contenant une séquence Lua non décodée
+        (octets UTF-8 invalides, \\z...) : pas représentable telle quelle dans
+        un fichier texte UTF-8, elle reste en dur dans le source.
+        """
+        return (has_undecoded_escape(real_text)
+                or is_technical_string(real_text, line_context, self.rules))
 
     def _find_non_localized_strings(self, line: str) -> List[Tuple[str, int, int]]:
         """
@@ -215,21 +227,19 @@ class LocalizableStringExtractor:
         for line_num, line in enumerate(lines, 1):
             line_stripped = line.strip()
 
-            # Lignes dans un commentaire bloc (y compris la ligne de fermeture) : ignorées
-            if block_comment_level is not None:
-                block_comment_level = block_comment_state(line, block_comment_level)
-                continue
-
-            # Un commentaire bloc peut s'ouvrir sur cette ligne (en début ou après du code)
-            block_comment_level = block_comment_state(line, None)
-
-            # Ignorer les commentaires Lua
-            if line_stripped.startswith('--'):
-                continue
+            # Commentaires Lua : seul le code de la ligne est analysé. Les
+            # commentaires (fin d'un bloc ouvert plus haut, bloc ouvert et fermé
+            # sur la ligne, bloc resté ouvert ou commentaire de ligne) sont
+            # effacés par des espaces pour garder les colonnes de la ligne source.
+            level_at_start = block_comment_level
+            block_comment_level = block_comment_state(line, level_at_start)
+            code_line = blank_spans(line, comment_spans(line, level_at_start))
+            if not code_line.strip():
+                continue  # Ligne vide ou entièrement en commentaire
 
             # Gestion du contexte multi-ligne en cours
             if self.multi_line_ctx.active:
-                is_complete = self.multi_line_ctx.add_line(line_num, line)
+                is_complete = self.multi_line_ctx.add_line(line_num, code_line)
                 if is_complete:
                     # Traiter le bloc complet
                     # Extraire les chaînes du bloc combiné avec le contexte pour retrouver les lignes
@@ -241,21 +251,22 @@ class LocalizableStringExtractor:
                         file_has_strings = True
                 continue
 
-            # CONTRAINTE 1: Ignorer les lignes de log
-            if self.ignore_log and LOG_LINE_REGEX.search(line):
-                self.stats.log_lines_ignored += 1
-                continue
+            # CONTRAINTE 1: Ignorer les arguments des appels de log. Seuls ces
+            # arguments sont effacés (espaces, colonnes inchangées) : le reste de
+            # la ligne (`log:info("x"); title = "Export"`) est analysé normalement.
+            if self.ignore_log:
+                code_line = self._blank_log_calls(code_line)
 
             # EXTRACTION DES LOC EXISTANTS (même sans UI_CONTEXT_PATTERN)
-            has_existing_loc = 'LOC "$$$/' in line
+            has_existing_loc = 'LOC "$$$/' in code_line
             if has_existing_loc:
-                self._extract_existing_loc(line, rel_path, file_name, line_num)
+                self._extract_existing_loc(code_line, rel_path, file_name, line_num)
                 file_has_strings = True
 
             # Vérifier si la ligne contient un contexte UI
             matched_pattern = None
             for pattern_name, pattern_re in UI_CONTEXT_PATTERNS:
-                if pattern_re.search(line):
+                if pattern_re.search(code_line):
                     matched_pattern = pattern_name
                     break
 
@@ -263,20 +274,21 @@ class LocalizableStringExtractor:
                 continue
 
             # Calculer l'équilibre des parenthèses et détecter les concaténations
-            paren_balance = line.count('(') - line.count(')')
-            ends_with_concat = line_stripped.endswith('..')
+            paren_balance = code_line.count('(') - code_line.count(')')
+            ends_with_concat = code_line.rstrip().endswith('..')
 
             # Détecter si c'est un appel/assignation multi-ligne
             # Cas 1: Parenthèses non fermées (paren_balance > 0)
             # Cas 2: Ligne se terminant par ".." (concaténation qui continue)
             if paren_balance > 0 or ends_with_concat:
                 # Début d'un bloc multi-ligne
-                self.multi_line_ctx.start(matched_pattern, line_num, line)
+                self.multi_line_ctx.start(matched_pattern, line_num, code_line)
                 continue
 
             # Traitement standard (ligne simple complète)
             extracted_from_line = self._process_single_line(
-                line, line_stripped, rel_path, file_name, line_num, matched_pattern
+                code_line, line_stripped, rel_path, file_name, line_num, matched_pattern,
+                indent=len(line) - len(line.lstrip())
             )
             if extracted_from_line:
                 file_has_strings = True
@@ -307,6 +319,9 @@ class LocalizableStringExtractor:
             True si des chaînes ont été extraites
         """
         combined = ctx.get_combined_content()
+        if self.ignore_log:
+            # Arguments des appels de log présents dans le bloc multi-ligne
+            combined = blank_spans(combined, log_call_spans(combined))
         pattern_name = ctx.pattern_name
 
         extracted_any = False
@@ -328,7 +343,7 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), combined, self.rules):
+            if self._is_ignored_text(unescape_lua_string(original_text), combined):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -354,9 +369,17 @@ class LocalizableStringExtractor:
 
     def _process_single_line(self, line: str, line_stripped: str,
                              rel_path: str, file_name: str,
-                             line_num: int, matched_pattern: str) -> bool:
+                             line_num: int, matched_pattern: str,
+                             indent: int = 0) -> bool:
         """
         Traite une ligne simple (non multi-ligne).
+
+        Args:
+            line: Ligne à analyser, aux colonnes de la ligne source (les zones
+                  ignorées, arguments de log ou commentaire, sont des espaces)
+            line_stripped: Ligne source sans indentation (line_content)
+            indent: Indentation de la ligne source : la colonne enregistrée
+                    est relative à line_stripped
 
         Returns:
             True si des chaînes ont été extraites
@@ -392,8 +415,8 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), line if is_tech_context else None,
-                                   self.rules):
+            if self._is_ignored_text(unescape_lua_string(original_text),
+                                     line if is_tech_context else None):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -414,7 +437,8 @@ class LocalizableStringExtractor:
                 line_num, matched_pattern,
                 is_concat=(is_concat and len(valid_members) > 1),
                 member_idx=member_idx,
-                total_members=len(valid_members)
+                total_members=len(valid_members),
+                column=start_pos - indent
             )
 
         return len(valid_members) > 0
@@ -422,7 +446,8 @@ class LocalizableStringExtractor:
     def _create_entry(self, original_text: str, line_content: str,
                       rel_path: str, file_name: str, line_num: int,
                       pattern_name: str, is_concat: bool = False,
-                      member_idx: int = 0, total_members: int = 1) -> Optional[ExtractedString]:
+                      member_idx: int = 0, total_members: int = 1,
+                      column: Optional[int] = None) -> Optional[ExtractedString]:
         """
         Crée une entrée ExtractedString pour une chaîne.
 
@@ -482,7 +507,8 @@ class LocalizableStringExtractor:
             match_context=line_content[:100],
             is_concat_member=is_concat,
             concat_member_index=member_idx,
-            concat_total_members=total_members
+            concat_total_members=total_members,
+            column=column
         )
 
         self.extracted.append(entry)
@@ -539,8 +565,9 @@ class LocalizableStringExtractor:
                 self.stats.technical_ignored += 1
                 continue
 
-            # Ignorer les valeurs techniques
-            if existing_value in self.rules.ignore_loc_values:
+            # Ignorer les valeurs techniques, et celles qui gardent une séquence
+            # Lua non décodée (non représentable dans les fichiers UTF-8 générés)
+            if existing_value in self.rules.ignore_loc_values or has_undecoded_escape(existing_value):
                 self.stats.technical_ignored += 1
                 continue
 

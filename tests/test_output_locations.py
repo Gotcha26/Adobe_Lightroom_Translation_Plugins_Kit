@@ -70,7 +70,7 @@ def test_compare_without_output_dir_uses_tempdir(isolated_config, plugin_dir, to
 def test_sync_without_backup_dir_leaves_plugin_root_clean(isolated_config, plugin_dir):
     run_sync(os.path.join(plugin_dir, "TranslatedStrings_en.txt"), plugin_dir, None)
     assert glob.glob(os.path.join(plugin_dir, "*.bak")) == []
-    assert os.path.isfile(os.path.join(plugin_dir, "backups", "TranslatedStrings_fr.txt.bak"))
+    assert os.path.isfile(os.path.join(plugin_dir, "__i18n_tmp__", "backups", "TranslatedStrings_fr.txt.bak"))
 
 
 def test_inject_without_backup_dir_leaves_target_dir_clean(isolated_config, plugin_dir, tmp_path):
@@ -79,4 +79,4 @@ def test_inject_without_backup_dir_leaves_target_dir_clean(isolated_config, plug
     target = os.path.join(plugin_dir, "TranslatedStrings_fr.txt")
     run_inject(str(translate), target, str(tmp_path))
     assert glob.glob(os.path.join(plugin_dir, "*.bak")) == []
-    assert _bak_files(plugin_dir) in ([], [os.path.join(plugin_dir, "backups", "TranslatedStrings_fr.txt.bak")])
+    assert _bak_files(plugin_dir) in ([], [os.path.join(plugin_dir, "__i18n_tmp__", "backups", "TranslatedStrings_fr.txt.bak")])

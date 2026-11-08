@@ -1,6 +1,6 @@
 # ADD LANGUAGE Command
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -142,16 +142,16 @@ See example sessions below for details on Mode A and Mode B menus.
 
 ```bash
 # Auto mode (tries Extractor then creation)
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de
 
 # Mode A explicit: install from Extractor
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --mode extraction
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --mode extraction
 
 # Mode B explicit: create new file
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --mode create
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --mode create
 
 # Force overwrite without confirmation
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --force
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --force
 ```
 
 ### CLI Options
@@ -385,6 +385,6 @@ flowchart LR
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *ADDLANG.md* | **Version** | 1.0 |
-| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commands/ADDLANG.md)* |
+| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commandes/ADDLANG.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

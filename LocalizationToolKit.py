@@ -26,7 +26,8 @@ Les outils génèrent leurs sorties dans:
 
 Usage CLI :
     python LocalizationToolkit.py               # Menu interactif
-    python LocalizationToolkit.py extract       # Lancer Extractor
+    python LocalizationToolkit.py extract [--yes]
+                                                # Lancer Extractor (--yes : mode CLI avec la config)
     python LocalizationToolkit.py apply         # Lancer Applicator (menu)
     python LocalizationToolkit.py apply [--dry-run] [--yes]
                                                 # Applicator en CLI (simulation seulement avec --dry-run)
@@ -59,6 +60,7 @@ from core.paths import (
     get_i18n_kit_path, find_latest_tool_output, get_i18n_dir, set_i18n_dir,
     validate_plugin_path, find_git_root, DEFAULT_I18N_DIR
 )
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _, debug_language_detection
 from core.defaults import DEFAULT_PREFIX
@@ -104,20 +106,29 @@ class ConfigManager:
         self.config_local_path = os.path.join(base_dir, CONFIG_LOCAL_FILE)
         self.shared: Dict = {}   # contenu de config.json (versionné)
         self.local: Dict = {}    # contenu de config.local.json (non versionné)
+        self.local_readable = True  # False si config.local.json existe mais est illisible
         self.config = self._load()
 
     @staticmethod
-    def _read_json(path: str, message: str) -> Dict:
-        """Lit un fichier JSON de configuration ; renvoie {} si absent ou illisible."""
+    def _read_json(path: str, message: str) -> Tuple[Dict, bool]:
+        """Lit un fichier JSON de configuration.
+
+        Renvoie (données, lisible). Un fichier absent donne ({}, True) : on peut
+        le créer. Un fichier présent mais illisible (JSON invalide, racine non-objet,
+        erreur d'encodage ou d'E/S) donne ({}, False) : il ne doit jamais être écrasé.
+        """
         if not os.path.exists(path):
-            return {}
+            return {}, True
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            return data if isinstance(data, dict) else {}
-        except Exception as e:
+        except (OSError, ValueError) as e:  # ValueError couvre JSONDecodeError et UnicodeDecodeError
             print(message.format(error=e))
-            return {}
+            return {}, False
+        if not isinstance(data, dict):
+            print(message.format(error=_("la racine doit être un objet JSON")))
+            return {}, False
+        return data, True
 
     # ------------------------------------------------------------------
     # Ordre de priorité :  DEFAULT_CONFIG  <  config.json  <  config.local.json
@@ -130,8 +141,9 @@ class ConfigManager:
         Les deux dictionnaires sont conservés séparément (self.shared / self.local)
         afin que save() n'écrive jamais l'un dans l'autre.
         """
-        self.shared = self._read_json(self.config_path, _("Erreur lecture config: {error}"))
-        self.local = self._read_json(self.config_local_path, _("Erreur lecture config locale: {error}"))
+        self.shared, _shared_ok = self._read_json(self.config_path, _("Erreur lecture config: {error}"))
+        self.local, self.local_readable = self._read_json(
+            self.config_local_path, _("Erreur lecture config locale: {error}"))
 
         config = {**DEFAULT_CONFIG, **self.shared, **self.local}
 
@@ -148,26 +160,45 @@ class ConfigManager:
         """
         return self.local, self.config_local_path
 
-    def save(self):
-        """Sauvegarde uniquement config.local.json (jamais config.json)."""
+    def save(self) -> bool:
+        """Sauvegarde uniquement config.local.json (jamais config.json).
+
+        Returns:
+            True si le fichier a été écrit
+        """
         data, path = self._target()
         try:
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception as e:
             print(_("Erreur sauvegarde config: {error}").format(error=e))
+            return False
+        return True
 
     def get(self, key: str, default=None):
         """Récupère une valeur de configuration."""
         return self.config.get(key, default)
 
-    def set(self, key: str, value):
-        """Définit une valeur de configuration dans le fichier cible."""
+    def set(self, key: str, value) -> bool:
+        """Définit une valeur de configuration dans le fichier cible.
+
+        La valeur est toujours appliquée en mémoire (session en cours).
+
+        Returns:
+            True si elle a aussi été enregistrée dans config.local.json
+        """
         data, path = self._target()
         data[key] = value
         self.config[key] = value
-        self.save()
+        if not self.local_readable:
+            # Fichier présent mais illisible : on ne l'écrase pas (valeur gardée en mémoire)
+            print(c.error(_("{file} est illisible : la modification n'est pas enregistrée. "
+                            "Corrigez ou supprimez ce fichier.").format(file=os.path.basename(path))))
+            return False
+        if not self.save():
+            return False
         print(_("Configuration mise à jour dans {file}").format(file=os.path.basename(path)))
+        return True
 
     def display(self):
         """Affiche la configuration actuelle."""
@@ -619,8 +650,8 @@ class MainMenu:
         self.launcher = ToolLauncher(self.base_dir, self.config)
 
     def clear_screen(self):
-        """Efface l'écran."""
-        os.system('cls' if os.name == 'nt' else 'clear')
+        """Efface l'écran, seulement sur un terminal."""
+        clear_screen()
 
     def has_translated_strings(self) -> bool:
         """Détecte si le plugin contient au moins un fichier TranslatedStrings_xx.txt."""
@@ -693,6 +724,18 @@ class MainMenu:
         print(c.menu_option("0", _("Quitter")))
         print()
 
+    @staticmethod
+    def print_setting_result(saved: bool, message: str):
+        """Confirme une modification de configuration (retour de ConfigManager.set).
+
+        Non enregistrée (config.local.json illisible ou écriture impossible) :
+        la valeur ne vaut que pour la session en cours, ce que dit le message.
+        """
+        if saved:
+            print(c.success(message))
+        else:
+            print(c.warning(_("{message} (pour cette session uniquement)").format(message=message)))
+
     def input_plugin_path(self):
         """Configure le chemin du plugin."""
         print()
@@ -727,8 +770,8 @@ class MainMenu:
                     print(c.error(_("Configuration annulée")))
                     return
 
-            self.config.set("plugin_path", normalized)
-            print(c.success(_("Plugin configuré: {path}").format(path=normalized)))
+            saved = self.config.set("plugin_path", normalized)
+            self.print_setting_result(saved, _("Plugin configuré: {path}").format(path=normalized))
 
             # Afficher le chemin du dossier temporaire
             i18n_path = get_i18n_kit_path(normalized)
@@ -763,9 +806,9 @@ class MainMenu:
                 print(c.error(_("Caractères invalides dans le nom: {chars}").format(chars=invalid_chars)))
                 continue
 
-            self.config.set("temp_dir", name)
+            saved = self.config.set("temp_dir", name)
             set_i18n_dir(name)
-            print(c.success(_("Dossier temporaire: {name}").format(name=name)))
+            self.print_setting_result(saved, _("Dossier temporaire: {name}").format(name=name))
 
             plugin_path = self.config.get("plugin_path", "")
             if plugin_path:
@@ -843,9 +886,9 @@ class MainMenu:
             # Toggle auto-ajout .gitignore
             current = self.config.get("auto_add_gitignore", True)
             new_value = not current
-            self.config.set("auto_add_gitignore", new_value)
+            saved = self.config.set("auto_add_gitignore", new_value)
             status = _("activé") if new_value else _("désactivé")
-            print(c.success(_("Auto-ajout au .gitignore: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Auto-ajout au .gitignore: {status}").format(status=status))
             print()
             temp_dir_name = self.config.get('temp_dir', DEFAULT_I18N_DIR)
             if new_value:
@@ -856,9 +899,9 @@ class MainMenu:
             # Toggle animation Flip-anim
             current = self.config.get("enable_flip_anim", True)
             new_value = not current
-            self.config.set("enable_flip_anim", new_value)
+            saved = self.config.set("enable_flip_anim", new_value)
             status = _("activée") if new_value else _("désactivée")
-            print(c.success(_("Animation au démarrage: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Animation au démarrage: {status}").format(status=status))
         elif choice == '5':
             # Modifier le préfixe
             print()
@@ -868,8 +911,8 @@ class MainMenu:
             print()
             new_prefix = input(c.prompt(_("Nouveau préfixe (ENTRÉE pour garder):") + " ")).strip()
             if new_prefix:
-                self.config.set("prefix", new_prefix)
-                print(c.success(_("Préfixe: {prefix}").format(prefix=new_prefix)))
+                saved = self.config.set("prefix", new_prefix)
+                self.print_setting_result(saved, _("Préfixe: {prefix}").format(prefix=new_prefix))
             else:
                 print(c.success(_("Préfixe inchangé")))
         elif choice == '6':
@@ -883,17 +926,17 @@ class MainMenu:
             print()
             new_lang = input(c.prompt(_("Nouvelle langue (ENTRÉE pour garder):") + " ")).strip()
             if new_lang:
-                self.config.set("lang", new_lang)
-                print(c.success(_("Langue: {lang}").format(lang=new_lang)))
+                saved = self.config.set("lang", new_lang)
+                self.print_setting_result(saved, _("Langue: {lang}").format(lang=new_lang))
             else:
                 print(c.success(_("Langue inchangée")))
         elif choice == '7':
             # Toggle debug i18n
             current = self.config.get("debug_i18n", False)
             new_value = not current
-            self.config.set("debug_i18n", new_value)
+            saved = self.config.set("debug_i18n", new_value)
             status = _("activé") if new_value else _("désactivé")
-            print(c.success(_("Debug i18n: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Debug i18n: {status}").format(status=status))
 
         input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
 
@@ -964,15 +1007,34 @@ class MainMenu:
 # POINT D'ENTRÉE
 # =============================================================================
 
-# Options CLI acceptées après la commande du lanceur
+# Options CLI acceptées après chaque commande du lanceur (prise en charge réelle) :
+# toute autre option est refusée (code 2) au lieu d'être ignorée en silence
 CLI_OPTIONS = ("--dry-run", "--yes")
+COMMAND_OPTIONS = {
+    'extract': ("--yes",),
+    'apply': ("--dry-run", "--yes"),
+    'translate': (),
+    'restore': (),
+    'delete': (),
+    'autosync': ("--yes",),
+    'config': (),
+}
+COMMAND_ALIASES = {
+    'extract': 'extract', 'extractor': 'extract', '1': 'extract',
+    'apply': 'apply', 'applicator': 'apply', '2': 'apply',
+    'translate': 'translate', 'translation': 'translate', '3': 'translate',
+    'restore': 'restore', '4': 'restore',
+    'delete': 'delete', 'clean': 'delete', '5': 'delete',
+    'autosync': 'autosync', '6': 'autosync',
+    '--config': 'config', 'config': 'config', '7': 'config',
+}
 
 
 def print_cli_usage():
     """Affiche l'aide du mode CLI du lanceur."""
     print("\n" + _("Usage:"))
     print("  python LocalizationToolKit.py                     # " + _("Menu interactif"))
-    print("  python LocalizationToolKit.py extract   (1)       # " + _("Lancer Extractor"))
+    print("  python LocalizationToolKit.py extract   (1) [--yes]  # " + _("Lancer Extractor"))
     print("  python LocalizationToolKit.py apply     (2)       # " + _("Lancer Applicator (menu)"))
     print("  python LocalizationToolKit.py apply [--dry-run] [--yes]  # "
           + _("Appliquer en CLI (simulation seulement avec --dry-run)"))
@@ -983,7 +1045,7 @@ def print_cli_usage():
           + _("Mettre à jour plugin + langues (AUTOSYNC)"))
     print("  python LocalizationToolKit.py config    (7)       # " + _("Afficher config"))
     print("  python LocalizationToolKit.py --help    (-h)      # " + _("Afficher cette aide"))
-    print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue."))
+    print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue ou non prise en charge."))
 
 
 def main():
@@ -1005,6 +1067,16 @@ def main():
             print(_("Option inconnue: {option}").format(option=" ".join(unknown)))
             print_cli_usage()
             sys.exit(2)
+
+        # Option connue mais non prise en charge par la commande : refus explicite
+        command = COMMAND_ALIASES.get(cmd)
+        if command is not None:
+            unsupported = [arg for arg in extra if arg not in COMMAND_OPTIONS[command]]
+            if unsupported:
+                print(_("Option non prise en charge par la commande {cmd}: {option}").format(
+                    cmd=cmd, option=" ".join(unsupported)))
+                print_cli_usage()
+                sys.exit(2)
         dry_run = "--dry-run" in extra
         assume_yes = "--yes" in extra
 
@@ -1012,19 +1084,19 @@ def main():
         config = ConfigManager(base_dir)
         launcher = ToolLauncher(base_dir, config)
 
-        if cmd in ['extract', 'extractor', '1']:
+        if command == 'extract':
             success = launcher.run_extractor(interactive=not extra)
-        elif cmd in ['apply', 'applicator', '2']:
+        elif command == 'apply':
             success = launcher.run_applicator(interactive=not extra, dry_run=dry_run, assume_yes=assume_yes)
-        elif cmd in ['translate', 'translation', '3']:
+        elif command == 'translate':
             success = launcher.run_translation_manager()
-        elif cmd in ['restore', '4']:
+        elif command == 'restore':
             success = launcher.run_restore_backup()
-        elif cmd in ['delete', 'clean', '5']:
+        elif command == 'delete':
             success = launcher.run_delete_temp_dir()
-        elif cmd in ['autosync', '6']:
+        elif command == 'autosync':
             success = launcher.run_autosync(assume_yes=assume_yes)
-        elif cmd in ['--config', 'config', '7']:
+        elif command == 'config':
             config.display()
             success = True
         else:

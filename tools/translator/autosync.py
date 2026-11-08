@@ -42,7 +42,10 @@ from typing import Dict, List, Tuple
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import find_latest_tool_output, get_tool_output_path, backup_once, display_relative
+from core.paths import (
+    find_latest_tool_output, find_session_dirs, get_i18n_kit_path, get_tool_output_path,
+    backup_once, display_relative
+)
 from core.colors import c
 from core.i18n import _
 from tools.extractor.main import run_extraction
@@ -197,6 +200,34 @@ def _applicator_failure(report, plugin_path: str) -> RuntimeError:
     return RuntimeError(_("Applicator a échoué : {details}").format(details=details))
 
 
+_SESSION_TOOLS = ("Extractor", "Applicator", "Translator")
+
+
+def _snapshot_sessions(plugin_path: str) -> Dict[str, set]:
+    """Sessions existantes de chaque outil, avant que l'AUTO-SYNC n'en crée."""
+    i18n_kit = get_i18n_kit_path(plugin_path)
+    return {tool: set(find_session_dirs(i18n_kit, tool)) for tool in _SESSION_TOOLS}
+
+
+def _remove_new_sessions(plugin_path: str, sessions_before: Dict[str, set]) -> List[str]:
+    """
+    Supprime les sessions créées depuis `sessions_before` (celles de CET appel).
+
+    Une session déjà présente avant l'AUTO-SYNC n'est jamais touchée.
+
+    Returns:
+        Chemins supprimés
+    """
+    i18n_kit = get_i18n_kit_path(plugin_path)
+    removed = []
+    for tool in _SESSION_TOOLS:
+        for session in find_session_dirs(i18n_kit, tool):
+            if session not in sessions_before[tool]:
+                shutil.rmtree(session)
+                removed.append(session)
+    return removed
+
+
 def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
     """
     Orchestrateur AUTO-SYNC : EXTRACTOR -> APPLICATOR -> COMPARE -> EXTRACT -> INJECT -> SYNC
@@ -231,6 +262,8 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
     if not plugin_path or not os.path.isdir(plugin_path):
         results['errors'].append(_("Chemin du plugin invalide"))
         return results
+
+    sessions_before = _snapshot_sessions(plugin_path)
 
     # Créer le dossier de sortie pour les rapports/artefacts
     output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
@@ -333,6 +366,10 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
             if answer not in ('o', 'oui', 'y', 'yes'):
                 print(c.warning(_("Annulé par l'utilisateur")))
                 results['errors'].append(_("Annulé par l'utilisateur"))
+                # Ne laisser aucune session à moitié faite : retirer ce que CET appel a créé
+                for removed in _remove_new_sessions(plugin_path, sessions_before):
+                    print(_("{var0}  Session temporaire supprimée : {var1}{path}{var2}").format(
+                        var0=c.DIM, var1=c.VALUE, path=display_relative(removed, plugin_path), var2=c.RESET))
                 return results
 
         # Exécution réelle, dans la même session Applicator

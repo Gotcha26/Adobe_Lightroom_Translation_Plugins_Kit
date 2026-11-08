@@ -51,25 +51,25 @@ Lors du développement d'un plugin, les textes évoluent :
 
 ### Prérequis
 
-- **Python 3.8+** installé sur votre système
+- **Python 3.10+** installé sur votre système
 - ***Extractor*** et/ou ***Applicator*** doivent avoir été exécutés (selon le workflow)
 - Aucune dépendance externe requise (bibliothèque standard uniquement)
 
 ### Structure des fichiers
 
 ```
-3_Translator/
-├── main.py             ← Point d'entrée (menu + CLI)
-├── common.py           ← Fonctions communes (parser, utils)
-├── install.py          ← Commande INSTALL
-├── autosync.py         ← Commande AUTO-SYNC ⭐
-├── addlang.py          ← Commande ADD LANGUAGE
-├── compare.py          ← Commande COMPARE (avancé)
-├── compare_langs.py    ← Commande COMPARE-LANGS (avancé)
-├── extract.py          ← Commande EXTRACT (avancé)
-├── inject.py           ← Commande INJECT (avancé)
-├── sync.py             ← Commande SYNC (avancé)
-└── __doc/
+tools/translator/
+├── main.py           ← Point d'entrée (menu + CLI)
+├── common.py         ← Fonctions communes (parser, utils)
+├── install.py        ← Commande INSTALL
+├── autosync.py       ← Commande AUTO-SYNC ⭐
+├── addlang.py        ← Commande ADD LANGUAGE
+├── compare.py        ← Commande COMPARE (avancé)
+├── compare_langs.py  ← Commande COMPARE-LANGS (avancé)
+├── extract.py        ← Commande EXTRACT (avancé)
+├── inject.py         ← Commande INJECT (avancé)
+├── sync.py           ← Commande SYNC (avancé)
+└── __doc__/
     └── fr/
         ├── Translator_fr.md    ← Ce fichier
         └── commandes/
@@ -88,7 +88,7 @@ Lors du développement d'un plugin, les textes évoluent :
 ***Translator*** peut fonctionner de manière **indépendante** en ligne de commande :
 
 ```bash
-python Translator_main.py
+python -m tools.translator.main
 ```
 
 Cependant, l'utilisation via ***LocalizationToolKit.py*** est recommandée car :
@@ -99,7 +99,7 @@ Cependant, l'utilisation via ***LocalizationToolKit.py*** est recommandée car :
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Mode standalone"]
-        S["python Translator_main.py"]
+        S["python -m tools.translator.main"]
     end
 
     subgraph Lanceur["🚀 Mode lanceur (recommandé)"]
@@ -251,7 +251,7 @@ Ces commandes offrent un contrôle fin pour des cas d'usage spécifiques (traduc
 
 | Commande | Documentation | Rôle |
 |----------|---------------|------|
-| **COMPARE** | [COMPARE.md](commandes/COMPARE.md) | Compare 2 versions EN → génère `UPDATE_en.json` |
+| **COMPARE** | [COMPARE.md](commandes/COMPARE.md) | Compare 2 versions EN → génère `UPDATE_<ref>.json` |
 | **COMPARE-LANGS** | [COMPARE-LANGS.md](commandes/COMPARE-LANGS.md) | Compare 2 fichiers de langues (audit, cohérence) |
 | **EXTRACT** | [EXTRACT.md](commandes/EXTRACT.md) | Génère fichiers partiels `TRANSLATE_xx.txt` |
 | **INJECT** | [INJECT.md](commandes/INJECT.md) | Réinjecte les traductions dans les fichiers complets |
@@ -264,7 +264,7 @@ flowchart TD
     subgraph Compare["1️⃣ COMPARE"]
         C1["Ancien EN"] --> C["Comparateur"]
         C2["Nouveau EN"] --> C
-        C --> C3["UPDATE_en.json<br/>CHANGELOG.txt"]
+        C --> C3["UPDATE_&lt;ref&gt;.json<br/>CHANGELOG.txt"]
     end
 
     subgraph Extract["2️⃣ EXTRACT"]
@@ -338,7 +338,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A["Nouvelle extraction"] -->|COMPARE| B["UPDATE_en.json"]
+    A["Nouvelle extraction"] -->|COMPARE| B["UPDATE_&lt;ref&gt;.json"]
     B -->|EXTRACT| C["TRANSLATE_fr.txt<br/>TRANSLATE_de.txt"]
     C -->|"📧 Envoi"| D["Traducteurs"]
     D -->|"📥 Réception"| E["Fichiers traduits"]
@@ -395,47 +395,47 @@ Format standard du SDK Lightroom :
 ### Syntaxe générale
 
 ```bash
-python Translator_main.py [commande] [options]
+python -m tools.translator.main [commande] [options]
 ```
 
 ### Mode interactif (recommandé)
 
 ```bash
-python Translator_main.py
+python -m tools.translator.main
 ```
 
 Ou avec plugin pré-configuré :
 
 ```bash
-python Translator_main.py --default-plugin ./plugin.lrplugin
+python -m tools.translator.main --default-plugin ./plugin.lrplugin
 ```
 
 ### Exemples CLI
 
 ```bash
 # INSTALL
-python Translator_main.py install --plugin-path ./plugin.lrplugin
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin
 
 # AUTO-SYNC
-python Translator_main.py autosync --plugin-path ./plugin.lrplugin
+python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin
 
 # COMPARE
-python Translator_main.py compare --old ./old/en.txt --new ./new/en.txt
+python -m tools.translator.main compare --old ./old/en.txt --new ./new/en.txt
 
 # COMPARE-LANGS (par codes langue)
-python Translator_main.py compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
 
 # COMPARE-LANGS (par fichiers)
-python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
+python -m tools.translator.main compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
 
 # EXTRACT
-python Translator_main.py extract --plugin-path ./plugin.lrplugin
+python -m tools.translator.main extract --plugin-path ./plugin.lrplugin
 
 # INJECT
-python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
 # SYNC
-python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 ```
 
 ---
@@ -481,6 +481,6 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
 | **Nom** | *Lisez-moi.md* | **Version** | 7.2 |
-| **Type** | Guide utilisateur TRANSLATOR - Avancé | **Langue** | FR - *[EN](../../en/README.md)* |
+| **Type** | Guide utilisateur TRANSLATOR - Avancé | **Langue** | FR - *[EN](../en/Translator_en.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **Licence** | [MIT](../../../../LICENSE) | | |

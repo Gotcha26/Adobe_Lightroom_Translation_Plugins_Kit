@@ -35,7 +35,7 @@ from tools.translator.common import (
 )
 
 from .models import ExtractedString
-from .utils import build_loc_call, escape_lua_string
+from .utils import build_loc_call, escape_lua_string, pick_literal_position
 
 
 class OutputGenerator:
@@ -170,7 +170,9 @@ class OutputGenerator:
                         'leading_spaces': entry.leading_spaces,
                         'trailing_spaces': entry.trailing_spaces,
                         'suffix': entry.suffix,
-                        'replacement': self._build_loc_call(entry)
+                        'replacement': self._build_loc_call(entry),
+                        # Colonne du littéral dans la ligne sans indentation (None si inconnue)
+                        'column': entry.column
                     }
                     members.append(member_info)
 
@@ -227,18 +229,20 @@ class OutputGenerator:
 
         Remplace chaque chaîne originale par son appel LOC correspondant.
         """
+        # Position de chaque entrée : littéral entier à sa colonne, sinon premier
+        # littéral non encore attribué (jamais à l'intérieur d'un autre littéral).
+        # original_line est line_content : les colonnes s'y appliquent telles quelles.
+        used_positions = set()
+        positioned = []
+        for entry in entries:
+            pos = pick_literal_position(original_line, entry.original_text, used_positions, entry.column)
+            if pos is not None:
+                positioned.append((pos, entry))
+
+        # Remplacer par position décroissante pour ne pas décaler les indices
         result = original_line
-
-        # Trier par position décroissante pour ne pas décaler les indices
-        sorted_entries = sorted(entries, key=lambda e: original_line.find(f'"{e.original_text}"'), reverse=True)
-
-        for entry in sorted_entries:
-            search_str = f'"{entry.original_text}"'
-            replace_str = self._build_loc_call(entry)
-
-            # Remplacer une seule occurrence (la première trouvée depuis la fin)
-            pos = result.rfind(search_str)
-            if pos != -1:
-                result = result[:pos] + replace_str + result[pos + len(search_str):]
+        for pos, entry in sorted(positioned, key=lambda item: item[0], reverse=True):
+            search_len = len(entry.original_text) + 2  # avec les guillemets
+            result = result[:pos] + self._build_loc_call(entry) + result[pos + search_len:]
 
         return result

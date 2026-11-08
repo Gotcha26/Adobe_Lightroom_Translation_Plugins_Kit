@@ -1,6 +1,6 @@
 # Commande COMPARE
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -26,7 +26,7 @@ flowchart LR
     end
 
     subgraph Output["📂 Sorties"]
-        O1["UPDATE_en.json"]
+        O1["UPDATE_&lt;ref&gt;.json"]
         O2["CHANGELOG.txt"]
         O3["TranslatedStrings_en.txt<br/>(copie nouvelle version)"]
     end
@@ -42,7 +42,7 @@ flowchart LR
 |------|----------|
 | **Entrée** | Ancien `TranslatedStrings_en.txt` |
 | **Entrée** | Nouveau `TranslatedStrings_en.txt` |
-| **Sortie** | `UPDATE_en.json` (données structurées) |
+| **Sortie** | `UPDATE_<ref>.json` (données structurées) |
 | **Sortie** | `CHANGELOG.txt` (rapport lisible) |
 | **Sortie** | `TranslatedStrings_en.txt` (copie de référence) |
 
@@ -73,7 +73,7 @@ flowchart TD
     L -->|Oui| M["→ UNCHANGED"]
     L -->|Non| N["→ CHANGED"]
 
-    H & J & M & N --> O["Générer UPDATE_en.json"]
+    H & J & M & N --> O["Générer UPDATE_&lt;ref&gt;.json"]
     O --> P["Générer CHANGELOG.txt"]
 
     style O fill:#FFEB3B,color:#000
@@ -102,7 +102,7 @@ flowchart TD
 │                                                                  │
 │  3. COMPARE                                                      │  ◄── Sélectionner
 │     Compare ancien EN vs nouveau EN                              │
-│     → Génère UPDATE_en.json + CHANGELOG.txt                      │
+│     → Génère UPDATE_<ref>.json + CHANGELOG.txt                      │
 │                                                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -115,16 +115,16 @@ Le menu demande ensuite :
 
 ```bash
 # Comparer deux fichiers
-python Translator_main.py compare --old ./v1/TranslatedStrings_en.txt --new ./v2/TranslatedStrings_en.txt
+python -m tools.translator.main compare --old ./v1/TranslatedStrings_en.txt --new ./v2/TranslatedStrings_en.txt
 
 # Comparer deux répertoires (auto-détection du fichier EN)
-python Translator_main.py compare --old ./old_extraction/ --new ./new_extraction/
+python -m tools.translator.main compare --old ./old_extraction/ --new ./new_extraction/
 
 # Avec sortie dans __i18n_tmp__
-python Translator_main.py compare --old ./old.txt --new ./new.txt --plugin-path ./plugin.lrplugin
+python -m tools.translator.main compare --old ./old.txt --new ./new.txt --plugin-path ./plugin.lrplugin
 
 # Sortie personnalisée
-python Translator_main.py compare --old ./old.txt --new ./new.txt --output ./my_output/
+python -m tools.translator.main compare --old ./old.txt --new ./new.txt --output ./my_output/
 ```
 
 ### Options CLI
@@ -161,7 +161,7 @@ Fichier NOUVEAU (TranslatedStrings_en.txt ou répertoire):
   Clés inchangées :  130
 
 ✓ Fichiers générés dans: __i18n_tmp__/3_Translator/20260201_151234/
-    • UPDATE_en.json
+    • UPDATE_<ref>.json
     • CHANGELOG.txt
     • TranslatedStrings_en.txt
 
@@ -174,7 +174,7 @@ Fichier NOUVEAU (TranslatedStrings_en.txt ou répertoire):
 
 ## 📁 Format des fichiers générés
 
-### UPDATE_en.json
+### `UPDATE_<ref>.json`
 
 ```json
 {
@@ -262,8 +262,8 @@ Ces clés n'existent plus et seront retirées des traductions.
 PROCHAINE ÉTAPE
 ================================================================================
 Lancez EXTRACT puis INJECT, ou directement SYNC:
-  python Translator_main.py extract --update ./20260201_151234
-  python Translator_main.py sync --update ./20260201_151234
+  python -m tools.translator.main extract --update ./20260201_151234
+  python -m tools.translator.main sync --update ./20260201_151234
 ```
 
 ---

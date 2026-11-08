@@ -1,6 +1,6 @@
 # AUTO-SYNC Command ⭐
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -58,7 +58,7 @@ flowchart TB
 | **Output (code)** | `.lua` files with LOC replacements applied |
 | **Output (translations)** | `plugin.lrplugin/TranslatedStrings_*.txt` (synchronized) |
 | **Output (backups)** | `__i18n_tmp__/2_Applicator/<timestamp>/backups/` |
-| **Output (reports)** | `__i18n_tmp__/3_Translator/<timestamp>/` (CHANGELOG, UPDATE_en.json) |
+| **Output (reports)** | `__i18n_tmp__/3_Translator/<timestamp>/` (CHANGELOG, `UPDATE_<ref>.json`) |
 
 ---
 
@@ -97,7 +97,7 @@ flowchart TD
 |------|------|--------|--------|
 | **1** | Extractor | Extract LOC keys from Lua code | Freshly generated `TranslatedStrings_en.txt` |
 | **2** | Applicator | Apply replacements in Lua code | `.lua` files modified with backups |
-| **3** | COMPARE | Compare old EN vs new EN | `UPDATE_en.json` + `CHANGELOG.txt` |
+| **3** | COMPARE | Compare old EN vs new EN | `UPDATE_<ref>.json` + `CHANGELOG.txt` |
 | **4** | EXTRACT | Generate translation files | `TRANSLATE_xx.txt` (changed keys only) |
 | **5** | INJECT | Inject translations into plugin | Updated `TranslatedStrings_*.txt` files |
 | **6** | SYNC | Synchronize with EN reference | Final files aligned, no markers |
@@ -136,7 +136,7 @@ For each language file (fr, de, es...):
 ### CLI Mode
 
 ```bash
-python Translator_main.py autosync --plugin-path ./plugin.lrplugin
+python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin
 ```
 
 ### CLI Options
@@ -160,7 +160,7 @@ python Translator_main.py autosync --plugin-path ./plugin.lrplugin
 Workflow:
   1. Extractor  → extract keys from Lua code
   2. Applicator → apply replacements in code
-  3. COMPARE    → generate UPDATE_en.json
+  3. COMPARE    → generate UPDATE_<ref>.json
   4. EXTRACT    → generate TRANSLATE_xx.txt files
   5. INJECT     → apply completed translations
   6. SYNC       → synchronize with EN reference
@@ -216,7 +216,7 @@ AUTO-SYNC generates multiple report files:
 
 | File | Location | Content |
 |------|----------|---------|
-| **UPDATE_en.json** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Complete changes details (JSON) |
+| **`UPDATE_<ref>.json`** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Complete changes details (JSON) |
 | **CHANGELOG.txt** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Readable modification list |
 | **Backups** | `__i18n_tmp__/2_Applicator/<timestamp>/backups/` | Backup copies (`.bak`) |
 
@@ -252,8 +252,8 @@ For each language, the report shows:
 | Command | Link | Relation |
 |---------|------|----------|
 | **INSTALL** | [INSTALL.md](INSTALL.md) | First installation (before AUTO-SYNC) |
-| **Extractor** | [Extractor.md](../../extractor/Extractor.md) | Step 1 of workflow |
-| **Applicator** | [Applicator.md](../../applicator/Applicator.md) | Step 2 of workflow |
+| **Extractor** | [Extractor.md](../../../../extractor/__doc__/en/README.md) | Step 1 of workflow |
+| **Applicator** | [Applicator.md](../../../../applicator/__doc__/en/README.md) | Step 2 of workflow |
 | **COMPARE** | [COMPARE.md](COMPARE.md) | Step 3 of workflow |
 | **EXTRACT** | [EXTRACT.md](EXTRACT.md) | Step 4 of workflow |
 | **INJECT** | [INJECT.md](INJECT.md) | Step 5 of workflow |
@@ -274,6 +274,6 @@ For each language, the report shows:
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *AUTOSYNC.md* | **Version** | 2.0 |
-| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commands/AUTOSYNC.md)* |
+| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commandes/AUTOSYNC.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-06 |
 | **License** | [MIT](../../../../../LICENSE) | | |

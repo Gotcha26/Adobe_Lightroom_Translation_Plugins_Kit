@@ -27,8 +27,9 @@ from typing import Tuple, Optional
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, validate_plugin_path, get_i18n_dir, display_relative
+from core.cli import clear_screen
 from core.colors import c
-from core.menu_helpers import select_tool_output_dir
+from core.menu_helpers import choose_tool_output_dir
 from core.i18n import _
 
 
@@ -64,8 +65,8 @@ class ApplicatorMenu:
                 self.extraction_dir = latest
 
     def clear_screen(self):
-        """Efface l'écran (compatible Windows et Linux)."""
-        os.system('cls' if os.name == 'nt' else 'clear')
+        """Efface l'écran, seulement sur un terminal."""
+        clear_screen()
 
     def print_header(self):
         """Affiche l'en-tête du menu."""
@@ -219,16 +220,18 @@ class ApplicatorMenu:
 
     def input_extraction_dir(self) -> bool:
         """Demande le répertoire d'extraction avec choix multiple si plusieurs disponibles."""
-        selected_dir = select_tool_output_dir(self.plugin_path, "Extractor", self.extraction_dir)
+        selected_dir, cancelled = choose_tool_output_dir(self.plugin_path, "Extractor", self.extraction_dir)
 
         if selected_dir is None:
             # Erreur (chemin introuvable, choix invalide) déjà affichée
             return False
-        if selected_dir == self.extraction_dir:
-            # Annulé : dossier actuel conservé tel quel
+        if cancelled:
+            # Annulation : dossier actuel conservé tel quel, sans confirmation ni contrôle
             return bool(selected_dir)
 
         if selected_dir:
+            # Re-sélectionner le dossier courant le confirme (même contrôle que
+            # pour un nouveau dossier)
             # Vérifier les fichiers requis
             required = ["replacements.json"]
             missing = [f for f in required if not os.path.exists(os.path.join(selected_dir, f))]
@@ -242,6 +245,7 @@ class ApplicatorMenu:
                     return False
 
             self.extraction_dir = selected_dir
+            print(c.success(_("Dossier d'extraction confirmé: {name}").format(name=os.path.basename(selected_dir))))
             return True
 
         return False

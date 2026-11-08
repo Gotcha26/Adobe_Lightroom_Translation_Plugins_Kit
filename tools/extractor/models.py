@@ -11,7 +11,7 @@ Fournit les modèles: ExtractedString, ExtractionStats.
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -20,7 +20,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -45,7 +45,11 @@ class ExtractedString:
     is_concat_member: bool = False  # Fait partie d'une chaîne concaténée
     concat_member_index: int = 0    # Index dans la concaténation (0, 1, 2...)
     concat_total_members: int = 1   # Nombre total de membres
-    
+    # Position du guillemet ouvrant dans line_content (ligne sans son
+    # indentation) ; None si inconnue (bloc multi-ligne). Permet à l'Applicator
+    # de viser le bon littéral quand le même texte apparaît plusieurs fois.
+    column: Optional[int] = None
+
     def has_spacing(self) -> bool:
         return self.leading_spaces > 0 or self.trailing_spaces > 0
     

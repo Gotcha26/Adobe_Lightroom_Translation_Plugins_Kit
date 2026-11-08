@@ -1,6 +1,6 @@
 # SYNC Command
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -19,7 +19,7 @@ flowchart LR
     subgraph Input["📂 Inputs"]
         I1["TranslatedStrings_en.txt<br/>(reference)"]
         I2["TranslatedStrings_fr.txt<br/>(to synchronize)"]
-        I3["UPDATE_en.json<br/>(optional)"]
+        I3["UPDATE_&lt;ref&gt;.json<br/>(optional)"]
     end
 
     subgraph Process["⚙️ Synchronization"]
@@ -42,7 +42,7 @@ flowchart LR
 |------|-------|
 | **Input** | `TranslatedStrings_en.txt` (reference) |
 | **Input** | `TranslatedStrings_xx.txt` (to synchronize) |
-| **Input** | `UPDATE_en.json` (optional, for detailed markers) |
+| **Input** | `UPDATE_<ref>.json` (optional, for detailed markers) |
 | **Output** | `TranslatedStrings_xx.txt` synchronized |
 
 ---
@@ -63,7 +63,7 @@ flowchart TD
     F --> G["→ Delete (obsolete)"]
 
     C --> H["Common keys"]
-    H --> I{"UPDATE_en.json<br/>provided?"}
+    H --> I{"UPDATE_&lt;ref&gt;.json<br/>provided?"}
 
     I -->|Yes| J{"Key in CHANGED?"}
     J -->|Yes| K["→ Keep translation<br/>+ [NEEDS_REVIEW] marker"]
@@ -114,13 +114,13 @@ The menu asks:
 
 ```bash
 # With UPDATE folder ([NEEDS_REVIEW] markers)
-python Translator_main.py sync --update ./20260201_151234 --locales ./plugin.lrplugin
+python -m tools.translator.main sync --update ./20260201_151234 --locales ./plugin.lrplugin
 
 # With direct EN file (no [NEEDS_REVIEW])
-python Translator_main.py sync --ref ./TranslatedStrings_en.txt --locales ./plugin.lrplugin
+python -m tools.translator.main sync --ref ./TranslatedStrings_en.txt --locales ./plugin.lrplugin
 
 # With plugin-path (auto-detection)
-python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 ```
 
 ### CLI Options
@@ -128,7 +128,7 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 | Option | Description | Required |
 |--------|-------------|----------|
 | `--ref` | Reference EN file | Conditional |
-| `--update` | UPDATE folder (with UPDATE_en.json) | Conditional |
+| `--update` | UPDATE folder (with `UPDATE_<ref>.json`) | Conditional |
 | `--plugin-path` | Auto-detection of Translator folder | ❌ No |
 | `--locales` | Directory of language files | ✅ Yes |
 
@@ -249,7 +249,7 @@ TOTAL
 
 | Command | Link | Relation |
 |---------|------|----------|
-| **COMPARE** | [COMPARE.md](COMPARE.md) | Generates UPDATE_en.json |
+| **COMPARE** | [COMPARE.md](COMPARE.md) | Generates `UPDATE_<ref>.json` |
 | **INJECT** | [INJECT.md](INJECT.md) | Previous step (optional) |
 | **AUTO-SYNC** | [AUTOSYNC.md](AUTOSYNC.md) | Automatic alternative |
 

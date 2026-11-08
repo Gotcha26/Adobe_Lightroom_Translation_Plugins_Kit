@@ -51,24 +51,25 @@ During plugin development, text evolves:
 
 ### Prerequisites
 
-- **Python 3.8+** installed on your system
+- **Python 3.10+** installed on your system
 - ***Extractor*** and/or ***Applicator*** must have been run (depending on the workflow)
 - No external dependencies required (standard library only)
 
 ### File Structure
 
 ```
-3_Translator/
-├── main.py         ← Entry point (menu + CLI)
-├── common.py       ← Common functions (parser, utils)
-├── install.py      ← INSTALL command
-├── autosync.py     ← AUTO-SYNC command ⭐
-├── addlang.py      ← ADD LANGUAGE command
-├── compare.py      ← COMPARE command (advanced)
-├── extract.py      ← EXTRACT command (advanced)
-├── inject.py       ← INJECT command (advanced)
-├── sync.py         ← SYNC command (advanced)
-└── __doc/
+tools/translator/
+├── main.py           ← Entry point (menu + CLI)
+├── common.py         ← Common functions (parser, utils)
+├── install.py        ← INSTALL command
+├── autosync.py       ← AUTO-SYNC command ⭐
+├── addlang.py        ← ADD LANGUAGE command
+├── compare.py        ← COMPARE command (advanced)
+├── compare_langs.py  ← COMPARE-LANGS command (advanced)
+├── extract.py        ← EXTRACT command (advanced)
+├── inject.py         ← INJECT command (advanced)
+├── sync.py           ← SYNC command (advanced)
+└── __doc__/
     └── en/
         ├── Translator_en.md   ← This file
         └── commands/
@@ -76,6 +77,7 @@ During plugin development, text evolves:
             ├── AUTOSYNC.md
             ├── ADDLANG.md
             ├── COMPARE.md
+            ├── COMPARE-LANGS.md
             ├── EXTRACT.md
             ├── INJECT.md
             └── SYNC.md
@@ -86,7 +88,7 @@ During plugin development, text evolves:
 ***Translator*** can run **independently** from the command line:
 
 ```bash
-python Translator_main.py
+python -m tools.translator.main
 ```
 
 However, using ***LocalizationToolKit.py*** is recommended because:
@@ -97,7 +99,7 @@ However, using ***LocalizationToolKit.py*** is recommended because:
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Standalone mode"]
-        S["python Translator_main.py"]
+        S["python -m tools.translator.main"]
     end
 
     subgraph Launcher["🚀 Launcher mode (recommended)"]
@@ -134,6 +136,7 @@ flowchart TB
 
     subgraph Advanced["🔧 Advanced Modules"]
         CO["compare.py"]
+        CL["compare_langs.py"]
         EX["extract.py"]
         IN["inject.py"]
         SY["sync.py"]
@@ -248,7 +251,8 @@ These commands provide fine control for specific use cases (external translators
 
 | Command | Documentation | Role |
 |---------|---------------|------|
-| **COMPARE** | [COMPARE.md](commands/COMPARE.md) | Compare 2 EN versions → generates `UPDATE_en.json` |
+| **COMPARE** | [COMPARE.md](commands/COMPARE.md) | Compare 2 EN versions → generates `UPDATE_<ref>.json` |
+| **COMPARE-LANGS** | [COMPARE-LANGS.md](commands/COMPARE-LANGS.md) | Compares 2 language files (audit, consistency) |
 | **EXTRACT** | [EXTRACT.md](commands/EXTRACT.md) | Generates partial `TRANSLATE_xx.txt` files |
 | **INJECT** | [INJECT.md](commands/INJECT.md) | Reinjests translations into complete files |
 | **SYNC** | [SYNC.md](commands/SYNC.md) | Synchronizes a language file with EN |
@@ -260,7 +264,7 @@ flowchart TD
     subgraph Compare["1️⃣ COMPARE"]
         C1["Old EN"] --> C["Comparator"]
         C2["New EN"] --> C
-        C --> C3["UPDATE_en.json<br/>CHANGELOG.txt"]
+        C --> C3["UPDATE_&lt;ref&gt;.json<br/>CHANGELOG.txt"]
     end
 
     subgraph Extract["2️⃣ EXTRACT"]
@@ -334,7 +338,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A["New extraction"] -->|COMPARE| B["UPDATE_en.json"]
+    A["New extraction"] -->|COMPARE| B["UPDATE_&lt;ref&gt;.json"]
     B -->|EXTRACT| C["TRANSLATE_fr.txt<br/>TRANSLATE_de.txt"]
     C -->|"📧 Send"| D["Translators"]
     D -->|"📥 Receive"| E["Translated files"]
@@ -391,41 +395,41 @@ Standard Lightroom SDK format:
 ### General Syntax
 
 ```bash
-python Translator_main.py [command] [options]
+python -m tools.translator.main [command] [options]
 ```
 
 ### Interactive Mode (Recommended)
 
 ```bash
-python Translator_main.py
+python -m tools.translator.main
 ```
 
 Or with pre-configured plugin:
 
 ```bash
-python Translator_main.py --default-plugin ./plugin.lrplugin
+python -m tools.translator.main --default-plugin ./plugin.lrplugin
 ```
 
 ### CLI Examples
 
 ```bash
 # INSTALL
-python Translator_main.py install --plugin-path ./plugin.lrplugin
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin
 
 # AUTO-SYNC
-python Translator_main.py autosync --plugin-path ./plugin.lrplugin
+python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin
 
 # COMPARE
-python Translator_main.py compare --old ./old/en.txt --new ./new/en.txt
+python -m tools.translator.main compare --old ./old/en.txt --new ./new/en.txt
 
 # EXTRACT
-python Translator_main.py extract --plugin-path ./plugin.lrplugin
+python -m tools.translator.main extract --plugin-path ./plugin.lrplugin
 
 # INJECT
-python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
 # SYNC
-python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 ```
 
 ---
@@ -470,6 +474,6 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *README.md* | **Version** | 7.1 |
-| **Type** | User Guide - TRANSLATOR Advanced | **Language** | EN - *[FR](../fr/Lisez-moi.md)* |
+| **Type** | User Guide - TRANSLATOR Advanced | **Language** | EN - *[FR](../fr/Translator_fr.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

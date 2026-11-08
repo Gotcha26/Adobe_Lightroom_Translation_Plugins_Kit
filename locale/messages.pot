@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalizationToolKit 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 15:51+0100\n"
+"POT-Creation-Date: 2026-11-08 17:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,517 +17,547 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: LocalizationToolKit.py:133
+#: LocalizationToolKit.py:129
+msgid "la racine doit être un objet JSON"
+msgstr ""
+
+#: LocalizationToolKit.py:144
 #, python-brace-format
 msgid "Erreur lecture config: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:134
+#: LocalizationToolKit.py:146
 #, python-brace-format
 msgid "Erreur lecture config locale: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:158
+#: LocalizationToolKit.py:174
 #, python-brace-format
 msgid "Erreur sauvegarde config: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:170
+#: LocalizationToolKit.py:195
+#, python-brace-format
+msgid ""
+"{file} est illisible : la modification n'est pas enregistrée. Corrigez ou "
+"supprimez ce fichier."
+msgstr ""
+
+#: LocalizationToolKit.py:200
 #, python-brace-format
 msgid "Configuration mise à jour dans {file}"
 msgstr ""
 
-#: LocalizationToolKit.py:176 LocalizationToolKit.py:181
-#: LocalizationToolKit.py:785 LocalizationToolKit.py:794
+#: LocalizationToolKit.py:207 LocalizationToolKit.py:212
+#: LocalizationToolKit.py:828 LocalizationToolKit.py:837
 msgid "(non défini)"
 msgstr ""
 
-#: LocalizationToolKit.py:179
+#: LocalizationToolKit.py:210
 msgid "Configuration actuelle:"
 msgstr ""
 
-#: LocalizationToolKit.py:182 LocalizationToolKit.py:795
+#: LocalizationToolKit.py:213 LocalizationToolKit.py:838
 msgid "Plugin path"
 msgstr ""
 
-#: LocalizationToolKit.py:183 LocalizationToolKit.py:796
-#: tools/extractor/menu.py:113 tools/extractor/menu.py:116
-#: tools/extractor/menu.py:196 tools/toolbox/delete_temp_dir.py:216
+#: LocalizationToolKit.py:214 LocalizationToolKit.py:839
+#: tools/extractor/menu.py:114 tools/extractor/menu.py:117
+#: tools/extractor/menu.py:197 tools/toolbox/delete_temp_dir.py:200
 msgid "Dossier temporaire"
 msgstr ""
 
-#: LocalizationToolKit.py:184 LocalizationToolKit.py:797
-#: tools/toolbox/delete_temp_dir.py:217
+#: LocalizationToolKit.py:215 LocalizationToolKit.py:840
+#: tools/toolbox/delete_temp_dir.py:201
 msgid "Chemin complet"
 msgstr ""
 
-#: LocalizationToolKit.py:185 LocalizationToolKit.py:807
-#: core/output_formatters.py:174 tools/extractor/menu.py:119
+#: LocalizationToolKit.py:216 LocalizationToolKit.py:850
+#: core/output_formatters.py:174 tools/extractor/menu.py:120
 msgid "Préfixe LOC"
 msgstr ""
 
-#: LocalizationToolKit.py:186 LocalizationToolKit.py:808
-#: LocalizationToolKit.py:878
+#: LocalizationToolKit.py:217 LocalizationToolKit.py:851
+#: LocalizationToolKit.py:921
 msgid "Langue par défaut"
 msgstr ""
 
-#: LocalizationToolKit.py:195 LocalizationToolKit.py:817
+#: LocalizationToolKit.py:226 LocalizationToolKit.py:860
 #, python-brace-format
 msgid "Exécutions récentes dans {dir}/:"
 msgstr ""
 
-#: LocalizationToolKit.py:206 LocalizationToolKit.py:826
+#: LocalizationToolKit.py:237 LocalizationToolKit.py:869
 msgid "(aucune)"
 msgstr ""
 
-#: LocalizationToolKit.py:287
+#: LocalizationToolKit.py:318
 msgid "Dossier temporaire pour les outils de localisation"
 msgstr ""
 
-#: LocalizationToolKit.py:290
+#: LocalizationToolKit.py:321
 #, python-brace-format
 msgid "Ajouté '{line}' au .gitignore"
 msgstr ""
 
-#: LocalizationToolKit.py:294
+#: LocalizationToolKit.py:325
 #, python-brace-format
 msgid "Impossible d'ajouter au .gitignore: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:322
+#: LocalizationToolKit.py:353
 #, python-brace-format
 msgid "Impossible de lire le .gitignore: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:329
+#: LocalizationToolKit.py:360
 #, python-brace-format
 msgid "Le dossier temporaire '{dir}' n'est pas dans le .gitignore"
 msgstr ""
 
-#: LocalizationToolKit.py:330
+#: LocalizationToolKit.py:361
 msgid "Voulez-vous l'ajouter automatiquement ?"
 msgstr ""
 
-#: LocalizationToolKit.py:331
+#: LocalizationToolKit.py:362
 msgid "Ligne à ajouter:"
 msgstr ""
 
-#: LocalizationToolKit.py:333
+#: LocalizationToolKit.py:364
 msgid "Ajouter au .gitignore? [O/n]:"
 msgstr ""
 
-#: LocalizationToolKit.py:354
+#: LocalizationToolKit.py:385
 msgid "(pas de dépôt git)"
 msgstr ""
 
-#: LocalizationToolKit.py:360
+#: LocalizationToolKit.py:391
 msgid "Absent"
 msgstr ""
 
-#: LocalizationToolKit.py:366
+#: LocalizationToolKit.py:397
 msgid "Erreur lecture"
 msgstr ""
 
-#: LocalizationToolKit.py:377
+#: LocalizationToolKit.py:408
 msgid "Exception .gitignore - sera ajouté"
 msgstr ""
 
-#: LocalizationToolKit.py:378
+#: LocalizationToolKit.py:409
 msgid "Exception .gitignore - manquant"
 msgstr ""
 
-#: LocalizationToolKit.py:408
+#: LocalizationToolKit.py:439
 #, python-brace-format
 msgid "Script introuvable: {path}"
 msgstr ""
 
-#: LocalizationToolKit.py:428
+#: LocalizationToolKit.py:459
 msgid "Lancement:"
 msgstr ""
 
-#: LocalizationToolKit.py:429
+#: LocalizationToolKit.py:460
 msgid "Répertoire:"
 msgstr ""
 
-#: LocalizationToolKit.py:440
+#: LocalizationToolKit.py:471
 #, python-brace-format
 msgid "[ERREUR] Erreur exécution: {error}"
 msgstr ""
 
-#: LocalizationToolKit.py:448
+#: LocalizationToolKit.py:479
 msgid "Erreur: Script Extractor introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:486
+#: LocalizationToolKit.py:517
 msgid "Erreur: Script Applicator introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:500
+#: LocalizationToolKit.py:531
 msgid "[ERREUR] Aucune extraction précédente. Lancez d'abord l'Extractor."
 msgstr ""
 
-#: LocalizationToolKit.py:519 LocalizationToolKit.py:595
+#: LocalizationToolKit.py:550 LocalizationToolKit.py:626
 msgid "Erreur: Script Translator introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:532
+#: LocalizationToolKit.py:563
 msgid "[ERREUR] Plugin non configuré."
 msgstr ""
 
-#: LocalizationToolKit.py:545
+#: LocalizationToolKit.py:576
 msgid "Erreur: Script Restore introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:559
+#: LocalizationToolKit.py:590
 msgid "Erreur: Script Delete introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:600 LocalizationToolKit.py:916
-#: LocalizationToolKit.py:926
+#: LocalizationToolKit.py:631 LocalizationToolKit.py:959
+#: LocalizationToolKit.py:969
 msgid "Plugin non configuré!"
 msgstr ""
 
-#: LocalizationToolKit.py:657
+#: LocalizationToolKit.py:688
 msgid "Plugin non configuré ou introuvable"
 msgstr ""
 
-#: LocalizationToolKit.py:669
+#: LocalizationToolKit.py:700
 msgid "OUTILS DE LOCALISATION"
 msgstr ""
 
-#: LocalizationToolKit.py:671
+#: LocalizationToolKit.py:702
 msgid "Extractor      - Extraire les chaînes"
 msgstr ""
 
-#: LocalizationToolKit.py:672
+#: LocalizationToolKit.py:703
 msgid "Applicator     - Appliquer les localisations"
 msgstr ""
 
-#: LocalizationToolKit.py:673
+#: LocalizationToolKit.py:704
 msgid "Translator     - Gérer les traductions"
 msgstr ""
 
-#: LocalizationToolKit.py:674
+#: LocalizationToolKit.py:705
 msgid "Restore        - Restaurer les backups"
 msgstr ""
 
-#: LocalizationToolKit.py:675
+#: LocalizationToolKit.py:706
 msgid "Supprimer"
 msgstr ""
 
-#: LocalizationToolKit.py:675
+#: LocalizationToolKit.py:706
 msgid "Nettoyer le dossier temporaire"
 msgstr ""
 
-#: LocalizationToolKit.py:679
+#: LocalizationToolKit.py:710
 msgid "MISE A JOUR EXPRESS"
 msgstr ""
 
-#: LocalizationToolKit.py:682
+#: LocalizationToolKit.py:713
 msgid "AUTO-SYNC ⭐    - Maintenir à jour"
 msgstr ""
 
-#: LocalizationToolKit.py:683
+#: LocalizationToolKit.py:714
 msgid "(code lua + traductions)"
 msgstr ""
 
-#: LocalizationToolKit.py:685
+#: LocalizationToolKit.py:716
 msgid "AUTO-SYNC      - Maintenir à jour"
 msgstr ""
 
-#: LocalizationToolKit.py:686
+#: LocalizationToolKit.py:717
 msgid "(aucun TranslatedStrings)"
 msgstr ""
 
-#: LocalizationToolKit.py:688
+#: LocalizationToolKit.py:719
 msgid "CONFIGURATION"
 msgstr ""
 
-#: LocalizationToolKit.py:690 tools/toolbox/restore_backup.py:291
+#: LocalizationToolKit.py:721 tools/toolbox/restore_backup.py:261
 msgid "Configuration du plugin"
 msgstr ""
 
-#: LocalizationToolKit.py:693 tools/applicator/menu.py:163
-#: tools/extractor/menu.py:144
+#: LocalizationToolKit.py:724 tools/applicator/menu.py:164
+#: tools/extractor/menu.py:145
 msgid "Quitter"
 msgstr ""
 
-#: LocalizationToolKit.py:699
+#: LocalizationToolKit.py:737
+#, python-brace-format
+msgid "{message} (pour cette session uniquement)"
+msgstr ""
+
+#: LocalizationToolKit.py:742
 msgid "Configuration du chemin du plugin"
 msgstr ""
 
-#: LocalizationToolKit.py:704 LocalizationToolKit.py:746
-#: LocalizationToolKit.py:867 core/menu_helpers.py:59
-#: tools/applicator/menu.py:177 tools/extractor/menu.py:158
+#: LocalizationToolKit.py:747 LocalizationToolKit.py:789
+#: LocalizationToolKit.py:910 core/menu_helpers.py:59
+#: tools/applicator/menu.py:178 tools/extractor/menu.py:159
 msgid "Actuel:"
 msgstr ""
 
-#: LocalizationToolKit.py:707 LocalizationToolKit.py:751
-#: LocalizationToolKit.py:882 tools/applicator/menu.py:171
-#: tools/extractor/menu.py:152 tools/extractor/menu.py:223
-#: tools/extractor/menu.py:239 tools/extractor/menu.py:257
-#: tools/toolbox/delete_temp_dir.py:178
+#: LocalizationToolKit.py:750 LocalizationToolKit.py:794
+#: LocalizationToolKit.py:925 tools/applicator/menu.py:172
+#: tools/extractor/menu.py:153 tools/extractor/menu.py:224
+#: tools/extractor/menu.py:240 tools/extractor/menu.py:258
+#: tools/toolbox/delete_temp_dir.py:162
 msgid "Exemples:"
 msgstr ""
 
-#: LocalizationToolKit.py:712
+#: LocalizationToolKit.py:755
 msgid "Nouveau chemin (ENTRÉE pour garder):"
 msgstr ""
 
-#: LocalizationToolKit.py:724 tools/applicator/menu.py:202
-#: tools/extractor/menu.py:183
+#: LocalizationToolKit.py:767 tools/applicator/menu.py:203
+#: tools/extractor/menu.py:184
 msgid "Les plugins Lightroom doivent se terminer par .lrplugin"
 msgstr ""
 
-#: LocalizationToolKit.py:725 tools/applicator/menu.py:203
-#: tools/applicator/menu.py:240 tools/extractor/menu.py:184
+#: LocalizationToolKit.py:768 tools/applicator/menu.py:204
+#: tools/applicator/menu.py:243 tools/extractor/menu.py:185
 msgid "Continuer quand même? [o/N]:"
 msgstr ""
 
-#: LocalizationToolKit.py:727 tools/applicator/menu.py:205
-#: tools/extractor/menu.py:186
+#: LocalizationToolKit.py:770 tools/applicator/menu.py:206
+#: tools/extractor/menu.py:187
 msgid "Configuration annulée"
 msgstr ""
 
-#: LocalizationToolKit.py:731
+#: LocalizationToolKit.py:774
 #, python-brace-format
 msgid "Plugin configuré: {path}"
 msgstr ""
 
-#: LocalizationToolKit.py:735
+#: LocalizationToolKit.py:778
 msgid "Sorties dans:"
 msgstr ""
 
-#: LocalizationToolKit.py:737 core/menu_helpers.py:84 core/menu_helpers.py:118
-#: tools/applicator/menu.py:183 tools/extractor/menu.py:164
+#: LocalizationToolKit.py:780 core/menu_helpers.py:84 core/menu_helpers.py:118
+#: tools/applicator/menu.py:184 tools/extractor/menu.py:165
 msgid "Chemin inchangé"
 msgstr ""
 
-#: LocalizationToolKit.py:742
+#: LocalizationToolKit.py:785
 msgid "Configuration du dossier temporaire"
 msgstr ""
 
-#: LocalizationToolKit.py:748
+#: LocalizationToolKit.py:791
 msgid "Ce dossier est créé dans le plugin pour stocker les"
 msgstr ""
 
-#: LocalizationToolKit.py:749
+#: LocalizationToolKit.py:792
 msgid "fichiers générés par les outils (extractions, backups, etc.)"
 msgstr ""
 
-#: LocalizationToolKit.py:756
+#: LocalizationToolKit.py:799
 msgid "Nouveau nom (ENTRÉE pour garder):"
 msgstr ""
 
-#: LocalizationToolKit.py:759
+#: LocalizationToolKit.py:802
 msgid "Nom inchangé"
 msgstr ""
 
-#: LocalizationToolKit.py:763
+#: LocalizationToolKit.py:806
 #, python-brace-format
 msgid "Caractères invalides dans le nom: {chars}"
 msgstr ""
 
-#: LocalizationToolKit.py:768
+#: LocalizationToolKit.py:811
 #, python-brace-format
 msgid "Dossier temporaire: {name}"
 msgstr ""
 
-#: LocalizationToolKit.py:772
+#: LocalizationToolKit.py:815
 msgid "Nouveau chemin:"
 msgstr ""
 
-#: LocalizationToolKit.py:792
+#: LocalizationToolKit.py:835
 msgid "Paramètres actuels:"
 msgstr ""
 
-#: LocalizationToolKit.py:800 LocalizationToolKit.py:811
-#: LocalizationToolKit.py:847 LocalizationToolKit.py:895
+#: LocalizationToolKit.py:843 LocalizationToolKit.py:854
+#: LocalizationToolKit.py:890 LocalizationToolKit.py:938
 msgid "activé"
 msgstr ""
 
-#: LocalizationToolKit.py:800 LocalizationToolKit.py:811
-#: LocalizationToolKit.py:847 LocalizationToolKit.py:895
+#: LocalizationToolKit.py:843 LocalizationToolKit.py:854
+#: LocalizationToolKit.py:890 LocalizationToolKit.py:938
 msgid "désactivé"
 msgstr ""
 
-#: LocalizationToolKit.py:801
+#: LocalizationToolKit.py:844
 msgid "Auto-ajout .gitignore"
 msgstr ""
 
-#: LocalizationToolKit.py:804 LocalizationToolKit.py:860
+#: LocalizationToolKit.py:847 LocalizationToolKit.py:903
 msgid "activée"
 msgstr ""
 
-#: LocalizationToolKit.py:804 LocalizationToolKit.py:860
+#: LocalizationToolKit.py:847 LocalizationToolKit.py:903
 msgid "désactivée"
 msgstr ""
 
-#: LocalizationToolKit.py:805
+#: LocalizationToolKit.py:848
 msgid "Animation au démarrage"
 msgstr ""
 
-#: LocalizationToolKit.py:812
+#: LocalizationToolKit.py:855
 msgid "Debug i18n"
 msgstr ""
 
-#: LocalizationToolKit.py:830
+#: LocalizationToolKit.py:873
 msgid "Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir"
 msgstr ""
 
-#: LocalizationToolKit.py:833 LocalizationToolKit.py:907
+#: LocalizationToolKit.py:876 LocalizationToolKit.py:950
 #: core/menu_helpers.py:81 core/menu_helpers.py:115
-#: tools/applicator/main.py:712 tools/applicator/main.py:730
-#: tools/applicator/menu.py:318 tools/extractor/menu.py:332
-#: tools/toolbox/delete_temp_dir.py:283 tools/translator/addlang.py:441
-#: tools/translator/main.py:102 tools/translator/main.py:181
+#: tools/applicator/main.py:724 tools/applicator/main.py:742
+#: tools/applicator/menu.py:322 tools/extractor/menu.py:333
+#: tools/toolbox/delete_temp_dir.py:267 tools/translator/addlang.py:441
+#: tools/translator/main.py:103 tools/translator/main.py:182
 msgid "Votre choix:"
 msgstr ""
 
-#: LocalizationToolKit.py:848
+#: LocalizationToolKit.py:891
 #, python-brace-format
 msgid "Auto-ajout au .gitignore: {status}"
 msgstr ""
 
-#: LocalizationToolKit.py:852
+#: LocalizationToolKit.py:895
 #, python-brace-format
 msgid "Le dossier '{dir}' sera automatiquement ajouté au .gitignore du plugin"
 msgstr ""
 
-#: LocalizationToolKit.py:854
+#: LocalizationToolKit.py:897
 #, python-brace-format
 msgid "Le dossier '{dir}' ne sera pas ajouté automatiquement au .gitignore"
 msgstr ""
 
-#: LocalizationToolKit.py:861
+#: LocalizationToolKit.py:904
 #, python-brace-format
 msgid "Animation au démarrage: {status}"
 msgstr ""
 
-#: LocalizationToolKit.py:865
+#: LocalizationToolKit.py:908
 msgid "Préfixe de localisation"
 msgstr ""
 
-#: LocalizationToolKit.py:869
+#: LocalizationToolKit.py:912
 msgid "Nouveau préfixe (ENTRÉE pour garder):"
 msgstr ""
 
-#: LocalizationToolKit.py:872 tools/extractor/menu.py:230
+#: LocalizationToolKit.py:915 tools/extractor/menu.py:231
 #, python-brace-format
 msgid "Préfixe: {prefix}"
 msgstr ""
 
-#: LocalizationToolKit.py:874
+#: LocalizationToolKit.py:917
 msgid "Préfixe inchangé"
 msgstr ""
 
-#: LocalizationToolKit.py:880
+#: LocalizationToolKit.py:923
 msgid "Actuelle:"
 msgstr ""
 
-#: LocalizationToolKit.py:884
+#: LocalizationToolKit.py:927
 msgid "Nouvelle langue (ENTRÉE pour garder):"
 msgstr ""
 
-#: LocalizationToolKit.py:887 tools/extractor/menu.py:246
+#: LocalizationToolKit.py:930 tools/extractor/menu.py:247
 #, python-brace-format
 msgid "Langue: {lang}"
 msgstr ""
 
-#: LocalizationToolKit.py:889
+#: LocalizationToolKit.py:932
 msgid "Langue inchangée"
 msgstr ""
 
-#: LocalizationToolKit.py:896
+#: LocalizationToolKit.py:939
 #, python-brace-format
 msgid "Debug i18n: {status}"
 msgstr ""
 
-#: LocalizationToolKit.py:898 LocalizationToolKit.py:922
-#: LocalizationToolKit.py:932 LocalizationToolKit.py:939
-#: LocalizationToolKit.py:942 LocalizationToolKit.py:945
-#: LocalizationToolKit.py:955 LocalizationToolKit.py:960
+#: LocalizationToolKit.py:941 LocalizationToolKit.py:965
+#: LocalizationToolKit.py:975 LocalizationToolKit.py:982
+#: LocalizationToolKit.py:985 LocalizationToolKit.py:988
+#: LocalizationToolKit.py:998 LocalizationToolKit.py:1003
 msgid "Appuyez sur ENTRÉE pour continuer..."
 msgstr ""
 
-#: LocalizationToolKit.py:910 tools/applicator/menu.py:322
-#: tools/extractor/menu.py:336
+#: LocalizationToolKit.py:953 tools/applicator/menu.py:326
+#: tools/extractor/menu.py:337
 msgid "Au revoir!"
 msgstr ""
 
-#: LocalizationToolKit.py:951
+#: LocalizationToolKit.py:994
 msgid ""
 "AUTO-SYNC indisponible : aucun fichier TranslatedStrings_xx.txt à la racine "
 "du plugin."
 msgstr ""
 
-#: LocalizationToolKit.py:953
+#: LocalizationToolKit.py:996
 msgid ""
 "  → Première installation : lancez l'Extractor (1), puis la commande INSTALL "
 "du Translator (3)."
 msgstr ""
 
-#: LocalizationToolKit.py:959 core/menu_helpers.py:102 core/menu_helpers.py:135
-#: tools/translator/addlang.py:450
+#: LocalizationToolKit.py:1002 core/menu_helpers.py:102
+#: core/menu_helpers.py:135 tools/translator/addlang.py:450
 msgid "Choix invalide"
 msgstr ""
 
-#: LocalizationToolKit.py:973
+#: LocalizationToolKit.py:1035
 msgid "Usage:"
 msgstr ""
 
-#: LocalizationToolKit.py:974
+#: LocalizationToolKit.py:1036
 msgid "Menu interactif"
 msgstr ""
 
-#: LocalizationToolKit.py:975
+#: LocalizationToolKit.py:1037
 msgid "Lancer Extractor"
 msgstr ""
 
-#: LocalizationToolKit.py:976
+#: LocalizationToolKit.py:1038
 msgid "Lancer Applicator (menu)"
 msgstr ""
 
-#: LocalizationToolKit.py:978
+#: LocalizationToolKit.py:1040
 msgid "Appliquer en CLI (simulation seulement avec --dry-run)"
 msgstr ""
 
-#: LocalizationToolKit.py:979
+#: LocalizationToolKit.py:1041
 msgid "Lancer Translator"
 msgstr ""
 
-#: LocalizationToolKit.py:980
+#: LocalizationToolKit.py:1042
 msgid "Lancer Restore"
 msgstr ""
 
-#: LocalizationToolKit.py:981
+#: LocalizationToolKit.py:1043
 msgid "Supprimer dossier temporaire"
 msgstr ""
 
-#: LocalizationToolKit.py:983
+#: LocalizationToolKit.py:1045
 msgid "Mettre à jour plugin + langues (AUTOSYNC)"
 msgstr ""
 
-#: LocalizationToolKit.py:984
+#: LocalizationToolKit.py:1046
 msgid "Afficher config"
 msgstr ""
 
-#: LocalizationToolKit.py:985
+#: LocalizationToolKit.py:1047
 msgid "Afficher cette aide"
 msgstr ""
 
-#: LocalizationToolKit.py:986
-msgid "Codes retour : 0 succès, 1 erreur, 2 option inconnue."
+#: LocalizationToolKit.py:1048
+msgid ""
+"Codes retour : 0 succès, 1 erreur, 2 option inconnue ou non prise en charge."
 msgstr ""
 
-#: LocalizationToolKit.py:1005
+#: LocalizationToolKit.py:1067
 #, python-brace-format
 msgid "Option inconnue: {option}"
 msgstr ""
 
-#: LocalizationToolKit.py:1031
+#: LocalizationToolKit.py:1076
+#, python-brace-format
+msgid "Option non prise en charge par la commande {cmd}: {option}"
+msgstr ""
+
+#: LocalizationToolKit.py:1103
 #, python-brace-format
 msgid "Commande inconnue: {cmd}"
+msgstr ""
+
+#: core/cli.py:30
+msgid "Plugin pré-configuré pour le menu interactif"
+msgstr ""
+
+#: core/cli.py:36
+msgid "Chemin vers le répertoire du plugin (active le mode CLI)"
 msgstr ""
 
 #: core/colors.py:224 core/colors.py:260
@@ -546,21 +576,21 @@ msgstr ""
 msgid "INFO"
 msgstr ""
 
-#: core/i18n.py:386 core/i18n.py:393
+#: core/i18n.py:387 core/i18n.py:394
 #, python-brace-format
 msgid "Locale système: {locale}"
 msgstr ""
 
-#: core/i18n.py:395
+#: core/i18n.py:396
 #, python-brace-format
 msgid "Langue détectée: {lang}"
 msgstr ""
 
-#: core/i18n.py:399
+#: core/i18n.py:400
 msgid "défaut"
 msgstr ""
 
-#: core/i18n.py:400
+#: core/i18n.py:401
 #, python-brace-format
 msgid "Fichier .mo chargé: {status}"
 msgstr ""
@@ -630,7 +660,7 @@ msgstr ""
 msgid "FICHIERS GÉNÉRÉS"
 msgstr ""
 
-#: core/output_formatters.py:138 tools/applicator/menu.py:146
+#: core/output_formatters.py:138 tools/applicator/menu.py:147
 msgid "Sortie"
 msgstr ""
 
@@ -638,8 +668,8 @@ msgstr ""
 msgid "RÉSUMÉ DE L'EXTRACTION"
 msgstr ""
 
-#: core/output_formatters.py:172 tools/applicator/menu.py:107
-#: tools/applicator/menu.py:109
+#: core/output_formatters.py:172 tools/applicator/menu.py:108
+#: tools/applicator/menu.py:110
 msgid "Plugin"
 msgstr ""
 
@@ -659,158 +689,167 @@ msgstr ""
 msgid "Détails"
 msgstr ""
 
-#: core/paths.py:286
+#: core/paths.py:323
+msgid "Aucune nouvelle sauvegarde .bak (déjà sauvegardés ou fichiers absents)"
+msgstr ""
+
+#: core/paths.py:324
+#, python-brace-format
+msgid "Sauvegardes .bak : {count} fichier(s) dans {folder}"
+msgstr ""
+
+#: core/paths.py:365
 msgid "Chemin vide"
 msgstr ""
 
-#: core/paths.py:291
+#: core/paths.py:370
 #, python-brace-format
 msgid "Répertoire introuvable: {normalized}"
 msgstr ""
 
-#: core/paths.py:294
+#: core/paths.py:373
 msgid "Ce dossier ne se termine pas par .lrplugin"
 msgstr ""
 
-#: tools/applicator/main.py:118
+#: tools/applicator/main.py:119
 #, python-brace-format
 msgid "RAPPORT DE LOCALISATION - {var0}\n"
 msgstr ""
 
-#: tools/applicator/main.py:121 tools/translator/compare_langs.py:258
+#: tools/applicator/main.py:122 tools/translator/compare_langs.py:258
 msgid "STATISTIQUES GLOBALES\n"
-msgstr ""
-
-#: tools/applicator/main.py:123
-#, python-brace-format
-msgid "Fichiers traites        : {var0}\n"
 msgstr ""
 
 #: tools/applicator/main.py:124
 #, python-brace-format
-msgid "Fichiers modifies       : {var0}\n"
+msgid "Fichiers traites        : {var0}\n"
 msgstr ""
 
 #: tools/applicator/main.py:125
 #, python-brace-format
-msgid "Lignes modifiees        : {var0}\n"
+msgid "Fichiers modifies       : {var0}\n"
 msgstr ""
 
 #: tools/applicator/main.py:126
 #, python-brace-format
-msgid "Chaines remplacees      : {var0}\n"
+msgid "Lignes modifiees        : {var0}\n"
 msgstr ""
 
 #: tools/applicator/main.py:127
 #, python-brace-format
-msgid "Chaines ignorees        : {var0}\n"
+msgid "Chaines remplacees      : {var0}\n"
 msgstr ""
 
 #: tools/applicator/main.py:128
+#, python-brace-format
+msgid "Chaines ignorees        : {var0}\n"
+msgstr ""
+
+#: tools/applicator/main.py:129
 #, python-brace-format
 msgid ""
 "Erreurs                 : {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/applicator/main.py:132
+#: tools/applicator/main.py:133
 msgid "MODIFICATIONS EFFECTUEES\n"
 msgstr ""
 
-#: tools/applicator/main.py:140
+#: tools/applicator/main.py:141
 #, python-brace-format
 msgid "Fichier: {var0}\n"
 msgstr ""
 
-#: tools/applicator/main.py:143
+#: tools/applicator/main.py:144
 #, python-brace-format
 msgid "  Ligne {var0}:\n"
 msgstr ""
 
-#: tools/applicator/main.py:144
+#: tools/applicator/main.py:145
 #, python-brace-format
 msgid "  AVANT : {var0}\n"
 msgstr ""
 
-#: tools/applicator/main.py:145
+#: tools/applicator/main.py:146
 #, python-brace-format
 msgid "  APRES : {var0}\n"
 msgstr ""
 
-#: tools/applicator/main.py:152
+#: tools/applicator/main.py:153
 msgid "CHAINES IGNOREES\n"
 msgstr ""
 
-#: tools/applicator/main.py:157
+#: tools/applicator/main.py:158
 #, python-brace-format
 msgid "    Raison: {var0}\n"
 msgstr ""
 
-#: tools/applicator/main.py:158
+#: tools/applicator/main.py:159
 #, python-brace-format
 msgid ""
 "    Contenu: {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/applicator/main.py:162
+#: tools/applicator/main.py:163
 msgid "ERREURS\n"
 msgstr ""
 
-#: tools/applicator/main.py:167
+#: tools/applicator/main.py:168
 #, python-brace-format
 msgid ""
 "    Erreur: {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/applicator/main.py:170
+#: tools/applicator/main.py:171
 msgid "RECOMMANDATIONS POST-TRAITEMENT\n"
 msgstr ""
 
-#: tools/applicator/main.py:172
+#: tools/applicator/main.py:173
 msgid "1. Verifier les modifications avec Git diff\n"
 msgstr ""
 
-#: tools/applicator/main.py:173
+#: tools/applicator/main.py:174
 msgid "2. REDEMARRER Lightroom Classic (reload ne suffit pas)\n"
 msgstr ""
 
-#: tools/applicator/main.py:174
+#: tools/applicator/main.py:175
 msgid "3. Verifier que TranslatedStrings_fr.txt existe a la racine\n"
 msgstr ""
 
-#: tools/applicator/main.py:175
+#: tools/applicator/main.py:176
 msgid ""
 "4. Tester les textes dans l'interface\n"
 "\n"
 msgstr ""
 
-#: tools/applicator/main.py:189
+#: tools/applicator/main.py:190
 #, python-brace-format
 msgid "ERREUR: Fichier replacements.json introuvable dans {dir}"
 msgstr ""
 
-#: tools/applicator/main.py:200
+#: tools/applicator/main.py:201
 #, python-brace-format
 msgid "ERREUR lors du chargement de replacements.json: {error}"
 msgstr ""
 
-#: tools/applicator/main.py:208
+#: tools/applicator/main.py:209
 msgid "* replacements.json chargé"
 msgstr ""
 
-#: tools/applicator/main.py:209
+#: tools/applicator/main.py:210
 #, python-brace-format
 msgid "  - {n} fichiers avec remplacements"
 msgstr ""
 
-#: tools/applicator/main.py:214
+#: tools/applicator/main.py:215
 #, python-brace-format
 msgid "  - {n} remplacements prévus"
 msgstr ""
 
-#: tools/applicator/main.py:295 tools/applicator/main.py:448
+#: tools/applicator/main.py:295 tools/applicator/main.py:458
 msgid "Fichier introuvable"
 msgstr ""
 
@@ -823,355 +862,355 @@ msgstr ""
 msgid "Chaine non trouvee ou deja localisee"
 msgstr ""
 
-#: tools/applicator/main.py:376
+#: tools/applicator/main.py:388
 #, python-brace-format
 msgid "ERREUR: Répertoire du plugin introuvable: {path}"
 msgstr ""
 
-#: tools/applicator/main.py:383
+#: tools/applicator/main.py:394
 msgid "ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"
 msgstr ""
 
-#: tools/applicator/main.py:384
+#: tools/applicator/main.py:395
 msgid "        Lancez d'abord Extractor sur ce plugin."
 msgstr ""
 
-#: tools/applicator/main.py:386
+#: tools/applicator/main.py:397
 #, python-brace-format
 msgid "* Auto-détection: {dir}"
 msgstr ""
 
-#: tools/applicator/main.py:389
+#: tools/applicator/main.py:400
 #, python-brace-format
 msgid "ERREUR: Répertoire Extractor introuvable: {dir}"
 msgstr ""
 
-#: tools/applicator/main.py:411
+#: tools/applicator/main.py:421
 msgid "ERREUR: Impossible de charger les remplacements"
 msgstr ""
 
-#: tools/applicator/main.py:418
+#: tools/applicator/main.py:428
 msgid "Aucun remplacement à effectuer"
 msgstr ""
 
-#: tools/applicator/main.py:429
+#: tools/applicator/main.py:439
 #, python-brace-format
 msgid "Traitement de {file}..."
 msgstr ""
 
-#: tools/applicator/main.py:441
+#: tools/applicator/main.py:451
 #, python-brace-format
 msgid "  * {n} chaîne(s) remplacée(s)"
 msgstr ""
 
-#: tools/applicator/main.py:444
+#: tools/applicator/main.py:454
 msgid "  - Aucun remplacement"
 msgstr ""
 
-#: tools/applicator/main.py:447
+#: tools/applicator/main.py:457
 #, python-brace-format
 msgid "  ! Fichier introuvable: {file}"
 msgstr ""
 
-#: tools/applicator/main.py:456 tools/toolbox/delete_temp_dir.py:472
-#: tools/toolbox/restore_backup.py:460
+#: tools/applicator/main.py:468 tools/toolbox/delete_temp_dir.py:456
+#: tools/toolbox/restore_backup.py:430
 msgid "RÉSUMÉ"
 msgstr ""
 
-#: tools/applicator/main.py:458
+#: tools/applicator/main.py:470
 msgid "Fichiers traités"
 msgstr ""
 
-#: tools/applicator/main.py:459
+#: tools/applicator/main.py:471
 msgid "Fichiers modifiés"
 msgstr ""
 
-#: tools/applicator/main.py:460
+#: tools/applicator/main.py:472
 msgid "Lignes modifiées"
 msgstr ""
 
-#: tools/applicator/main.py:461
+#: tools/applicator/main.py:473
 msgid "Chaînes remplacées"
 msgstr ""
 
-#: tools/applicator/main.py:462
+#: tools/applicator/main.py:474
 msgid "Chaînes ignorées"
 msgstr ""
 
-#: tools/applicator/main.py:464
+#: tools/applicator/main.py:476
 msgid "Sortie Applicator"
 msgstr ""
 
-#: tools/applicator/main.py:466
+#: tools/applicator/main.py:478
 msgid "Backups"
 msgstr ""
 
-#: tools/applicator/main.py:467
+#: tools/applicator/main.py:479
 msgid "Rapport détaillé"
 msgstr ""
 
-#: tools/applicator/main.py:470
+#: tools/applicator/main.py:482
 msgid "MODE DRY-RUN: Aucun fichier n'a été modifié"
 msgstr ""
 
-#: tools/applicator/main.py:473
+#: tools/applicator/main.py:485
 msgid "IMPORTANT: Redémarrez Lightroom après les modifications!"
 msgstr ""
 
-#: tools/applicator/main.py:474
+#: tools/applicator/main.py:486
 msgid "           (le rechargement du plugin ne suffit pas)"
 msgstr ""
 
-#: tools/applicator/main.py:527 tools/applicator/main.py:537
+#: tools/applicator/main.py:539 tools/applicator/main.py:549
 msgid "Lancement de AUTOSYNC..."
 msgstr ""
 
-#: tools/applicator/main.py:544
+#: tools/applicator/main.py:556
 #, python-brace-format
 msgid "Impossible de lancer AUTOSYNC: {error}"
 msgstr ""
 
-#: tools/applicator/main.py:546
+#: tools/applicator/main.py:558
 #, python-brace-format
 msgid "autosync.py introuvable: {path}"
 msgstr ""
 
-#: tools/applicator/main.py:548
+#: tools/applicator/main.py:560
 #, python-brace-format
 msgid "Erreur lors du lancement de AUTOSYNC: {error}"
 msgstr ""
 
-#: tools/applicator/main.py:595
+#: tools/applicator/main.py:607
 msgid "Préparer d'autres langues ?"
 msgstr ""
 
-#: tools/applicator/main.py:598
+#: tools/applicator/main.py:610
 msgid "Le fichier qui vient d'être installé ne contient aucune traduction :"
 msgstr ""
 
-#: tools/applicator/main.py:599
+#: tools/applicator/main.py:611
 msgid "il sert de base pour que des traducteurs puissent le remplir."
 msgstr ""
 
-#: tools/applicator/main.py:600
+#: tools/applicator/main.py:612
 msgid ""
 "On peut en créer un par langue supplémentaire, pour leur simplifier la vie."
 msgstr ""
 
-#: tools/applicator/main.py:602
+#: tools/applicator/main.py:614
 msgid "Langues proposées :"
 msgstr ""
 
-#: tools/applicator/main.py:613
+#: tools/applicator/main.py:625
 msgid "Entrez les codes séparés par des virgules, ou ENTRÉE pour passer :"
 msgstr ""
 
-#: tools/applicator/main.py:614
+#: tools/applicator/main.py:626
 msgid "Exemple : de, it, es"
 msgstr ""
 
-#: tools/applicator/main.py:617
+#: tools/applicator/main.py:629
 msgid "Langues :"
 msgstr ""
 
-#: tools/applicator/main.py:637
+#: tools/applicator/main.py:649
 #, python-brace-format
 msgid "Ignoré(s) : {codes}"
 msgstr ""
 
-#: tools/applicator/main.py:651
+#: tools/applicator/main.py:663
 #, python-brace-format
 msgid "  {name} existe déjà — ignoré"
 msgstr ""
 
-#: tools/applicator/main.py:671
+#: tools/applicator/main.py:683
 #, python-brace-format
 msgid "  {name} — créé"
 msgstr ""
 
-#: tools/applicator/main.py:673
+#: tools/applicator/main.py:685
 #, python-brace-format
 msgid "  {name} — erreur : {error}"
 msgstr ""
 
-#: tools/applicator/main.py:685
+#: tools/applicator/main.py:697
 #, python-brace-format
 msgid "Fichier mis en place : {name}"
 msgstr ""
 
-#: tools/applicator/main.py:688
+#: tools/applicator/main.py:700
 #, python-brace-format
 msgid "Impossible de copier le fichier: {error}"
 msgstr ""
 
-#: tools/applicator/main.py:703
+#: tools/applicator/main.py:715
 msgid "Que voulez-vous faire ?"
 msgstr ""
 
-#: tools/applicator/main.py:707
+#: tools/applicator/main.py:719
 msgid "Choisir un autre fichier depuis une extraction précédente."
 msgstr ""
 
-#: tools/applicator/main.py:708
+#: tools/applicator/main.py:720
 msgid "Importer un fichier depuis l'extérieur"
 msgstr ""
 
-#: tools/applicator/main.py:709
+#: tools/applicator/main.py:721
 msgid "Sortir sans copier"
 msgstr ""
 
-#: tools/applicator/main.py:717
+#: tools/applicator/main.py:729
 msgid "Fichiers disponibles dans l'extraction :"
 msgstr ""
 
-#: tools/applicator/main.py:727
+#: tools/applicator/main.py:739
 msgid "Retour"
 msgstr ""
 
-#: tools/applicator/main.py:736 tools/applicator/main.py:738
-#: tools/applicator/main.py:746 tools/applicator/main.py:757
+#: tools/applicator/main.py:748 tools/applicator/main.py:750
+#: tools/applicator/main.py:758 tools/applicator/main.py:769
 msgid "Rien copié"
 msgstr ""
 
-#: tools/applicator/main.py:744
+#: tools/applicator/main.py:756
 msgid "Chemin du fichier TranslatedStrings_xx.txt :"
 msgstr ""
 
-#: tools/applicator/main.py:751
+#: tools/applicator/main.py:763
 #, python-brace-format
 msgid "Fichier introuvable: {path}"
 msgstr ""
 
-#: tools/applicator/main.py:770
+#: tools/applicator/main.py:782
 msgid "GESTION DES TRADUCTIONS"
 msgstr ""
 
-#: tools/applicator/main.py:785
+#: tools/applicator/main.py:797
 msgid "Aucun fichier TranslatedStrings_xx.txt à la racine."
 msgstr ""
 
-#: tools/applicator/main.py:786
+#: tools/applicator/main.py:798
 msgid "  1. Lancez l'Extractor sur le plugin"
 msgstr ""
 
-#: tools/applicator/main.py:787
+#: tools/applicator/main.py:799
 msgid "  2. Copiez le fichier TranslatedStrings_xx.txt"
 msgstr ""
 
-#: tools/applicator/main.py:788
+#: tools/applicator/main.py:800
 msgid "     généré à la racine du plugin"
 msgstr ""
 
-#: tools/applicator/main.py:789
+#: tools/applicator/main.py:801
 msgid "  3. Éditez le fichier pour ajouter vos traductions"
 msgstr ""
 
-#: tools/applicator/main.py:794
+#: tools/applicator/main.py:806
 msgid ""
 "Il semble que ce soit votre première installation d'une langue à traduire."
 msgstr ""
 
-#: tools/applicator/main.py:795
+#: tools/applicator/main.py:807
 msgid ""
 "Utiliseriez-vous le dernier fichier extrait depuis Extractor comme "
 "référence ?"
 msgstr ""
 
-#: tools/applicator/main.py:797
+#: tools/applicator/main.py:809
 msgid "Il sera alors simplement mis en place à la racine du plugin,"
 msgstr ""
 
-#: tools/applicator/main.py:798
+#: tools/applicator/main.py:810
 msgid "prêt pour de futurs traductions."
 msgstr ""
 
-#: tools/applicator/main.py:799
+#: tools/applicator/main.py:811
 msgid "Rien d'autre à faire si ce n'est d'inciter des contributeurs à"
 msgstr ""
 
-#: tools/applicator/main.py:800
+#: tools/applicator/main.py:812
 msgid "venir enrichir la communauté autour de ce plugin."
 msgstr ""
 
-#: tools/applicator/main.py:803
+#: tools/applicator/main.py:815
 #, python-brace-format
 msgid "  →  <plugin>\\{template_name}"
 msgstr ""
 
-#: tools/applicator/main.py:807
+#: tools/applicator/main.py:819
 msgid "Copier le fichier? [O/n]:"
 msgstr ""
 
-#: tools/applicator/main.py:829
+#: tools/applicator/main.py:841
 msgid "Plusieurs langues détectées à la racine du plugin :"
 msgstr ""
 
-#: tools/applicator/main.py:833
+#: tools/applicator/main.py:845
 msgid ""
 "Cela indique une mise à jour manuelle sans passer par les outils standard."
 msgstr ""
 
-#: tools/applicator/main.py:834
+#: tools/applicator/main.py:846
 msgid "Lancement automatique de AUTOSYNC pour synchroniser l'ensemble."
 msgstr ""
 
-#: tools/applicator/main.py:837
+#: tools/applicator/main.py:849
 msgid "Lancer AUTOSYNC ? [O/n]:"
 msgstr ""
 
-#: tools/applicator/main.py:841
+#: tools/applicator/main.py:853
 msgid "AUTOSYNC non lancé"
 msgstr ""
 
-#: tools/applicator/main.py:848
+#: tools/applicator/main.py:860
 msgid "Vous venez certainement de mettre à jour vos clés dans votre lua."
 msgstr ""
 
-#: tools/applicator/main.py:849
+#: tools/applicator/main.py:861
 #, python-brace-format
 msgid "Un fichier {name} se trouve déjà à la racine de votre plugin."
 msgstr ""
 
-#: tools/applicator/main.py:850
+#: tools/applicator/main.py:862
 msgid ""
 "Il est très fortement conseillé de le remplacer afin de le mettre à jour avec"
 msgstr ""
 
-#: tools/applicator/main.py:851
+#: tools/applicator/main.py:863
 msgid "votre dernière mise à jour."
 msgstr ""
 
-#: tools/applicator/main.py:854
+#: tools/applicator/main.py:866
 msgid "Remplacer le fichier déjà présent? [O/n]:"
 msgstr ""
 
-#: tools/applicator/main.py:859
+#: tools/applicator/main.py:871
 #, python-brace-format
 msgid "Fichier remplacé : {name}"
 msgstr ""
 
-#: tools/applicator/main.py:862
+#: tools/applicator/main.py:874
 #, python-brace-format
 msgid "Impossible de remplacer le fichier: {error}"
 msgstr ""
 
-#: tools/applicator/main.py:864
+#: tools/applicator/main.py:876
 msgid "Fichier non remplacé"
 msgstr ""
 
-#: tools/applicator/main.py:868
+#: tools/applicator/main.py:880
 msgid "Fichier(s) de traduction trouvé(s) à la racine du plugin :"
 msgstr ""
 
-#: tools/applicator/main.py:872
+#: tools/applicator/main.py:884
 msgid "Aucun template d'extraction ne correspond. Rien à faire."
 msgstr ""
 
-#: tools/applicator/main.py:878
+#: tools/applicator/main.py:890
 msgid "Applique les localisations generees par Extractor au plugin"
 msgstr ""
 
-#: tools/applicator/main.py:880
+#: tools/applicator/main.py:892
 msgid ""
 "\n"
 "Exemples:\n"
@@ -1193,260 +1232,256 @@ msgid ""
 "        "
 msgstr ""
 
-#: tools/applicator/main.py:899 tools/extractor/main.py:171
-#: tools/translator/main.py:263
-msgid "Plugin pré-configuré pour le menu interactif"
-msgstr ""
-
-#: tools/applicator/main.py:901 tools/extractor/main.py:173
-msgid "Chemin vers le répertoire du plugin (active le mode CLI)"
-msgstr ""
-
-#: tools/applicator/main.py:903
+#: tools/applicator/main.py:913
 msgid "Aucune question : ne pas lancer la gestion des fichiers de traduction"
 msgstr ""
 
-#: tools/applicator/main.py:905
+#: tools/applicator/main.py:915
 msgid "Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)"
 msgstr ""
 
-#: tools/applicator/main.py:907
+#: tools/applicator/main.py:917
 msgid "Mode simulation (affiche sans modifier)"
 msgstr ""
 
-#: tools/applicator/main.py:909
+#: tools/applicator/main.py:919
 msgid "Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)"
 msgstr ""
 
-#: tools/applicator/main.py:926
+#: tools/applicator/main.py:936
 msgid "Application annulée"
 msgstr ""
 
-#: tools/applicator/menu.py:73
+#: tools/applicator/menu.py:74
 msgid "APPLICATOR - Application des localisations"
 msgstr ""
 
-#: tools/applicator/menu.py:97 tools/extractor/menu.py:97
+#: tools/applicator/menu.py:98 tools/extractor/menu.py:98
 msgid "Configuration:"
 msgstr ""
 
-#: tools/applicator/menu.py:105 tools/applicator/menu.py:125
-#: tools/extractor/menu.py:105
+#: tools/applicator/menu.py:106 tools/applicator/menu.py:126
+#: tools/extractor/menu.py:106
 msgid "INTROUVABLE"
 msgstr ""
 
-#: tools/applicator/menu.py:109 tools/applicator/menu.py:127
-#: tools/extractor/menu.py:109
+#: tools/applicator/menu.py:110 tools/applicator/menu.py:128
+#: tools/extractor/menu.py:110
 msgid "(non défini - REQUIS)"
 msgstr ""
 
-#: tools/applicator/menu.py:119
+#: tools/applicator/menu.py:120
 msgid "replacements.json manquant"
 msgstr ""
 
-#: tools/applicator/menu.py:122 tools/applicator/menu.py:125
-#: tools/applicator/menu.py:127
+#: tools/applicator/menu.py:123 tools/applicator/menu.py:126
+#: tools/applicator/menu.py:128
 msgid "Extraction"
 msgstr ""
 
-#: tools/applicator/menu.py:131
+#: tools/applicator/menu.py:132
 msgid "Oui (SIMULATION)"
 msgstr ""
 
-#: tools/applicator/menu.py:133
+#: tools/applicator/menu.py:134
 msgid "Non (modifications réelles)"
 msgstr ""
 
-#: tools/applicator/menu.py:134
+#: tools/applicator/menu.py:135
 msgid "Mode simulation"
 msgstr ""
 
-#: tools/applicator/menu.py:138
+#: tools/applicator/menu.py:139
 msgid "Oui (recommandé)"
 msgstr ""
 
-#: tools/applicator/menu.py:140 tools/applicator/menu.py:255
-#: tools/applicator/menu.py:302 tools/extractor/menu.py:129
-#: tools/extractor/menu.py:316
+#: tools/applicator/menu.py:141 tools/applicator/menu.py:259
+#: tools/applicator/menu.py:306 tools/extractor/menu.py:130
+#: tools/extractor/menu.py:317
 msgid "Non"
 msgstr ""
 
-#: tools/applicator/menu.py:141 tools/applicator/menu.py:274
+#: tools/applicator/menu.py:142 tools/applicator/menu.py:278
 msgid "Sauvegardes .bak"
 msgstr ""
 
-#: tools/applicator/menu.py:156 tools/applicator/menu.py:158
-#: tools/applicator/menu.py:160 tools/extractor/menu.py:139
-#: tools/extractor/menu.py:141
+#: tools/applicator/menu.py:157 tools/applicator/menu.py:159
+#: tools/applicator/menu.py:161 tools/extractor/menu.py:140
+#: tools/extractor/menu.py:142
 msgid "ENTRÉE"
 msgstr ""
 
-#: tools/applicator/menu.py:156
+#: tools/applicator/menu.py:157
 msgid "Lancer la SIMULATION"
 msgstr ""
 
-#: tools/applicator/menu.py:158
+#: tools/applicator/menu.py:159
 msgid "Lancer l'application"
 msgstr ""
 
-#: tools/applicator/menu.py:160
+#: tools/applicator/menu.py:161
 msgid "Lancer (configurer plugin et extraction d'abord)"
 msgstr ""
 
-#: tools/applicator/menu.py:162
+#: tools/applicator/menu.py:163
 msgid "1-4"
 msgstr ""
 
-#: tools/applicator/menu.py:162 tools/extractor/menu.py:143
+#: tools/applicator/menu.py:163 tools/extractor/menu.py:144
 msgid "Modifier une option"
 msgstr ""
 
-#: tools/applicator/menu.py:169 tools/extractor/menu.py:150
-#: tools/toolbox/delete_temp_dir.py:176
+#: tools/applicator/menu.py:170 tools/extractor/menu.py:151
+#: tools/toolbox/delete_temp_dir.py:160
 msgid "Chemin du plugin Lightroom"
 msgstr ""
 
-#: tools/applicator/menu.py:178 tools/extractor/menu.py:159
+#: tools/applicator/menu.py:179 tools/extractor/menu.py:160
 msgid "Nouveau chemin (ENTRÉE pour garder, x pour annuler):"
 msgstr ""
 
-#: tools/applicator/menu.py:180 tools/applicator/menu.py:188
-#: tools/extractor/menu.py:161 tools/extractor/menu.py:169
+#: tools/applicator/menu.py:181 tools/applicator/menu.py:189
+#: tools/extractor/menu.py:162 tools/extractor/menu.py:170
 msgid "Annulation"
 msgstr ""
 
-#: tools/applicator/menu.py:186 tools/extractor/menu.py:167
+#: tools/applicator/menu.py:187 tools/extractor/menu.py:168
 msgid "Chemin du plugin (x pour annuler):"
 msgstr ""
 
-#: tools/applicator/menu.py:191 tools/extractor/menu.py:172
+#: tools/applicator/menu.py:192 tools/extractor/menu.py:173
 msgid "Chemin requis!"
 msgstr ""
 
-#: tools/applicator/menu.py:210 tools/extractor/menu.py:190
+#: tools/applicator/menu.py:211 tools/extractor/menu.py:191
 #, python-brace-format
 msgid "Plugin: {path}"
 msgstr ""
 
-#: tools/applicator/menu.py:216
+#: tools/applicator/menu.py:217
 #, python-brace-format
 msgid "Extraction auto-détectée: {name}"
 msgstr ""
 
-#: tools/applicator/menu.py:238
+#: tools/applicator/menu.py:241
 #, python-brace-format
 msgid "Fichiers manquants: {files}"
 msgstr ""
 
-#: tools/applicator/menu.py:239
+#: tools/applicator/menu.py:242
 msgid "Ce n'est peut-être pas un dossier Extractor valide."
 msgstr ""
 
-#: tools/applicator/menu.py:252
+#: tools/applicator/menu.py:248
+#, python-brace-format
+msgid "Dossier d'extraction confirmé: {name}"
+msgstr ""
+
+#: tools/applicator/menu.py:256
 msgid "Mode simulation (dry-run)"
 msgstr ""
 
-#: tools/applicator/menu.py:254 tools/applicator/menu.py:302
-#: tools/extractor/menu.py:129 tools/extractor/menu.py:316
+#: tools/applicator/menu.py:258 tools/applicator/menu.py:306
+#: tools/extractor/menu.py:130 tools/extractor/menu.py:317
 msgid "Oui"
 msgstr ""
 
-#: tools/applicator/menu.py:254
+#: tools/applicator/menu.py:258
 msgid "Affiche les changements SANS modifier les fichiers"
 msgstr ""
 
-#: tools/applicator/menu.py:255
+#: tools/applicator/menu.py:259
 msgid "Applique les modifications (crée des backups)"
 msgstr ""
 
-#: tools/applicator/menu.py:259
+#: tools/applicator/menu.py:263
 #, python-brace-format
 msgid "Mode simulation? [{current}]:"
 msgstr ""
 
-#: tools/applicator/menu.py:263
+#: tools/applicator/menu.py:267
 msgid "Mode SIMULATION activé"
 msgstr ""
 
-#: tools/applicator/menu.py:266
+#: tools/applicator/menu.py:270
 msgid "Mode MODIFICATION activé"
 msgstr ""
 
-#: tools/applicator/menu.py:268
+#: tools/applicator/menu.py:272
 msgid "Simulation"
 msgstr ""
 
-#: tools/applicator/menu.py:268
+#: tools/applicator/menu.py:272
 msgid "Modification"
 msgstr ""
 
-#: tools/applicator/menu.py:269 tools/applicator/menu.py:303
-#: tools/extractor/menu.py:317
+#: tools/applicator/menu.py:273 tools/applicator/menu.py:307
+#: tools/extractor/menu.py:318
 #, python-brace-format
 msgid "Option inchangée: {status}"
 msgstr ""
 
-#: tools/applicator/menu.py:276
+#: tools/applicator/menu.py:280
 msgid "Crée des copies de sauvegarde avant modification."
 msgstr ""
 
-#: tools/applicator/menu.py:277
+#: tools/applicator/menu.py:281
 msgid "Fortement recommandé pour pouvoir revenir en arrière."
 msgstr ""
 
-#: tools/applicator/menu.py:281
+#: tools/applicator/menu.py:285
 msgid "(Non utilisé en mode simulation)"
 msgstr ""
 
-#: tools/applicator/menu.py:282 tools/applicator/menu.py:336
-#: tools/applicator/menu.py:340 tools/applicator/menu.py:344
-#: tools/applicator/menu.py:356 tools/applicator/menu.py:361
-#: tools/extractor/menu.py:347 tools/extractor/menu.py:351
-#: tools/extractor/menu.py:355 tools/extractor/menu.py:359
-#: tools/extractor/menu.py:363 tools/extractor/menu.py:367
-#: tools/extractor/menu.py:371 tools/extractor/menu.py:377
-#: tools/extractor/menu.py:382
+#: tools/applicator/menu.py:286 tools/applicator/menu.py:340
+#: tools/applicator/menu.py:344 tools/applicator/menu.py:348
+#: tools/applicator/menu.py:360 tools/applicator/menu.py:365
+#: tools/extractor/menu.py:348 tools/extractor/menu.py:352
+#: tools/extractor/menu.py:356 tools/extractor/menu.py:360
+#: tools/extractor/menu.py:364 tools/extractor/menu.py:368
+#: tools/extractor/menu.py:372 tools/extractor/menu.py:378
+#: tools/extractor/menu.py:383
 msgid "Appuyez sur ENTRÉE..."
 msgstr ""
 
-#: tools/applicator/menu.py:286
+#: tools/applicator/menu.py:290
 #, python-brace-format
 msgid "Créer des sauvegardes? [{current}]:"
 msgstr ""
 
-#: tools/applicator/menu.py:290 tools/applicator/menu.py:300
+#: tools/applicator/menu.py:294 tools/applicator/menu.py:304
 msgid "Sauvegardes activées"
 msgstr ""
 
-#: tools/applicator/menu.py:293
+#: tools/applicator/menu.py:297
 msgid "Êtes-vous sûr de NE PAS vouloir de sauvegardes?"
 msgstr ""
 
-#: tools/applicator/menu.py:294
+#: tools/applicator/menu.py:298
 msgid "Confirmer [o/N]:"
 msgstr ""
 
-#: tools/applicator/menu.py:297
+#: tools/applicator/menu.py:301
 msgid "Sauvegardes désactivées"
 msgstr ""
 
-#: tools/applicator/menu.py:329
+#: tools/applicator/menu.py:333
 msgid "Lancement de la SIMULATION..."
 msgstr ""
 
-#: tools/applicator/menu.py:331
+#: tools/applicator/menu.py:335
 msgid "Lancement de l'application..."
 msgstr ""
 
-#: tools/applicator/menu.py:353 tools/extractor/menu.py:376
+#: tools/applicator/menu.py:357 tools/extractor/menu.py:377
 msgid "Configurez d'abord le chemin du plugin (option 1)"
 msgstr ""
 
-#: tools/applicator/menu.py:355
+#: tools/applicator/menu.py:359
 msgid "Configurez d'abord le dossier d'extraction (option 2)"
 msgstr ""
 
-#: tools/applicator/menu.py:360 tools/extractor/menu.py:381
+#: tools/applicator/menu.py:364 tools/extractor/menu.py:382
 #, python-brace-format
 msgid "Choix invalide: \"{choice}\""
 msgstr ""
@@ -1472,96 +1507,96 @@ msgstr ""
 msgid "AVERTISSEMENT: {path} doit contenir un objet JSON"
 msgstr ""
 
-#: tools/extractor/engine.py:207
+#: tools/extractor/engine.py:219
 #, python-brace-format
 msgid "Erreur lecture {path}: {error}"
 msgstr ""
 
-#: tools/extractor/main.py:62
+#: tools/extractor/main.py:63
 #, python-brace-format
 msgid "Répertoire introuvable: {path}"
 msgstr ""
 
-#: tools/extractor/main.py:76
+#: tools/extractor/main.py:77
 msgid "EXTRACTION"
 msgstr ""
 
-#: tools/extractor/main.py:77
+#: tools/extractor/main.py:78
 #, python-brace-format
 msgid "Analyse de {plugin}..."
 msgstr ""
 
-#: tools/extractor/main.py:115
+#: tools/extractor/main.py:116
 msgid "Fichiers analysés"
 msgstr ""
 
-#: tools/extractor/main.py:116
+#: tools/extractor/main.py:117
 msgid "Fichiers avec chaînes"
 msgstr ""
 
-#: tools/extractor/main.py:117
+#: tools/extractor/main.py:118
 msgid "Total chaînes trouvées"
 msgstr ""
 
-#: tools/extractor/main.py:118
+#: tools/extractor/main.py:119
 msgid "Clés uniques"
 msgstr ""
 
-#: tools/extractor/main.py:123
+#: tools/extractor/main.py:124
 msgid "Chaînes avec espaces"
 msgstr ""
 
-#: tools/extractor/main.py:124
+#: tools/extractor/main.py:125
 msgid "Chaînes avec suffixes"
 msgstr ""
 
-#: tools/extractor/main.py:125
+#: tools/extractor/main.py:126
 msgid "Lignes concaténées"
 msgstr ""
 
-#: tools/extractor/main.py:126
+#: tools/extractor/main.py:127
 msgid "Membres de concaténation"
 msgstr ""
 
-#: tools/extractor/main.py:144
+#: tools/extractor/main.py:145
 #, python-brace-format
 msgid "{n} clés"
 msgstr ""
 
-#: tools/extractor/main.py:144
+#: tools/extractor/main.py:145
 msgid "Fichier de chaînes"
 msgstr ""
 
-#: tools/extractor/main.py:145
+#: tools/extractor/main.py:146
 #, python-brace-format
 msgid "{n} entrées"
 msgstr ""
 
-#: tools/extractor/main.py:145
+#: tools/extractor/main.py:146
 msgid "Métadonnées d'espaces/suffixes"
 msgstr ""
 
-#: tools/extractor/main.py:146
+#: tools/extractor/main.py:147
 msgid "pour Applicator"
 msgstr ""
 
-#: tools/extractor/main.py:146
+#: tools/extractor/main.py:147
 msgid "Remplacement des chaînes"
 msgstr ""
 
-#: tools/extractor/main.py:147
+#: tools/extractor/main.py:148
 msgid "rapport détaillé"
 msgstr ""
 
-#: tools/extractor/main.py:147
+#: tools/extractor/main.py:148
 msgid "Analyse complète"
 msgstr ""
 
-#: tools/extractor/main.py:156
+#: tools/extractor/main.py:157
 msgid "Extrait les chaînes localisables d'un plugin Lightroom Classic"
 msgstr ""
 
-#: tools/extractor/main.py:158
+#: tools/extractor/main.py:159
 msgid ""
 "\n"
 "Exemples:\n"
@@ -1576,240 +1611,240 @@ msgid ""
 "        "
 msgstr ""
 
-#: tools/extractor/main.py:175
+#: tools/extractor/main.py:174
 msgid "Aucune question (l'Extractor n'en pose pas en mode CLI)"
 msgstr ""
 
-#: tools/extractor/main.py:177
+#: tools/extractor/main.py:176
 msgid ""
 "Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)"
 msgstr ""
 
-#: tools/extractor/main.py:183 tools/extractor/menu.py:59
+#: tools/extractor/main.py:182 tools/extractor/menu.py:60
 #, python-brace-format
 msgid "Préfixe illisible, {prefix} utilisé : {error}"
 msgstr ""
 
-#: tools/extractor/main.py:186
+#: tools/extractor/main.py:185
 #, python-brace-format
 msgid "Préfixe des clés LOC (défaut: {prefix})"
 msgstr ""
 
-#: tools/extractor/main.py:191
+#: tools/extractor/main.py:190
 #, python-brace-format
 msgid "Langue de référence illisible, « en » utilisée : {error}"
 msgstr ""
 
-#: tools/extractor/main.py:195
+#: tools/extractor/main.py:194
 #, python-brace-format
 msgid "Code langue (défaut: {lang})"
 msgstr ""
 
-#: tools/extractor/main.py:197
+#: tools/extractor/main.py:196
 msgid "Fichiers à exclure (répétable)"
 msgstr ""
 
-#: tools/extractor/main.py:199
+#: tools/extractor/main.py:198
 msgid "Longueur minimale des chaînes (défaut: 3)"
 msgstr ""
 
-#: tools/extractor/main.py:201
+#: tools/extractor/main.py:200
 msgid "NE PAS ignorer les lignes de log"
 msgstr ""
 
-#: tools/extractor/main.py:218
+#: tools/extractor/main.py:217
 msgid "Extraction annulée"
 msgstr ""
 
-#: tools/extractor/main.py:234 tools/extractor/main.py:249
+#: tools/extractor/main.py:233 tools/extractor/main.py:248
 #, python-brace-format
 msgid "ERREUR: {error}"
 msgstr ""
 
-#: tools/extractor/menu.py:88
+#: tools/extractor/menu.py:89
 msgid "EXTRACTOR - Extraction des chaînes localisables"
 msgstr ""
 
-#: tools/extractor/menu.py:107 tools/extractor/menu.py:109
+#: tools/extractor/menu.py:108 tools/extractor/menu.py:110
 msgid "Plugin ciblé"
 msgstr ""
 
-#: tools/extractor/menu.py:116
+#: tools/extractor/menu.py:117
 msgid "(auto)"
 msgstr ""
 
-#: tools/extractor/menu.py:120 tools/extractor/menu.py:237
+#: tools/extractor/menu.py:121 tools/extractor/menu.py:238
 msgid "Langue du plugin"
 msgstr ""
 
-#: tools/extractor/menu.py:122
+#: tools/extractor/menu.py:123
 msgid "(aucun)"
 msgstr ""
 
-#: tools/extractor/menu.py:123 tools/extractor/menu.py:255
+#: tools/extractor/menu.py:124 tools/extractor/menu.py:256
 msgid "Fichiers à exclure"
 msgstr ""
 
-#: tools/extractor/menu.py:125
+#: tools/extractor/menu.py:126
 msgid "Long. min chaînes"
 msgstr ""
 
-#: tools/extractor/menu.py:130
+#: tools/extractor/menu.py:131
 msgid "Inclure msg. logs"
 msgstr ""
 
-#: tools/extractor/menu.py:139
+#: tools/extractor/menu.py:140
 msgid "Lancer l'extraction"
 msgstr ""
 
-#: tools/extractor/menu.py:141
+#: tools/extractor/menu.py:142
 msgid "Lancer l'extraction (configurer le plugin d'abord)"
 msgstr ""
 
-#: tools/extractor/menu.py:143
+#: tools/extractor/menu.py:144
 msgid "1-7"
 msgstr ""
 
-#: tools/extractor/menu.py:198
+#: tools/extractor/menu.py:199
 msgid "Par défaut:"
 msgstr ""
 
-#: tools/extractor/menu.py:200
+#: tools/extractor/menu.py:201
 msgid "Pour forcer un autre emplacement, entrez un chemin."
 msgstr ""
 
-#: tools/extractor/menu.py:201
+#: tools/extractor/menu.py:202
 msgid "Sinon, appuyez sur ENTRÉE pour utiliser le défaut."
 msgstr ""
 
-#: tools/extractor/menu.py:205
+#: tools/extractor/menu.py:206
 msgid "Override actuel:"
 msgstr ""
 
-#: tools/extractor/menu.py:207
+#: tools/extractor/menu.py:208
 msgid "Répertoire (ENTRÉE pour défaut):"
 msgstr ""
 
-#: tools/extractor/menu.py:213
+#: tools/extractor/menu.py:214
 #, python-brace-format
 msgid "Override: {path}"
 msgstr ""
 
-#: tools/extractor/menu.py:216
+#: tools/extractor/menu.py:217
 #, python-brace-format
 msgid "Utilisera: {path}"
 msgstr ""
 
-#: tools/extractor/menu.py:221
+#: tools/extractor/menu.py:222
 msgid "Préfixe des clés LOC"
 msgstr ""
 
-#: tools/extractor/menu.py:226
+#: tools/extractor/menu.py:227
 #, python-brace-format
 msgid "Préfixe [{prefix}]:"
 msgstr ""
 
-#: tools/extractor/menu.py:232
+#: tools/extractor/menu.py:233
 #, python-brace-format
 msgid "Préfixe inchangé: {prefix}"
 msgstr ""
 
-#: tools/extractor/menu.py:239
+#: tools/extractor/menu.py:240
 msgid "(anglais)"
 msgstr ""
 
-#: tools/extractor/menu.py:239
+#: tools/extractor/menu.py:240
 msgid "(français)"
 msgstr ""
 
-#: tools/extractor/menu.py:239
+#: tools/extractor/menu.py:240
 msgid "(allemand)"
 msgstr ""
 
-#: tools/extractor/menu.py:242
+#: tools/extractor/menu.py:243
 #, python-brace-format
 msgid "Langue [{lang}]:"
 msgstr ""
 
-#: tools/extractor/menu.py:248
+#: tools/extractor/menu.py:249
 msgid "Code invalide (2 caractères requis), valeur inchangée"
 msgstr ""
 
-#: tools/extractor/menu.py:250
+#: tools/extractor/menu.py:251
 #, python-brace-format
 msgid "Langue inchangée: {lang}"
 msgstr ""
 
-#: tools/extractor/menu.py:261
+#: tools/extractor/menu.py:262
 msgid "Actuels:"
 msgstr ""
 
-#: tools/extractor/menu.py:263
+#: tools/extractor/menu.py:264
 msgid "Fichiers à exclure (virgule pour séparer):"
 msgstr ""
 
-#: tools/extractor/menu.py:267
+#: tools/extractor/menu.py:268
 #, python-brace-format
 msgid "Fichiers à exclure: {files}"
 msgstr ""
 
-#: tools/extractor/menu.py:270
+#: tools/extractor/menu.py:271
 msgid "Aucun fichier à exclure"
 msgstr ""
 
-#: tools/extractor/menu.py:275
+#: tools/extractor/menu.py:276
 msgid "Longueur minimale des chaînes"
 msgstr ""
 
-#: tools/extractor/menu.py:277
+#: tools/extractor/menu.py:278
 msgid "Les chaînes plus courtes seront ignorées."
 msgstr ""
 
-#: tools/extractor/menu.py:280
+#: tools/extractor/menu.py:281
 #, python-brace-format
 msgid "Longueur minimale [{n}]:"
 msgstr ""
 
-#: tools/extractor/menu.py:283
+#: tools/extractor/menu.py:284
 #, python-brace-format
 msgid "Longueur inchangée: {n}"
 msgstr ""
 
-#: tools/extractor/menu.py:290
+#: tools/extractor/menu.py:291
 #, python-brace-format
 msgid "Longueur minimale: {n}"
 msgstr ""
 
-#: tools/extractor/menu.py:292
+#: tools/extractor/menu.py:293
 msgid "Doit être >= 1"
 msgstr ""
 
-#: tools/extractor/menu.py:294
+#: tools/extractor/menu.py:295
 msgid "Valeur invalide"
 msgstr ""
 
-#: tools/extractor/menu.py:299
+#: tools/extractor/menu.py:300
 msgid "Inclure les messages de log"
 msgstr ""
 
-#: tools/extractor/menu.py:301
+#: tools/extractor/menu.py:302
 msgid "Inclut les lignes contenant log(), warn(), etc."
 msgstr ""
 
-#: tools/extractor/menu.py:307
+#: tools/extractor/menu.py:308
 #, python-brace-format
 msgid "Inclure les messages de log? [{current}]:"
 msgstr ""
 
-#: tools/extractor/menu.py:311
+#: tools/extractor/menu.py:312
 msgid "Messages de log inclus"
 msgstr ""
 
-#: tools/extractor/menu.py:314
+#: tools/extractor/menu.py:315
 msgid "Messages de log ignorés"
 msgstr ""
 
-#: tools/extractor/menu.py:342
+#: tools/extractor/menu.py:343
 msgid "Lancement de l'extraction..."
 msgstr ""
 
@@ -1823,114 +1858,114 @@ msgstr ""
 msgid "✓ Spacing metadata      : {path} ({n} clés)"
 msgstr ""
 
-#: tools/extractor/output.py:212
+#: tools/extractor/output.py:214
 #, python-brace-format
 msgid "✓ Replacements JSON     : {path} ({n} lignes à modifier)"
 msgstr ""
 
-#: tools/extractor/report.py:62
+#: tools/extractor/report.py:82
 msgid "RAPPORT D'EXTRACTION DES CHAÎNES LOCALISABLES\n"
 msgstr ""
 
-#: tools/extractor/report.py:65 tools/translator/compare.py:174
+#: tools/extractor/report.py:85 tools/translator/compare.py:175
 #: tools/translator/compare_langs.py:249
 #, python-brace-format
 msgid "Date: {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:66
+#: tools/extractor/report.py:86
 #, python-brace-format
 msgid "Plugin: {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:67
+#: tools/extractor/report.py:87
 #, python-brace-format
 msgid ""
 "Préfixe: {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:70
+#: tools/extractor/report.py:90
 msgid "LÉGENDE:\n"
 msgstr ""
 
-#: tools/extractor/report.py:71
+#: tools/extractor/report.py:91
 msgid "  ⬅️   = Espace(s) en DÉBUT de chaîne\n"
 msgstr ""
 
-#: tools/extractor/report.py:72
+#: tools/extractor/report.py:92
 msgid "  ➡️   = Espace(s) en FIN de chaîne\n"
 msgstr ""
 
-#: tools/extractor/report.py:73
+#: tools/extractor/report.py:93
 msgid "  ⬅️➡️ = Espaces des DEUX côtés\n"
 msgstr ""
 
-#: tools/extractor/report.py:74
+#: tools/extractor/report.py:94
 msgid "  🔚  = Suffixe détecté (\" - \", \" -\", \"...\")\n"
 msgstr ""
 
-#: tools/extractor/report.py:75
+#: tools/extractor/report.py:95
 msgid ""
 "  🔗  = Membre d'une chaîne concaténée\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:78
+#: tools/extractor/report.py:98
 msgid "STATISTIQUES\n"
 msgstr ""
 
-#: tools/extractor/report.py:80
+#: tools/extractor/report.py:100
 #, python-brace-format
 msgid "Fichiers analysés          : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:81
+#: tools/extractor/report.py:101
 #, python-brace-format
 msgid "Fichiers avec chaînes      : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:82
+#: tools/extractor/report.py:102
 #, python-brace-format
 msgid "Total chaînes trouvées     : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:83
+#: tools/extractor/report.py:103
 #, python-brace-format
 msgid "Clés uniques               : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:84
+#: tools/extractor/report.py:104
 #, python-brace-format
 msgid "Lignes de log ignorées     : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:85
+#: tools/extractor/report.py:105
 #, python-brace-format
 msgid "Chaînes techniques ignorées: {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:86
+#: tools/extractor/report.py:106
 #, python-brace-format
 msgid "Chaînes avec espaces       : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:87
+#: tools/extractor/report.py:107
 #, python-brace-format
 msgid "Chaînes avec suffixes      : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:88
+#: tools/extractor/report.py:108
 #, python-brace-format
 msgid "Lignes concaténées         : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:89
+#: tools/extractor/report.py:109
 #, python-brace-format
 msgid "Membres de concaténation   : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:93
+#: tools/extractor/report.py:113
 #, python-brace-format
 msgid ""
 "Clés LOC existantes        : {existing_loc_count} (déjà localisées, non "
@@ -1938,617 +1973,617 @@ msgid ""
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:96
+#: tools/extractor/report.py:116
 msgid "PATTERNS DÉTECTÉS\n"
 msgstr ""
 
-#: tools/extractor/report.py:106
+#: tools/extractor/report.py:126
 msgid ""
 "CLÉS LOC EXISTANTES (déjà localisées - incluses dans TranslatedStrings_xx."
 "txt)\n"
 msgstr ""
 
-#: tools/extractor/report.py:110
+#: tools/extractor/report.py:130
 #, python-brace-format
 msgid "     Clé    : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:111
+#: tools/extractor/report.py:131
 #, python-brace-format
 msgid ""
 "     Valeur : {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:117
+#: tools/extractor/report.py:137
 msgid ""
 "DÉTAIL PAR FICHIER (pour remplacement) → Ne pas tenir compte du champs "
 "\"REMPLACER\" si vide !\n"
 msgstr ""
 
-#: tools/extractor/report.py:125
+#: tools/extractor/report.py:145
 #, python-brace-format
 msgid "Fichier: {file_path}\n"
 msgstr ""
 
-#: tools/extractor/report.py:126
+#: tools/extractor/report.py:146
 #, python-brace-format
 msgid "Chaînes: {var0} ({unique_count} clés uniques)\n"
 msgstr ""
 
-#: tools/extractor/report.py:140
+#: tools/extractor/report.py:160
 #, python-brace-format
 msgid ""
 "  [Ligne {line_num}] Pattern: {var1} 🔗 CHAÎNE CONCATÉNÉE ({var2} membres)\n"
 msgstr ""
 
-#: tools/extractor/report.py:141
+#: tools/extractor/report.py:161
 #, python-brace-format
 msgid "  LIGNE    : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:146
+#: tools/extractor/report.py:166
 #, python-brace-format
 msgid ""
 "\n"
 "  MEMBRE {idx} : \"{original_text}\"{markers}\n"
 msgstr ""
 
-#: tools/extractor/report.py:147
+#: tools/extractor/report.py:169
 #, python-brace-format
 msgid "    BASE   : \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:148
+#: tools/extractor/report.py:170
 #, python-brace-format
 msgid "    CLÉ    : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:150
+#: tools/extractor/report.py:172
 #, python-brace-format
 msgid "    ESPACES: {var0} début, {var1} fin\n"
 msgstr ""
 
-#: tools/extractor/report.py:152
+#: tools/extractor/report.py:174
 #, python-brace-format
 msgid "    SUFFIXE: \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:159
+#: tools/extractor/report.py:181
 #, python-brace-format
 msgid "  [Ligne {line_num}] Pattern: {var1}{markers}\n"
 msgstr ""
 
-#: tools/extractor/report.py:160
+#: tools/extractor/report.py:182
 #, python-brace-format
 msgid "  CHERCHER : \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:161
+#: tools/extractor/report.py:184
 #, python-brace-format
 msgid "  BASE     : \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:162
+#: tools/extractor/report.py:185
 #, python-brace-format
 msgid "  CLÉ      : {var0}\n"
 msgstr ""
 
-#: tools/extractor/report.py:164
+#: tools/extractor/report.py:187
 #, python-brace-format
 msgid "  ESPACES  : {var0} début, {var1} fin\n"
 msgstr ""
 
-#: tools/extractor/report.py:166
+#: tools/extractor/report.py:189
 #, python-brace-format
 msgid "  SUFFIXE  : \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:167
+#: tools/extractor/report.py:191
 #, python-brace-format
 msgid ""
 "  REMPLACER: {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:172
+#: tools/extractor/report.py:196
 msgid "CHAÎNES AVEC ESPACES OU SUFFIXES\n"
 msgstr ""
 
-#: tools/extractor/report.py:174
+#: tools/extractor/report.py:198
 msgid ""
 "Ces chaînes nécessitent une réinjection des espaces/suffixes.\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:181
+#: tools/extractor/report.py:205
 #, python-brace-format
 msgid "     Original: \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:182
+#: tools/extractor/report.py:207
 #, python-brace-format
 msgid "     Base: \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:184
+#: tools/extractor/report.py:210
 #, python-brace-format
 msgid "     Espaces: {var0} début + {var1} fin\n"
 msgstr ""
 
-#: tools/extractor/report.py:186
+#: tools/extractor/report.py:212
 #, python-brace-format
 msgid "     Suffixe: \"{var0}\"\n"
 msgstr ""
 
-#: tools/extractor/report.py:187
+#: tools/extractor/report.py:213
 #, python-brace-format
 msgid ""
 "     Fichier: {var0}:{var1}\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:191
+#: tools/extractor/report.py:217
 msgid "LISTE DES CLÉS POUR TranslatedStrings_xx.txt\n"
 msgstr ""
 
-#: tools/extractor/report.py:200
+#: tools/extractor/report.py:226
 #, python-brace-format
 msgid ""
 "-- {var0} clés uniques\n"
 "\n"
 msgstr ""
 
-#: tools/extractor/report.py:209
+#: tools/extractor/report.py:235
 #, python-brace-format
 msgid "✓ Rapport               : {path}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:75
+#: tools/toolbox/delete_temp_dir.py:76
 msgid "octets"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:75
+#: tools/toolbox/delete_temp_dir.py:76
 msgid "Ko"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:75
+#: tools/toolbox/delete_temp_dir.py:76
 msgid "Mo"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:75
+#: tools/toolbox/delete_temp_dir.py:76
 msgid "Go"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:79
+#: tools/toolbox/delete_temp_dir.py:80
 msgid "To"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:167 tools/toolbox/restore_backup.py:280
+#: tools/toolbox/delete_temp_dir.py:151 tools/toolbox/restore_backup.py:250
 #, python-brace-format
 msgid "Plugin: {var0}{var1}{var2}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:168 tools/toolbox/restore_backup.py:281
+#: tools/toolbox/delete_temp_dir.py:152 tools/toolbox/restore_backup.py:251
 #, python-brace-format
 msgid "{var0}  Chemin: {normalized}{var2}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:172 tools/toolbox/restore_backup.py:285
+#: tools/toolbox/delete_temp_dir.py:156 tools/toolbox/restore_backup.py:255
 #, python-brace-format
 msgid "Plugin par défaut invalide: {warning}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:183
+#: tools/toolbox/delete_temp_dir.py:167
 msgid "Chemin du plugin: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:197
+#: tools/toolbox/delete_temp_dir.py:181
 msgid "            Êtes-vous sûr que c'est un plugin Lightroom?"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:198
+#: tools/toolbox/delete_temp_dir.py:182
 msgid "Continuer quand même? [o/N]: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:221
+#: tools/toolbox/delete_temp_dir.py:205
 msgid "Le dossier temporaire n'existe pas."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:222
+#: tools/toolbox/delete_temp_dir.py:206
 msgid "       Rien à supprimer."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:229
+#: tools/toolbox/delete_temp_dir.py:213
 msgid "CONTENU DU DOSSIER TEMPORAIRE"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:234
+#: tools/toolbox/delete_temp_dir.py:218
 #, python-brace-format
 msgid ""
 "  {var0}{var1:25}{var2} : {var3}{var4:4}{var5} fichiers, {var6}{var7}{var8}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:238
+#: tools/toolbox/delete_temp_dir.py:222
 #, python-brace-format
 msgid "{var0}TOTAL: {total_files} fichiers, {var2}{var3}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:258
+#: tools/toolbox/delete_temp_dir.py:242
 msgid "Que voulez-vous supprimer?"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:266
+#: tools/toolbox/delete_temp_dir.py:250
 #, python-brace-format
 msgid "  {var0}1{var1}. {var2}Supprimer UNIQUEMENT les backups{var3}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:267
+#: tools/toolbox/delete_temp_dir.py:251
 #, python-brace-format
 msgid ""
 "     {var0}{var1} session(s) de backup • {total_backup_files} fichiers • "
 "{var3}{var4}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:269
+#: tools/toolbox/delete_temp_dir.py:253
 #, python-brace-format
 msgid "  {var0}1. Supprimer UNIQUEMENT les backups (aucun backup trouvé){var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:274
+#: tools/toolbox/delete_temp_dir.py:258
 #, python-brace-format
 msgid "  {var0}2{var1}. {var2}Supprimer TOUT le dossier temporaire{var3}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:275
+#: tools/toolbox/delete_temp_dir.py:259
 #, python-brace-format
 msgid "     {var0}Tout le contenu • {total_files} fichiers • {var2}{var3}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:279 tools/toolbox/restore_backup.py:236
+#: tools/toolbox/delete_temp_dir.py:263 tools/toolbox/restore_backup.py:206
 #, python-brace-format
 msgid "  {var0}0{var1}. {var2}Annuler{var3}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:289
+#: tools/toolbox/delete_temp_dir.py:273
 msgid "Aucun backup à supprimer"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:296
+#: tools/toolbox/delete_temp_dir.py:280
 msgid "Choix invalide. Entrez 0, 1 ou 2"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:314
+#: tools/toolbox/delete_temp_dir.py:298
 #, python-brace-format
 msgid "{var0}{var1}!!! ATTENTION - OPÉRATION IRRÉVERSIBLE !!!{var2}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:319
+#: tools/toolbox/delete_temp_dir.py:303
 #, python-brace-format
 msgid "Cette opération va {var0}SUPPRIMER DÉFINITIVEMENT{var1}:"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:322
+#: tools/toolbox/delete_temp_dir.py:306
 #, python-brace-format
 msgid "{var0}Vous perdrez:{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:323
+#: tools/toolbox/delete_temp_dir.py:307
 msgid "  - Toutes les extractions précédentes"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:324
+#: tools/toolbox/delete_temp_dir.py:308
 msgid "  - Tous les fichiers de backup (.bak)"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:325
+#: tools/toolbox/delete_temp_dir.py:309
 msgid "  - Toutes les sorties des outils"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:329
+#: tools/toolbox/delete_temp_dir.py:313
 #, python-brace-format
 msgid "{var0}Étape 1/3: Confirmation initiale{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:330
+#: tools/toolbox/delete_temp_dir.py:314
 msgid "Voulez-vous vraiment supprimer ce dossier? [o/N]: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:332 tools/toolbox/delete_temp_dir.py:344
-#: tools/toolbox/delete_temp_dir.py:361
+#: tools/toolbox/delete_temp_dir.py:316 tools/toolbox/delete_temp_dir.py:328
+#: tools/toolbox/delete_temp_dir.py:345
 msgid "Suppression annulée."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:335
+#: tools/toolbox/delete_temp_dir.py:319
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Étape 2/3: Confirmation de sécurité{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:336
+#: tools/toolbox/delete_temp_dir.py:320
 #, python-brace-format
 msgid "Tapez '{var0}SUPPRIMER{var1}{var2}' pour confirmer: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:338
+#: tools/toolbox/delete_temp_dir.py:322
 msgid "Suppression annulée (mot de confirmation incorrect)."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:341
+#: tools/toolbox/delete_temp_dir.py:325
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Étape 3/3: Dernière chance{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:342
+#: tools/toolbox/delete_temp_dir.py:326
 msgid "Dernière confirmation - Êtes-vous ABSOLUMENT sûr? [o/N]: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:348
+#: tools/toolbox/delete_temp_dir.py:332
 #, python-brace-format
 msgid "Cette opération va {var0}SUPPRIMER{var1} les backups suivants:"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:355
+#: tools/toolbox/delete_temp_dir.py:339
 #, python-brace-format
 msgid "{var0}Les autres fichiers du dossier temporaire seront conservés.{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:359
+#: tools/toolbox/delete_temp_dir.py:343
 msgid "Confirmer la suppression des backups? [o/N]: "
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:384
+#: tools/toolbox/delete_temp_dir.py:368
 #, python-brace-format
 msgid "  {var0}Suppression:{var1} {var2}{name}{var4}..."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:386
+#: tools/toolbox/delete_temp_dir.py:370
 #, python-brace-format
 msgid "{var0}[OK]{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:389 tools/toolbox/delete_temp_dir.py:393
+#: tools/toolbox/delete_temp_dir.py:373 tools/toolbox/delete_temp_dir.py:377
 #, python-brace-format
 msgid "{var0}[ERREUR]{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:390
+#: tools/toolbox/delete_temp_dir.py:374
 #, python-brace-format
 msgid "    {var0}Permission refusée: {e}{var2}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:419
+#: tools/toolbox/delete_temp_dir.py:403
 #, python-brace-format
 msgid "NETTOYAGE DU DOSSIER TEMPORAIRE (v{version})"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:426 tools/toolbox/delete_temp_dir.py:442
+#: tools/toolbox/delete_temp_dir.py:410 tools/toolbox/delete_temp_dir.py:426
 msgid "Opération annulée."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:427 tools/toolbox/delete_temp_dir.py:434
-#: tools/toolbox/delete_temp_dir.py:443 tools/toolbox/delete_temp_dir.py:449
+#: tools/toolbox/delete_temp_dir.py:411 tools/toolbox/delete_temp_dir.py:418
+#: tools/toolbox/delete_temp_dir.py:427 tools/toolbox/delete_temp_dir.py:433
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Appuyez sur ENTRÉE pour quitter...{var1}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:455
+#: tools/toolbox/delete_temp_dir.py:439
 msgid "NETTOYAGE EN COURS"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:476
+#: tools/toolbox/delete_temp_dir.py:460
 #, python-brace-format
 msgid "{success_count} élément(s) supprimé(s) avec succès!"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:479
+#: tools/toolbox/delete_temp_dir.py:463
 msgid "Les autres fichiers du dossier temporaire ont été conservés."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:481
+#: tools/toolbox/delete_temp_dir.py:465
 #, python-brace-format
 msgid "{var0}Succès{var1}: {var2}{success_count}{var4}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:482
+#: tools/toolbox/delete_temp_dir.py:466
 #, python-brace-format
 msgid "{var0}Échecs{var1}: {var2}{failure_count}{var4}"
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:484
+#: tools/toolbox/delete_temp_dir.py:468
 msgid "Certains fichiers n'ont pas pu être supprimés."
 msgstr ""
 
-#: tools/toolbox/delete_temp_dir.py:485
+#: tools/toolbox/delete_temp_dir.py:469
 msgid "         Fermez tous les programmes qui utilisent ces fichiers."
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:157
+#: tools/toolbox/restore_backup.py:133
 #, python-brace-format
 msgid "  {var0}[OK]{var1} {rel_path}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:160 tools/toolbox/restore_backup.py:182
+#: tools/toolbox/restore_backup.py:136 tools/toolbox/restore_backup.py:158
 #, python-brace-format
 msgid "  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:179
+#: tools/toolbox/restore_backup.py:155
 #, python-brace-format
 msgid "  {var0}[OK]{var1} Supprimé: {rel_path}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:219
+#: tools/toolbox/restore_backup.py:189
 msgid "Sessions Applicator avec backups disponibles"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:230
+#: tools/toolbox/restore_backup.py:200
 #, python-brace-format
 msgid "{var0}[DERNIÈRE]{var1} "
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:234
+#: tools/toolbox/restore_backup.py:204
 #, python-brace-format
 msgid ""
 "  {var0}{i}{var2}. {marker}{var4}{formatted}{var6} {var7}({bak_count} "
 "fichier(s)){var9}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:244
+#: tools/toolbox/restore_backup.py:214
 #, python-brace-format
 msgid ""
 "{var0}Choisir une session [{var1}{default_choice}{var3}{var4} par défaut]"
 "{var5}: "
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:257
+#: tools/toolbox/restore_backup.py:227
 #, python-brace-format
 msgid "Choix invalide. Entrez un nombre entre 0 et {var0}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:259
+#: tools/toolbox/restore_backup.py:229
 msgid "Entrez un nombre valide"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:273
+#: tools/toolbox/restore_backup.py:243
 msgid "RESTAURATION DES FICHIERS .bak"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:294
+#: tools/toolbox/restore_backup.py:264
 #, python-brace-format
 msgid "{var0}Répertoire du plugin à restaurer:{var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:300
+#: tools/toolbox/restore_backup.py:270
 #, python-brace-format
 msgid "{var0}Chemin du plugin: {var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:303
+#: tools/toolbox/restore_backup.py:273
 msgid "Chemin obligatoire"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:318
+#: tools/toolbox/restore_backup.py:288
 #, python-brace-format
 msgid "{var0}Continuer quand même? [o/N]: {var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:326
+#: tools/toolbox/restore_backup.py:296
 #, python-brace-format
 msgid "Plugin: {var0}{normalized}{var2}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:337
+#: tools/toolbox/restore_backup.py:307
 #, python-brace-format
 msgid "{var0} session(s) Applicator trouvée(s) dans {var1}/"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:344
+#: tools/toolbox/restore_backup.py:314
 #, python-brace-format
 msgid "Session sélectionnée: {var0}{var1}{var2}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:347 tools/toolbox/restore_backup.py:432
+#: tools/toolbox/restore_backup.py:317 tools/toolbox/restore_backup.py:402
 msgid "Restauration annulée"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:350
+#: tools/toolbox/restore_backup.py:320
 #, python-brace-format
 msgid "Aucune session Applicator trouvée dans {var0}/"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:351
+#: tools/toolbox/restore_backup.py:321
 #, python-brace-format
 msgid ""
 "{var0}Recherche des backups legacy (.lua.bak à côté des fichiers)...{var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:382
+#: tools/toolbox/restore_backup.py:352
 #, python-brace-format
 msgid "Répertoire introuvable: {directory}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:389
+#: tools/toolbox/restore_backup.py:359
 #, python-brace-format
 msgid "Session Applicator trouvée: {var0}{var1}{var2}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:396
+#: tools/toolbox/restore_backup.py:366
 msgid "RECHERCHE DES FICHIERS .bak"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:398
+#: tools/toolbox/restore_backup.py:368
 #, python-brace-format
 msgid "{var0}Plugin{var1}: {var2}{directory}{var4}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:401
+#: tools/toolbox/restore_backup.py:371
 #, python-brace-format
 msgid "{var0}Source{var1}: {var2}{backup_dir}{var4}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:404
+#: tools/toolbox/restore_backup.py:374
 #, python-brace-format
 msgid "{var0}Source{var1}: {var2}Legacy (fichiers .bak à côté des .lua){var3}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:410
+#: tools/toolbox/restore_backup.py:380
 msgid "Aucun fichier .bak trouvé"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:412
+#: tools/toolbox/restore_backup.py:382
 msgid "Rien à restaurer"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:416
+#: tools/toolbox/restore_backup.py:386
 #, python-brace-format
 msgid "Fichiers trouvés: {var0}{var1}{var2}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:422
+#: tools/toolbox/restore_backup.py:392
 #, python-brace-format
 msgid "{var0}[REMPLACER]{var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:424
+#: tools/toolbox/restore_backup.py:394
 #, python-brace-format
 msgid "{var0}[NOUVEAU]{var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:429
+#: tools/toolbox/restore_backup.py:399
 #, python-brace-format
 msgid "{var0}Restaurer ces {var1} fichier(s) ? [o/N]: {var2}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:438
+#: tools/toolbox/restore_backup.py:408
 msgid "RESTAURATION"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:447
+#: tools/toolbox/restore_backup.py:417
 #, python-brace-format
 msgid "{var0}Supprimer les fichiers .bak ? [o/N]: {var1}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:451
+#: tools/toolbox/restore_backup.py:421
 msgid "Suppression des .bak"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:455
+#: tools/toolbox/restore_backup.py:425
 #, python-brace-format
 msgid "{deleted} fichier(s) .bak supprimé(s)"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:463
+#: tools/toolbox/restore_backup.py:433
 #, python-brace-format
 msgid "{var0}Fichiers restaurés{var1}: {var2}{restored}{var4}"
 msgstr ""
 
-#: tools/toolbox/restore_backup.py:466
+#: tools/toolbox/restore_backup.py:436
 msgid "Terminé!"
 msgstr ""
 
@@ -2707,7 +2742,7 @@ msgid ""
 "{var0}  ADD LANGUAGE - Ajouter une langue au plugin{var1}"
 msgstr ""
 
-#: tools/translator/addlang.py:405 tools/translator/autosync.py:144
+#: tools/translator/addlang.py:405 tools/translator/autosync.py:147
 #: tools/translator/install.py:134
 msgid "Plugin non configuré ou introuvable."
 msgstr ""
@@ -2923,355 +2958,360 @@ msgstr ""
 msgid "Mode invalide: {mode}"
 msgstr ""
 
-#: tools/translator/autosync.py:139
+#: tools/translator/autosync.py:142
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}  AUTO-SYNC - Orchestration complète{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:151
+#: tools/translator/autosync.py:154
 msgid "Aucun fichier TranslatedStrings_xx.txt trouvé dans le plugin."
 msgstr ""
 
-#: tools/translator/autosync.py:153
+#: tools/translator/autosync.py:156
 #, python-brace-format
 msgid "{var0}Première installation ?{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:154 tools/translator/autosync.py:375
+#: tools/translator/autosync.py:157 tools/translator/autosync.py:412
 msgid ""
 "  → Utilisez la commande INSTALL pour installer les fichiers depuis "
 "l'extraction"
 msgstr ""
 
-#: tools/translator/autosync.py:157
+#: tools/translator/autosync.py:160
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Fichiers de traduction détectés:"
 msgstr ""
 
-#: tools/translator/autosync.py:163
+#: tools/translator/autosync.py:166
 #, python-brace-format
 msgid "{var0}Workflow:{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:164
+#: tools/translator/autosync.py:167
 #, python-brace-format
 msgid "  1. {var0}EXTRACTOR{var1}  → extrait clés depuis code Lua"
 msgstr ""
 
-#: tools/translator/autosync.py:165
+#: tools/translator/autosync.py:168
 #, python-brace-format
 msgid "  2. {var0}APPLICATOR{var1} → applique les remplacements dans le code"
 msgstr ""
 
-#: tools/translator/autosync.py:166
+#: tools/translator/autosync.py:169
 #, python-brace-format
 msgid "  3. {var0}COMPARE{var1}    → génère "
 msgstr ""
 
-#: tools/translator/autosync.py:167
+#: tools/translator/autosync.py:170
 #, python-brace-format
 msgid "  4. {var0}EXTRACT{var1}    → génère fichiers TRANSLATE_xx.txt"
 msgstr ""
 
-#: tools/translator/autosync.py:168
+#: tools/translator/autosync.py:171
 #, python-brace-format
 msgid "  5. {var0}INJECT{var1}     → applique les traductions complétées"
 msgstr ""
 
-#: tools/translator/autosync.py:169
+#: tools/translator/autosync.py:172
 #, python-brace-format
 msgid "  6. {var0}SYNC{var1}       → synchronise avec la référence EN"
 msgstr ""
 
-#: tools/translator/autosync.py:173
+#: tools/translator/autosync.py:176
 #, python-brace-format
 msgid "{var0}Lancer le workflow complet? (O/n): {var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:176
+#: tools/translator/autosync.py:179
 msgid "Workflow annulé"
 msgstr ""
 
-#: tools/translator/autosync.py:182
+#: tools/translator/autosync.py:185
 #, python-brace-format
 msgid "{var0}Exécution du workflow...{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:197
+#: tools/translator/autosync.py:200
 #, python-brace-format
 msgid "Applicator a échoué : {details}"
 msgstr ""
 
-#: tools/translator/autosync.py:232 tools/translator/install.py:220
+#: tools/translator/autosync.py:263 tools/translator/install.py:220
 msgid "Chemin du plugin invalide"
 msgstr ""
 
-#: tools/translator/autosync.py:260
+#: tools/translator/autosync.py:293
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 1/6 | EXTRACTOR]{var1} Extraction des clés depuis le code Lua"
 msgstr ""
 
-#: tools/translator/autosync.py:261
+#: tools/translator/autosync.py:294
 #, python-brace-format
 msgid "{var0}  → Extraction fraîche pour comparer AVANT vs MAINTENANT{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:279
+#: tools/translator/autosync.py:312
 msgid "Extraction échouée - aucun répertoire généré"
 msgstr ""
 
-#: tools/translator/autosync.py:283
+#: tools/translator/autosync.py:316
 #, python-brace-format
 msgid "{filename} non généré par Extractor"
 msgstr ""
 
-#: tools/translator/autosync.py:291
+#: tools/translator/autosync.py:324
 #, python-brace-format
 msgid "{var0}  Détails  : {var1}{plugin_name}/{rel_path}{var4}"
 msgstr ""
 
-#: tools/translator/autosync.py:294 tools/translator/autosync.py:356
-#: tools/translator/autosync.py:420
+#: tools/translator/autosync.py:327 tools/translator/autosync.py:393
+#: tools/translator/autosync.py:457
 #, python-brace-format
 msgid "ERREUR: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:295
+#: tools/translator/autosync.py:328
 #, python-brace-format
 msgid "Extractor: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:301
+#: tools/translator/autosync.py:334
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 2/6 | APPLICATOR]{var1} Application des remplacements LOC"
 msgstr ""
 
-#: tools/translator/autosync.py:302
+#: tools/translator/autosync.py:335
 #, python-brace-format
 msgid "{var0}  → Remplacement des chaînes hardcodées par les clés LOC{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:322
+#: tools/translator/autosync.py:355
 #, python-brace-format
 msgid ""
 "{var0}  Lignes à modifier : {var1}{lines}{var2} dans {files} fichier(s){var3}"
 msgstr ""
 
-#: tools/translator/autosync.py:327
+#: tools/translator/autosync.py:360
 #, python-brace-format
 msgid "{var0}  Appliquer ces modifications au code Lua ? [o/N] : {var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:334 tools/translator/autosync.py:335
+#: tools/translator/autosync.py:367 tools/translator/autosync.py:368
 msgid "Annulé par l'utilisateur"
 msgstr ""
 
-#: tools/translator/autosync.py:353
+#: tools/translator/autosync.py:371
+#, python-brace-format
+msgid "{var0}  Session temporaire supprimée : {var1}{path}{var2}"
+msgstr ""
+
+#: tools/translator/autosync.py:390
 #, python-brace-format
 msgid "{var0}  Remplacements appliqués au code source{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:357
+#: tools/translator/autosync.py:394
 #, python-brace-format
 msgid "Applicator: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:363
+#: tools/translator/autosync.py:400
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 3/6 | COMPARE]{var1} Comparaison ANCIEN vs NOUVEAU"
 msgstr ""
 
-#: tools/translator/autosync.py:374
+#: tools/translator/autosync.py:411
 #, python-brace-format
 msgid "  {var0}Première installation - ancien EN non trouvé{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:405
+#: tools/translator/autosync.py:442
 #, python-brace-format
 msgid "{var0}  Ancien      : {var1}{old_short}{var3}"
 msgstr ""
 
-#: tools/translator/autosync.py:406
+#: tools/translator/autosync.py:443
 #, python-brace-format
 msgid "{var0}  Nouveau     : {var1}{plugin_name}/{new_rel}{var4}"
 msgstr ""
 
-#: tools/translator/autosync.py:410
+#: tools/translator/autosync.py:447
 #, python-brace-format
 msgid ""
 "{var0}  Changements : {var1}{added} ajoutées{var3}, {var4}{changed} "
 "modifiées{var5}, {var6}{deleted} supprimées{var7}"
 msgstr ""
 
-#: tools/translator/autosync.py:417
+#: tools/translator/autosync.py:454
 #, python-brace-format
 msgid "{var0}  Détails     : {var1}{plugin_name}/{rel_compare}{var4}"
 msgstr ""
 
-#: tools/translator/autosync.py:421
+#: tools/translator/autosync.py:458
 #, python-brace-format
 msgid "Compare: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:427
+#: tools/translator/autosync.py:464
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 4/6 | EXTRACT]{var1} Extraction des clés modifiées"
 msgstr ""
 
-#: tools/translator/autosync.py:428
+#: tools/translator/autosync.py:465
 #, python-brace-format
 msgid "{var0}  → Sélection uniquement des changements détectés{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:441
+#: tools/translator/autosync.py:478
 msgid "Aucune langue trouvée dans le plugin"
 msgstr ""
 
-#: tools/translator/autosync.py:442
+#: tools/translator/autosync.py:479
 msgid "Aucun fichier de traduction trouvé"
 msgstr ""
 
-#: tools/translator/autosync.py:459 tools/translator/autosync.py:500
+#: tools/translator/autosync.py:496 tools/translator/autosync.py:537
 #, python-brace-format
 msgid "  ERREUR {lang_code}: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:460
+#: tools/translator/autosync.py:497
 #, python-brace-format
 msgid "Extract {lang_code}: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:465
+#: tools/translator/autosync.py:502
 #, python-brace-format
 msgid "{var0}  Détails     : {var1}{plugin_name}/{rel_extract}{var4}"
 msgstr ""
 
-#: tools/translator/autosync.py:468
+#: tools/translator/autosync.py:505
 #, python-brace-format
 msgid "Erreur extraction: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:469
+#: tools/translator/autosync.py:506
 #, python-brace-format
 msgid "Extract: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:475
+#: tools/translator/autosync.py:512
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 5/6 | INJECT]{var1} Injection des traductions"
 msgstr ""
 
-#: tools/translator/autosync.py:476
+#: tools/translator/autosync.py:513
 #, python-brace-format
 msgid "{var0}  → Mise à jour des fichiers de traduction{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:501
+#: tools/translator/autosync.py:538
 #, python-brace-format
 msgid "Inject {lang_code}: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:504
+#: tools/translator/autosync.py:541
 #, python-brace-format
 msgid "{var0}  {var1}{total_injected}{var3} traduction(s) injectée(s)"
 msgstr ""
 
-#: tools/translator/autosync.py:506
+#: tools/translator/autosync.py:543
 #, python-brace-format
 msgid "{var0}  Aucune nouvelle traduction à injecter{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:508
+#: tools/translator/autosync.py:545
 #, python-brace-format
 msgid "{var0}  Aucune modification détectée{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:513
+#: tools/translator/autosync.py:550
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Étape 6/6 | SYNC]{var1} Synchronisation finale"
 msgstr ""
 
-#: tools/translator/autosync.py:514
+#: tools/translator/autosync.py:551
 #, python-brace-format
 msgid "{var0}  → Alignement avec la référence EN (sans marqueurs){var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:538
+#: tools/translator/autosync.py:575
 #, python-brace-format
 msgid ""
 "{var0}  {lang_code}: {var2}{added}{var4} ajoutées, {var5}{modified}{var6} "
 "modifiées, {var7}{removed}{var8} supprimées"
 msgstr ""
 
-#: tools/translator/autosync.py:551
+#: tools/translator/autosync.py:588
 #, python-brace-format
 msgid "{var0}  Détails     : {var1}{plugin_name}/{rel_changelog}{var4}"
 msgstr ""
 
-#: tools/translator/autosync.py:554
+#: tools/translator/autosync.py:591
 #, python-brace-format
 msgid "Erreur sync: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:555
+#: tools/translator/autosync.py:592
 #, python-brace-format
 msgid "Sync: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:561
+#: tools/translator/autosync.py:598
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[Finalisation]{var1} Mise à jour du fichier EN"
 msgstr ""
 
-#: tools/translator/autosync.py:572
+#: tools/translator/autosync.py:609
 #, python-brace-format
 msgid "{var0}  Backup      : {var1}{plugin_name}/{rel_backup}/{var4}{var5}"
 msgstr ""
 
-#: tools/translator/autosync.py:576
+#: tools/translator/autosync.py:613
 #, python-brace-format
 msgid "{var0}  {filename} → mis à jour{var1}"
 msgstr ""
 
-#: tools/translator/autosync.py:579
+#: tools/translator/autosync.py:616
 #, python-brace-format
 msgid "ERREUR copie EN: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:580
+#: tools/translator/autosync.py:617
 #, python-brace-format
 msgid "Copy EN: {e}"
 msgstr ""
 
-#: tools/translator/autosync.py:592
+#: tools/translator/autosync.py:629
 #, python-brace-format
 msgid "{var0}[ERREUR]{var1} Workflow interrompu"
 msgstr ""
 
-#: tools/translator/autosync.py:596
+#: tools/translator/autosync.py:633
 #, python-brace-format
 msgid "{var0}[OK]{var1} Workflow complet sans erreur"
 msgstr ""
 
-#: tools/translator/autosync.py:600
+#: tools/translator/autosync.py:637
 #, python-brace-format
 msgid ""
 "\n"
@@ -3279,22 +3319,22 @@ msgid ""
 "jour.{var1}"
 msgstr ""
 
-#: tools/translator/common.py:536
+#: tools/translator/common.py:537
 #, python-brace-format
 msgid "{ref_filename} non trouvé dans: {path}"
 msgstr ""
 
-#: tools/translator/common.py:538
+#: tools/translator/common.py:539
 #, python-brace-format
 msgid "Chemin invalide: {path}"
 msgstr ""
 
-#: tools/translator/common.py:595
+#: tools/translator/common.py:591
 #, python-brace-format
 msgid "  TRANSLATION MANAGER v{version}"
 msgstr ""
 
-#: tools/translator/common.py:596
+#: tools/translator/common.py:592
 msgid "  Gestionnaire de traductions multilingues"
 msgstr ""
 
@@ -3303,243 +3343,246 @@ msgstr ""
 msgid "Dossier de sortie temporaire : {path}"
 msgstr ""
 
-#: tools/translator/compare.py:171
-msgid "CHANGELOG - Modifications des traductions EN\n"
+#: tools/translator/compare.py:172
+#, python-brace-format
+msgid "CHANGELOG - Modifications des traductions {lang}\n"
 msgstr ""
 
-#: tools/translator/compare.py:175
+#: tools/translator/compare.py:176
 #, python-brace-format
 msgid "Ancien: {old_file}\n"
 msgstr ""
 
-#: tools/translator/compare.py:176
+#: tools/translator/compare.py:177
 #, python-brace-format
 msgid ""
 "Nouveau: {new_file}\n"
 "\n"
 msgstr ""
 
-#: tools/translator/compare.py:179
+#: tools/translator/compare.py:180
 msgid "RÉSUMÉ\n"
-msgstr ""
-
-#: tools/translator/compare.py:181
-#, python-brace-format
-msgid "  Clés ajoutées    : {var0:4d}  [NEW]\n"
 msgstr ""
 
 #: tools/translator/compare.py:182
 #, python-brace-format
-msgid "  Clés modifiées   : {var0:4d}  [CHANGED]\n"
+msgid "  Clés ajoutées    : {var0:4d}  [NEW]\n"
 msgstr ""
 
 #: tools/translator/compare.py:183
 #, python-brace-format
-msgid "  Clés supprimées  : {var0:4d}  [DELETED]\n"
+msgid "  Clés modifiées   : {var0:4d}  [CHANGED]\n"
 msgstr ""
 
 #: tools/translator/compare.py:184
 #, python-brace-format
+msgid "  Clés supprimées  : {var0:4d}  [DELETED]\n"
+msgstr ""
+
+#: tools/translator/compare.py:185
+#, python-brace-format
 msgid "  Clés inchangées  : {var0:4d}\n"
 msgstr ""
 
-#: tools/translator/compare.py:189
+#: tools/translator/compare.py:190
 #, python-brace-format
 msgid "CLÉS AJOUTÉES ({var0})\n"
 msgstr ""
 
-#: tools/translator/compare.py:190
+#: tools/translator/compare.py:191
 msgid "Ces clés doivent être traduites dans toutes les langues.\n"
-msgstr ""
-
-#: tools/translator/compare.py:194
-#, python-brace-format
-msgid "  [NEW] {key}\n"
 msgstr ""
 
 #: tools/translator/compare.py:195
 #, python-brace-format
+msgid "  [NEW] {key}\n"
+msgstr ""
+
+#: tools/translator/compare.py:196
+#, python-brace-format
 msgid ""
-"        EN: {value}\n"
+"        {lang}: {value}\n"
 "\n"
 msgstr ""
 
-#: tools/translator/compare.py:199
+#: tools/translator/compare.py:200
 #, python-brace-format
 msgid "CLÉS MODIFIÉES ({var0})\n"
 msgstr ""
 
-#: tools/translator/compare.py:200
-msgid "Le texte anglais a changé. Les traductions doivent être révisées.\n"
-msgstr ""
-
-#: tools/translator/compare.py:204
+#: tools/translator/compare.py:201
 #, python-brace-format
-msgid "  [CHANGED] {key}\n"
+msgid "Le texte {lang} a changé. Les traductions doivent être révisées.\n"
 msgstr ""
 
 #: tools/translator/compare.py:205
 #, python-brace-format
-msgid "        AVANT: {var0}\n"
+msgid "  [CHANGED] {key}\n"
 msgstr ""
 
 #: tools/translator/compare.py:206
+#, python-brace-format
+msgid "        AVANT: {var0}\n"
+msgstr ""
+
+#: tools/translator/compare.py:207
 #, python-brace-format
 msgid ""
 "        APRÈS: {var0}\n"
 "\n"
 msgstr ""
 
-#: tools/translator/compare.py:210
+#: tools/translator/compare.py:211
 #, python-brace-format
 msgid "CLÉS SUPPRIMÉES ({var0})\n"
 msgstr ""
 
-#: tools/translator/compare.py:211
+#: tools/translator/compare.py:212
 msgid "Ces clés n'existent plus et seront retirées des traductions.\n"
 msgstr ""
 
-#: tools/translator/compare.py:214
+#: tools/translator/compare.py:215
 #, python-brace-format
 msgid "  [DELETED] {key}\n"
 msgstr ""
 
-#: tools/translator/compare.py:217
+#: tools/translator/compare.py:218
 msgid "PROCHAINE ÉTAPE\n"
 msgstr ""
 
-#: tools/translator/compare.py:219
+#: tools/translator/compare.py:220
 msgid "Lancez EXTRACT puis INJECT, ou directement SYNC:\n"
 msgstr ""
 
-#: tools/translator/compare.py:239
+#: tools/translator/compare.py:240
 #, python-brace-format
 msgid ""
 "\n"
-"{var0}COMPARE{var1}: Comparer deux versions EN"
+"{var0}COMPARE{var1}: Comparer deux versions {lang}"
 msgstr ""
 
-#: tools/translator/compare.py:242
+#: tools/translator/compare.py:243
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Fichier ANCIEN{var1} ({var2} ou répertoire):"
 msgstr ""
 
-#: tools/translator/compare.py:245 tools/translator/compare.py:252
+#: tools/translator/compare.py:246 tools/translator/compare.py:253
 #: tools/translator/compare_langs.py:491 tools/translator/compare_langs.py:498
-#: tools/translator/inject.py:288 tools/translator/sync.py:316
+#: tools/translator/inject.py:291 tools/translator/sync.py:322
 msgid "Chemin requis."
 msgstr ""
 
-#: tools/translator/compare.py:246 tools/translator/compare.py:253
+#: tools/translator/compare.py:247 tools/translator/compare.py:254
 #: tools/translator/compare_langs.py:428 tools/translator/compare_langs.py:456
 #: tools/translator/compare_langs.py:463 tools/translator/compare_langs.py:473
 #: tools/translator/compare_langs.py:480 tools/translator/compare_langs.py:492
 #: tools/translator/compare_langs.py:499 tools/translator/compare_langs.py:504
 #: tools/translator/compare_langs.py:575 tools/translator/compare_langs.py:580
-#: tools/translator/extract.py:215 tools/translator/extract.py:222
-#: tools/translator/inject.py:282 tools/translator/inject.py:289
-#: tools/translator/inject.py:322 tools/translator/inject.py:329
-#: tools/translator/inject.py:364 tools/translator/sync.py:310
-#: tools/translator/sync.py:317
+#: tools/translator/extract.py:198 tools/translator/extract.py:217
+#: tools/translator/extract.py:224 tools/translator/inject.py:285
+#: tools/translator/inject.py:292 tools/translator/inject.py:326
+#: tools/translator/inject.py:333 tools/translator/inject.py:370
+#: tools/translator/sync.py:300 tools/translator/sync.py:316
+#: tools/translator/sync.py:323
 msgid ""
 "\n"
 "Appuyez sur Entrée..."
 msgstr ""
 
-#: tools/translator/compare.py:249
+#: tools/translator/compare.py:250
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Fichier NOUVEAU{var1} ({var2} ou répertoire):"
 msgstr ""
 
-#: tools/translator/compare.py:257 tools/translator/compare_langs.py:509
+#: tools/translator/compare.py:258 tools/translator/compare_langs.py:509
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Comparaison en cours..."
 msgstr ""
 
-#: tools/translator/compare.py:273
+#: tools/translator/compare.py:274
 #, python-brace-format
 msgid "{var0}  RÉSUMÉ{var1}"
-msgstr ""
-
-#: tools/translator/compare.py:275
-#, python-brace-format
-msgid ""
-"  {var0}Clés ajoutées   {var1}: {var2}{var3:4d}{var4}  {var5}[NEW]{var6}"
 msgstr ""
 
 #: tools/translator/compare.py:276
 #, python-brace-format
 msgid ""
-"  {var0}Clés modifiées  {var1}: {var2}{var3:4d}{var4}  {var5}[CHANGED]{var6}"
+"  {var0}Clés ajoutées   {var1}: {var2}{var3:4d}{var4}  {var5}[NEW]{var6}"
 msgstr ""
 
 #: tools/translator/compare.py:277
 #, python-brace-format
 msgid ""
-"  {var0}Clés supprimées {var1}: {var2}{var3:4d}{var4}  {var5}[DELETED]{var6}"
+"  {var0}Clés modifiées  {var1}: {var2}{var3:4d}{var4}  {var5}[CHANGED]{var6}"
 msgstr ""
 
 #: tools/translator/compare.py:278
 #, python-brace-format
+msgid ""
+"  {var0}Clés supprimées {var1}: {var2}{var3:4d}{var4}  {var5}[DELETED]{var6}"
+msgstr ""
+
+#: tools/translator/compare.py:279
+#, python-brace-format
 msgid "  {var0}Clés inchangées {var1}: {var2}{var3:4d}{var4}"
 msgstr ""
 
-#: tools/translator/compare.py:280 tools/translator/main.py:376
+#: tools/translator/compare.py:281 tools/translator/main.py:376
 #, python-brace-format
 msgid "Fichiers générés dans: {var0}{output_dir}{var2}"
 msgstr ""
 
-#: tools/translator/compare.py:281 tools/translator/compare.py:283
+#: tools/translator/compare.py:282 tools/translator/compare.py:284
 #, python-brace-format
 msgid "    {var0}• {var2}{var1}"
 msgstr ""
 
-#: tools/translator/compare.py:282
+#: tools/translator/compare.py:283
 #, python-brace-format
 msgid "    {var0}• CHANGELOG.txt{var1}"
 msgstr ""
 
-#: tools/translator/compare.py:287 tools/translator/extract.py:254
-#: tools/translator/sync.py:336
+#: tools/translator/compare.py:288 tools/translator/extract.py:256
+#: tools/translator/sync.py:344
 #, python-brace-format
 msgid "{var0}[INFO]{var1} PROCHAINE ÉTAPE:"
 msgstr ""
 
-#: tools/translator/compare.py:288
+#: tools/translator/compare.py:289
 #, python-brace-format
 msgid "  {var0}• EXTRACT pour générer les fichiers de traduction{var1}"
 msgstr ""
 
-#: tools/translator/compare.py:289
+#: tools/translator/compare.py:290
 #, python-brace-format
-msgid "  {var0}• ou SYNC directement pour utiliser EN par défaut{var1}"
+msgid "  {var0}• ou SYNC directement pour utiliser {lang} par défaut{var1}"
 msgstr ""
 
-#: tools/translator/compare.py:294 tools/translator/compare_langs.py:574
-#: tools/translator/sync.py:343
+#: tools/translator/compare.py:295 tools/translator/compare_langs.py:574
+#: tools/translator/sync.py:351
 #, python-brace-format
 msgid "Fichier non trouvé: {e}"
 msgstr ""
 
-#: tools/translator/compare.py:296 tools/translator/compare_langs.py:577
-#: tools/translator/extract.py:264 tools/translator/inject.py:315
-#: tools/translator/inject.py:360 tools/translator/main.py:379
+#: tools/translator/compare.py:297 tools/translator/compare_langs.py:577
+#: tools/translator/extract.py:266 tools/translator/inject.py:319
+#: tools/translator/inject.py:366 tools/translator/main.py:379
 #: tools/translator/main.py:460 tools/translator/main.py:494
 #: tools/translator/main.py:527 tools/translator/main.py:554
-#: tools/translator/sync.py:345
+#: tools/translator/sync.py:353
 #, python-brace-format
 msgid "Erreur: {e}"
 msgstr ""
 
-#: tools/translator/compare.py:298 tools/translator/compare_langs.py:570
-#: tools/translator/extract.py:266 tools/translator/inject.py:367
-#: tools/translator/sync.py:347
+#: tools/translator/compare.py:299 tools/translator/compare_langs.py:570
+#: tools/translator/extract.py:268 tools/translator/inject.py:373
+#: tools/translator/sync.py:355
 msgid ""
 "\n"
 "Appuyez sur Entrée pour continuer..."
@@ -3900,7 +3943,7 @@ msgid "Mode de comparaison (1-2, défaut=1): "
 msgstr ""
 
 #: tools/translator/compare_langs.py:427 tools/translator/compare_langs.py:503
-#: tools/translator/inject.py:363
+#: tools/translator/inject.py:369
 msgid "Choix invalide."
 msgstr ""
 
@@ -3945,9 +3988,9 @@ msgid ""
 "saisissez un autre chemin{var1}"
 msgstr ""
 
-#: tools/translator/compare_langs.py:455 tools/translator/extract.py:214
-#: tools/translator/inject.py:321 tools/translator/inject.py:328
-#: tools/translator/sync.py:309
+#: tools/translator/compare_langs.py:455 tools/translator/extract.py:216
+#: tools/translator/inject.py:325 tools/translator/inject.py:332
+#: tools/translator/sync.py:315
 msgid "Répertoire invalide."
 msgstr ""
 
@@ -4196,112 +4239,116 @@ msgid ""
 "{var0}EXTRACT{var1}: Générer fichiers de traduction"
 msgstr ""
 
-#: tools/translator/extract.py:204 tools/translator/sync.py:300
+#: tools/translator/extract.py:197 tools/translator/sync.py:299
+msgid "Sélection annulée, retour au menu."
+msgstr ""
+
+#: tools/translator/extract.py:206 tools/translator/sync.py:306
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}"
 msgstr ""
 
-#: tools/translator/extract.py:206 tools/translator/sync.py:302
+#: tools/translator/extract.py:208 tools/translator/sync.py:308
 msgid "Aucun dossier Translator sélectionné"
 msgstr ""
 
-#: tools/translator/extract.py:207
+#: tools/translator/extract.py:209
 msgid "Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement"
 msgstr ""
 
-#: tools/translator/extract.py:211 tools/translator/sync.py:306
+#: tools/translator/extract.py:213 tools/translator/sync.py:312
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Dossier UPDATE{var1} (contenant {update_filename}):"
 msgstr ""
 
-#: tools/translator/extract.py:221
+#: tools/translator/extract.py:223
 #, python-brace-format
 msgid "{update_filename} non trouvé."
 msgstr ""
 
-#: tools/translator/extract.py:225
+#: tools/translator/extract.py:227
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Répertoire des traductions existantes{var1} (Locales):"
 msgstr ""
 
-#: tools/translator/extract.py:226
+#: tools/translator/extract.py:228
 #, python-brace-format
 msgid ""
 "{var0}  (Pour récupérer les traductions actuelles des clés modifiées){var1}"
 msgstr ""
 
-#: tools/translator/extract.py:227
+#: tools/translator/extract.py:229
 #, python-brace-format
 msgid "{var0}  (Entrée pour ignorer){var1}"
 msgstr ""
 
-#: tools/translator/extract.py:230
+#: tools/translator/extract.py:232
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Langue(s) à générer{var1}:"
 msgstr ""
 
-#: tools/translator/extract.py:231
+#: tools/translator/extract.py:233
 #, python-brace-format
 msgid "{var0}  • Entrée = toutes les langues trouvées dans Locales{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:232
+#: tools/translator/extract.py:234
 #, python-brace-format
 msgid "{var0}  • Ou spécifier: fr, de, es...{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:236
+#: tools/translator/extract.py:238
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Génération en cours..."
 msgstr ""
 
-#: tools/translator/extract.py:249
+#: tools/translator/extract.py:251
 #, python-brace-format
 msgid "{var0}  FICHIERS GÉNÉRÉS{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:252
+#: tools/translator/extract.py:254
 #, python-brace-format
 msgid "  {var0}[OK]{var1} {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/extract.py:255
+#: tools/translator/extract.py:257
 #, python-brace-format
 msgid "  {var0}1. Éditez les fichiers et remplissez après chaque →{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:256
+#: tools/translator/extract.py:258
 #, python-brace-format
 msgid "  {var0}2. Lancez INJECT pour réinjecter les traductions{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:257
+#: tools/translator/extract.py:259
 #, python-brace-format
 msgid "  {var0}3. Lancez SYNC pour finaliser{var1}"
 msgstr ""
 
-#: tools/translator/extract.py:261
+#: tools/translator/extract.py:263
 msgid "Aucun fichier généré"
 msgstr ""
 
-#: tools/translator/inject.py:268
+#: tools/translator/inject.py:271
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}INJECT{var1}: Réinjecter les traductions"
 msgstr ""
 
-#: tools/translator/inject.py:270
+#: tools/translator/inject.py:273
 #, python-brace-format
 msgid ""
 "\n"
@@ -4309,134 +4356,129 @@ msgid ""
 "EN"
 msgstr ""
 
-#: tools/translator/inject.py:272
+#: tools/translator/inject.py:275
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Mode{var1}:"
 msgstr ""
 
-#: tools/translator/inject.py:273
+#: tools/translator/inject.py:276
 #, python-brace-format
 msgid "  {var0}1{var1}. Injecter un fichier TRANSLATE_xx.txt spécifique"
 msgstr ""
 
-#: tools/translator/inject.py:274
+#: tools/translator/inject.py:277
 #, python-brace-format
 msgid ""
 "  {var0}2{var1}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier"
-msgstr ""
-
-#: tools/translator/inject.py:275
-#, python-brace-format
-msgid ""
-"\n"
-"{var0}  Choix (1-2): {var1}"
 msgstr ""
 
 #: tools/translator/inject.py:278
 #, python-brace-format
 msgid ""
 "\n"
-"{var0}Fichier TRANSLATE_xx.txt{var1}:"
+"{var0}  Choix (1-2): {var1}"
 msgstr ""
 
 #: tools/translator/inject.py:281
+#, python-brace-format
+msgid ""
+"\n"
+"{var0}Fichier TRANSLATE_xx.txt{var1}:"
+msgstr ""
+
+#: tools/translator/inject.py:284
 msgid "Fichier invalide."
 msgstr ""
 
-#: tools/translator/inject.py:285
+#: tools/translator/inject.py:288
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Fichier cible TranslatedStrings_xx.txt{var1}:"
 msgstr ""
 
-#: tools/translator/inject.py:292 tools/translator/inject.py:332
+#: tools/translator/inject.py:295 tools/translator/inject.py:336
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Dossier UPDATE{var1} (contenant UPDATE_xx.json):"
 msgstr ""
 
-#: tools/translator/inject.py:293 tools/translator/inject.py:333
+#: tools/translator/inject.py:296 tools/translator/inject.py:337
 #, python-brace-format
 msgid "{var0}  (Entrée = même dossier que TRANSLATE){var1}"
 msgstr ""
 
-#: tools/translator/inject.py:297 tools/translator/inject.py:337
+#: tools/translator/inject.py:300 tools/translator/inject.py:341
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Injection en cours..."
 msgstr ""
 
-#: tools/translator/inject.py:302 tools/translator/inject.py:343
+#: tools/translator/inject.py:306 tools/translator/inject.py:348
 #, python-brace-format
 msgid "{var0}  RÉSULTAT{var1}"
 msgstr ""
 
-#: tools/translator/inject.py:304
+#: tools/translator/inject.py:308
 #, python-brace-format
 msgid "  {var0}Traductions injectées  {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/inject.py:305
+#: tools/translator/inject.py:309
 #, python-brace-format
 msgid "  {var0}Valeurs EN par défaut  {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/inject.py:306
+#: tools/translator/inject.py:310
 #, python-brace-format
 msgid "  {var0}Entrées ignorées       {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/inject.py:307
+#: tools/translator/inject.py:311
 #, python-brace-format
 msgid "  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/inject.py:309
+#: tools/translator/inject.py:313
 #, python-brace-format
 msgid "Fichier mis à jour: {var0}{target_file}{var2}"
 msgstr ""
 
-#: tools/translator/inject.py:310
-#, python-brace-format
-msgid "{var0}  (Backup .bak créé dans backups/){var1}"
-msgstr ""
-
-#: tools/translator/inject.py:318
+#: tools/translator/inject.py:322
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Dossier contenant les fichiers TRANSLATE_*.txt{var1}:"
 msgstr ""
 
-#: tools/translator/inject.py:325
+#: tools/translator/inject.py:329
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Répertoire des fichiers de langue{var1} (Locales):"
 msgstr ""
 
-#: tools/translator/inject.py:347
+#: tools/translator/inject.py:352
 #, python-brace-format
 msgid "  {var0}[{var1}]{var2} {var3}[ERREUR]{var4} {var5}"
 msgstr ""
 
-#: tools/translator/inject.py:351
+#: tools/translator/inject.py:356
 #, python-brace-format
 msgid ""
 "  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} traduites + "
 "{var8}{from_ref}{var10} EN par défaut"
 msgstr ""
 
-#: tools/translator/inject.py:353 tools/translator/sync.py:334
-msgid "Fichiers mis à jour (backups .bak créés)"
+#: tools/translator/inject.py:358 tools/translator/sync.py:341
+msgid "Fichiers mis à jour"
 msgstr ""
 
-#: tools/translator/inject.py:357
+#: tools/translator/inject.py:363
 msgid "Aucun fichier TRANSLATE_*.txt trouvé"
 msgstr ""
 
@@ -4546,187 +4588,187 @@ msgstr ""
 msgid "✓ {n} fichier(s) installé(s): {files}"
 msgstr ""
 
-#: tools/translator/main.py:79
+#: tools/translator/main.py:80
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}  OPTIONS AVANCÉES{var1}"
 msgstr ""
 
-#: tools/translator/main.py:80
+#: tools/translator/main.py:81
 #, python-brace-format
 msgid "  {var0}Workflow manuel étape par étape{var1}"
 msgstr ""
 
-#: tools/translator/main.py:85 tools/translator/main.py:165
+#: tools/translator/main.py:86 tools/translator/main.py:166
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Plugin: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/main.py:87 tools/translator/main.py:167
+#: tools/translator/main.py:88 tools/translator/main.py:168
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[ATTENTION]{var1} Aucun plugin configuré - utilise répertoires locaux"
 msgstr ""
 
-#: tools/translator/main.py:89
+#: tools/translator/main.py:90
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}  Commandes:{var1}"
 msgstr ""
 
-#: tools/translator/main.py:91
-#, python-brace-format
-msgid "  {var0}1{var1}. {var2}COMPARE{var3}       - Comparer 2 versions EN"
-msgstr ""
-
 #: tools/translator/main.py:92
 #, python-brace-format
-msgid ""
-"  {var0}2{var1}. {var2}COMPARE-LANGS{var3} - Comparer 2 fichiers de langues"
+msgid "  {var0}1{var1}. {var2}COMPARE{var3}       - Comparer 2 versions EN"
 msgstr ""
 
 #: tools/translator/main.py:93
 #, python-brace-format
 msgid ""
-"  {var0}3{var1}. {var2}EXTRACT{var3}       - Extraire les clés à traduire"
+"  {var0}2{var1}. {var2}COMPARE-LANGS{var3} - Comparer 2 fichiers de langues"
 msgstr ""
 
 #: tools/translator/main.py:94
 #, python-brace-format
-msgid "  {var0}4{var1}. {var2}INJECT{var3}        - Réinjecter les traductions"
+msgid ""
+"  {var0}3{var1}. {var2}EXTRACT{var3}       - Extraire les clés à traduire"
 msgstr ""
 
 #: tools/translator/main.py:95
+#, python-brace-format
+msgid "  {var0}4{var1}. {var2}INJECT{var3}        - Réinjecter les traductions"
+msgstr ""
+
+#: tools/translator/main.py:96
 #, python-brace-format
 msgid ""
 "  {var0}5{var1}. {var2}SYNC{var3}          - Synchroniser les langues avec EN"
 msgstr ""
 
-#: tools/translator/main.py:98
+#: tools/translator/main.py:99
 #, python-brace-format
 msgid "  {var0}8{var1}. {var2}Aide{var3}          - Documentation complète"
 msgstr ""
 
-#: tools/translator/main.py:99
+#: tools/translator/main.py:100
 #, python-brace-format
 msgid "  {var0}0{var1}. {var2}Retour au menu principal{var3}"
 msgstr ""
 
-#: tools/translator/main.py:117
+#: tools/translator/main.py:118
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Appuyez sur Entrée pour revenir au menu...{var1}"
 msgstr ""
 
-#: tools/translator/main.py:121 tools/translator/main.py:221
+#: tools/translator/main.py:122 tools/translator/main.py:222
 #, python-brace-format
 msgid "Choix invalide : \"{choice}\""
 msgstr ""
 
-#: tools/translator/main.py:122 tools/translator/main.py:222
+#: tools/translator/main.py:123 tools/translator/main.py:223
 #, python-brace-format
 msgid "{var0}Appuyez sur Entrée...{var1}"
 msgstr ""
 
-#: tools/translator/main.py:137
+#: tools/translator/main.py:138
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Configuration initiale{var1}"
 msgstr ""
 
-#: tools/translator/main.py:139
+#: tools/translator/main.py:140
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Chemin du plugin{var1} (.lrplugin) {var2}(x pour annuler){var3}:"
 msgstr ""
 
-#: tools/translator/main.py:140
+#: tools/translator/main.py:141
 #, python-brace-format
 msgid "{var0}  (Optionnel - permet d'utiliser la structure __i18n_tmp__){var1}"
 msgstr ""
 
-#: tools/translator/main.py:141 tools/translator/main.py:198
+#: tools/translator/main.py:142 tools/translator/main.py:199
 #, python-brace-format
 msgid "{var0}  (Entrée pour ignorer - utilise répertoires locaux){var1}"
 msgstr ""
 
-#: tools/translator/main.py:144
+#: tools/translator/main.py:145
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Annulation{var1}"
 msgstr ""
 
-#: tools/translator/main.py:154 tools/translator/main.py:211
+#: tools/translator/main.py:155 tools/translator/main.py:212
 #, python-brace-format
 msgid "Chemin invalide: {error}"
 msgstr ""
 
-#: tools/translator/main.py:155
+#: tools/translator/main.py:156
 #, python-brace-format
 msgid "{var0}Vous pouvez continuer sans plugin (répertoires locaux){var1}"
 msgstr ""
 
-#: tools/translator/main.py:157
+#: tools/translator/main.py:158
 #, python-brace-format
 msgid "{var0}Appuyez sur Entrée pour continuer...{var1}"
 msgstr ""
 
-#: tools/translator/main.py:169
+#: tools/translator/main.py:170
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}  Options essentielles:{var1}"
 msgstr ""
 
-#: tools/translator/main.py:171
+#: tools/translator/main.py:172
 #, python-brace-format
 msgid "  {var0}1{var1}. {var2}INSTALL{var3}          - Première installation"
 msgstr ""
 
-#: tools/translator/main.py:172
+#: tools/translator/main.py:173
 #, python-brace-format
 msgid "  {var0}2{var1}. {var2}AUTO-SYNC{var3} ⭐     - Maintenance automatique"
 msgstr ""
 
-#: tools/translator/main.py:173
+#: tools/translator/main.py:174
 #, python-brace-format
 msgid ""
 "  {var0}3{var1}. {var2}ADD LANGUAGE{var3}     - Ajouter/réinstaller une "
 "langue"
 msgstr ""
 
-#: tools/translator/main.py:176
+#: tools/translator/main.py:177
 #, python-brace-format
 msgid "  {var0}7{var1}. {var2}Options avancées{var3}"
 msgstr ""
 
-#: tools/translator/main.py:177
+#: tools/translator/main.py:178
 #, python-brace-format
 msgid "  {var0}9{var1}. {var2}Changer le plugin{var3}"
 msgstr ""
 
-#: tools/translator/main.py:178
+#: tools/translator/main.py:179
 #, python-brace-format
 msgid "  {var0}0{var1}. {var2}Quitter{var3}"
 msgstr ""
 
-#: tools/translator/main.py:195
+#: tools/translator/main.py:196
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Changement de plugin{var1}"
 msgstr ""
 
-#: tools/translator/main.py:197
+#: tools/translator/main.py:198
 #, python-brace-format
 msgid ""
 "\n"
@@ -4734,34 +4776,34 @@ msgid ""
 "{var3}:"
 msgstr ""
 
-#: tools/translator/main.py:209
+#: tools/translator/main.py:210
 #, python-brace-format
 msgid "Plugin changé: {var0}{plugin_path}{var2}"
 msgstr ""
 
-#: tools/translator/main.py:214
+#: tools/translator/main.py:215
 msgid "Plugin désactivé - utilise répertoires locaux"
 msgstr ""
 
-#: tools/translator/main.py:216
+#: tools/translator/main.py:217
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Appuyez sur Entrée pour continuer...{var1}"
 msgstr ""
 
-#: tools/translator/main.py:218
+#: tools/translator/main.py:219
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Au revoir !{var1}"
 msgstr ""
 
-#: tools/translator/main.py:237
+#: tools/translator/main.py:238
 msgid "Gestionnaire de traductions multilingues"
 msgstr ""
 
-#: tools/translator/main.py:239
+#: tools/translator/main.py:240
 msgid ""
 "\n"
 "Exemples:\n"
@@ -5143,152 +5185,152 @@ msgstr ""
 msgid "{var0}[INFO]{var1} Synchronisation..."
 msgstr ""
 
-#: tools/translator/main.py:548 tools/translator/sync.py:329
+#: tools/translator/main.py:548 tools/translator/sync.py:336
 msgid "Aucune langue étrangère trouvée."
 msgstr ""
 
-#: tools/translator/sync.py:74
+#: tools/translator/sync.py:78
 msgid "Chemin de référence requis (--ref ou via --update)"
 msgstr ""
 
-#: tools/translator/sync.py:161
+#: tools/translator/sync.py:165
 msgid "Texte de référence modifié"
 msgstr ""
 
-#: tools/translator/sync.py:169
+#: tools/translator/sync.py:173
 msgid "À traduire"
 msgstr ""
 
-#: tools/translator/sync.py:206
+#: tools/translator/sync.py:210
 #, python-brace-format
 msgid "{var0}RAPPORT DE SYNCHRONISATION{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:220
+#: tools/translator/sync.py:224
 #, python-brace-format
 msgid "  {var0}Clés conservées  {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:221
+#: tools/translator/sync.py:225
 #, python-brace-format
 msgid ""
 "  {var0}Clés ajoutées    {var1}: {var2}{var3}{var4}  {var5}[NEW] à "
 "traduire{var6}"
 msgstr ""
 
-#: tools/translator/sync.py:222
+#: tools/translator/sync.py:226
 #, python-brace-format
 msgid ""
 "  {var0}Clés à réviser   {var1}: {var2}{var3}{var4}  {var5}[NEEDS_REVIEW]"
 "{var6}"
 msgstr ""
 
-#: tools/translator/sync.py:223
+#: tools/translator/sync.py:227
 #, python-brace-format
 msgid "  {var0}Clés supprimées  {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:224
+#: tools/translator/sync.py:228
 #, python-brace-format
 msgid "  {var0}Total            {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:227
+#: tools/translator/sync.py:231
 #, python-brace-format
 msgid "  {var0}Nouvelles clés:{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:231 tools/translator/sync.py:238
+#: tools/translator/sync.py:235 tools/translator/sync.py:242
 #, python-brace-format
 msgid "    {var0}... et {var1} autres{var2}"
 msgstr ""
 
-#: tools/translator/sync.py:234
+#: tools/translator/sync.py:238
 #, python-brace-format
 msgid "  {var0}Clés à réviser:{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:243
+#: tools/translator/sync.py:247
 #, python-brace-format
 msgid "{var0}TOTAL{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:245
+#: tools/translator/sync.py:249
 #, python-brace-format
 msgid "  {var0}Langues traitées {var1}: {var2}{var3}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:246
+#: tools/translator/sync.py:250
 #, python-brace-format
 msgid "  {var0}Clés ajoutées    {var1}: {var2}{total_added}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:247
+#: tools/translator/sync.py:251
 #, python-brace-format
 msgid "  {var0}Clés à réviser   {var1}: {var2}{total_review}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:248
+#: tools/translator/sync.py:252
 #, python-brace-format
 msgid "  {var0}Clés supprimées  {var1}: {var2}{total_removed}{var4}"
 msgstr ""
 
-#: tools/translator/sync.py:278
+#: tools/translator/sync.py:282
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}SYNC{var1}: Synchroniser les langues étrangères"
 msgstr ""
 
-#: tools/translator/sync.py:281
+#: tools/translator/sync.py:285
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Avez-vous un dossier UPDATE{var1} (généré par COMPARE) ?"
 msgstr ""
 
-#: tools/translator/sync.py:282
+#: tools/translator/sync.py:286
 #, python-brace-format
 msgid "{var0}  (Permet de marquer les clés [NEEDS_REVIEW]){var1}"
 msgstr ""
 
-#: tools/translator/sync.py:283
+#: tools/translator/sync.py:287
 #, python-brace-format
 msgid "{var0}  [O/n]: {var1}"
 msgstr ""
 
-#: tools/translator/sync.py:313
+#: tools/translator/sync.py:319
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Fichier EN de référence{var1} (ou répertoire):"
 msgstr ""
 
-#: tools/translator/sync.py:320
+#: tools/translator/sync.py:326
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Répertoire des fichiers de langues{var1} (Locales):"
 msgstr ""
 
-#: tools/translator/sync.py:321
+#: tools/translator/sync.py:327
 #, python-brace-format
 msgid "{var0}  (Entrée = même répertoire que la référence){var1}"
 msgstr ""
 
-#: tools/translator/sync.py:325
+#: tools/translator/sync.py:331
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Synchronisation en cours..."
 msgstr ""
 
-#: tools/translator/sync.py:337
+#: tools/translator/sync.py:345
 #, python-brace-format
 msgid "{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:338
+#: tools/translator/sync.py:346
 #, python-brace-format
 msgid "{var0}  pour compléter les traductions.{var1}"
 msgstr ""

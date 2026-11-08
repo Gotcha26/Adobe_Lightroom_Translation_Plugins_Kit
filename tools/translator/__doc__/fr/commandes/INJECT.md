@@ -1,6 +1,6 @@
 # Commande INJECT
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -19,7 +19,7 @@ flowchart LR
     subgraph Input["📂 Entrées"]
         I1["TRANSLATE_fr.txt<br/>(traductions partielles)"]
         I2["TranslatedStrings_fr.txt<br/>(fichier complet existant)"]
-        I3["UPDATE_en.json<br/>(pour valeurs EN)"]
+        I3["UPDATE_&lt;ref&gt;.json<br/>(pour valeurs EN)"]
     end
 
     subgraph Process["⚙️ Injection"]
@@ -42,7 +42,7 @@ flowchart LR
 |------|----------|
 | **Entrée** | `TRANSLATE_xx.txt` (traductions) |
 | **Entrée** | `TranslatedStrings_xx.txt` existant |
-| **Entrée** | `UPDATE_en.json` (valeurs EN pour fallback) |
+| **Entrée** | `UPDATE_<ref>.json` (valeurs EN pour fallback) |
 | **Sortie** | `TranslatedStrings_xx.txt` mis à jour |
 
 ---
@@ -58,7 +58,7 @@ flowchart TD
     B --> C{"Traduction fournie ?<br/>(après →)"}
 
     C -->|Oui| D["Utiliser la traduction"]
-    C -->|Non/Vide| E["Charger UPDATE_en.json"]
+    C -->|Non/Vide| E["Charger UPDATE_&lt;ref&gt;.json"]
     E --> F["Utiliser valeur EN"]
 
     D --> G["Fusionner avec fichier existant"]
@@ -76,7 +76,7 @@ flowchart TD
 | Situation | Action |
 |-----------|--------|
 | `[FR] → Bonjour` | Utilise "Bonjour" |
-| `[FR] →` (vide) | Utilise valeur EN depuis `UPDATE_en.json` |
+| `[FR] →` (vide) | Utilise valeur EN depuis `UPDATE_<ref>.json` |
 | `[FR] → ` (espaces) | Utilise valeur EN |
 
 > **Important** : Le fallback EN garantit que toutes les clés ont une valeur, même non traduite.
@@ -106,16 +106,16 @@ Le menu propose deux modes :
 
 ```bash
 # Fichier unique
-python Translator_main.py inject --translate ./TRANSLATE_fr.txt --target ./TranslatedStrings_fr.txt
+python -m tools.translator.main inject --translate ./TRANSLATE_fr.txt --target ./TranslatedStrings_fr.txt
 
 # Batch (tous les TRANSLATE_*.txt)
-python Translator_main.py inject --translate-dir ./20260201_151234 --locales ./plugin.lrplugin
+python -m tools.translator.main inject --translate-dir ./20260201_151234 --locales ./plugin.lrplugin
 
 # Avec auto-détection (plugin-path)
-python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
 # Spécifier le dossier UPDATE pour fallback EN
-python Translator_main.py inject --translate-dir ./translations --locales ./plugin.lrplugin --update ./20260201_151234
+python -m tools.translator.main inject --translate-dir ./translations --locales ./plugin.lrplugin --update ./20260201_151234
 ```
 
 ### Options CLI
@@ -153,7 +153,7 @@ Fichier TRANSLATE_xx.txt:
 Fichier cible TranslatedStrings_xx.txt:
   > ./plugin.lrplugin/TranslatedStrings_fr.txt
 
-Dossier UPDATE (contenant UPDATE_en.json):
+Dossier UPDATE (contenant UPDATE_<ref>.json):
   (Entrée = même dossier que TRANSLATE)
   >
 

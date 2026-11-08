@@ -37,8 +37,9 @@ from typing import Optional, Tuple, List
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
+from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path, find_session_dirs
 from core import __version__
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _
 
@@ -113,41 +114,24 @@ def find_backup_dirs(temp_dir_path: str) -> List[dict]:
     if not os.path.isdir(temp_dir_path):
         return backups
 
-    # Chercher les dossiers Applicator (avec ou sans préfixe)
-    applicator_dirs = []
-    for name in os.listdir(temp_dir_path):
-        if "applicator" in name.lower():
-            applicator_dirs.append(os.path.join(temp_dir_path, name))
+    # Sessions reconnues au motif exact (core.paths) : jamais par sous-chaîne du nom
+    for session_path in find_session_dirs(temp_dir_path, "Applicator"):
+        backup_path = os.path.join(session_path, "backups")
 
-    # Pour chaque dossier Applicator, chercher les sessions de backup
-    for applicator_dir in applicator_dirs:
-        if not os.path.isdir(applicator_dir):
-            continue
-
-        for session in os.listdir(applicator_dir):
-            session_path = os.path.join(applicator_dir, session)
-            backup_path = os.path.join(session_path, "backups")
-
-            # Vérifier que c'est une session valide avec backups
-            if os.path.isdir(backup_path):
-                size, count = get_dir_size(backup_path)
-                backups.append({
-                    'session': session,
-                    'path': session_path,
-                    'backup_path': backup_path,
-                    'size': size,
-                    'file_count': count
-                })
+        # Vérifier que c'est une session valide avec backups
+        if os.path.isdir(backup_path):
+            size, count = get_dir_size(backup_path)
+            backups.append({
+                'session': os.path.basename(session_path),
+                'path': session_path,
+                'backup_path': backup_path,
+                'size': size,
+                'file_count': count
+            })
 
     # Trier du plus récent au plus ancien
     backups.sort(key=lambda x: x['session'], reverse=True)
     return backups
-
-
-def clear_screen():
-    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
-    if sys.stdout is not None and sys.stdout.isatty():
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:

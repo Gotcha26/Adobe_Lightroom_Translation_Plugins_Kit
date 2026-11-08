@@ -28,7 +28,8 @@ from typing import List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/toolbox/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
+from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path, find_session_dirs, count_bak_files
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _
 
@@ -48,37 +49,12 @@ def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
         Liste de tuples (timestamp, chemin_backup_dir) triés du plus récent au plus ancien
     """
     sessions = []
-    i18n_kit_path = get_i18n_kit_path(plugin_path)
 
-    # Chercher tous les dossiers qui contiennent "Applicator" (avec ou sans préfixe)
-    if not os.path.isdir(i18n_kit_path):
-        return sessions
-
-    applicator_dirs = []
-    for name in os.listdir(i18n_kit_path):
-        if "applicator" in name.lower():
-            applicator_dirs.append(os.path.join(i18n_kit_path, name))
-
-    # Si aucun dossier Applicator trouvé, retourner vide
-    if not applicator_dirs:
-        return sessions
-
-    # Parcourir tous les dossiers Applicator trouvés
-    for applicator_dir in applicator_dirs:
-        if not os.path.isdir(applicator_dir):
-            continue
-
-        for item in os.listdir(applicator_dir):
-            item_path = os.path.join(applicator_dir, item)
-            backup_path = os.path.join(item_path, "backups")
-
-            # Vérifier format timestamp (15 caractères: YYYYMMDD_HHMMSS)
-            if (os.path.isdir(item_path) and len(item) == 15 and item[8] == '_'
-                    and os.path.isdir(backup_path)):
-                # Vérifier qu'il y a des fichiers .bak
-                has_bak = any(f.endswith('.bak') for _r, _d, files in os.walk(backup_path) for f in files)
-                if has_bak:
-                    sessions.append((item, backup_path))
+    # Sessions reconnues au motif exact (core.paths) : jamais par sous-chaîne du nom
+    for session_path in find_session_dirs(get_i18n_kit_path(plugin_path), "Applicator"):
+        backup_path = os.path.join(session_path, "backups")
+        if os.path.isdir(backup_path) and count_bak_files(backup_path):
+            sessions.append((os.path.basename(session_path), backup_path))
 
     # Trier du plus récent au plus ancien
     sessions.sort(key=lambda x: x[0], reverse=True)
@@ -182,12 +158,6 @@ def delete_backups(pairs: List[Tuple[str, str]]) -> int:
             print(_("  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}").format(var0=c.ERROR, var1=c.RESET, rel_path=rel_path, var3=c.DIM, e=e, var5=c.RESET))
 
     return deleted
-
-
-def clear_screen():
-    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
-    if sys.stdout is not None and sys.stdout.isatty():
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def count_backup_files(backup_dir: str) -> int:

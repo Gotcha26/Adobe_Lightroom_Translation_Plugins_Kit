@@ -55,22 +55,22 @@ flowchart LR
 
 ### Prérequis
 
-- **Python 3.8+** installé sur votre système
+- **Python 3.10+** installé sur votre système
 - Aucune dépendance externe requise (bibliothèque standard uniquement)
 
 ### Structure des fichiers
 
 ```
-1_Extractor/
-├── Extractor_main.py      ← Point d'entrée, orchestration
-├── Extractor_config.py    ← Patterns regex et constantes
-├── Extractor_models.py    ← Classes de données
-├── Extractor_utils.py     ← Fonctions utilitaires
-├── Extractor_engine.py    ← Moteur d'extraction principal
-├── Extractor_output.py    ← Génération des fichiers de sortie
-├── Extractor_report.py    ← Génération des rapports
-├── Extractor_menu.py      ← Interface interactive
-└── __doc/
+tools/extractor/
+├── main.py    ← Point d'entrée, orchestration
+├── config.py  ← Patterns regex et constantes
+├── models.py  ← Classes de données
+├── utils.py   ← Fonctions utilitaires
+├── engine.py  ← Moteur d'extraction principal
+├── output.py  ← Génération des fichiers de sortie
+├── report.py  ← Génération des rapports
+├── menu.py    ← Interface interactive
+└── __doc__/
     └── fr/
         └── Lisez-moi.md   ← Ce fichier
 ```
@@ -88,7 +88,7 @@ Cependant, l'utilisation via le lanceur central ***LocalizationToolKit.py*** est
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Mode standalone"]
-        S["python Extractor_main.py<br/>--plugin-path ..."]
+        S["python -m tools.extractor.main<br/>--plugin-path ..."]
     end
 
     subgraph Lanceur["🚀 Mode lanceur (recommandé)"]
@@ -110,7 +110,7 @@ flowchart TB
 Lancez simplement le script sans argument :
 
 ```bash
-python Extractor_main.py
+python -m tools.extractor.main
 ```
 
 Un menu "Ready to go" s'affiche avec la configuration actuelle :
@@ -123,7 +123,7 @@ Un menu "Ready to go" s'affiche avec la configuration actuelle :
 Configuration:
 
   1. Plugin ciblé       : D:\plugins\monPlugin.lrplugin [OK]
-  2. Sortie             : <plugin>/__i18n_tmp__/Extractor/<timestamp>/ (auto)
+  2. Sortie             : <plugin>/__i18n_tmp__/1_Extractor/<timestamp>/ (auto)
   3. Préfixe LOC        : $$$/MonPlugin
   4. Langue extraite    : en
   5. Exclusions         : (aucun)
@@ -143,7 +143,7 @@ Appuyez sur **Entrée** pour lancer l'extraction, ou tapez un chiffre pour modif
 Pour une utilisation scriptée ou automatisée :
 
 ```bash
-python Extractor_main.py --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
+python -m tools.extractor.main --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
 ```
 
 #### Options disponibles
@@ -151,7 +151,7 @@ python Extractor_main.py --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
 | Option | Description | Défaut | Exemple |
 |--------|-------------|--------|---------|
 | `--plugin-path` | Chemin du plugin **(obligatoire)** | — | `./monPlugin.lrplugin` |
-| `--output-dir` | Répertoire de sortie personnalisé | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
+| `--output-dir` | Répertoire de sortie personnalisé | `<plugin>/__i18n_tmp__/1_Extractor/` | `./output` |
 | `--prefix` | Préfixe des clés LOC | `$$$/Piwigo` | `$$$/MonApp` |
 | `--lang` | Code langue de base | `en` | `fr`, `de`, `es` |
 | `--exclude` | Fichiers à exclure (répétable) | — | `--exclude test.lua` |
@@ -162,13 +162,13 @@ python Extractor_main.py --plugin-path /chemin/vers/plugin.lrplugin [OPTIONS]
 
 ```bash
 # Extraction standard
-python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
+python -m tools.extractor.main --plugin-path ./piwigoPublish.lrplugin
 
 # Avec préfixe personnalisé
-python Extractor_main.py --plugin-path ./myPlugin.lrplugin --prefix '$$$/MyApp'
+python -m tools.extractor.main --plugin-path ./myPlugin.lrplugin --prefix '$$$/MyApp'
 
 # Plugin en français avec exclusions
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./monPlugin.lrplugin \
   --lang fr \
   --prefix '$$$/MonApp' \
@@ -180,7 +180,7 @@ python Extractor_main.py \
 
 ## 📄 Fichiers générés
 
-Les fichiers sont créés dans : `<plugin>/__i18n_tmp__/Extractor/<timestamp>/`
+Les fichiers sont créés dans : `<plugin>/__i18n_tmp__/1_Extractor/<timestamp>/`
 
 ### `TranslatedStrings_xx.txt`
 
@@ -301,23 +301,23 @@ Chaînes techniques ignorées: 23
 ```mermaid
 flowchart TB
     subgraph Orchestration
-        MAIN["<b>Extractor_main.py</b><br/>Point d'entrée"]
+        MAIN["<b>main.py</b><br/>Point d'entrée"]
     end
 
     subgraph Coeur["Cœur métier"]
-        ENGINE["<b>Extractor_engine.py</b><br/>LocalizableStringExtractor"]
-        CONFIG["Extractor_config.py<br/>Patterns & constantes"]
-        MODELS["Extractor_models.py<br/>Classes de données"]
-        UTILS["Extractor_utils.py<br/>Fonctions utilitaires"]
+        ENGINE["<b>engine.py</b><br/>LocalizableStringExtractor"]
+        CONFIG["config.py<br/>Patterns & constantes"]
+        MODELS["models.py<br/>Classes de données"]
+        UTILS["utils.py<br/>Fonctions utilitaires"]
     end
 
     subgraph Sorties
-        OUTPUT["Extractor_output.py<br/>OutputGenerator"]
-        REPORT["Extractor_report.py<br/>ReportGenerator"]
+        OUTPUT["output.py<br/>OutputGenerator"]
+        REPORT["report.py<br/>ReportGenerator"]
     end
 
     subgraph Interface
-        MENU["Extractor_menu.py<br/>InteractiveMenu"]
+        MENU["menu.py<br/>InteractiveMenu"]
     end
 
     MAIN --> ENGINE
@@ -339,14 +339,14 @@ Chaque module a une responsabilité claire :
 
 | Module | Responsabilité |
 |--------|----------------|
-| `Extractor_main.py` | Orchestration, parsing des arguments CLI |
-| `Extractor_engine.py` | Analyse des fichiers Lua, extraction des chaînes |
-| `Extractor_config.py` | Définition des patterns regex, listes d'exclusion |
-| `Extractor_models.py` | Classes de données (`ExtractedString`, `ExtractionStats`...) |
-| `Extractor_utils.py` | Extraction des espaces, génération des clés LOC |
-| `Extractor_output.py` | Génération de `TranslatedStrings_xx.txt`, JSON |
-| `Extractor_report.py` | Génération du rapport détaillé |
-| `Extractor_menu.py` | Interface menu interactif |
+| `main.py` | Orchestration, parsing des arguments CLI |
+| `engine.py` | Analyse des fichiers Lua, extraction des chaînes |
+| `config.py` | Définition des patterns regex, listes d'exclusion |
+| `models.py` | Classes de données (`ExtractedString`, `ExtractionStats`...) |
+| `utils.py` | Extraction des espaces, génération des clés LOC |
+| `output.py` | Génération de `TranslatedStrings_xx.txt`, JSON |
+| `report.py` | Génération du rapport détaillé |
+| `menu.py` | Interface menu interactif |
 
 ---
 
@@ -682,7 +682,7 @@ $$$/Piwigo/Dialog/AreYouSure3  → "Are you sure you want to reset?"
 Si votre plugin est écrit en français et que vous souhaitez le localiser :
 
 ```bash
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./monPlugin.lrplugin \
   --lang fr \
   --prefix '$$$/MonApp'
@@ -696,12 +696,12 @@ Cela génère `TranslatedStrings_fr.txt`. Vous pourrez ensuite créer `Translate
 
 ```bash
 # Première extraction
-python Extractor_main.py --plugin-path ./plugin.lrplugin
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin
 
 # ... développement, nouvelles fonctionnalités ...
 
 # Nouvelle extraction (ne touche pas aux clés existantes)
-python Extractor_main.py --plugin-path ./plugin.lrplugin
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin
 ```
 
 Les clés déjà localisées apparaissent dans le rapport mais ne sont pas ajoutées aux fichiers de remplacement.
@@ -709,7 +709,7 @@ Les clés déjà localisées apparaissent dans le rapport mais ne sont pas ajout
 ### Extraction ciblée avec exclusions
 
 ```bash
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./plugin.lrplugin \
   --exclude test.lua \
   --exclude debug.lua \
@@ -726,7 +726,7 @@ Exemple de script bash pour automatisation :
 #!/bin/bash
 PLUGIN_PATH="./monPlugin.lrplugin"
 
-python 1_Extractor/Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path "$PLUGIN_PATH" \
   --prefix '$$$/MonApp'
 
@@ -753,7 +753,7 @@ fi
 **Solutions :**
 ```bash
 # Réduire la longueur minimale
-python Extractor_main.py --plugin-path ./plugin.lrplugin --min-length 1
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin --min-length 1
 
 # Vérifier le chemin
 ls ./plugin.lrplugin/*.lua
@@ -789,7 +789,7 @@ Si les clés générées sont illisibles :
 
 ### Puis-je modifier les patterns de détection ?
 
-Oui, éditez `Extractor_config.py`. Les patterns sont définis dans `UI_CONTEXT_PATTERNS` :
+Oui, éditez `config.py`. Les patterns sont définis dans `UI_CONTEXT_PATTERNS` :
 
 ```python
 UI_CONTEXT_PATTERNS: List[tuple] = [

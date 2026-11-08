@@ -52,13 +52,14 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative, fallback_backup_dir
 from core.colors import c, stdin_is_interactive
+from core.cli import add_default_plugin_arg, add_plugin_path_arg
 from core.i18n import _
 import glob
 import subprocess
 
-from tools.extractor.utils import build_loc_call as _build_loc_call
+from tools.extractor.utils import build_loc_call as _build_loc_call, pick_literal_position
 from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
@@ -245,22 +246,21 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
     members_with_pos = []
     used_positions = set()  # Pour eviter d'utiliser la meme position deux fois
 
+    # Colonne relevée par l'Extractor : relative à la ligne sans indentation
+    indent = len(line) - len(line.lstrip())
+
     for member in members:
         original_text = member['original_text']
         # Guillemets doubles uniquement (conformément au SDK Adobe et à Extractor)
         search_str = f'"{original_text}"'
-        # Trouver toutes les occurrences de cette chaine
-        start = 0
-        while True:
-            pos = result.find(search_str, start)
-            if pos == -1:
-                break
-            # Verifier que cette position n'est pas deja utilisee
-            if pos not in used_positions:
-                members_with_pos.append((pos, member, search_str))
-                used_positions.add(pos)
-                break  # Utiliser la premiere occurrence non-utilisee
-            start = pos + 1  # Chercher la suivante
+        # Littéraux entiers seulement : jamais la fin d'un autre littéral. Le
+        # littéral à la colonne relevée est préféré (même texte dans un appel
+        # de log sur la même ligne, par exemple), sinon le premier libre (#34)
+        column = member.get('column')
+        preferred = indent + column if column is not None else None
+        pos = pick_literal_position(result, original_text, used_positions, preferred)
+        if pos is not None:
+            members_with_pos.append((pos, member, search_str))
 
     # Trier par position decroissante pour ne pas decaler les indices
     members_with_pos.sort(key=lambda x: x[0], reverse=True)
@@ -347,7 +347,11 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 # Backup de session : le premier écrivain gagne (état d'origine)
                 backup_once(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
             else:
-                shutil.copy2(file_path, file_path + '.bak')
+                # Repli : un seul <plugin>/<temp_dir>/backups (arborescence relative conservée),
+                # jamais un .bak ni un dossier de repli dans les sous-dossiers du plugin (#36).
+                # Dernier recours sans plugin_path : le dossier du fichier.
+                base_dir = plugin_path or os.path.dirname(file_path)
+                backup_once(file_path, base_dir, fallback_backup_dir(base_dir))
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 
@@ -372,22 +376,28 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     """
     report = LocalizationReport(os.path.basename(os.path.normpath(plugin_path)))
 
-    if not os.path.isdir(plugin_path):
-        print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
+    def fail(message: str, *details: str) -> Tuple[bool, LocalizationReport]:
+        """Échec : erreur consignée dans le rapport, affichée sauf en mode silencieux."""
+        report.add_error(plugin_path, 0, message)
+        if not silent:
+            for line in (message, *details):
+                print(line)
         return False, report
+
+    if not os.path.isdir(plugin_path):
+        return fail(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
 
     # Auto-détection du dossier d'extraction si non spécifié
     if not extraction_dir:
         extraction_dir = find_latest_tool_output(plugin_path, "Extractor")
         if not extraction_dir:
-            print(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"))
-            print(_("        Lancez d'abord Extractor sur ce plugin."))
-            return False, report
-        print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
+            return fail(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"),
+                        _("        Lancez d'abord Extractor sur ce plugin."))
+        if not silent:
+            print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
 
     if not os.path.isdir(extraction_dir):
-        print(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
-        return False, report
+        return fail(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
 
     if backup_dir:
         # Session Applicator fournie par l'appelant : ne pas en créer une seconde
@@ -448,7 +458,9 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
             report.add_error(file_rel_path, 0, _("Fichier introuvable"))
 
     # Generer le rapport dans le dossier Applicator
-    report_path = os.path.join(applicator_output, "application_report.txt")
+    # Le rapport de la passe à blanc ne doit pas écraser celui de la passe réelle
+    report_name = "application_report_dry_run.txt" if dry_run else "application_report.txt"
+    report_path = os.path.join(applicator_output, report_name)
     report.generate(report_path)
 
     if not silent:
@@ -895,10 +907,8 @@ Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments inv
         """)
     )
 
-    parser.add_argument('--default-plugin', default="",
-                        help=_("Plugin pré-configuré pour le menu interactif"))
-    parser.add_argument('--plugin-path', default=None,
-                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    add_default_plugin_arg(parser)
+    add_plugin_path_arg(parser)
     parser.add_argument('--yes', action='store_true',
                         help=_("Aucune question : ne pas lancer la gestion des fichiers de traduction"))
     parser.add_argument('--extraction-dir', default=None,

@@ -1,6 +1,6 @@
 # Commande ADD LANGUAGE
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -142,16 +142,16 @@ Voir exemples de session ci-dessous pour les détails des menus Mode A et Mode B
 
 ```bash
 # Mode auto (essaie Extractor puis création)
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de
 
 # Mode A explicite : installer depuis Extractor
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --mode extraction
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --mode extraction
 
 # Mode B explicite : créer nouveau fichier
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --mode create
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --mode create
 
 # Forcer l'écrasement sans confirmation
-python Translator_main.py addlang --plugin-path ./plugin.lrplugin --lang de --force
+python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de --force
 ```
 
 ### Options CLI

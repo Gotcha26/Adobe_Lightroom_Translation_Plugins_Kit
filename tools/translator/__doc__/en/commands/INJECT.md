@@ -1,6 +1,6 @@
 # INJECT Command
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -19,7 +19,7 @@ flowchart LR
     subgraph Input["📂 Inputs"]
         I1["TRANSLATE_fr.txt<br/>(partial translations)"]
         I2["TranslatedStrings_fr.txt<br/>(existing complete file)"]
-        I3["UPDATE_en.json<br/>(for EN values)"]
+        I3["UPDATE_&lt;ref&gt;.json<br/>(for EN values)"]
     end
 
     subgraph Process["⚙️ Injection"]
@@ -42,7 +42,7 @@ flowchart LR
 |------|-------|
 | **Input** | `TRANSLATE_xx.txt` (translations) |
 | **Input** | Existing `TranslatedStrings_xx.txt` |
-| **Input** | `UPDATE_en.json` (EN values for fallback) |
+| **Input** | `UPDATE_<ref>.json` (EN values for fallback) |
 | **Output** | Updated `TranslatedStrings_xx.txt` |
 
 ---
@@ -58,7 +58,7 @@ flowchart TD
     B --> C{"Translation provided?<br/>(after →)"}
 
     C -->|Yes| D["Use translation"]
-    C -->|No/Empty| E["Load UPDATE_en.json"]
+    C -->|No/Empty| E["Load UPDATE_&lt;ref&gt;.json"]
     E --> F["Use EN value"]
 
     D --> G["Merge with existing file"]
@@ -76,7 +76,7 @@ flowchart TD
 | Situation | Action |
 |-----------|--------|
 | `[FR] → Hello` | Uses "Hello" |
-| `[FR] →` (empty) | Uses EN value from `UPDATE_en.json` |
+| `[FR] →` (empty) | Uses EN value from `UPDATE_<ref>.json` |
 | `[FR] → ` (spaces) | Uses EN value |
 
 > **Important**: The EN fallback ensures that all keys have a value, even if untranslated.
@@ -106,16 +106,16 @@ The menu offers two modes:
 
 ```bash
 # Single file
-python Translator_main.py inject --translate ./TRANSLATE_fr.txt --target ./TranslatedStrings_fr.txt
+python -m tools.translator.main inject --translate ./TRANSLATE_fr.txt --target ./TranslatedStrings_fr.txt
 
 # Batch (all TRANSLATE_*.txt)
-python Translator_main.py inject --translate-dir ./20260201_151234 --locales ./plugin.lrplugin
+python -m tools.translator.main inject --translate-dir ./20260201_151234 --locales ./plugin.lrplugin
 
 # With auto-detection (plugin-path)
-python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main inject --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
 # Specify UPDATE folder for EN fallback
-python Translator_main.py inject --translate-dir ./translations --locales ./plugin.lrplugin --update ./20260201_151234
+python -m tools.translator.main inject --translate-dir ./translations --locales ./plugin.lrplugin --update ./20260201_151234
 ```
 
 ### CLI Options
@@ -153,7 +153,7 @@ TRANSLATE_xx.txt file:
 Target TranslatedStrings_xx.txt file:
   > ./plugin.lrplugin/TranslatedStrings_fr.txt
 
-UPDATE folder (containing UPDATE_en.json):
+UPDATE folder (containing UPDATE_<ref>.json):
   (Enter = same folder as TRANSLATE)
   >
 
@@ -253,6 +253,6 @@ INJECT **merges** translations, it doesn't replace the whole file:
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *INJECT.md* | **Version** | 1.0 |
-| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commands/INJECT.md)* |
+| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commandes/INJECT.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

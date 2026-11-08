@@ -23,7 +23,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 
 import os
-import shutil
+import re
 from typing import Dict, Optional
 
 from .common import (
@@ -33,18 +33,22 @@ from .common import (
 )
 from .config_loader import get_reference_lang
 from core.i18n import _
-from core.paths import backup_once, local_backup_path, get_translator_backup_dir
+from core.paths import (
+    BackupReport, backup_once, backup_to_fallback, format_backup_message, get_translator_backup_dir,
+)
 
 
 def _marker_value(line, markers):
     """Valeur après le premier marqueur de `markers` qui ouvre la ligne, sinon None."""
     for m in markers:
         if line.startswith(m):
-            rest = line[len(m):]
-            if rest.lstrip().startswith(TRANSLATE_ARROW):
-                return None  # ligne de traduction cible, pas une valeur de référence
-            return rest.strip()
+            return line[len(m):].strip()
     return None
+
+
+# Ligne cible : « [XX] → » en début de ligne (un seul espace, cf. translate_target_marker).
+# Une valeur de référence commençant par → s'écrit « [EN]  → … » (deux espaces) : aucune confusion.
+_TARGET_LINE_RE = re.compile(r"^\[[^\]]+\] ?" + re.escape(TRANSLATE_ARROW))
 
 
 # =============================================================================
@@ -99,6 +103,18 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                 current_key = line[len(TRANSLATE_KEY):].strip()
                 current_en_value = en_values.get(current_key, '')
 
+            # Détecter la traduction : « [XX] → » en début de ligne
+            elif _TARGET_LINE_RE.match(line):
+                if current_key:
+                    translation = line[_TARGET_LINE_RE.match(line).end():].strip()
+                    if translation:
+                        # Traduction fournie : « " » brut échappé, sinon la ligne
+                        # écrite ne serait plus relisible (KEY_LINE_RE)
+                        translations[current_key] = escape_translation_value(translation)
+                    else:
+                        # Pas de traduction → utiliser valeur EN
+                        translations[current_key] = current_en_value or ''
+
             # Détecter [<REF> AFTER] pour les clés modifiées
             elif _marker_value(line, after_markers) is not None:
                 if current_key:
@@ -109,20 +125,6 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                 if current_key and not current_en_value:
                     current_en_value = _marker_value(line, ref_markers)
 
-            # Détecter la traduction (ligne avec →)
-            elif '] → ' in line or '] →' in line:
-                parts = line.split('→', 1)
-                if len(parts) == 2 and current_key:
-                    translation = parts[1].strip()
-
-                    if translation:
-                        # Traduction fournie : « " » brut échappé, sinon la ligne
-                        # écrite ne serait plus relisible (KEY_LINE_RE)
-                        translations[current_key] = escape_translation_value(translation)
-                    else:
-                        # Pas de traduction → utiliser valeur EN
-                        translations[current_key] = current_en_value or ''
-
     return translations
 
 
@@ -132,7 +134,7 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
 
 def run_inject(translate_file: str, target_file: str,
                update_dir: Optional[str] = None, create_backup: bool = True,
-               backup_dir: Optional[str] = None) -> Dict:
+               backup_dir: Optional[str] = None, backups: Optional[BackupReport] = None) -> Dict:
     """
     Injecte les traductions d'un fichier TRANSLATE dans un fichier de langue.
 
@@ -141,7 +143,8 @@ def run_inject(translate_file: str, target_file: str,
         target_file: Fichier TranslatedStrings_xx.txt cible
         update_dir: Répertoire contenant UPDATE_{lang}.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
-        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, repli sous <temp_dir>/backups du dossier du fichier, jamais à la racine du plugin)
+        backups: Collecte les .bak réellement créés par cette opération (optionnel)
 
     Returns:
         Statistiques d'injection
@@ -167,12 +170,10 @@ def run_inject(translate_file: str, target_file: str,
         if create_backup:
             if backup_dir:
                 # Backup de session : ne jamais écraser l'original déjà sauvegardé
-                backup_once(target_file, os.path.dirname(target_file), backup_dir)
+                backup_once(target_file, os.path.dirname(target_file), backup_dir, backups)
             else:
-                # Par défaut : sous-dossier backups/ à côté du fichier cible
-                backup_path = local_backup_path(target_file)
-                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-                shutil.copy2(target_file, backup_path)
+                # Repli : <temp_dir>/backups du dossier de la cible, jamais à la racine du plugin
+                backup_to_fallback(target_file, backups)
     else:
         existing = {}
 
@@ -215,7 +216,8 @@ def run_inject(translate_file: str, target_file: str,
 def run_inject_from_dir(translate_dir: str, locales_dir: str,
                         update_dir: Optional[str] = None,
                         create_backup: bool = True,
-                        backup_dir: Optional[str] = None) -> Dict[str, Dict]:
+                        backup_dir: Optional[str] = None,
+                        backups: Optional[BackupReport] = None) -> Dict[str, Dict]:
     """
     Injecte tous les fichiers TRANSLATE_*.txt dans les fichiers de langue.
 
@@ -224,7 +226,8 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
         locales_dir: Répertoire des fichiers TranslatedStrings_*.txt
         update_dir: Répertoire UPDATE (défaut: translate_dir)
         create_backup: Créer des sauvegardes .bak
-        backup_dir: Répertoire des sauvegardes (défaut: backups/ à côté de chaque fichier cible)
+        backup_dir: Répertoire des sauvegardes (défaut: repli sous <temp_dir>/backups du dossier de chaque fichier cible)
+        backups: Collecte les .bak réellement créés par cette opération (optionnel)
 
     Returns:
         Statistiques par langue
@@ -243,7 +246,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
             target_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
 
             try:
-                stats = run_inject(translate_file, target_file, update_dir, create_backup, backup_dir)
+                stats = run_inject(translate_file, target_file, update_dir, create_backup, backup_dir, backups)
                 results[lang] = stats
             except Exception as e:
                 results[lang] = {'error': str(e)}
@@ -295,8 +298,9 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
+            backups = BackupReport()
             stats = run_inject(translate_file, target_file, update_dir,
-                               backup_dir=get_translator_backup_dir(plugin_path))
+                               backup_dir=get_translator_backup_dir(plugin_path), backups=backups)
 
             print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
             print(_("{var0}  RÉSULTAT{var1}").format(var0=c.TITLE, var1=c.RESET))
@@ -307,7 +311,7 @@ def menu_inject(plugin_path: str = ""):
             print(_("  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=stats['total'], var4=c.RESET))
             print()
             print(c.success(_("Fichier mis à jour: {var0}{target_file}{var2}").format(var0=c.VALUE, target_file=target_file, var2=c.RESET)))
-            print(_("{var0}  (Backup .bak créé dans backups/){var1}").format(var0=c.DIM, var1=c.RESET))
+            print(f"{c.DIM}  {format_backup_message(backups, plugin_path)}{c.RESET}")
 
             return stats
 
@@ -335,8 +339,9 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
+            backups = BackupReport()
             results = run_inject_from_dir(translate_dir, locales_dir, update_dir,
-                                          backup_dir=get_translator_backup_dir(plugin_path))
+                                          backup_dir=get_translator_backup_dir(plugin_path), backups=backups)
 
             if results:
                 print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
@@ -350,7 +355,8 @@ def menu_inject(plugin_path: str = ""):
                         from_ref = stats['from_ref']
                         print(_("  {var0}[{var1}]{var2} {var3}[OK]{var4} {var5}{translated}{var7} traduites + {var8}{from_ref}{var10} EN par défaut").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, translated=translated, var7=c.RESET, var8=c.CYAN, from_ref=from_ref, var10=c.RESET))
                 print()
-                print(c.success(_("Fichiers mis à jour (backups .bak créés)")))
+                print(c.success(_("Fichiers mis à jour")))
+                print(f"{c.DIM}  {format_backup_message(backups, plugin_path)}{c.RESET}")
 
                 return results
             else:

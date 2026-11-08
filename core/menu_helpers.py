@@ -18,14 +18,15 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 from core.paths import find_all_tool_outputs
 from core.colors import c
 from core.i18n import _
 
 
 
-def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = "") -> Optional[str]:
+def choose_tool_output_dir(plugin_path: str, tool_name: str,
+                           current_dir: str = "") -> Tuple[Optional[str], bool]:
     """
     Affiche un menu interactif pour sélectionner un dossier de sortie d'un outil.
 
@@ -40,16 +41,15 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
         current_dir: Dossier actuellement sélectionné (optionnel)
 
     Returns:
-        - le chemin du dossier sélectionné ;
-        - `current_dir` inchangé si l'utilisateur annule (peut être "") ;
-        - None en cas d'erreur (chemin introuvable, choix invalide), déjà affichée.
+        Tuple (chemin, annulé) :
+        - (chemin du dossier sélectionné, False) ;
+        - (`current_dir`, True) si l'utilisateur annule (peut être "") ;
+        - (None, False) en cas d'erreur (chemin introuvable, choix invalide), déjà affichée.
+        Re-sélectionner le dossier courant renvoie (current_dir, False) : seul
+        `annulé` distingue ce cas d'une annulation.
 
     Example:
-        >>> dir = select_tool_output_dir(plugin_path, "Extractor", current_extraction)
-        >>> if dir is None:
-        >>>     ...  # erreur
-        >>> elif dir:
-        >>>     self.extraction_dir = dir
+        >>> dir, cancelled = choose_tool_output_dir(plugin_path, "Extractor", current_extraction)
     """
     print()
     print(c.title(_("Dossier {tool}").format(tool=tool_name)))
@@ -82,25 +82,25 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
 
         if choice == '0':
             print(c.success(_("Chemin inchangé")))
-            return current_dir
+            return current_dir, True
         elif choice == 'M':
             manual_path = input(c.prompt(_("Chemin du répertoire:") + " ")).strip()
             if manual_path and os.path.isdir(manual_path):
                 print(c.success(_("Dossier: {path}").format(path=manual_path)))
-                return manual_path
+                return manual_path, False
             elif manual_path:
                 print(c.error(_("Répertoire introuvable")))
-                return None
+                return None, False
             else:
                 print(c.success(_("Annulé")))
-                return current_dir
+                return current_dir, True
         elif choice.isdigit() and 1 <= int(choice) <= len(all_dirs):
             selected_dir = all_dirs[int(choice) - 1]
             print(c.success(_("Dossier sélectionné: {name}").format(name=os.path.basename(selected_dir))))
-            return selected_dir
+            return selected_dir, False
         else:
             print(c.error(_("Choix invalide")))
-            return None
+            return None, False
 
     elif len(all_dirs) == 1:
         # Un seul dossier disponible
@@ -116,24 +116,24 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
 
         if choice == '0':
             print(c.success(_("Chemin inchangé")))
-            return current_dir
+            return current_dir, True
         elif choice == '1' or choice == '':
             print(c.success(_("Dossier sélectionné: {name}").format(name=os.path.basename(auto_detect))))
-            return auto_detect
+            return auto_detect, False
         elif choice == 'M':
             manual_path = input(c.prompt(_("Chemin du répertoire:") + " ")).strip()
             if manual_path and os.path.isdir(manual_path):
                 print(c.success(_("Dossier: {path}").format(path=manual_path)))
-                return manual_path
+                return manual_path, False
             elif manual_path:
                 print(c.error(_("Répertoire introuvable")))
-                return None
+                return None, False
             else:
                 print(c.success(_("Annulé")))
-                return current_dir
+                return current_dir, True
         else:
             print(c.error(_("Choix invalide")))
-            return None
+            return None, False
 
     else:
         # Aucun dossier trouvé
@@ -144,10 +144,22 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
         if manual_path:
             if os.path.isdir(manual_path):
                 print(c.success(_("Dossier: {path}").format(path=manual_path)))
-                return manual_path
+                return manual_path, False
             else:
                 print(c.error(_("Répertoire introuvable")))
-                return None
+                return None, False
         else:
             print(c.success(_("Annulé")))
-            return current_dir
+            return current_dir, True
+
+
+def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = "") -> Optional[str]:
+    """
+    Variante de `choose_tool_output_dir` sans l'indicateur d'annulation.
+
+    Returns:
+        - le chemin du dossier sélectionné ;
+        - `current_dir` inchangé si l'utilisateur annule (peut être "") ;
+        - None en cas d'erreur (chemin introuvable, choix invalide), déjà affichée.
+    """
+    return choose_tool_output_dir(plugin_path, tool_name, current_dir)[0]
