@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fallback backups (no session, no plugin path) went to `backups/` next to the target file, i.e. at the plugin root for `TranslatedStrings_xx.txt`; they now go under `<temp_dir>/backups`. Applicator no longer drops `.bak` files next to the source file either (#36)
 - INJECT/SYNC "backups created" messages now give the number of `.bak` files actually created by that operation and the folder really used, relative to the plugin (#36)
 - Extractor: non-simple Lua escapes (`\ddd`, `\xXX`, `\u{...}`, `\z`) were kept as-is when unescaped, then their `\` was doubled when re-escaped, so `"Caf\195\169"` became `LOC "…=Caf\\195\\169"`. Byte escapes forming valid UTF-8 and valid `\u{...}` are now decoded to real text (`Café`); any other sequence comes back verbatim, and a string that keeps such a sequence is left hard-coded instead of being extracted (#34)
+- Applicator (and the Extractor's `replaced_line` preview and multi-line line lookup) searched `"original_text"` with a raw `find`, which could match inside another literal ending with `\"X\""` or across two literals. The search now only matches whole literals of the line (#34)
 
 ---
 

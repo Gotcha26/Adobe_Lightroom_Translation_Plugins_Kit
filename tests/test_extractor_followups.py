@@ -9,10 +9,14 @@ import os
 
 import pytest
 
-from tools.applicator.main import process_plugin_directory
-from tools.extractor.engine import LocalizableStringExtractor
+from tools.applicator.main import apply_replacements_to_line, process_plugin_directory
+from tools.extractor.engine import LocalizableStringExtractor, MultiLineContext
 from tools.extractor.main import run_extraction
-from tools.extractor.utils import VERBATIM_BACKSLASH, escape_lua_string, unescape_lua_string
+from tools.extractor.models import ExtractedString
+from tools.extractor.output import OutputGenerator
+from tools.extractor.utils import (
+    VERBATIM_BACKSLASH, escape_lua_string, find_literal_positions, unescape_lua_string
+)
 
 
 def _plugin_with(tmp_path, source: str) -> str:
@@ -117,3 +121,57 @@ def test_undecodable_string_is_not_extracted(tmp_path):
     extractor = _extract(plugin)
     assert extractor.extracted == []
     assert extractor.stats.technical_ignored == 1
+
+
+# --- Point 5 : recherche ancrée sur des littéraux entiers ----------------------
+
+# "Open \"Export\"" se termine par \"Export\"" : un find brut de "Export\""
+# (membre `Export\"`, texte réel « Export" ») tombe au milieu de ce littéral.
+_TAIL_LINE = 'local t = { title = "Open \\"Export\\"", tooltip = "Export\\"" }'
+_TAIL_MEMBER = {"original_text": 'Export\\"', "base_text": 'Export"', "loc_key": "$$$/T/E"}
+
+
+def test_find_literal_positions_is_anchored():
+    assert find_literal_positions(_TAIL_LINE, 'Export\\"') == [_TAIL_LINE.index('"Export\\"" }')]
+    # Entre la fin d'un littéral et le début du suivant : pas un littéral
+    assert find_literal_positions('t = {"a", "b"}', ', ') == []
+    assert find_literal_positions('t = {"a", ", "}', ', ') == [10]
+    # Un littéral entre apostrophes n'est pas une chaîne entre guillemets doubles
+    assert find_literal_positions("s = '\"Export\"'", "Export") == []
+
+
+def test_applicator_replaces_whole_literal_only():
+    result, applied = apply_replacements_to_line(_TAIL_LINE, [_TAIL_MEMBER])
+    assert applied == [_TAIL_MEMBER]
+    assert result == 'local t = { title = "Open \\"Export\\"", tooltip = LOC "$$$/T/E=Export\\"" }'
+
+
+def test_applicator_ignores_gap_between_literals():
+    member = {"original_text": ", ", "base_text": ", ", "loc_key": "$$$/T/C"}
+    result, applied = apply_replacements_to_line('t = {"a", "b"}', [member])
+    assert (result, applied) == ('t = {"a", "b"}', [])
+
+
+def test_build_replaced_line_is_anchored():
+    # Littéral visé en premier : un rfind brut tomberait dans le second littéral
+    line = 'local t = { tooltip = "Export\\"", title = "Open \\"Export\\"" }'
+    entry = ExtractedString(
+        original_text='Export\\"', clean_text='Export"', base_text='Export"',
+        file_path="PWExport.lua", file_name="PWExport.lua", line_num=1,
+        line_content=line, pattern_name="tooltip", suggested_key="$$$/T/E")
+    replaced = OutputGenerator("", "$$$/T", silent=True)._build_replaced_line(line, [entry])
+    assert replaced == 'local t = { tooltip = LOC "$$$/T/E=Export\\"", title = "Open \\"Export\\"" }'
+
+
+def test_multiline_find_line_for_string_is_anchored():
+    ctx = MultiLineContext()
+    ctx.start("LrDialogs.message", 10, 'LrDialogs.message("Open \\"Export\\"",')
+    ctx.add_line(11, '  "Export\\"")')
+    assert ctx.find_line_for_string('Export\\"') == 11
+
+
+def test_anchored_search_end_to_end(tmp_path, isolated_config):
+    plugin = _plugin_with(tmp_path, _TAIL_LINE + "\n")
+    lua = _run_pipeline(plugin)
+    assert lua == ('local t = { title = LOC "$$$/Test/PWExport/OpenExport=Open \\"Export\\"", '
+                   'tooltip = LOC "$$$/Test/PWExport/Export=Export\\"" }\n')

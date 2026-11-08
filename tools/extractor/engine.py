@@ -36,7 +36,8 @@ from .models import ExtractedString, ExtractionStats
 from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
-    is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape
+    is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape,
+    find_literal_positions
 )
 
 
@@ -119,16 +120,10 @@ class MultiLineContext:
         Returns:
             Le numéro de ligne où la chaîne a été trouvée, ou start_line par défaut
         """
-        # Chercher la chaîne exacte (avec guillemets) dans chaque ligne
-        search_quoted = f'"{search_text}"'
-
+        # Littéral entier uniquement (recherche ancrée) : un littéral Lua entre
+        # guillemets ne s'étend jamais sur deux lignes
         for line_num, line_content in self.lines_with_numbers:
-            if search_quoted in line_content:
-                return line_num
-
-        # Si pas trouvé avec guillemets doubles, essayer sans (cas des concaténations)
-        for line_num, line_content in self.lines_with_numbers:
-            if search_text in line_content:
+            if find_literal_positions(line_content, search_text):
                 return line_num
 
         # Par défaut, retourner la première ligne

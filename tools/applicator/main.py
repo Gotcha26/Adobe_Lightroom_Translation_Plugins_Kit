@@ -58,7 +58,7 @@ from core.i18n import _
 import glob
 import subprocess
 
-from tools.extractor.utils import build_loc_call as _build_loc_call
+from tools.extractor.utils import build_loc_call as _build_loc_call, find_literal_positions
 from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
@@ -249,18 +249,13 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
         original_text = member['original_text']
         # Guillemets doubles uniquement (conformément au SDK Adobe et à Extractor)
         search_str = f'"{original_text}"'
-        # Trouver toutes les occurrences de cette chaine
-        start = 0
-        while True:
-            pos = result.find(search_str, start)
-            if pos == -1:
-                break
-            # Verifier que cette position n'est pas deja utilisee
+        # Littéraux entiers seulement : jamais la fin d'un autre littéral (#34)
+        for pos in find_literal_positions(result, original_text):
+            # Utiliser la premiere occurrence non-utilisee
             if pos not in used_positions:
                 members_with_pos.append((pos, member, search_str))
                 used_positions.add(pos)
-                break  # Utiliser la premiere occurrence non-utilisee
-            start = pos + 1  # Chercher la suivante
+                break
 
     # Trier par position decroissante pour ne pas decaler les indices
     members_with_pos.sort(key=lambda x: x[0], reverse=True)

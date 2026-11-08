@@ -35,7 +35,7 @@ from tools.translator.common import (
 )
 
 from .models import ExtractedString
-from .utils import build_loc_call, escape_lua_string
+from .utils import build_loc_call, escape_lua_string, find_literal_positions
 
 
 class OutputGenerator:
@@ -227,18 +227,21 @@ class OutputGenerator:
 
         Remplace chaque chaîne originale par son appel LOC correspondant.
         """
+        # Position de chaque entrée : premier littéral entier non encore attribué
+        # (recherche ancrée, jamais à l'intérieur d'un autre littéral)
+        used_positions = set()
+        positioned = []
+        for entry in entries:
+            for pos in find_literal_positions(original_line, entry.original_text):
+                if pos not in used_positions:
+                    used_positions.add(pos)
+                    positioned.append((pos, entry))
+                    break
+
+        # Remplacer par position décroissante pour ne pas décaler les indices
         result = original_line
-
-        # Trier par position décroissante pour ne pas décaler les indices
-        sorted_entries = sorted(entries, key=lambda e: original_line.find(f'"{e.original_text}"'), reverse=True)
-
-        for entry in sorted_entries:
-            search_str = f'"{entry.original_text}"'
-            replace_str = self._build_loc_call(entry)
-
-            # Remplacer une seule occurrence (la première trouvée depuis la fin)
-            pos = result.rfind(search_str)
-            if pos != -1:
-                result = result[:pos] + replace_str + result[pos + len(search_str):]
+        for pos, entry in sorted(positioned, key=lambda item: item[0], reverse=True):
+            search_len = len(entry.original_text) + 2  # avec les guillemets
+            result = result[:pos] + self._build_loc_call(entry) + result[pos + search_len:]
 
         return result

@@ -171,6 +171,23 @@ _ANY_LUA_LITERAL_PATTERN = re.compile(
 )
 
 
+def find_literal_positions(line: str, original_text: str) -> List[int]:
+    """
+    Positions des littéraux entiers "…" de la ligne dont le contenu source
+    (forme échappée) vaut original_text.
+
+    La recherche est ancrée sur les bornes des littéraux énumérés : elle ne
+    trouve jamais `"X"` à l'intérieur d'un autre littéral (ex. la fin de
+    `"Open \\"X\\""`), ni entre la fin d'un littéral et le début du suivant.
+
+    Returns:
+        Positions (guillemet ouvrant) par ordre croissant
+    """
+    quoted = f'"{original_text}"'
+    return [match.start() for match in _ANY_LUA_LITERAL_PATTERN.finditer(line)
+            if match.group(0) == quoted]
+
+
 def _mask_string_literals(text: str) -> str:
     """Remplace chaque littéral Lua de la ligne par des espaces (même longueur)."""
     return _ANY_LUA_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
