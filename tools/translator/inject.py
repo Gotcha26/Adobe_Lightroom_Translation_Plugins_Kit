@@ -33,7 +33,7 @@ from .common import (
 )
 from .config_loader import get_reference_lang
 from core.i18n import _
-from core.paths import backup_path_for
+from core.paths import backup_path_for, local_backup_path, get_translator_backup_dir
 
 
 def _marker_value(line, markers):
@@ -140,7 +140,7 @@ def run_inject(translate_file: str, target_file: str,
         target_file: Fichier TranslatedStrings_xx.txt cible
         update_dir: Répertoire contenant UPDATE_{lang}.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
-        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
 
     Returns:
         Statistiques d'injection
@@ -170,8 +170,10 @@ def run_inject(translate_file: str, target_file: str,
                 os.makedirs(os.path.dirname(backup_path), exist_ok=True)
                 shutil.copy2(target_file, backup_path)
             else:
-                # Backup classique à côté du fichier
-                shutil.copy2(target_file, target_file + '.bak')
+                # Par défaut : sous-dossier backups/ à côté du fichier cible
+                backup_path = local_backup_path(target_file)
+                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+                shutil.copy2(target_file, backup_path)
     else:
         existing = {}
 
@@ -213,7 +215,8 @@ def run_inject(translate_file: str, target_file: str,
 
 def run_inject_from_dir(translate_dir: str, locales_dir: str,
                         update_dir: Optional[str] = None,
-                        create_backup: bool = True) -> Dict[str, Dict]:
+                        create_backup: bool = True,
+                        backup_dir: Optional[str] = None) -> Dict[str, Dict]:
     """
     Injecte tous les fichiers TRANSLATE_*.txt dans les fichiers de langue.
 
@@ -222,6 +225,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
         locales_dir: Répertoire des fichiers TranslatedStrings_*.txt
         update_dir: Répertoire UPDATE (défaut: translate_dir)
         create_backup: Créer des sauvegardes .bak
+        backup_dir: Répertoire des sauvegardes (défaut: backups/ à côté de chaque fichier cible)
 
     Returns:
         Statistiques par langue
@@ -240,7 +244,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
             target_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
 
             try:
-                stats = run_inject(translate_file, target_file, update_dir, create_backup)
+                stats = run_inject(translate_file, target_file, update_dir, create_backup, backup_dir)
                 results[lang] = stats
             except Exception as e:
                 results[lang] = {'error': str(e)}
@@ -292,7 +296,8 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
-            stats = run_inject(translate_file, target_file, update_dir)
+            stats = run_inject(translate_file, target_file, update_dir,
+                               backup_dir=get_translator_backup_dir(plugin_path))
 
             print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
             print(_("{var0}  RÉSULTAT{var1}").format(var0=c.TITLE, var1=c.RESET))
@@ -303,7 +308,7 @@ def menu_inject(plugin_path: str = ""):
             print(_("  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=stats['total'], var4=c.RESET))
             print()
             print(c.success(_("Fichier mis à jour: {var0}{target_file}{var2}").format(var0=c.VALUE, target_file=target_file, var2=c.RESET)))
-            print(_("{var0}  (Backup .bak créé){var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("{var0}  (Backup .bak créé dans backups/){var1}").format(var0=c.DIM, var1=c.RESET))
 
             return stats
 
@@ -331,7 +336,8 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
-            results = run_inject_from_dir(translate_dir, locales_dir, update_dir)
+            results = run_inject_from_dir(translate_dir, locales_dir, update_dir,
+                                          backup_dir=get_translator_backup_dir(plugin_path))
 
             if results:
                 print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")

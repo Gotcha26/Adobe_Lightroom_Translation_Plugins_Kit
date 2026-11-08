@@ -262,6 +262,54 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
     return all_outputs[0] if all_outputs else None
 
 
+def find_update_dir_in(directory: str, filename: str) -> Optional[str]:
+    """Renvoie `directory` ou `directory/compare` s'il contient `filename`, sinon None."""
+    for candidate in (directory, os.path.join(directory, "compare")):
+        if os.path.isfile(os.path.join(candidate, filename)):
+            return candidate
+    return None
+
+
+def find_latest_update_dir(plugin_path: str, filename: str) -> Optional[str]:
+    """
+    Trouve le dossier Translator le plus récent contenant le fichier UPDATE.
+
+    Parcourt les sorties Translator du plus récent au plus ancien et renvoie le
+    premier dossier contenant `filename`, directement ou dans un sous-dossier
+    `compare/` (cas d'AUTOSYNC). Les sorties sans UPDATE (COMPARE-LANGS,
+    ADD LANGUAGE) sont ignorées.
+
+    Args:
+        plugin_path: Chemin vers le plugin Lightroom
+        filename: Nom du fichier UPDATE recherché (ex: "UPDATE_en.json")
+
+    Returns:
+        Le dossier qui contient réellement le fichier, ou None si aucun
+    """
+    for output in find_all_tool_outputs(plugin_path, "Translator"):
+        found = find_update_dir_in(output, filename)
+        if found:
+            return found
+    return None
+
+
+def get_translator_backup_dir(plugin_path: str) -> Optional[str]:
+    """
+    Dossier de sauvegarde d'une opération Translator : `<sortie Translator>/backups`.
+
+    Renvoie None si `plugin_path` est vide (le `.bak` ira alors dans `backups/`
+    à côté du fichier cible). Le dossier n'est créé qu'au moment de la copie.
+    """
+    if not plugin_path:
+        return None
+    return os.path.join(get_tool_output_path(plugin_path, "Translator", create=False), "backups")
+
+
+def local_backup_path(file_path: str) -> str:
+    """Chemin de sauvegarde par défaut : `backups/<nom>.bak` à côté du fichier."""
+    return os.path.join(os.path.dirname(file_path), "backups", os.path.basename(file_path) + '.bak')
+
+
 def is_valid_plugin_path(path: str) -> bool:
     """
     Vérifie si le chemin est un plugin Lightroom valide.

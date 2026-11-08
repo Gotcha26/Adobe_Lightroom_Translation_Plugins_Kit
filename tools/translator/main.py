@@ -49,7 +49,7 @@ import argparse
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from core.paths import get_tool_output_path, find_latest_tool_output
+from core.paths import get_tool_output_path, find_latest_update_dir, get_translator_backup_dir
 from core.colors import Colors
 from core.i18n import _
 
@@ -470,9 +470,10 @@ Exemples:
             # Determiner le dossier UPDATE
             update_dir = args.update
             if not update_dir and hasattr(args, 'plugin_path') and args.plugin_path:
-                update_dir = find_latest_tool_output(args.plugin_path, "Translator")
+                update_dir = find_latest_update_dir(args.plugin_path, get_update_filename())
                 if not update_dir:
-                    print(c.error(_("Aucun dossier Translator trouvé dans __i18n_tmp__/")))
+                    print(c.error(_("Aucun dossier Translator contenant {update_filename} trouvé dans __i18n_tmp__/").format(
+                        update_filename=get_update_filename())))
                     print(f"{c.DIM}        Lancez d'abord la commande 'compare'.{c.RESET}")
                     sys.exit(1)
                 print(_("{var0}[INFO]{var1} Auto-détection: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
@@ -501,18 +502,20 @@ Exemples:
             translate_dir = args.translate_dir
             update_dir = args.update
             if hasattr(args, 'plugin_path') and args.plugin_path and not translate_dir:
-                translate_dir = find_latest_tool_output(args.plugin_path, "Translator")
+                translate_dir = find_latest_update_dir(args.plugin_path, get_update_filename())
                 update_dir = update_dir or translate_dir
                 if translate_dir:
                     print(_("{var0}[INFO]{var1} Auto-détection: {var2}{translate_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, translate_dir=translate_dir, var4=c.RESET))
 
+            plugin_path = getattr(args, 'plugin_path', None)
+            backup_dir = get_translator_backup_dir(plugin_path)
             if args.translate and args.target:
                 print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
-                stats = run_inject(args.translate, args.target, update_dir)
+                stats = run_inject(args.translate, args.target, update_dir, backup_dir=backup_dir)
                 print(c.success(_("{var0}{var1}{var2} traduites + {var3}{var4}{var5} EN par défaut").format(var0=c.GREEN, var1=stats['injected'], var2=c.RESET, var3=c.CYAN, var4=stats['from_ref'], var5=c.RESET)))
             elif translate_dir and args.locales:
                 print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
-                results = run_inject_from_dir(translate_dir, args.locales, update_dir)
+                results = run_inject_from_dir(translate_dir, args.locales, update_dir, backup_dir=backup_dir)
                 for lang, stats in sorted(results.items()):
                     if 'error' in stats:
                         print(_("{var0}[{var1}]{var2} {var3}[ERREUR]{var4}: {var5}").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.ERROR, var4=c.RESET, var5=stats['error']))
@@ -531,7 +534,7 @@ Exemples:
             # Auto-detection du dossier update si plugin_path fourni
             update_dir = args.update
             if hasattr(args, 'plugin_path') and args.plugin_path and not update_dir:
-                update_dir = find_latest_tool_output(args.plugin_path, "Translator")
+                update_dir = find_latest_update_dir(args.plugin_path, get_update_filename())
                 if update_dir:
                     print(_("{var0}[INFO]{var1} Auto-détection: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
 
@@ -540,7 +543,8 @@ Exemples:
                 sys.exit(1)
 
             print(_("{var0}[INFO]{var1} Synchronisation...").format(var0=c.INFO, var1=c.RESET))
-            results = run_sync(args.ref, args.locales, update_dir)
+            results = run_sync(args.ref, args.locales, update_dir,
+                               get_translator_backup_dir(getattr(args, 'plugin_path', None)))
 
             if not results:
                 print(c.warning(_("Aucune langue étrangère trouvée.")))

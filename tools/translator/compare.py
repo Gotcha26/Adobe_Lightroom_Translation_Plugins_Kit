@@ -26,6 +26,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import json
 import shutil
+import tempfile
 from datetime import datetime
 from typing import Dict, Optional
 
@@ -98,19 +99,19 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     Args:
         old_path: Ancien fichier EN (ou répertoire)
         new_path: Nouveau fichier EN (ou répertoire)
-        output_dir: Répertoire de sortie (défaut: timestampé)
+        output_dir: Répertoire de sortie (défaut: dossier temporaire système)
 
     Returns:
         Chemin du répertoire de sortie
     """
     # Résoudre les chemins
-    _, old_file = resolve_path(old_path)
-    _, new_file = resolve_path(new_path)
+    _dir, old_file = resolve_path(old_path)
+    _dir, new_file = resolve_path(new_path)
 
     # Créer répertoire de sortie
     if not output_dir:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), timestamp)
+        output_dir = tempfile.mkdtemp(prefix="i18n_kit_")
+        print(_("Dossier de sortie temporaire : {path}").format(path=output_dir))
     os.makedirs(output_dir, exist_ok=True)
 
     # Parser les fichiers

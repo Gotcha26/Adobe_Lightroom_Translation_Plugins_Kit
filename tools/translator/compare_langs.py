@@ -32,6 +32,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import json
+import tempfile
 from datetime import datetime
 from typing import Dict, Optional
 
@@ -152,8 +153,8 @@ def run_compare_langs(file1_path: str, file2_path: str,
         Chemin du répertoire de sortie
     """
     # Résoudre les chemins
-    _, file1 = resolve_path(file1_path)
-    _, file2 = resolve_path(file2_path)
+    _dir, file1 = resolve_path(file1_path)
+    _dir, file2 = resolve_path(file2_path)
 
     # Auto-détecter les noms de langues depuis les noms de fichiers
     if not lang1_name:
@@ -163,11 +164,8 @@ def run_compare_langs(file1_path: str, file2_path: str,
 
     # Créer répertoire de sortie
     if not output_dir:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            f"compare_langs_{timestamp}"
-        )
+        output_dir = tempfile.mkdtemp(prefix="i18n_kit_")
+        print(_("Dossier de sortie temporaire : {path}").format(path=output_dir))
     os.makedirs(output_dir, exist_ok=True)
 
     # Parser les fichiers

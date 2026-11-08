@@ -34,7 +34,7 @@ from .common import (
 )
 from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
-from core.paths import backup_path_for
+from core.paths import backup_path_for, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
 
 
 # =============================================================================
@@ -54,7 +54,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         reference_path: Fichier de référence (ou répertoire)
         locales_dir: Répertoire des fichiers de langues
         update_dir: Répertoire contenant UPDATE_{lang}.json (optionnel)
-        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
 
     Returns:
         Dict par langue avec les statistiques
@@ -128,7 +128,9 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
             os.makedirs(os.path.dirname(backup_path), exist_ok=True)
             shutil.copy2(lang_file, backup_path)
         else:
-            shutil.copy2(lang_file, lang_file + '.bak')
+            backup_path = local_backup_path(lang_file)
+            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+            shutil.copy2(lang_file, backup_path)
     else:
         lang_strings = {}
 
@@ -253,6 +255,16 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
 # MENU INTERACTIF
 # =============================================================================
 
+def _resolve_update_dir(chosen, plugin_path):
+    """Dossier réellement porteur de l'UPDATE : le choix s'il en contient un, sinon le plus récent valide."""
+    filename = get_update_filename()
+    if chosen:
+        found = find_update_dir_in(chosen, filename)
+        if found:
+            return found
+    return find_latest_update_dir(plugin_path, filename)
+
+
 def menu_sync(plugin_path: str = ""):
     """Menu interactif pour SYNC.
 
@@ -279,6 +291,7 @@ def menu_sync(plugin_path: str = ""):
         # Auto-détection et sélection interactive si plugin_path fourni
         if plugin_path:
             update_dir = select_tool_output_dir(plugin_path, "Translator", "")
+            update_dir = _resolve_update_dir(update_dir, plugin_path)
             if update_dir:
                 print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
             else:
@@ -306,7 +319,7 @@ def menu_sync(plugin_path: str = ""):
 
     try:
         print(_("\n{var0}[INFO]{var1} Synchronisation en cours...").format(var0=c.INFO, var1=c.RESET))
-        results = run_sync(ref_path, locales_dir, update_dir)
+        results = run_sync(ref_path, locales_dir, update_dir, get_translator_backup_dir(plugin_path))
 
         if not results:
             print(c.warning(_("Aucune langue étrangère trouvée.")))

@@ -33,6 +33,7 @@ from .common import (
 )
 from .config_loader import get_update_filename, get_reference_lang
 from core.i18n import _
+from core.paths import find_latest_update_dir, find_update_dir_in
 
 
 # =============================================================================
@@ -190,6 +191,9 @@ def menu_extract(plugin_path: str = ""):
     update_dir = None
     if plugin_path:
         update_dir = select_tool_output_dir(plugin_path, "Translator", "")
+        # Le dossier choisi peut être une sortie sans UPDATE (COMPARE-LANGS, ADD LANGUAGE)
+        update_dir = (find_update_dir_in(update_dir, get_update_filename()) if update_dir else None) \
+            or find_latest_update_dir(plugin_path, get_update_filename())
         if update_dir:
             print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
         else:
