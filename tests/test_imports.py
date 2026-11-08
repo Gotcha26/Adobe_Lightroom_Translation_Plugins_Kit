@@ -46,19 +46,7 @@ MODULES = [
 ]
 
 
-# Modules cassés aujourd'hui : SyntaxError « keyword argument repeated: lang »
-# à addlang.py:483 (résidu auto-i18n), hors périmètre de la Task 1.
-BROKEN_SYNTAX = {"tools.translator.addlang", "tools.translator.main"}
-BROKEN_REASON = "SyntaxError addlang.py:483 (lang= répété) — à corriger dans une tâche ultérieure"
-
-
-@pytest.mark.parametrize(
-    "module",
-    [
-        pytest.param(m, marks=pytest.mark.xfail(strict=True, reason=BROKEN_REASON)) if m in BROKEN_SYNTAX else m
-        for m in MODULES
-    ],
-)
+@pytest.mark.parametrize("module", MODULES)
 def test_import_module(module):
     importlib.import_module(module)
 

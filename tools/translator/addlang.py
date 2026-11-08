@@ -48,6 +48,7 @@ from .common import (
     clear_screen, print_header, parse_translation_file,
     write_translation_file
 )
+from .config_loader import get_reference_lang, get_reference_filename, is_reference_lang
 
 c = Colors()
 
@@ -480,7 +481,7 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
     print(f"\n{c.INFO}Langues disponibles dans l'extraction:{c.RESET}")
     for i, lang in enumerate(available_langs, 1):
         status = _("{var0}[DÉJÀ INSTALLÉ]{var1}").format(var0=c.DIM, var1=c.RESET) if lang in installed_langs else ""
-        print(_("  {var0}{i}{var2}. {var3}{lang}{var5} (TranslatedStrings_{lang}.txt) {status}").format(var0=c.YELLOW, i=i, var2=c.RESET, var3=c.VALUE, lang=lang, var5=c.RESET, lang=lang, status=status))
+        print(_("  {var0}{i}{var2}. {var3}{lang}{var5} (TranslatedStrings_{lang}.txt) {status}").format(var0=c.YELLOW, i=i, var2=c.RESET, var3=c.VALUE, var5=c.RESET, status=status))
 
     print()
     user_input = input(_("{var0}Sélectionnez la langue à installer (numéro ou code langue): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()

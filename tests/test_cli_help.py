@@ -12,12 +12,7 @@ import pytest
     [
         "tools.extractor.main",
         "tools.applicator.main",
-        pytest.param(
-            "tools.translator.main",
-            marks=pytest.mark.xfail(
-                strict=True, reason="SyntaxError addlang.py:483 (lang= répété) — à corriger dans une tâche ultérieure"
-            ),
-        ),
+        "tools.translator.main",
     ],
 )
 def test_cli_help(module, toolkit_root):
