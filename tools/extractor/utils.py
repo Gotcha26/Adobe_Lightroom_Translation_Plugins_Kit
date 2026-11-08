@@ -267,6 +267,19 @@ def _mask_string_literals(text: str) -> str:
     return _ANY_LUA_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
 
 
+def block_comment_close_end(line: str, open_level: str, start: int = 0) -> int | None:
+    """
+    Offset de fin d'un commentaire bloc de niveau open_level dans la ligne.
+
+    Returns:
+        Position qui suit le délimiteur fermant `]=*]` (à partir de start),
+        ou None si le commentaire ne se ferme pas sur cette ligne
+    """
+    closing = ']' + open_level + ']'
+    idx = line.find(closing, start)
+    return None if idx == -1 else idx + len(closing)
+
+
 def block_comment_state(line: str, open_level: str | None) -> str | None:
     """
     Calcule l'état « commentaire bloc » Lua à la fin d'une ligne.
@@ -286,15 +299,57 @@ def block_comment_state(line: str, open_level: str | None) -> str | None:
     pos = 0
     while True:
         if open_level is not None:
-            closing = ']' + open_level + ']'
-            idx = line.find(closing, pos)
-            if idx == -1:
+            close_end = block_comment_close_end(line, open_level, pos)
+            if close_end is None:
                 return open_level
-            pos = idx + len(closing)
+            pos = close_end
             open_level = None
 
         rest = _mask_string_literals(line[pos:])
         dash = rest.find('--')
+        if dash == -1:
+            return None
+        opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
+        if not opening:
+            return None  # Commentaire de ligne : le reste est ignoré
+        open_level = opening.group(1)
+        pos += opening.end()
+
+
+def code_span(line: str, open_level: str | None) -> Tuple[int, int] | None:
+    """
+    Zone de code (début, fin) d'une ligne, hors commentaires.
+
+    Le début suit les commentaires de tête : fin du commentaire bloc ouvert
+    au début de la ligne (`]]`, `]=*]` de même niveau), puis d'éventuels
+    commentaires bloc ouverts et fermés avant le code. La fin est le premier
+    commentaire (`--`, bloc ou ligne) hors chaîne qui suit le code, ou la fin
+    de la ligne. Le code éventuel après un second commentaire bloc fermé sur
+    la même ligne n'est pas inclus.
+
+    Args:
+        line: La ligne de code Lua
+        open_level: Niveau du commentaire bloc ouvert au début de la ligne
+                    (voir block_comment_state), ou None
+
+    Returns:
+        (début, fin) en positions de la ligne, ou None si la ligne ne
+        contient aucun code
+    """
+    pos = 0
+    while True:
+        if open_level is not None:
+            close_end = block_comment_close_end(line, open_level, pos)
+            if close_end is None:
+                return None
+            pos = close_end
+            open_level = None
+
+        rest = _mask_string_literals(line[pos:])
+        dash = rest.find('--')
+        end = pos + dash if dash != -1 else len(line.rstrip('\r\n'))
+        if line[pos:end].strip():
+            return pos, end
         if dash == -1:
             return None
         opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)

@@ -15,8 +15,8 @@ from tools.extractor.main import run_extraction
 from tools.extractor.models import ExtractedString
 from tools.extractor.output import OutputGenerator
 from tools.extractor.utils import (
-    VERBATIM_BACKSLASH, escape_lua_string, find_literal_positions, log_call_spans,
-    unescape_lua_string
+    VERBATIM_BACKSLASH, code_span, escape_lua_string, find_literal_positions,
+    log_call_spans, unescape_lua_string
 )
 
 
@@ -232,3 +232,58 @@ def test_log_literals_skipped_in_multiline_block(tmp_path):
                                     '  "Check the server"); log:warn("Upload failed badly")\n')
     texts = [e.base_text for e in _extract(plugin).extracted]
     assert texts == ["Upload failed", "Check the server"]
+
+
+# --- Point 2 : code après la fermeture d'un commentaire bloc --------------------
+
+def test_code_span():
+    assert code_span("  title = 1\n", None) == (0, 11)
+    assert code_span("  -- line comment", None) is None
+    assert code_span("   \n", None) is None
+    assert code_span("still inside", "") is None
+    assert code_span("  ]] title = 1", "") == (4, 14)
+    assert code_span("]] -- then a line comment", "") is None
+    assert code_span("]==] x", "==") == (4, 6)
+    assert code_span("x ]] y ]==] z", "==") == (11, 13)
+    line = '--[[ c ]] --[==[ d ]==] title = "X"'
+    assert code_span(line, None) == (line.index("]==]") + 4, len(line))
+    assert code_span("--[[ never closed", None) is None
+    # Le code s'arrête au commentaire suivant (bloc ou ligne), hors chaînes
+    line = ']] t = "a -- b" --[[ title = "old"'
+    assert code_span(line, "") == (2, line.index("--[["))
+    assert code_span('t = "x" -- "y"', None) == (0, 8)
+
+
+_CLOSING_SOURCE = (
+    '--[[\n'
+    '  title = "Old label two"\n'
+    ']] local t = { title = "After close" }\n'
+    '--[==[ title = "Inline old" ]==] local u = { title = "Inline after" }\n'
+    '--[[\n'
+    '  x ]] local v = { title = "Reopen first" } --[[ title = "Reopened old"\n'
+    '  title = "Still comment"\n'
+    ']]\n'
+)
+
+
+def test_code_after_block_comment_close_is_extracted(tmp_path):
+    plugin = _plugin_with(tmp_path, _CLOSING_SOURCE)
+    texts = [e.base_text for e in _extract(plugin).extracted]
+    assert texts == ["After close", "Inline after", "Reopen first"]
+
+
+def test_trailing_line_comment_is_not_extracted(tmp_path):
+    plugin = _plugin_with(tmp_path, 'local t = { title = "Real label" } -- title = "Commented label"\n')
+    assert [e.base_text for e in _extract(plugin).extracted] == ["Real label"]
+
+
+def test_code_after_block_comment_close_end_to_end(tmp_path, isolated_config):
+    plugin = _plugin_with(tmp_path, _CLOSING_SOURCE)
+    lua = _run_pipeline(plugin)
+    assert ']] local t = { title = LOC "$$$/Test/PWExport/AfterClose=After close" }\n' in lua
+    assert ('--[==[ title = "Inline old" ]==] '
+            'local u = { title = LOC "$$$/Test/PWExport/InlineAfter=Inline after" }\n') in lua
+    assert ('  x ]] local v = { title = LOC "$$$/Test/PWExport/ReopenFirst=Reopen first" }'
+            ' --[[ title = "Reopened old"\n') in lua
+    assert '  title = "Old label two"\n' in lua
+    assert '  title = "Still comment"\n' in lua

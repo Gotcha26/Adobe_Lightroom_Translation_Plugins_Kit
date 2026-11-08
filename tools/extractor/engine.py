@@ -35,7 +35,7 @@ from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
     is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape,
-    find_literal_positions, log_call_spans, blank_spans
+    find_literal_positions, log_call_spans, blank_spans, code_span
 )
 
 
@@ -227,21 +227,21 @@ class LocalizableStringExtractor:
         for line_num, line in enumerate(lines, 1):
             line_stripped = line.strip()
 
-            # Lignes dans un commentaire bloc (y compris la ligne de fermeture) : ignorées
-            if block_comment_level is not None:
-                block_comment_level = block_comment_state(line, block_comment_level)
-                continue
-
-            # Un commentaire bloc peut s'ouvrir sur cette ligne (en début ou après du code)
-            block_comment_level = block_comment_state(line, None)
-
-            # Ignorer les commentaires Lua
-            if line_stripped.startswith('--'):
-                continue
+            # Commentaires Lua : seule la zone de code de la ligne est analysée,
+            # le reste (fin d'un commentaire bloc ouvert plus haut, commentaire
+            # de ligne ou bloc ouvert après le code) est effacé par des espaces
+            # pour garder les colonnes de la ligne source.
+            level_at_start = block_comment_level
+            block_comment_level = block_comment_state(line, level_at_start)
+            span = code_span(line, level_at_start)
+            if span is None:
+                continue  # Ligne entièrement en commentaire
+            code_start, code_end = span
+            code_line = blank_spans(line, [(0, code_start), (code_end, len(line.rstrip('\r\n')))])
 
             # Gestion du contexte multi-ligne en cours
             if self.multi_line_ctx.active:
-                is_complete = self.multi_line_ctx.add_line(line_num, line)
+                is_complete = self.multi_line_ctx.add_line(line_num, code_line)
                 if is_complete:
                     # Traiter le bloc complet
                     # Extraire les chaînes du bloc combiné avec le contexte pour retrouver les lignes
@@ -256,9 +256,8 @@ class LocalizableStringExtractor:
             # CONTRAINTE 1: Ignorer les arguments des appels de log. Seuls ces
             # arguments sont effacés (espaces, colonnes inchangées) : le reste de
             # la ligne (`log:info("x"); title = "Export"`) est analysé normalement.
-            code_line = line
             if self.ignore_log:
-                code_line = self._blank_log_calls(line)
+                code_line = self._blank_log_calls(code_line)
 
             # EXTRACTION DES LOC EXISTANTS (même sans UI_CONTEXT_PATTERN)
             has_existing_loc = 'LOC "$$$/' in code_line
