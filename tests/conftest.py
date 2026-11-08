@@ -10,6 +10,21 @@ TOOLKIT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIXTURE_PLUGIN = os.path.join(TOOLKIT_ROOT, "tests", "fixtures", "plugin.lrplugin")
 
 
+@pytest.fixture(autouse=True)
+def _french_ui_language():
+    """Fige la langue d'interface sur le français (langue source) pour chaque test.
+
+    Les assertions portent sur des libellés français ; sans cela, le résultat
+    dépendrait de la langue du poste ou du runner CI.
+    """
+    from core import i18n
+
+    previous = i18n.get_current_language()
+    i18n.set_language("fr")
+    yield
+    i18n.set_language(previous)
+
+
 @pytest.fixture
 def toolkit_root() -> str:
     """Racine du dépôt."""
