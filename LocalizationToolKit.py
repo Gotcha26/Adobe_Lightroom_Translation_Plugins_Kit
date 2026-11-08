@@ -104,20 +104,29 @@ class ConfigManager:
         self.config_local_path = os.path.join(base_dir, CONFIG_LOCAL_FILE)
         self.shared: Dict = {}   # contenu de config.json (versionné)
         self.local: Dict = {}    # contenu de config.local.json (non versionné)
+        self.local_readable = True  # False si config.local.json existe mais est illisible
         self.config = self._load()
 
     @staticmethod
-    def _read_json(path: str, message: str) -> Dict:
-        """Lit un fichier JSON de configuration ; renvoie {} si absent ou illisible."""
+    def _read_json(path: str, message: str) -> Tuple[Dict, bool]:
+        """Lit un fichier JSON de configuration.
+
+        Renvoie (données, lisible). Un fichier absent donne ({}, True) : on peut
+        le créer. Un fichier présent mais illisible (JSON invalide, racine non-objet,
+        erreur d'encodage ou d'E/S) donne ({}, False) : il ne doit jamais être écrasé.
+        """
         if not os.path.exists(path):
-            return {}
+            return {}, True
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            return data if isinstance(data, dict) else {}
-        except Exception as e:
+        except (OSError, ValueError) as e:  # ValueError couvre JSONDecodeError et UnicodeDecodeError
             print(message.format(error=e))
-            return {}
+            return {}, False
+        if not isinstance(data, dict):
+            print(message.format(error=_("la racine doit être un objet JSON")))
+            return {}, False
+        return data, True
 
     # ------------------------------------------------------------------
     # Ordre de priorité :  DEFAULT_CONFIG  <  config.json  <  config.local.json
@@ -130,8 +139,9 @@ class ConfigManager:
         Les deux dictionnaires sont conservés séparément (self.shared / self.local)
         afin que save() n'écrive jamais l'un dans l'autre.
         """
-        self.shared = self._read_json(self.config_path, _("Erreur lecture config: {error}"))
-        self.local = self._read_json(self.config_local_path, _("Erreur lecture config locale: {error}"))
+        self.shared, _shared_ok = self._read_json(self.config_path, _("Erreur lecture config: {error}"))
+        self.local, self.local_readable = self._read_json(
+            self.config_local_path, _("Erreur lecture config locale: {error}"))
 
         config = {**DEFAULT_CONFIG, **self.shared, **self.local}
 
@@ -166,6 +176,11 @@ class ConfigManager:
         data, path = self._target()
         data[key] = value
         self.config[key] = value
+        if not self.local_readable:
+            # Fichier présent mais illisible : on ne l'écrase pas (valeur gardée en mémoire)
+            print(c.error(_("{file} est illisible : la modification n'est pas enregistrée. "
+                            "Corrigez ou supprimez ce fichier.").format(file=os.path.basename(path))))
+            return
         self.save()
         print(_("Configuration mise à jour dans {file}").format(file=os.path.basename(path)))
 

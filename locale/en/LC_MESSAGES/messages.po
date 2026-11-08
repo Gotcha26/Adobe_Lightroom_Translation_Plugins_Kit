@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalizationToolKit 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 15:51+0100\n"
+"POT-Creation-Date: 2026-11-08 16:22+0100\n"
 "PO-Revision-Date: 2026-11-08 15:15+0100\n"
 "Last-Translator: Julien Moreau <contact@julien-moreau.fr>\n"
 "Language-Team: English\n"
@@ -13,365 +13,377 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: LocalizationToolKit.py:133
+#: LocalizationToolKit.py:127
+msgid "la racine doit être un objet JSON"
+msgstr "the root must be a JSON object"
+
+#: LocalizationToolKit.py:142
 #, python-brace-format
 msgid "Erreur lecture config: {error}"
 msgstr "Config read error: {error}"
 
-#: LocalizationToolKit.py:134
+#: LocalizationToolKit.py:144
 #, python-brace-format
 msgid "Erreur lecture config locale: {error}"
 msgstr "Error reading local configuration: {error}"
 
-#: LocalizationToolKit.py:158
+#: LocalizationToolKit.py:168
 #, python-brace-format
 msgid "Erreur sauvegarde config: {error}"
 msgstr "Config save error: {error}"
 
-#: LocalizationToolKit.py:170
+#: LocalizationToolKit.py:181
+#, python-brace-format
+msgid ""
+"{file} est illisible : la modification n'est pas enregistrée. Corrigez ou "
+"supprimez ce fichier."
+msgstr ""
+"{file} is unreadable: the change is not saved. Fix or delete this file."
+
+#: LocalizationToolKit.py:185
 #, python-brace-format
 msgid "Configuration mise à jour dans {file}"
 msgstr "Configuration updated in {file}"
 
-#: LocalizationToolKit.py:176 LocalizationToolKit.py:181
-#: LocalizationToolKit.py:785 LocalizationToolKit.py:794
+#: LocalizationToolKit.py:191 LocalizationToolKit.py:196
+#: LocalizationToolKit.py:800 LocalizationToolKit.py:809
 msgid "(non défini)"
 msgstr "(not set)"
 
-#: LocalizationToolKit.py:179
+#: LocalizationToolKit.py:194
 msgid "Configuration actuelle:"
 msgstr "Current configuration:"
 
-#: LocalizationToolKit.py:182 LocalizationToolKit.py:795
+#: LocalizationToolKit.py:197 LocalizationToolKit.py:810
 msgid "Plugin path"
 msgstr "Plugin path"
 
-#: LocalizationToolKit.py:183 LocalizationToolKit.py:796
+#: LocalizationToolKit.py:198 LocalizationToolKit.py:811
 #: tools/extractor/menu.py:113 tools/extractor/menu.py:116
 #: tools/extractor/menu.py:196 tools/toolbox/delete_temp_dir.py:216
 msgid "Dossier temporaire"
 msgstr "Temporary folder"
 
-#: LocalizationToolKit.py:184 LocalizationToolKit.py:797
+#: LocalizationToolKit.py:199 LocalizationToolKit.py:812
 #: tools/toolbox/delete_temp_dir.py:217
 msgid "Chemin complet"
 msgstr "Full path"
 
-#: LocalizationToolKit.py:185 LocalizationToolKit.py:807
+#: LocalizationToolKit.py:200 LocalizationToolKit.py:822
 #: core/output_formatters.py:174 tools/extractor/menu.py:119
 msgid "Préfixe LOC"
 msgstr "LOC prefix"
 
-#: LocalizationToolKit.py:186 LocalizationToolKit.py:808
-#: LocalizationToolKit.py:878
+#: LocalizationToolKit.py:201 LocalizationToolKit.py:823
+#: LocalizationToolKit.py:893
 msgid "Langue par défaut"
 msgstr "Default language"
 
-#: LocalizationToolKit.py:195 LocalizationToolKit.py:817
+#: LocalizationToolKit.py:210 LocalizationToolKit.py:832
 #, python-brace-format
 msgid "Exécutions récentes dans {dir}/:"
 msgstr "Recent executions in {dir}/:"
 
-#: LocalizationToolKit.py:206 LocalizationToolKit.py:826
+#: LocalizationToolKit.py:221 LocalizationToolKit.py:841
 msgid "(aucune)"
 msgstr "(none)"
 
-#: LocalizationToolKit.py:287
+#: LocalizationToolKit.py:302
 msgid "Dossier temporaire pour les outils de localisation"
 msgstr "Temporary folder for localization tools"
 
-#: LocalizationToolKit.py:290
+#: LocalizationToolKit.py:305
 #, python-brace-format
 msgid "Ajouté '{line}' au .gitignore"
 msgstr "Added '{line}' to .gitignore"
 
-#: LocalizationToolKit.py:294
+#: LocalizationToolKit.py:309
 #, python-brace-format
 msgid "Impossible d'ajouter au .gitignore: {error}"
 msgstr "Cannot add to .gitignore: {error}"
 
-#: LocalizationToolKit.py:322
+#: LocalizationToolKit.py:337
 #, python-brace-format
 msgid "Impossible de lire le .gitignore: {error}"
 msgstr "Cannot read .gitignore: {error}"
 
-#: LocalizationToolKit.py:329
+#: LocalizationToolKit.py:344
 #, python-brace-format
 msgid "Le dossier temporaire '{dir}' n'est pas dans le .gitignore"
 msgstr "Temporary folder '{dir}' is not in .gitignore"
 
-#: LocalizationToolKit.py:330
+#: LocalizationToolKit.py:345
 msgid "Voulez-vous l'ajouter automatiquement ?"
 msgstr "Do you want to add it automatically?"
 
-#: LocalizationToolKit.py:331
+#: LocalizationToolKit.py:346
 msgid "Ligne à ajouter:"
 msgstr "Line to add:"
 
-#: LocalizationToolKit.py:333
+#: LocalizationToolKit.py:348
 msgid "Ajouter au .gitignore? [O/n]:"
 msgstr "Add to .gitignore? [Y/n]:"
 
-#: LocalizationToolKit.py:354
+#: LocalizationToolKit.py:369
 msgid "(pas de dépôt git)"
 msgstr "(no git repository)"
 
-#: LocalizationToolKit.py:360
+#: LocalizationToolKit.py:375
 msgid "Absent"
 msgstr "Missing"
 
-#: LocalizationToolKit.py:366
+#: LocalizationToolKit.py:381
 msgid "Erreur lecture"
 msgstr "Read error"
 
-#: LocalizationToolKit.py:377
+#: LocalizationToolKit.py:392
 msgid "Exception .gitignore - sera ajouté"
 msgstr ".gitignore exception - will be added"
 
-#: LocalizationToolKit.py:378
+#: LocalizationToolKit.py:393
 msgid "Exception .gitignore - manquant"
 msgstr ".gitignore exception - missing"
 
-#: LocalizationToolKit.py:408
+#: LocalizationToolKit.py:423
 #, python-brace-format
 msgid "Script introuvable: {path}"
 msgstr "Script not found: {path}"
 
-#: LocalizationToolKit.py:428
+#: LocalizationToolKit.py:443
 msgid "Lancement:"
 msgstr "Running:"
 
-#: LocalizationToolKit.py:429
+#: LocalizationToolKit.py:444
 msgid "Répertoire:"
 msgstr "Directory:"
 
-#: LocalizationToolKit.py:440
+#: LocalizationToolKit.py:455
 #, python-brace-format
 msgid "[ERREUR] Erreur exécution: {error}"
 msgstr "[ERROR] Execution error: {error}"
 
-#: LocalizationToolKit.py:448
+#: LocalizationToolKit.py:463
 msgid "Erreur: Script Extractor introuvable"
 msgstr "Error: Script Extractor not found"
 
-#: LocalizationToolKit.py:486
+#: LocalizationToolKit.py:501
 msgid "Erreur: Script Applicator introuvable"
 msgstr "Error: Script Applicator not found"
 
-#: LocalizationToolKit.py:500
+#: LocalizationToolKit.py:515
 msgid "[ERREUR] Aucune extraction précédente. Lancez d'abord l'Extractor."
 msgstr "[ERROR] No previous extraction. Run Extractor first."
 
-#: LocalizationToolKit.py:519 LocalizationToolKit.py:595
+#: LocalizationToolKit.py:534 LocalizationToolKit.py:610
 msgid "Erreur: Script Translator introuvable"
 msgstr "Error: Script Translator not found"
 
-#: LocalizationToolKit.py:532
+#: LocalizationToolKit.py:547
 msgid "[ERREUR] Plugin non configuré."
 msgstr "[ERROR] Plugin not configured."
 
-#: LocalizationToolKit.py:545
+#: LocalizationToolKit.py:560
 msgid "Erreur: Script Restore introuvable"
 msgstr "Error: Restore script not found"
 
-#: LocalizationToolKit.py:559
+#: LocalizationToolKit.py:574
 msgid "Erreur: Script Delete introuvable"
 msgstr "Error: Script Delete not found"
 
-#: LocalizationToolKit.py:600 LocalizationToolKit.py:916
-#: LocalizationToolKit.py:926
+#: LocalizationToolKit.py:615 LocalizationToolKit.py:931
+#: LocalizationToolKit.py:941
 msgid "Plugin non configuré!"
 msgstr "Plugin not configured!"
 
-#: LocalizationToolKit.py:657
+#: LocalizationToolKit.py:672
 msgid "Plugin non configuré ou introuvable"
 msgstr "Plugin not configured or not found"
 
-#: LocalizationToolKit.py:669
+#: LocalizationToolKit.py:684
 msgid "OUTILS DE LOCALISATION"
 msgstr "LOCALIZATION TOOLS"
 
-#: LocalizationToolKit.py:671
+#: LocalizationToolKit.py:686
 msgid "Extractor      - Extraire les chaînes"
 msgstr "Extractor      - Extract strings"
 
-#: LocalizationToolKit.py:672
+#: LocalizationToolKit.py:687
 msgid "Applicator     - Appliquer les localisations"
 msgstr "Applicator     - Apply localizations"
 
-#: LocalizationToolKit.py:673
+#: LocalizationToolKit.py:688
 msgid "Translator     - Gérer les traductions"
 msgstr "Translator     - Manage translations"
 
-#: LocalizationToolKit.py:674
+#: LocalizationToolKit.py:689
 msgid "Restore        - Restaurer les backups"
 msgstr "Restore        - Restore backups"
 
-#: LocalizationToolKit.py:675
+#: LocalizationToolKit.py:690
 msgid "Supprimer"
 msgstr "Delete   "
 
-#: LocalizationToolKit.py:675
+#: LocalizationToolKit.py:690
 msgid "Nettoyer le dossier temporaire"
 msgstr "Clean temporary folder"
 
-#: LocalizationToolKit.py:679
+#: LocalizationToolKit.py:694
 msgid "MISE A JOUR EXPRESS"
 msgstr "EXPRESS UPDATE"
 
-#: LocalizationToolKit.py:682
+#: LocalizationToolKit.py:697
 msgid "AUTO-SYNC ⭐    - Maintenir à jour"
 msgstr "AUTO-SYNC ⭐    - Keep up to date"
 
-#: LocalizationToolKit.py:683
+#: LocalizationToolKit.py:698
 msgid "(code lua + traductions)"
 msgstr "(Lua code + translations)"
 
-#: LocalizationToolKit.py:685
+#: LocalizationToolKit.py:700
 msgid "AUTO-SYNC      - Maintenir à jour"
 msgstr "AUTO-SYNC      - Keep up to date"
 
-#: LocalizationToolKit.py:686
+#: LocalizationToolKit.py:701
 msgid "(aucun TranslatedStrings)"
 msgstr "(no TranslatedStrings)"
 
-#: LocalizationToolKit.py:688
+#: LocalizationToolKit.py:703
 msgid "CONFIGURATION"
 msgstr "SETTINGS"
 
-#: LocalizationToolKit.py:690 tools/toolbox/restore_backup.py:291
+#: LocalizationToolKit.py:705 tools/toolbox/restore_backup.py:291
 msgid "Configuration du plugin"
 msgstr "Plugin settings"
 
-#: LocalizationToolKit.py:693 tools/applicator/menu.py:163
+#: LocalizationToolKit.py:708 tools/applicator/menu.py:163
 #: tools/extractor/menu.py:144
 msgid "Quitter"
 msgstr "Quit"
 
-#: LocalizationToolKit.py:699
+#: LocalizationToolKit.py:714
 msgid "Configuration du chemin du plugin"
 msgstr "Plugin path configuration"
 
-#: LocalizationToolKit.py:704 LocalizationToolKit.py:746
-#: LocalizationToolKit.py:867 core/menu_helpers.py:59
+#: LocalizationToolKit.py:719 LocalizationToolKit.py:761
+#: LocalizationToolKit.py:882 core/menu_helpers.py:59
 #: tools/applicator/menu.py:177 tools/extractor/menu.py:158
 msgid "Actuel:"
 msgstr "Current:"
 
-#: LocalizationToolKit.py:707 LocalizationToolKit.py:751
-#: LocalizationToolKit.py:882 tools/applicator/menu.py:171
+#: LocalizationToolKit.py:722 LocalizationToolKit.py:766
+#: LocalizationToolKit.py:897 tools/applicator/menu.py:171
 #: tools/extractor/menu.py:152 tools/extractor/menu.py:223
 #: tools/extractor/menu.py:239 tools/extractor/menu.py:257
 #: tools/toolbox/delete_temp_dir.py:178
 msgid "Exemples:"
 msgstr "Examples:"
 
-#: LocalizationToolKit.py:712
+#: LocalizationToolKit.py:727
 msgid "Nouveau chemin (ENTRÉE pour garder):"
 msgstr "New path (ENTER to keep):"
 
-#: LocalizationToolKit.py:724 tools/applicator/menu.py:202
+#: LocalizationToolKit.py:739 tools/applicator/menu.py:202
 #: tools/extractor/menu.py:183
 msgid "Les plugins Lightroom doivent se terminer par .lrplugin"
 msgstr "Lightroom plugins must end with .lrplugin"
 
-#: LocalizationToolKit.py:725 tools/applicator/menu.py:203
+#: LocalizationToolKit.py:740 tools/applicator/menu.py:203
 #: tools/applicator/menu.py:240 tools/extractor/menu.py:184
 msgid "Continuer quand même? [o/N]:"
 msgstr "Continue anyway? [y/N]:"
 
-#: LocalizationToolKit.py:727 tools/applicator/menu.py:205
+#: LocalizationToolKit.py:742 tools/applicator/menu.py:205
 #: tools/extractor/menu.py:186
 msgid "Configuration annulée"
 msgstr "Configuration cancelled"
 
-#: LocalizationToolKit.py:731
+#: LocalizationToolKit.py:746
 #, python-brace-format
 msgid "Plugin configuré: {path}"
 msgstr "Plugin configured: {path}"
 
-#: LocalizationToolKit.py:735
+#: LocalizationToolKit.py:750
 msgid "Sorties dans:"
 msgstr "Output in:"
 
-#: LocalizationToolKit.py:737 core/menu_helpers.py:84 core/menu_helpers.py:118
+#: LocalizationToolKit.py:752 core/menu_helpers.py:84 core/menu_helpers.py:118
 #: tools/applicator/menu.py:183 tools/extractor/menu.py:164
 msgid "Chemin inchangé"
 msgstr "Path unchanged"
 
-#: LocalizationToolKit.py:742
+#: LocalizationToolKit.py:757
 msgid "Configuration du dossier temporaire"
 msgstr "Temporary folder configuration"
 
-#: LocalizationToolKit.py:748
+#: LocalizationToolKit.py:763
 msgid "Ce dossier est créé dans le plugin pour stocker les"
 msgstr "This folder is created in the plugin to store"
 
-#: LocalizationToolKit.py:749
+#: LocalizationToolKit.py:764
 msgid "fichiers générés par les outils (extractions, backups, etc.)"
 msgstr "files generated by the tools (extractions, backups, etc.)"
 
-#: LocalizationToolKit.py:756
+#: LocalizationToolKit.py:771
 msgid "Nouveau nom (ENTRÉE pour garder):"
 msgstr "New name (ENTER to keep):"
 
-#: LocalizationToolKit.py:759
+#: LocalizationToolKit.py:774
 msgid "Nom inchangé"
 msgstr "Name unchanged"
 
-#: LocalizationToolKit.py:763
+#: LocalizationToolKit.py:778
 #, python-brace-format
 msgid "Caractères invalides dans le nom: {chars}"
 msgstr "Invalid characters in name: {chars}"
 
-#: LocalizationToolKit.py:768
+#: LocalizationToolKit.py:783
 #, python-brace-format
 msgid "Dossier temporaire: {name}"
 msgstr "Temporary folder: {name}"
 
-#: LocalizationToolKit.py:772
+#: LocalizationToolKit.py:787
 msgid "Nouveau chemin:"
 msgstr "New path:"
 
-#: LocalizationToolKit.py:792
+#: LocalizationToolKit.py:807
 msgid "Paramètres actuels:"
 msgstr "Current settings:"
 
-#: LocalizationToolKit.py:800 LocalizationToolKit.py:811
-#: LocalizationToolKit.py:847 LocalizationToolKit.py:895
+#: LocalizationToolKit.py:815 LocalizationToolKit.py:826
+#: LocalizationToolKit.py:862 LocalizationToolKit.py:910
 msgid "activé"
 msgstr "enabled"
 
-#: LocalizationToolKit.py:800 LocalizationToolKit.py:811
-#: LocalizationToolKit.py:847 LocalizationToolKit.py:895
+#: LocalizationToolKit.py:815 LocalizationToolKit.py:826
+#: LocalizationToolKit.py:862 LocalizationToolKit.py:910
 msgid "désactivé"
 msgstr "disabled"
 
-#: LocalizationToolKit.py:801
+#: LocalizationToolKit.py:816
 msgid "Auto-ajout .gitignore"
 msgstr "Auto-add .gitignore"
 
-#: LocalizationToolKit.py:804 LocalizationToolKit.py:860
+#: LocalizationToolKit.py:819 LocalizationToolKit.py:875
 msgid "activée"
 msgstr "enabled"
 
-#: LocalizationToolKit.py:804 LocalizationToolKit.py:860
+#: LocalizationToolKit.py:819 LocalizationToolKit.py:875
 msgid "désactivée"
 msgstr "disabled"
 
-#: LocalizationToolKit.py:805
+#: LocalizationToolKit.py:820
 msgid "Animation au démarrage"
 msgstr "Startup animation"
 
-#: LocalizationToolKit.py:812
+#: LocalizationToolKit.py:827
 msgid "Debug i18n"
 msgstr "Debug i18n"
 
-#: LocalizationToolKit.py:830
+#: LocalizationToolKit.py:845
 msgid "Entrez le numéro d'un paramètre pour le modifier, ou 0 pour revenir"
 msgstr "Enter the number of a setting to modify, or 0 to go back"
 
-#: LocalizationToolKit.py:833 LocalizationToolKit.py:907
+#: LocalizationToolKit.py:848 LocalizationToolKit.py:922
 #: core/menu_helpers.py:81 core/menu_helpers.py:115
 #: tools/applicator/main.py:712 tools/applicator/main.py:730
 #: tools/applicator/menu.py:318 tools/extractor/menu.py:332
@@ -380,85 +392,85 @@ msgstr "Enter the number of a setting to modify, or 0 to go back"
 msgid "Votre choix:"
 msgstr "Your choice:"
 
-#: LocalizationToolKit.py:848
+#: LocalizationToolKit.py:863
 #, python-brace-format
 msgid "Auto-ajout au .gitignore: {status}"
 msgstr "Auto-add to .gitignore: {status}"
 
-#: LocalizationToolKit.py:852
+#: LocalizationToolKit.py:867
 #, python-brace-format
 msgid "Le dossier '{dir}' sera automatiquement ajouté au .gitignore du plugin"
 msgstr "Folder '{dir}' will be automatically added to the plugin's .gitignore"
 
-#: LocalizationToolKit.py:854
+#: LocalizationToolKit.py:869
 #, python-brace-format
 msgid "Le dossier '{dir}' ne sera pas ajouté automatiquement au .gitignore"
 msgstr "Folder '{dir}' will not be automatically added to .gitignore"
 
-#: LocalizationToolKit.py:861
+#: LocalizationToolKit.py:876
 #, python-brace-format
 msgid "Animation au démarrage: {status}"
 msgstr "Startup animation: {status}"
 
-#: LocalizationToolKit.py:865
+#: LocalizationToolKit.py:880
 msgid "Préfixe de localisation"
 msgstr "Localization prefix"
 
-#: LocalizationToolKit.py:869
+#: LocalizationToolKit.py:884
 msgid "Nouveau préfixe (ENTRÉE pour garder):"
 msgstr "New prefix (ENTER to keep):"
 
-#: LocalizationToolKit.py:872 tools/extractor/menu.py:230
+#: LocalizationToolKit.py:887 tools/extractor/menu.py:230
 #, python-brace-format
 msgid "Préfixe: {prefix}"
 msgstr "Prefix: {prefix}"
 
-#: LocalizationToolKit.py:874
+#: LocalizationToolKit.py:889
 msgid "Préfixe inchangé"
 msgstr "Prefix unchanged"
 
-#: LocalizationToolKit.py:880
+#: LocalizationToolKit.py:895
 msgid "Actuelle:"
 msgstr "Current:"
 
-#: LocalizationToolKit.py:884
+#: LocalizationToolKit.py:899
 msgid "Nouvelle langue (ENTRÉE pour garder):"
 msgstr "New language (ENTER to keep):"
 
-#: LocalizationToolKit.py:887 tools/extractor/menu.py:246
+#: LocalizationToolKit.py:902 tools/extractor/menu.py:246
 #, python-brace-format
 msgid "Langue: {lang}"
 msgstr "Language: {lang}"
 
-#: LocalizationToolKit.py:889
+#: LocalizationToolKit.py:904
 msgid "Langue inchangée"
 msgstr "Language unchanged"
 
-#: LocalizationToolKit.py:896
+#: LocalizationToolKit.py:911
 #, python-brace-format
 msgid "Debug i18n: {status}"
 msgstr "Debug i18n: {status}"
 
-#: LocalizationToolKit.py:898 LocalizationToolKit.py:922
-#: LocalizationToolKit.py:932 LocalizationToolKit.py:939
-#: LocalizationToolKit.py:942 LocalizationToolKit.py:945
-#: LocalizationToolKit.py:955 LocalizationToolKit.py:960
+#: LocalizationToolKit.py:913 LocalizationToolKit.py:937
+#: LocalizationToolKit.py:947 LocalizationToolKit.py:954
+#: LocalizationToolKit.py:957 LocalizationToolKit.py:960
+#: LocalizationToolKit.py:970 LocalizationToolKit.py:975
 msgid "Appuyez sur ENTRÉE pour continuer..."
 msgstr "Press ENTER to continue..."
 
-#: LocalizationToolKit.py:910 tools/applicator/menu.py:322
+#: LocalizationToolKit.py:925 tools/applicator/menu.py:322
 #: tools/extractor/menu.py:336
 msgid "Au revoir!"
 msgstr "Goodbye!"
 
-#: LocalizationToolKit.py:951
+#: LocalizationToolKit.py:966
 msgid ""
 "AUTO-SYNC indisponible : aucun fichier TranslatedStrings_xx.txt à la racine "
 "du plugin."
 msgstr ""
 "AUTO-SYNC unavailable: no TranslatedStrings_xx.txt file at the plugin root."
 
-#: LocalizationToolKit.py:953
+#: LocalizationToolKit.py:968
 msgid ""
 "  → Première installation : lancez l'Extractor (1), puis la commande INSTALL "
 "du Translator (3)."
@@ -466,65 +478,65 @@ msgstr ""
 "  → First installation: run the Extractor (1), then the Translator INSTALL "
 "command (3)."
 
-#: LocalizationToolKit.py:959 core/menu_helpers.py:102 core/menu_helpers.py:135
+#: LocalizationToolKit.py:974 core/menu_helpers.py:102 core/menu_helpers.py:135
 #: tools/translator/addlang.py:450
 msgid "Choix invalide"
 msgstr "Invalid choice"
 
-#: LocalizationToolKit.py:973
+#: LocalizationToolKit.py:988
 msgid "Usage:"
 msgstr "Usage:"
 
-#: LocalizationToolKit.py:974
+#: LocalizationToolKit.py:989
 msgid "Menu interactif"
 msgstr "Interactive menu"
 
-#: LocalizationToolKit.py:975
+#: LocalizationToolKit.py:990
 msgid "Lancer Extractor"
 msgstr "Run Extractor"
 
-#: LocalizationToolKit.py:976
+#: LocalizationToolKit.py:991
 msgid "Lancer Applicator (menu)"
 msgstr "Run Applicator (menu)"
 
-#: LocalizationToolKit.py:978
+#: LocalizationToolKit.py:993
 msgid "Appliquer en CLI (simulation seulement avec --dry-run)"
 msgstr "Apply in CLI mode (simulation only with --dry-run)"
 
-#: LocalizationToolKit.py:979
+#: LocalizationToolKit.py:994
 msgid "Lancer Translator"
 msgstr "Run Translator"
 
-#: LocalizationToolKit.py:980
+#: LocalizationToolKit.py:995
 msgid "Lancer Restore"
 msgstr "Run Restore"
 
-#: LocalizationToolKit.py:981
+#: LocalizationToolKit.py:996
 msgid "Supprimer dossier temporaire"
 msgstr "Delete temporary folder"
 
-#: LocalizationToolKit.py:983
+#: LocalizationToolKit.py:998
 msgid "Mettre à jour plugin + langues (AUTOSYNC)"
 msgstr "Update plugin + languages (AUTOSYNC)"
 
-#: LocalizationToolKit.py:984
+#: LocalizationToolKit.py:999
 msgid "Afficher config"
 msgstr "Show config"
 
-#: LocalizationToolKit.py:985
+#: LocalizationToolKit.py:1000
 msgid "Afficher cette aide"
 msgstr "Show this help"
 
-#: LocalizationToolKit.py:986
+#: LocalizationToolKit.py:1001
 msgid "Codes retour : 0 succès, 1 erreur, 2 option inconnue."
 msgstr "Exit codes: 0 success, 1 error, 2 unknown option."
 
-#: LocalizationToolKit.py:1005
+#: LocalizationToolKit.py:1020
 #, python-brace-format
 msgid "Option inconnue: {option}"
 msgstr "Unknown option: {option}"
 
-#: LocalizationToolKit.py:1031
+#: LocalizationToolKit.py:1046
 #, python-brace-format
 msgid "Commande inconnue: {cmd}"
 msgstr "Unknown command: {cmd}"

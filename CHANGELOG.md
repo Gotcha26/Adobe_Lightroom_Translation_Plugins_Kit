@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- `ConfigManager` no longer overwrites an unreadable `config.local.json` (invalid JSON, non-object root, encoding or I/O error): the change is kept in memory, an error names the file, and the file on disk is left untouched (#35)
+
+---
+
 ## [1.1.0] - 2026-11-08
 
 > **Upgrade note:** `replacements.json` files produced by an Extractor older than 1.1.0
