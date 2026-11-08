@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration persistence (`config.json`)
 
 ### Technical
-- Python 3.7+ compatibility
+- Python 3.10+
 - Zero external dependencies (standard library only)
 - Adobe Lightroom SDK compliance
 
