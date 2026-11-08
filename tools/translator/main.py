@@ -28,8 +28,14 @@ Usage CLI :
     python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./Locales
     python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./Locales
     python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
+    python -m tools.translator.main --default-plugin ./plugin.lrplugin   # Menu, plugin pré-configuré
+    python -m tools.translator.main install --plugin-path ./plugin.lrplugin [--source DIR] [--dry-run]
+    python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de [--mode auto|extraction|create] [--force]
+    python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin [--yes]
 
-Date : 2026-02-03
+    Codes retour (install, addlang, autosync) : 0 succès, 1 erreur, 2 arguments invalides.
+
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -54,9 +60,9 @@ from .compare_langs import run_compare_langs, menu_compare_langs
 from .extract import run_extract, run_extract_all, menu_extract
 from .inject import run_inject, run_inject_from_dir, menu_inject
 from .sync import run_sync, generate_sync_report, menu_sync
-from .install import menu_install
-from .autosync import menu_autosync, run_autosync
-from .addlang import menu_addlang
+from .install import menu_install, run_install
+from .autosync import menu_autosync, run_autosync, print_autosync_report
+from .addlang import menu_addlang, run_addlang_cli
 
 # Instance couleurs
 c = Colors()
@@ -223,31 +229,12 @@ def main_menu(default_plugin_path: str = ""):
 # =============================================================================
 
 def main():
-    """Point d'entrée principal."""
+    """Point d'entrée principal.
 
-    # Vérifier si mode interactif (aucun argument ou seulement --default-plugin)
-    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
-        # Récupérer le chemin par défaut si fourni
-        default_plugin = ""
-        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
-            default_plugin = sys.argv[2]
-
-        main_menu(default_plugin)
-        return
-
-    # Mode AUTO-SYNC direct (lancé depuis LocalizationToolKit)
-    # --yes (5e argument optionnel) : appliquer sans confirmation
-    if (len(sys.argv) in (4, 5) and sys.argv[1] == '--plugin-path' and sys.argv[3] == '--autosync'
-            and (len(sys.argv) == 4 or sys.argv[4] == '--yes')):
-        plugin_path = sys.argv[2]
-        if not os.path.isdir(plugin_path):
-            print(c.error(_("Plugin introuvable: {plugin_path}").format(plugin_path=plugin_path)))
-            sys.exit(1)
-        results = run_autosync(plugin_path, assume_yes=len(sys.argv) == 5)
-        from .autosync import print_autosync_report
-        print_autosync_report(results, plugin_path)
-        return
-
+    Mode interactif si aucune sous-commande n'est donnée (--default-plugin
+    pré-configure alors le plugin du menu). Codes retour des sous-commandes
+    install / addlang / autosync : 0 succès, 1 erreur, 2 arguments invalides.
+    """
     parser = argparse.ArgumentParser(
         description=_("Gestionnaire de traductions multilingues"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -267,10 +254,38 @@ Exemples:
   python Translator_main.py compare-langs --file1 ./Locales/fr.txt --file2 ./Locales/de.txt
   python Translator_main.py extract --update ./20260128_143000 --locales ./Locales
   python Translator_main.py sync --update ./20260128_143000 --locales ./Locales
+
+  # Commandes essentielles:
+  python -m tools.translator.main install --plugin-path ./plugin.lrplugin
+  python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de
+  python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin --yes
         """
     )
+    parser.add_argument('--default-plugin', default="",
+                        help=_("Plugin pré-configuré pour le menu interactif"))
 
     subparsers = parser.add_subparsers(dest='command', help='Commande')
+
+    # install
+    install_parser = subparsers.add_parser('install', help=_("Première installation des fichiers de traduction"))
+    install_parser.add_argument('--plugin-path', required=True, help=_("Chemin du plugin"))
+    install_parser.add_argument('--source', default=None,
+                                help=_("Dossier source (défaut : dernière extraction)"))
+    install_parser.add_argument('--dry-run', action='store_true', help=_("Simulation sans modification"))
+
+    # addlang
+    addlang_parser = subparsers.add_parser('addlang', help=_("Ajouter ou réinstaller une langue"))
+    addlang_parser.add_argument('--plugin-path', required=True, help=_("Chemin du plugin"))
+    addlang_parser.add_argument('--lang', required=True, help=_("Code langue (ex: de)"))
+    addlang_parser.add_argument('--mode', choices=['auto', 'extraction', 'create'], default='auto',
+                                help=_("Source du fichier (défaut : auto)"))
+    addlang_parser.add_argument('--force', action='store_true', help=_("Écraser sans demander"))
+
+    # autosync
+    autosync_parser = subparsers.add_parser('autosync', help=_("Synchronisation automatique (AUTO-SYNC)"))
+    autosync_parser.add_argument('--plugin-path', required=True, help=_("Chemin du plugin"))
+    autosync_parser.add_argument('--yes', action='store_true',
+                                 help=_("Appliquer les remplacements Lua sans confirmation"))
 
     # compare
     compare_parser = subparsers.add_parser('compare', help='Compare deux versions EN')
@@ -315,7 +330,28 @@ Exemples:
 
     args = parser.parse_args()
 
-    if args.command == 'compare':
+    if args.command is None:
+        # Aucune sous-commande : menu interactif
+        main_menu(args.default_plugin)
+        return
+
+    if args.command == 'install':
+        ok = run_install(args.plugin_path, source_dir=args.source, dry_run=args.dry_run)
+        sys.exit(0 if ok else 1)
+
+    elif args.command == 'addlang':
+        ok = run_addlang_cli(args.plugin_path, args.lang, mode=args.mode, force=args.force)
+        sys.exit(0 if ok else 1)
+
+    elif args.command == 'autosync':
+        if not os.path.isdir(args.plugin_path):
+            print(c.error(_("Plugin introuvable: {plugin_path}").format(plugin_path=args.plugin_path)))
+            sys.exit(1)
+        results = run_autosync(args.plugin_path, assume_yes=args.yes)
+        print_autosync_report(results, args.plugin_path)
+        sys.exit(1 if results.get('errors') else 0)
+
+    elif args.command == 'compare':
         try:
             print(_("{var0}[INFO]{var1} Comparaison...").format(var0=c.INFO, var1=c.RESET))
             # Determiner le repertoire de sortie

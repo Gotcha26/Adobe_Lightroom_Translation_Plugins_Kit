@@ -27,13 +27,20 @@ Les outils génèrent leurs sorties dans:
 Usage CLI :
     python LocalizationToolkit.py               # Menu interactif
     python LocalizationToolkit.py extract       # Lancer Extractor
-    python LocalizationToolkit.py apply         # Lancer Applicator
+    python LocalizationToolkit.py apply         # Lancer Applicator (menu)
+    python LocalizationToolkit.py apply [--dry-run] [--yes]
+                                                # Applicator en CLI (simulation seulement avec --dry-run)
     python LocalizationToolkit.py translate     # Lancer Translator
     python LocalizationToolkit.py restore       # Lancer Restore
     python LocalizationToolkit.py delete        # Nettoyer dossier temporaire
-    python LocalizationToolkit.py --config      # Afficher configuration
+    python LocalizationToolkit.py autosync [--yes]
+                                                # AUTOSYNC (confirmation demandée sans --yes)
+    python LocalizationToolkit.py config        # Afficher configuration (alias : 7, --config)
 
-Date : 2026-02-04
+    Alias numériques identiques au menu : 1 extract … 6 autosync, 7 config.
+    Codes retour : 0 succès, 1 erreur, 2 option inconnue.
+
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -494,8 +501,15 @@ class ToolLauncher:
 
             return self._run_script(script, args)
 
-    def run_applicator(self, interactive: bool = True) -> bool:
-        """Lance l'applicateur."""
+    def run_applicator(self, interactive: bool = True, dry_run: bool = False,
+                       assume_yes: bool = False) -> bool:
+        """Lance l'applicateur.
+
+        Args:
+            interactive: Menu de l'Applicator (sinon mode CLI avec la config)
+            dry_run: Mode CLI : transmet --dry-run (seulement si demandé)
+            assume_yes: Mode CLI : transmet --yes (seulement si demandé)
+        """
         script = self._get_tool_path("applicator", "main.py")
 
         if not script:
@@ -519,8 +533,11 @@ class ToolLauncher:
             args = [
                 "--plugin-path", plugin_path,
                 "--extraction-dir", extraction_dir,
-                "--dry-run"
             ]
+            if dry_run:
+                args.append("--dry-run")
+            if assume_yes:
+                args.append("--yes")
 
             return self._run_script(script, args)
 
@@ -545,7 +562,8 @@ class ToolLauncher:
                 print(_("[ERREUR] Plugin non configuré."))
                 return False
 
-            args = ["--plugin-path", plugin_path]
+            # Seule commande Translator utilisable sans paramètre supplémentaire
+            args = ["autosync", "--plugin-path", plugin_path]
             return self._run_script(script, args)
 
 
@@ -598,8 +616,8 @@ class ToolLauncher:
         """Lance la commande AUTOSYNC du Translator.
 
         Args:
-            assume_yes: Si True (CLI non interactif), transmet --yes : les
-                remplacements Lua sont appliqués sans demander confirmation.
+            assume_yes: Si True (--yes donné par l'utilisateur), transmet --yes :
+                les remplacements Lua sont appliqués sans demander confirmation.
         """
         script = self._get_tool_path("translator", "main.py")
 
@@ -612,7 +630,7 @@ class ToolLauncher:
             print(_("Plugin non configuré!"))
             return False
 
-        args = ["--plugin-path", plugin_path, "--autosync"]
+        args = ["autosync", "--plugin-path", plugin_path]
         if assume_yes:
             args.append("--yes")
         return self._run_script(script, args)
@@ -686,22 +704,20 @@ class MainMenu:
         print(c.menu_option("4", _("Restore        - Restaurer les backups")))
         print(c.menu_option("5", f"{c.WARNING}" + _("Supprimer") + f"{c.RESET}      - " + _("Nettoyer le dossier temporaire")))
 
-        # Option AUTOSYNC conditionnée - n'apparaît que si des fichiers TranslatedStrings_xx.txt existent
+        # Numérotation fixe : 6 = AUTO-SYNC (grisé sans TranslatedStrings_xx.txt), 7 = Configuration
+        print()
+        print(c.title(_("MISE A JOUR EXPRESS")))
+        print(c.separator())
         if self.has_translated_strings():
-            print()
-            print(c.title(_("MISE A JOUR EXPRESS")))
-            print(c.separator())
             print(c.menu_option("6", _("AUTO-SYNC ⭐    - Maintenir à jour")))
             print(f"                       {_('(code lua + traductions)')}")
-            print()
-            print(c.title(_("CONFIGURATION")))
-            print(c.separator())
-            print(c.menu_option("7", _("Configuration du plugin")))
         else:
-            print()
-            print(c.title(_("CONFIGURATION")))
-            print(c.separator())
-            print(c.menu_option("6", _("Configuration du plugin")))
+            print(f"  {c.DIM}6. " + _("AUTO-SYNC      - Maintenir à jour") + " "
+                  + _("(aucun TranslatedStrings)") + f"{c.RESET}")
+        print()
+        print(c.title(_("CONFIGURATION")))
+        print(c.separator())
+        print(c.menu_option("7", _("Configuration du plugin")))
 
         print()
         print(c.menu_option("0", _("Quitter")))
@@ -918,9 +934,7 @@ class MainMenu:
             self.print_header()
             self.print_menu()
 
-            # Adapter le message de prompt en fonction de la présence d'AUTOSYNC
-            max_choice = "7" if self.has_translated_strings() else "6"
-            choice = input(c.prompt(_("Votre choix:") + f" (0-{max_choice}): ")).strip()
+            choice = input(c.prompt(_("Votre choix:") + " (0-7): ")).strip()
 
             if choice == '0':
                 print("\n" + _("Au revoir!"))
@@ -960,21 +974,17 @@ class MainMenu:
                 self.launcher.run_delete_temp_dir()
                 input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '6':
-                # Option 6 peut être AUTOSYNC ou Configuration selon la détection
+                # AUTO-SYNC : disponible seulement si des TranslatedStrings_xx.txt existent
                 if self.has_translated_strings():
-                    # C'est AUTOSYNC
                     self.launcher.run_autosync()
-                    input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
                 else:
-                    # C'est Configuration
-                    self.configure_paths()
+                    print(c.warning(_("AUTO-SYNC indisponible : aucun fichier TranslatedStrings_xx.txt "
+                                      "à la racine du plugin.")))
+                    print(_("  → Première installation : lancez l'Extractor (1), puis la commande "
+                            "INSTALL du Translator (3)."))
+                input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
             elif choice == '7':
-                # Option 7 n'existe que s'il y a des TranslatedString
-                if self.has_translated_strings():
-                    self.configure_paths()
-                else:
-                    print(c.error(_("Choix invalide")))
-                    input(f"{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
+                self.configure_paths()
             else:
                 print(c.error(_("Choix invalide")))
                 input(f"{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
@@ -984,21 +994,53 @@ class MainMenu:
 # POINT D'ENTRÉE
 # =============================================================================
 
+# Options CLI acceptées après la commande du lanceur
+CLI_OPTIONS = ("--dry-run", "--yes")
+
+
+def print_cli_usage():
+    """Affiche l'aide du mode CLI du lanceur."""
+    print("\n" + _("Usage:"))
+    print("  python LocalizationToolKit.py                     # " + _("Menu interactif"))
+    print("  python LocalizationToolKit.py extract   (1)       # " + _("Lancer Extractor"))
+    print("  python LocalizationToolKit.py apply     (2)       # " + _("Lancer Applicator (menu)"))
+    print("  python LocalizationToolKit.py apply [--dry-run] [--yes]  # "
+          + _("Appliquer en CLI (simulation seulement avec --dry-run)"))
+    print("  python LocalizationToolKit.py translate (3)       # " + _("Lancer Translator"))
+    print("  python LocalizationToolKit.py restore   (4)       # " + _("Lancer Restore"))
+    print("  python LocalizationToolKit.py delete    (5)       # " + _("Supprimer dossier temporaire"))
+    print("  python LocalizationToolKit.py autosync  (6) [--yes]  # "
+          + _("Mettre à jour plugin + langues (AUTOSYNC)"))
+    print("  python LocalizationToolKit.py config    (7)       # " + _("Afficher config"))
+    print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue."))
+
+
 def main():
     """Point d'entrée principal."""
 
     # Mode CLI?
     if len(sys.argv) > 1:
         cmd = sys.argv[1].lower()
+        extra = sys.argv[2:]
+
+        # Options acceptées après la commande ; elles ne sont transmises aux
+        # outils que si l'utilisateur les a tapées
+        unknown = [arg for arg in extra if arg not in CLI_OPTIONS]
+        if unknown:
+            print(_("Option inconnue: {option}").format(option=" ".join(unknown)))
+            print_cli_usage()
+            sys.exit(2)
+        dry_run = "--dry-run" in extra
+        assume_yes = "--yes" in extra
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         config = ConfigManager(base_dir)
         launcher = ToolLauncher(base_dir, config)
 
         if cmd in ['extract', 'extractor', '1']:
-            success = launcher.run_extractor(interactive=len(sys.argv) == 2)
+            success = launcher.run_extractor(interactive=not extra)
         elif cmd in ['apply', 'applicator', '2']:
-            success = launcher.run_applicator(interactive=len(sys.argv) == 2)
+            success = launcher.run_applicator(interactive=not extra, dry_run=dry_run, assume_yes=assume_yes)
         elif cmd in ['translate', 'translation', '3']:
             success = launcher.run_translation_manager()
         elif cmd in ['restore', '4']:
@@ -1006,21 +1048,13 @@ def main():
         elif cmd in ['delete', 'clean', '5']:
             success = launcher.run_delete_temp_dir()
         elif cmd in ['autosync', '6']:
-            success = launcher.run_autosync(assume_yes=True)
-        elif cmd == '--config':
+            success = launcher.run_autosync(assume_yes=assume_yes)
+        elif cmd in ['--config', 'config', '7']:
             config.display()
             success = True
         else:
             print(_("Commande inconnue: {cmd}").format(cmd=cmd))
-            print("\n" + _("Usage:"))
-            print("  python LocalizationToolkit.py           # " + _("Menu interactif"))
-            print("  python LocalizationToolkit.py extract   # " + _("Lancer Extractor"))
-            print("  python LocalizationToolkit.py apply     # " + _("Lancer Applicator"))
-            print("  python LocalizationToolkit.py translate # " + _("Lancer Translator"))
-            print("  python LocalizationToolkit.py restore   # " + _("Lancer Restore"))
-            print("  python LocalizationToolkit.py delete    # " + _("Supprimer dossier temporaire"))
-            print("  python LocalizationToolkit.py autosync  # " + _("Mettre à jour plugin + langues (AUTOSYNC)"))
-            print("  python LocalizationToolkit.py --config  # " + _("Afficher config"))
+            print_cli_usage()
             success = False
 
         sys.exit(0 if success else 1)
@@ -1028,8 +1062,9 @@ def main():
     # Mode menu interactif
     menu = MainMenu()
 
-    # 🎬 Lancer l'animation au démarrage (si activée dans config.json)
-    if menu.config.get("enable_flip_anim", True):
+    # 🎬 Lancer l'animation au démarrage (si activée dans config.json et si
+    # la sortie est un terminal)
+    if menu.config.get("enable_flip_anim", True) and sys.stdout.isatty():
         menu.launcher.run_flip_anim()
 
     menu.run()

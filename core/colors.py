@@ -12,7 +12,7 @@ Compatible avec Windows (Git Bash, PowerShell, Terminal, etc.), Linux et Mac.
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -21,6 +21,37 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 from typing import Optional
+
+
+def stdin_is_interactive() -> bool:
+    """
+    Indique si l'entrée standard est un terminal capable de répondre aux questions.
+
+    Sous Windows, le périphérique NUL (entrée redirigée vers /dev/null, CI,
+    subprocess.DEVNULL) est un périphérique caractère : isatty() renvoie True.
+    Seule une vraie console accepte GetConsoleMode, d'où la vérification
+    supplémentaire.
+
+    Returns:
+        True si des questions peuvent être posées via input()
+    """
+    stdin = sys.stdin
+    if stdin is None or not hasattr(stdin, 'isatty'):
+        return False
+    try:
+        if not stdin.isatty():
+            return False
+        if os.name != 'nt':
+            return True
+        import ctypes
+        import msvcrt
+        handle = msvcrt.get_osfhandle(stdin.fileno())
+    except (OSError, ValueError):
+        # Flux fermé ou sans descripteur réel (ex. remplacé par un tampon) :
+        # ce n'est pas un terminal, la réponse est simplement « non »
+        return False
+    mode = ctypes.c_uint32()
+    return bool(ctypes.windll.kernel32.GetConsoleMode(handle, ctypes.byref(mode)))
 
 
 def supports_color() -> bool:

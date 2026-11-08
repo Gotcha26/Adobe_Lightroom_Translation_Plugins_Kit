@@ -28,6 +28,12 @@ Usage CLI :
         --extraction-dir PATH       Dossier Extractor (défaut : auto-détection)
         --dry-run                   Mode simulation (affichage sans modification)
         --no-backup                 Ne pas créer de .bak (défaut : backups activées)
+        --yes                       Aucune question (pas de gestion interactive des traductions)
+        --default-plugin PATH       Plugin pré-configuré pour le menu interactif
+
+    Sans --plugin-path : menu interactif. En CLI, la gestion des fichiers de
+    traduction n'est proposée que sans --yes et si l'entrée standard est un terminal.
+    Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments invalides.
 
 Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
@@ -47,7 +53,7 @@ from typing import Dict, List, Tuple, Optional
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_tool_output_path, find_latest_tool_output, backup_path_for
-from core.colors import Colors
+from core.colors import Colors, stdin_is_interactive
 from core.i18n import _
 import glob
 import subprocess
@@ -352,7 +358,8 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
             créée : sauvegardes et rapport vont dans cette session (AUTO-SYNC).
 
     Returns:
-        Tuple (succès, rapport). En dry-run, le rapport décrit les lignes qui
+        Tuple (succès, rapport). Succès vaut False si report.errors n'est pas
+        vide (fichier introuvable). En dry-run, le rapport décrit les lignes qui
         seraient modifiées (report.stats['total_replacements']).
     """
     report = LocalizationReport()
@@ -455,7 +462,8 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
         print(c.separator("═", 70))
 
-    return True, report
+    # Échec si des fichiers attendus sont introuvables (report.errors)
+    return not report.errors, report
 
 
 def find_translation_files(plugin_path: str) -> List[str]:
@@ -852,18 +860,55 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
     print(c.info(_("Aucun template d'extraction ne correspond. Rien à faire.")))
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    """Parseur unique : mode interactif (sans --plugin-path) et mode CLI."""
+    parser = argparse.ArgumentParser(
+        description=_("Applique les localisations generees par Extractor au plugin"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exemples:
+  # Mode interactif (menu)
+  python -m tools.applicator.main
+  python -m tools.applicator.main --default-plugin ./plugin.lrplugin
+
+  # Mode CLI avec auto-detection de l'extraction
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --dry-run
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --yes
+
+  # Mode CLI avec extraction specifique
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
+
+Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments invalides.
+        """
+    )
+
+    parser.add_argument('--default-plugin', default="",
+                        help=_("Plugin pré-configuré pour le menu interactif"))
+    parser.add_argument('--plugin-path', default=None,
+                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    parser.add_argument('--yes', action='store_true',
+                        help=_("Aucune question : ne pas lancer la gestion des fichiers de traduction"))
+    parser.add_argument('--extraction-dir', default=None,
+                        help='Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Mode simulation (affiche sans modifier)')
+    parser.add_argument('--no-backup', action='store_true',
+                        help='Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)')
+    return parser
+
+
 def main():
-    """Point d'entree principal."""
+    """Point d'entree principal.
 
-    # Verifier si mode interactif (aucun argument ou seulement --default-plugin)
-    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
-        # Recuperer le chemin par defaut si fourni
-        default_plugin = ""
-        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
-            default_plugin = sys.argv[2]
+    Mode interactif si --plugin-path est absent (--default-plugin pré-configure
+    alors le plugin du menu) ; sinon mode CLI.
+    """
+    args = _build_parser().parse_args()
 
+    if not args.plugin_path:
         # Menu interactif avec plugin pre-configure
-        result = show_interactive_menu(default_plugin)
+        result = show_interactive_menu(args.default_plugin)
 
         if result is None:
             print("\n" + _("Application annulée"))
@@ -880,34 +925,6 @@ def main():
         sys.exit(0 if success else 1)
     else:
         # Arguments en ligne de commande
-        parser = argparse.ArgumentParser(
-            description=_("Applique les localisations generees par Extractor au plugin"),
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Exemples:
-  # Mode interactif (menu)
-  python Applicator_main.py
-
-  # Mode CLI avec auto-detection de l'extraction
-  python Applicator_main.py --plugin-path ./plugin.lrplugin
-  python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
-
-  # Mode CLI avec extraction specifique
-  python Applicator_main.py --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
-            """
-        )
-
-        parser.add_argument('--plugin-path', required=True,
-                            help='Chemin vers le repertoire du plugin (OBLIGATOIRE)')
-        parser.add_argument('--extraction-dir', default=None,
-                            help='Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)')
-        parser.add_argument('--dry-run', action='store_true',
-                            help='Mode simulation (affiche sans modifier)')
-        parser.add_argument('--no-backup', action='store_true',
-                            help='Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)')
-
-        args = parser.parse_args()
-
         success, _report = process_plugin_directory(
             args.plugin_path,
             args.extraction_dir,
@@ -915,8 +932,9 @@ Exemples:
             create_backup=not args.no_backup
         )
 
-        # Proposer la gestion des fichiers de traduction si succes et pas en dry-run
-        if success and not args.dry_run:
+        # Gestion des fichiers de traduction (interactive) : seulement si succès,
+        # hors dry-run, sans --yes et avec un terminal capable de répondre
+        if success and not args.dry_run and not args.yes and stdin_is_interactive():
             handle_translation_files(args.plugin_path, args.extraction_dir)
 
         sys.exit(0 if success else 1)

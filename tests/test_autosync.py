@@ -86,20 +86,24 @@ def test_autosync_creates_single_applicator_session(plugin_dir, isolated_config,
 def test_translator_cli_autosync_passes_assume_yes_only_with_yes(plugin_dir, monkeypatch, extra_args, expected):
     import sys
 
-    from tools.translator import autosync, main as translator_main
+    from tools.translator import main as translator_main
 
     calls = []
     monkeypatch.setattr(translator_main, "run_autosync",
                         lambda path, **kwargs: calls.append(kwargs) or {"errors": [], "sync": {}})
-    monkeypatch.setattr(autosync, "print_autosync_report", lambda *a, **k: None)
-    monkeypatch.setattr(sys, "argv", ["main.py", "--plugin-path", plugin_dir, "--autosync", *extra_args])
+    monkeypatch.setattr(translator_main, "print_autosync_report", lambda *a, **k: None)
+    monkeypatch.setattr(sys, "argv", ["main.py", "autosync", "--plugin-path", plugin_dir, *extra_args])
 
-    translator_main.main()
+    with pytest.raises(SystemExit) as exc:
+        translator_main.main()
 
+    assert exc.value.code == 0
     assert calls == [{"assume_yes": expected}]
 
 
-def test_toolkit_cli_autosync_forwards_yes(plugin_dir, isolated_config, monkeypatch):
+@pytest.mark.parametrize(("extra_args", "expected"), [([], []), (["--yes"], ["--yes"])])
+def test_toolkit_cli_autosync_forwards_yes_only_when_given(plugin_dir, isolated_config, monkeypatch,
+                                                           extra_args, expected):
     import LocalizationToolKit
 
     captured = []
@@ -107,13 +111,38 @@ def test_toolkit_cli_autosync_forwards_yes(plugin_dir, isolated_config, monkeypa
                         lambda self, script, args=None, cwd=None: captured.append(args) or True)
     monkeypatch.setattr(LocalizationToolKit.ConfigManager, "get",
                         lambda self, key, default=None: plugin_dir if key == "plugin_path" else default)
-    monkeypatch.setattr("sys.argv", ["LocalizationToolKit.py", "autosync"])
+    monkeypatch.setattr("sys.argv", ["LocalizationToolKit.py", "autosync", *extra_args])
 
     with pytest.raises(SystemExit) as exc:
         LocalizationToolKit.main()
 
     assert exc.value.code == 0
-    assert captured == [["--plugin-path", plugin_dir, "--autosync", "--yes"]]
+    assert captured == [["autosync", "--plugin-path", plugin_dir, *expected]]
+
+
+def test_autosync_closed_stdin_counts_as_refusal(plugin_dir, isolated_config, monkeypatch):
+    before = _lua_contents(plugin_dir)
+
+    def closed_stdin(*_args):
+        raise EOFError
+
+    monkeypatch.setattr("builtins.input", closed_stdin)
+
+    results = run_autosync(plugin_dir)
+
+    assert results["errors"] == [_("Annulé par l'utilisateur")]
+    assert _lua_contents(plugin_dir) == before
+
+
+def test_autosync_first_install_points_to_install(plugin_dir, isolated_config, capsys):
+    for name in os.listdir(plugin_dir):
+        if name.startswith("TranslatedStrings_"):
+            os.remove(os.path.join(plugin_dir, name))
+
+    run_autosync(plugin_dir, assume_yes=True)
+
+    out = capsys.readouterr().out
+    assert _("  → Utilisez la commande INSTALL pour installer les fichiers depuis l'extraction") in out
 
 
 def test_extractor_missing_plugin_raises_file_not_found(tmp_path):

@@ -11,8 +11,12 @@ Gère le mode CLI et le mode menu interactif. Lance l'extracteur, génère les f
 Usage CLI :
     python -m tools.extractor.main --plugin-path /path/to/plugin.lrplugin [options]
 
+    python -m tools.extractor.main [--default-plugin PATH]   # Menu interactif
+
     Options:
-        --plugin-path PATH    Chemin du plugin (OBLIGATOIRE)
+        --plugin-path PATH    Chemin du plugin (active le mode CLI ; sans lui : menu)
+        --default-plugin PATH Plugin pré-configuré pour le menu interactif
+        --yes                 Aucune question (l'Extractor n'en pose pas en CLI)
         --output-dir PATH     Override du répertoire de sortie
         --prefix PREFIX       Préfixe LOC (défaut: $$$/Piwigo)
         --lang LANG           Code langue (défaut: en)
@@ -20,7 +24,7 @@ Usage CLI :
         --min-length N        Longueur minimale (défaut: 3)
         --no-ignore-log       NE PAS ignorer les logs
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -145,18 +149,63 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         formatter.print_files_generated(files_generated, timestamped_output_dir, plugin_path)
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    """Parseur unique : mode interactif (sans --plugin-path) et mode CLI."""
+    parser = argparse.ArgumentParser(
+        description=_("Extrait les chaînes localisables d'un plugin Lightroom Classic"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exemples:
+  # Mode interactif (menu)
+  python -m tools.extractor.main
+  python -m tools.extractor.main --default-plugin ./piwigoPublish.lrplugin
+
+  # Mode CLI
+  python -m tools.extractor.main --plugin-path ./piwigoPublish.lrplugin
+  python -m tools.extractor.main --plugin-path ./plugin --output-dir ./output
+        """
+    )
+
+    parser.add_argument('--default-plugin', default="",
+                        help=_("Plugin pré-configuré pour le menu interactif"))
+    parser.add_argument('--plugin-path', default=None,
+                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    parser.add_argument('--yes', action='store_true',
+                        help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
+    parser.add_argument('--output-dir', default=None,
+                        help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
+    parser.add_argument('--prefix', default='$$$/Piwigo',
+                        help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
+    # Charger la langue par défaut depuis config.json
+    try:
+        from tools.translator.config_loader import get_reference_lang
+        default_lang = get_reference_lang()
+    except Exception as e:
+        print(_("Langue de référence illisible, « en » utilisée : {error}").format(error=e))
+        default_lang = 'en'
+
+    parser.add_argument('--lang', default=default_lang,
+                        help=f'Code langue (défaut: {default_lang})')
+    parser.add_argument('--exclude', action='append', default=[],
+                        help='Fichiers à exclure (répétable)')
+    parser.add_argument('--min-length', type=int, default=3,
+                        help='Longueur minimale des chaînes (défaut: 3)')
+    parser.add_argument('--no-ignore-log', action='store_true',
+                        help='NE PAS ignorer les lignes de log')
+    return parser
+
+
 def main():
-    """Point d'entree principal."""
+    """Point d'entree principal.
 
-    # Verifier si mode interactif (aucun argument ou seulement --default-plugin)
-    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
-        # Recuperer le chemin par defaut si fourni
-        default_plugin = ""
-        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
-            default_plugin = sys.argv[2]
+    Mode interactif si --plugin-path est absent (--default-plugin pré-configure
+    alors le plugin du menu) ; sinon mode CLI.
+    """
+    args = _build_parser().parse_args()
 
+    if not args.plugin_path:
         # Menu interactif avec plugin pre-configure
-        result = show_interactive_menu(default_plugin)
+        result = show_interactive_menu(args.default_plugin)
 
         if result is None:
             print("\n" + _("Extraction annulée"))
@@ -178,45 +227,7 @@ def main():
             print(_("ERREUR: {error}").format(error=e))
             sys.exit(1)
     else:
-        # Arguments en ligne de commande
-        parser = argparse.ArgumentParser(
-            description=_("Extrait les chaînes localisables d'un plugin Lightroom Classic"),
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Exemples:
-  # Mode interactif (menu)
-  python Extractor_main.py
-
-  # Mode CLI
-  python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
-  python Extractor_main.py --plugin-path ./plugin --output-dir ./output
-            """
-        )
-
-        parser.add_argument('--plugin-path', required=True,
-                            help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
-        parser.add_argument('--output-dir', default=None,
-                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
-        parser.add_argument('--prefix', default='$$$/Piwigo',
-                            help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
-        # Charger la langue par défaut depuis config.json
-        try:
-            from tools.translator.config_loader import get_reference_lang
-            default_lang = get_reference_lang()
-        except Exception:
-            default_lang = 'en'
-
-        parser.add_argument('--lang', default=default_lang,
-                            help=f'Code langue (défaut: {default_lang})')
-        parser.add_argument('--exclude', action='append', default=[],
-                            help='Fichiers à exclure (répétable)')
-        parser.add_argument('--min-length', type=int, default=3,
-                            help='Longueur minimale des chaînes (défaut: 3)')
-        parser.add_argument('--no-ignore-log', action='store_true',
-                            help='NE PAS ignorer les lignes de log')
-
-        args = parser.parse_args()
-
+        # Arguments en ligne de commande (l'Extractor ne pose aucune question en CLI)
         try:
             run_extraction(
                 plugin_path=args.plugin_path,

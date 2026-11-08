@@ -314,8 +314,13 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
             var0=c.DIM, var1=c.VALUE, lines=lines_to_modify, var2=c.DIM, files=files_to_modify, var3=c.RESET))
 
         if lines_to_modify > 0 and not assume_yes:
-            answer = input(_("{var0}  Appliquer ces modifications au code Lua ? [o/N] : {var1}").format(
-                var0=c.PROMPT, var1=c.RESET)).strip().lower()
+            try:
+                answer = input(_("{var0}  Appliquer ces modifications au code Lua ? [o/N] : {var1}").format(
+                    var0=c.PROMPT, var1=c.RESET)).strip().lower()
+            except EOFError:
+                # Entrée standard fermée (script, CI) : aucune réponse = refus
+                print()
+                answer = ''
             if answer not in ('o', 'oui', 'y', 'yes'):
                 print(c.warning(_("Annulé par l'utilisateur")))
                 results['errors'].append(_("Annulé par l'utilisateur"))
@@ -358,6 +363,7 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
         else:
             # Si l'ancien n'existe pas, c'est la première fois
             print(_("  {var0}Première installation - ancien EN non trouvé{var1}").format(var0=c.WARNING, var1=c.RESET))
+            print(_("  → Utilisez la commande INSTALL pour installer les fichiers depuis l'extraction"))
             old_en_path = results['extractor']['en_file']  # Comparer avec lui-même
 
         # Nouveau EN = celui généré par Extractor
