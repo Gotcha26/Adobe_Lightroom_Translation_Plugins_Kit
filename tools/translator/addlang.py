@@ -2,7 +2,7 @@
 """
 Nom du fichier : addlang.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Ajoute ou réinstalle un fichier de langue spécifique dans le plugin.
@@ -34,22 +34,22 @@ import os
 import sys
 import re
 import shutil
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Tuple
 from datetime import datetime
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
 from .common import (
     clear_screen, print_header, parse_translation_file,
     write_translation_file
 )
+from .config_loader import get_reference_lang, get_reference_filename, is_reference_lang
 
-c = Colors()
 
 
 # =============================================================================
@@ -67,7 +67,7 @@ def validate_language_code(lang_code: str) -> Tuple[bool, str, Optional[str]]:
         (is_valid, normalized_code, error_message)
     """
     if not lang_code:
-        return False, "", "Code langue vide"
+        return False, "", _("Code langue vide")
 
     # Normaliser: minuscules, strip
     normalized = lang_code.strip().lower()
@@ -219,7 +219,7 @@ def install_language_from_extraction(plugin_path: str, lang_code: str,
     source_path = os.path.join(extraction_dir, source_filename)
 
     if not os.path.isfile(source_path):
-        print(c.error(f"Fichier {source_filename} introuvable dans l'extraction"))
+        print(c.error(_("Fichier {source_filename} introuvable dans l'extraction").format(source_filename=source_filename)))
         print(f"  {c.DIM}→ {extraction_dir}{c.RESET}")
         return False
 
@@ -280,7 +280,7 @@ def create_language_from_reference(plugin_path: str, lang_code: str,
             print(c.error(_("Aucun fichier {ref_lang} de référence trouvé").format(ref_lang=ref_lang)))
             print()
             print(_("{var0}Vérifiez que:{var1}").format(var0=c.DIM, var1=c.RESET))
-            print(f"  - {c.DIM}L'Extractor a été lancé{c.RESET}")
+            print(_("  - {var0}L'Extractor a été lancé{var1}").format(var0=c.DIM, var1=c.RESET))
             print(_("  - {var0}{ref_filename} existe dans le plugin{var2}").format(var0=c.DIM, ref_filename=ref_filename, var2=c.RESET))
             return False
 
@@ -422,13 +422,13 @@ def menu_addlang(plugin_path: str):
     # Menu de sélection du mode
     print()
     print(c.separator())
-    print(f"{c.INFO}Sélectionnez le mode d'ajout:{c.RESET}")
+    print(_("{var0}Sélectionnez le mode d'ajout:{var1}").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
     print()
     print(_("  {var0}1{var1}. {var2}Installer depuis Extractor{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
     print(_("     {var0}Copie un fichier TranslatedStrings_xx.txt existant depuis la{var1}").format(var0=c.DIM, var1=c.RESET))
     print(_("     {var0}dernière extraction Extractor vers le plugin.{var1}").format(var0=c.DIM, var1=c.RESET))
-    print(f"     {c.DIM}→ Utile si le fichier existe déjà dans l'extraction{c.RESET}")
+    print(_("     {var0}→ Utile si le fichier existe déjà dans l'extraction{var1}").format(var0=c.DIM, var1=c.RESET))
     print()
     print(_("  {var0}2{var1}. {var2}Créer un nouveau fichier de langue{var3}").format(var0=c.YELLOW, var1=c.RESET, var2=c.SUCCESS, var3=c.RESET))
     print(_("     {var0}Génère un nouveau TranslatedStrings_xx.txt basé sur le fichier EN{var1}").format(var0=c.DIM, var1=c.RESET))
@@ -474,13 +474,13 @@ def menu_mode_a_install_from_extraction(plugin_path: str, installed_langs: List[
     available_langs = list_available_languages_in_extraction(latest_extraction)
 
     if not available_langs:
-        print(c.error("Aucun fichier TranslatedStrings_xx.txt trouvé dans l'extraction"))
+        print(c.error(_("Aucun fichier TranslatedStrings_xx.txt trouvé dans l'extraction")))
         return
 
-    print(f"\n{c.INFO}Langues disponibles dans l'extraction:{c.RESET}")
+    print(_("\n{var0}Langues disponibles dans l'extraction:{var1}").format(var0=c.INFO, var1=c.RESET))
     for i, lang in enumerate(available_langs, 1):
         status = _("{var0}[DÉJÀ INSTALLÉ]{var1}").format(var0=c.DIM, var1=c.RESET) if lang in installed_langs else ""
-        print(_("  {var0}{i}{var2}. {var3}{lang}{var5} (TranslatedStrings_{lang}.txt) {status}").format(var0=c.YELLOW, i=i, var2=c.RESET, var3=c.VALUE, lang=lang, var5=c.RESET, lang=lang, status=status))
+        print(_("  {var0}{i}{var2}. {var3}{lang}{var5} (TranslatedStrings_{lang}.txt) {status}").format(var0=c.YELLOW, i=i, var2=c.RESET, var3=c.VALUE, var5=c.RESET, status=status))
 
     print()
     user_input = input(_("{var0}Sélectionnez la langue à installer (numéro ou code langue): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
@@ -539,7 +539,7 @@ def menu_mode_b_create_new(plugin_path: str, installed_langs: List[str]):
     if "Extractor" in ref_file:
         source_info = _("Dernière extraction: {var0}").format(var0=os.path.basename(os.path.dirname(ref_file)))
     else:
-        source_info = "Plugin racine"
+        source_info = _("Plugin racine")
 
     # Compter les clés
     try:

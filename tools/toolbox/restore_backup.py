@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : Restore_backup.py
+Nom du fichier : restore_backup.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Script pour restaurer les fichiers .lua à partir de leurs sauvegardes .bak
@@ -11,10 +11,10 @@ générées par Applicator.
 Les backups sont stockés dans: <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/backups/
 
 Usage CLI :
-    python Restore_backup.py                    # Menu interactif
-    python Restore_backup.py /path/to/plugin    # Chemin direct
+    python -m tools.toolbox.restore_backup                    # Menu interactif
+    python -m tools.toolbox.restore_backup /path/to/plugin    # Chemin direct
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -23,18 +23,15 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import shutil
-from pathlib import Path
 from typing import List, Tuple, Optional
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/toolbox/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
-# Instance globale des couleurs
-c = Colors()
 
 
 def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
@@ -79,8 +76,8 @@ def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
             if (os.path.isdir(item_path) and len(item) == 15 and item[8] == '_'
                     and os.path.isdir(backup_path)):
                 # Vérifier qu'il y a des fichiers .bak
-                bak_files = [f for f in os.listdir(backup_path) if f.endswith('.bak')]
-                if bak_files:
+                has_bak = any(f.endswith('.bak') for _r, _d, files in os.walk(backup_path) for f in files)
+                if has_bak:
                     sessions.append((item, backup_path))
 
     # Trier du plus récent au plus ancien
@@ -104,16 +101,18 @@ def find_backup_pairs_in_dir(backup_dir: str, plugin_path: str) -> List[Tuple[st
     if not os.path.isdir(backup_dir):
         return pairs
 
-    for file in os.listdir(backup_dir):
-        if file.endswith('.bak'):
-            bak_path = os.path.join(backup_dir, file)
-            # Le fichier original est dans le plugin avec le même nom sans .bak
-            lua_filename = file[:-4]  # Enlever ".bak"
-            lua_path = os.path.join(plugin_path, lua_filename)
+    for root, _dirs, files in os.walk(backup_dir):
+        for file in files:
+            if file.endswith('.bak'):
+                bak_path = os.path.join(root, file)
+                # Cible = chemin relatif du backup (sans .bak) rejoué depuis la racine du plugin.
+                # Un ancien backup plat (à la racine de backup_dir) reste restauré à la racine du plugin.
+                rel_path = os.path.relpath(bak_path, backup_dir)[:-4]
+                lua_path = os.path.join(plugin_path, rel_path)
 
-            pairs.append((lua_path, bak_path))
+                pairs.append((lua_path, bak_path))
 
-    return sorted(pairs, key=lambda x: os.path.basename(x[0]))
+    return sorted(pairs, key=lambda x: x[0])
 
 
 def find_backup_pairs_legacy(directory: str) -> List[Tuple[str, str]]:
@@ -185,6 +184,20 @@ def delete_backups(pairs: List[Tuple[str, str]]) -> int:
     return deleted
 
 
+def clear_screen():
+    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
+    if sys.stdout is not None and sys.stdout.isatty():
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def count_backup_files(backup_dir: str) -> int:
+    """Nombre de fichiers .bak d'une session, sous-dossiers compris (ex: ui/Dialog.lua.bak)."""
+    return sum(
+        1 for _root, _dirs, files in os.walk(backup_dir)
+        for name in files if name.endswith('.bak')
+    )
+
+
 def format_timestamp(timestamp: str) -> str:
     """Formate un timestamp YYYYMMDD_HHMMSS en format lisible."""
     try:
@@ -209,7 +222,7 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
 
     # Afficher les sessions avec numérotation
     for i, (timestamp, backup_dir) in enumerate(sessions, 1):
-        bak_count = len([f for f in os.listdir(backup_dir) if f.endswith('.bak')])
+        bak_count = count_backup_files(backup_dir)
         formatted = format_timestamp(timestamp)
 
         # Marquer la plus récente (première)
@@ -256,7 +269,7 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
     Returns:
         (chemin_plugin, backup_dir ou None)
     """
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear_screen()
     print(c.box_header(_("RESTAURATION DES FICHIERS .bak")))
     print()
 
@@ -422,7 +435,7 @@ def main():
     # Restaurer
     print()
     print(c.separator("=", 60))
-    print(c.title("RESTAURATION"))
+    print(c.title(_("RESTAURATION")))
     print(c.separator("=", 60))
     print()
 

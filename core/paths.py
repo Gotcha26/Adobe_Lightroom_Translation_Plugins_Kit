@@ -12,13 +12,15 @@ des outils (Extractor, Applicator, Translator, Tools).
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
 
 import os
+import re
+import shutil
 from datetime import datetime
 from typing import Optional, List
 
@@ -34,6 +36,10 @@ _i18n_dir = DEFAULT_I18N_DIR
 # Format du timestamp : YYYYMMDD_HHMMSS (15 caractères)
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 TIMESTAMP_LENGTH = 15
+TIMESTAMP_DIR_RE = re.compile(r'^\d{8}_\d{6}$')
+
+# Libellé affiché à la place du chemin du plugin
+PLUGIN_PLACEHOLDER = "<plugin>"
 
 # Mapping des noms d'outils vers leurs dossiers de sortie avec préfixe numérique
 # Le préfixe correspond à l'ordre dans le workflow : 1_Extractor → 2_Applicator → 3_Translator
@@ -84,46 +90,6 @@ def get_i18n_kit_path(plugin_path: str) -> str:
     return os.path.join(plugin_path, get_i18n_dir())
 
 
-def _extract_tool_prefix(tool_name: str) -> str:
-    """
-    Extrait le préfixe numérique du nom de l'outil en inspectant le stack.
-
-    Cette fonction remonte la stack pour trouver le script appelant et
-    extraire son préfixe numérique (ex: "1_" pour 1_Extractor).
-
-    Args:
-        tool_name: Nom de l'outil (Extractor, Applicator, etc.)
-
-    Returns:
-        Nom de l'outil avec préfixe si trouvé (ex: "1_Extractor"), sinon nom original
-    """
-    import inspect
-    import re
-
-    # Parcourir la stack pour trouver le script appelant
-    for frame_info in inspect.stack():
-        frame_filename = frame_info.filename
-
-        # Chercher un dossier avec préfixe numérique dans le chemin
-        # Pattern: /X_ToolName/ où X est 1 ou plusieurs chiffres
-        match = re.search(r'[\\/](\d+)_([^\\/]+)[\\/]', frame_filename)
-
-        if match:
-            prefix = match.group(1)  # Le numéro (ex: "1", "2", "3", "9")
-            folder_name = match.group(2)  # Le nom du dossier sans préfixe
-
-            # Vérifier si le nom du dossier correspond au tool_name
-            # (en ignorant la casse et les underscores vs espaces)
-            normalized_folder = folder_name.lower().replace('_', '').replace('-', '')
-            normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
-
-            if normalized_folder.startswith(normalized_tool) or normalized_tool.startswith(normalized_folder):
-                return f"{prefix}_{tool_name}"
-
-    # Si aucun préfixe trouvé, retourner le nom original
-    return tool_name
-
-
 def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) -> str:
     """
     Retourne le chemin de sortie pour un outil avec timestamp.
@@ -148,10 +114,8 @@ def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) 
     """
     timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    # Utiliser le mapping TOOL_FOLDER_NAMES, ou fallback sur _extract_tool_prefix
-    prefixed_tool_name = TOOL_FOLDER_NAMES.get(tool_name)
-    if not prefixed_tool_name:
-        prefixed_tool_name = _extract_tool_prefix(tool_name)
+    # Mapping TOOL_FOLDER_NAMES, sinon le nom de l'outil tel quel
+    prefixed_tool_name = TOOL_FOLDER_NAMES.get(tool_name, tool_name)
 
     path = os.path.join(
         get_i18n_kit_path(plugin_path),
@@ -187,54 +151,28 @@ def find_all_tool_outputs(plugin_path: str, tool_name: str) -> List[str]:
         >>> find_all_tool_outputs("/path/to/plugin.lrplugin", "Extractor")
         ['/path/.../1_Extractor/20260129_143022', '/path/.../1_Extractor/20260129_120000']
     """
-    import re
-
     i18n_kit = get_i18n_kit_path(plugin_path)
 
-    if not os.path.exists(i18n_kit):
+    if not os.path.isdir(i18n_kit):
         return []
 
-    # Chercher tous les dossiers qui correspondent au pattern: X_ToolName ou ToolName
-    # où X peut être n'importe quel chiffre
-    tool_dir = None
-    normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
-
-    # Lister tous les dossiers dans __i18n_tmp__
-    for dir_name in os.listdir(i18n_kit):
-        dir_path = os.path.join(i18n_kit, dir_name)
-        if not os.path.isdir(dir_path):
+    # Correspondance exacte : dossier actuel (1_Extractor) puis ancien format (Extractor)
+    folder_names = [TOOL_FOLDER_NAMES.get(tool_name, tool_name), tool_name]
+    outputs = []
+    for folder_name in dict.fromkeys(folder_names):
+        tool_dir = os.path.join(i18n_kit, folder_name)
+        if not os.path.isdir(tool_dir):
             continue
+        # Uniquement les sous-dossiers au format YYYYMMDD_HHMMSS
+        outputs.extend(
+            os.path.join(tool_dir, d) for d in os.listdir(tool_dir)
+            if TIMESTAMP_DIR_RE.match(d) and os.path.isdir(os.path.join(tool_dir, d))
+        )
 
-        # Vérifier si c'est le bon outil (avec ou sans préfixe)
-        # Pattern: X_ToolName ou ToolName
-        match = re.match(r'^(\d+_)?(.+)$', dir_name)
-        if match:
-            folder_tool_name = match.group(2)
-            normalized_folder = folder_tool_name.lower().replace('_', '').replace('-', '')
-
-            if normalized_folder == normalized_tool or \
-               normalized_folder.startswith(normalized_tool) or \
-               normalized_tool.startswith(normalized_folder):
-                tool_dir = dir_path
-                break
-
-    if not tool_dir or not os.path.exists(tool_dir):
-        return []
-
-    # Lister uniquement les dossiers au format YYYYMMDD_HHMMSS (15 caractères)
-    dirs = [
-        d for d in os.listdir(tool_dir)
-        if os.path.isdir(os.path.join(tool_dir, d)) and len(d) == TIMESTAMP_LENGTH
-    ]
-
-    if not dirs:
-        return []
-
-    # Tri décroissant (le plus récent en premier)
+    # Tri décroissant sur l'horodatage (le plus récent en premier), tous dossiers confondus.
     # Le format YYYYMMDD_HHMMSS permet un tri lexicographique correct
-    dirs.sort(reverse=True)
-
-    return [os.path.join(tool_dir, d) for d in dirs]
+    outputs.sort(key=os.path.basename, reverse=True)
+    return outputs
 
 
 def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
@@ -260,6 +198,54 @@ def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
     """
     all_outputs = find_all_tool_outputs(plugin_path, tool_name)
     return all_outputs[0] if all_outputs else None
+
+
+def find_update_dir_in(directory: str, filename: str) -> Optional[str]:
+    """Renvoie `directory` ou `directory/compare` s'il contient `filename`, sinon None."""
+    for candidate in (directory, os.path.join(directory, "compare")):
+        if os.path.isfile(os.path.join(candidate, filename)):
+            return candidate
+    return None
+
+
+def find_latest_update_dir(plugin_path: str, filename: str) -> Optional[str]:
+    """
+    Trouve le dossier Translator le plus récent contenant le fichier UPDATE.
+
+    Parcourt les sorties Translator du plus récent au plus ancien et renvoie le
+    premier dossier contenant `filename`, directement ou dans un sous-dossier
+    `compare/` (cas d'AUTOSYNC). Les sorties sans UPDATE (COMPARE-LANGS,
+    ADD LANGUAGE) sont ignorées.
+
+    Args:
+        plugin_path: Chemin vers le plugin Lightroom
+        filename: Nom du fichier UPDATE recherché (ex: "UPDATE_en.json")
+
+    Returns:
+        Le dossier qui contient réellement le fichier, ou None si aucun
+    """
+    for output in find_all_tool_outputs(plugin_path, "Translator"):
+        found = find_update_dir_in(output, filename)
+        if found:
+            return found
+    return None
+
+
+def get_translator_backup_dir(plugin_path: str) -> Optional[str]:
+    """
+    Dossier de sauvegarde d'une opération Translator : `<sortie Translator>/backups`.
+
+    Renvoie None si `plugin_path` est vide (le `.bak` ira alors dans `backups/`
+    à côté du fichier cible). Le dossier n'est créé qu'au moment de la copie.
+    """
+    if not plugin_path:
+        return None
+    return os.path.join(get_tool_output_path(plugin_path, "Translator", create=False), "backups")
+
+
+def local_backup_path(file_path: str) -> str:
+    """Chemin de sauvegarde par défaut : `backups/<nom>.bak` à côté du fichier."""
+    return os.path.join(os.path.dirname(file_path), "backups", os.path.basename(file_path) + '.bak')
 
 
 def is_valid_plugin_path(path: str) -> bool:
@@ -330,3 +316,95 @@ def normalize_path(path: str) -> str:
         'C:\\current\\dir\\plugin.lrplugin'  # sur Windows
     """
     return os.path.normpath(os.path.abspath(path))
+
+
+def backup_path_for(file_path: str, plugin_path: str, backup_dir: str) -> str:
+    """
+    Calcule le chemin du backup d'un fichier en conservant son arborescence relative au plugin.
+
+    Exemple : <plugin>/ui/Dialog.lua -> <backup_dir>/ui/Dialog.lua.bak
+    Si le fichier est hors du plugin, seul son nom de base est conservé.
+    Ne crée aucun dossier : l'appelant doit faire os.makedirs(os.path.dirname(...)).
+    """
+    rel_path = os.path.relpath(file_path, plugin_path)
+    if rel_path == os.pardir or rel_path.startswith(os.pardir + os.sep) or os.path.isabs(rel_path):
+        rel_path = os.path.basename(file_path)
+    return os.path.join(backup_dir, rel_path + '.bak')
+
+
+def backup_once(file_path: str, plugin_path: str, backup_dir: str) -> str:
+    """
+    Sauvegarde `file_path` dans `backup_dir`, sauf si un backup existe déjà.
+
+    Dans une même session (même `backup_dir`), le premier écrivain gagne : le
+    `.bak` conserve l'état d'origine du fichier, même si plusieurs étapes
+    (Applicator, INJECT, SYNC…) le modifient successivement.
+
+    Returns:
+        Chemin du backup (existant ou nouvellement créé)
+    """
+    backup_path = backup_path_for(file_path, plugin_path, backup_dir)
+    if not os.path.exists(backup_path):
+        os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+        shutil.copy2(file_path, backup_path)
+    return backup_path
+
+
+def display_relative(path: str, plugin_path: str) -> str:
+    """
+    Chemin à afficher : `<plugin>/sous/dossier` si `path` est dans le plugin.
+
+    La comparaison porte sur des composants de chemin entiers (un dossier voisin
+    `plugin.lrplugin-old` n'est pas confondu avec `plugin.lrplugin`) et ignore la
+    casse là où le système de fichiers l'ignore (Windows, via os.path.normcase).
+
+    Args:
+        path: Chemin à afficher
+        plugin_path: Chemin du plugin (vide = pas de raccourci)
+
+    Returns:
+        `<plugin>/…` avec des séparateurs `/`, ou `path` inchangé s'il est hors du plugin
+    """
+    if not path or not plugin_path:
+        return path
+
+    full = os.path.normpath(os.path.abspath(path))
+    plugin = os.path.normpath(os.path.abspath(plugin_path))
+    full_key = os.path.normcase(full)
+    plugin_key = os.path.normcase(plugin)
+
+    if full_key == plugin_key:
+        return PLUGIN_PLACEHOLDER
+    if not full_key.startswith(plugin_key.rstrip(os.sep) + os.sep):
+        return path
+
+    try:
+        relative = os.path.relpath(full, plugin)
+    except ValueError:
+        # Lecteurs différents sous Windows : impossible en pratique après le test ci-dessus
+        return path
+    return "{placeholder}/{relative}".format(placeholder=PLUGIN_PLACEHOLDER, relative=relative.replace(os.sep, "/"))
+
+
+def find_git_root(path: str) -> Optional[str]:
+    """
+    Remonte depuis `path` jusqu'au premier dossier contenant `.git`.
+
+    `.git` peut être un dossier (dépôt classique) ou un fichier (worktree, sous-module).
+
+    Args:
+        path: Dossier de départ (ex: chemin du plugin)
+
+    Returns:
+        Racine du dépôt git, ou None si aucun parent n'en contient
+    """
+    if not path:
+        return None
+    current = os.path.normpath(os.path.abspath(path))
+    while True:
+        if os.path.exists(os.path.join(current, ".git")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            return None
+        current = parent

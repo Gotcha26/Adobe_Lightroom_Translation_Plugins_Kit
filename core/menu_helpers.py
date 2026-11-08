@@ -11,7 +11,7 @@ la sélection de répertoires, menus avec options numérotées, et validations d
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -20,11 +20,9 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 from typing import Optional
 from core.paths import find_all_tool_outputs
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
-# Instance couleurs
-c = Colors()
 
 
 def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = "") -> Optional[str]:
@@ -42,11 +40,15 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
         current_dir: Dossier actuellement sélectionné (optionnel)
 
     Returns:
-        Chemin du dossier sélectionné ou None si annulé
+        - le chemin du dossier sélectionné ;
+        - `current_dir` inchangé si l'utilisateur annule (peut être "") ;
+        - None en cas d'erreur (chemin introuvable, choix invalide), déjà affichée.
 
     Example:
         >>> dir = select_tool_output_dir(plugin_path, "Extractor", current_extraction)
-        >>> if dir:
+        >>> if dir is None:
+        >>>     ...  # erreur
+        >>> elif dir:
         >>>     self.extraction_dir = dir
     """
     print()
@@ -91,7 +93,7 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
                 return None
             else:
                 print(c.success(_("Annulé")))
-                return None
+                return current_dir
         elif choice.isdigit() and 1 <= int(choice) <= len(all_dirs):
             selected_dir = all_dirs[int(choice) - 1]
             print(c.success(_("Dossier sélectionné: {name}").format(name=os.path.basename(selected_dir))))
@@ -128,7 +130,7 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
                 return None
             else:
                 print(c.success(_("Annulé")))
-                return None
+                return current_dir
         else:
             print(c.error(_("Choix invalide")))
             return None
@@ -148,4 +150,4 @@ def select_tool_output_dir(plugin_path: str, tool_name: str, current_dir: str = 
                 return None
         else:
             print(c.success(_("Annulé")))
-            return None
+            return current_dir

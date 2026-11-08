@@ -16,7 +16,7 @@ Important :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -24,15 +24,27 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 import shutil
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file, update_translation_file_surgical,
-    load_update_json, find_languages, c
+    parse_translation_file, update_translation_file_surgical,
+    load_update_json, c, escape_translation_value,
+    TRANSLATE_KEY, TRANSLATE_ARROW, translate_ref_marker, translate_after_marker,
 )
-from .config_loader import get_update_filename, get_reference_lang
+from .config_loader import get_reference_lang
 from core.i18n import _
+from core.paths import backup_once, local_backup_path, get_translator_backup_dir
+
+
+def _marker_value(line, markers):
+    """Valeur après le premier marqueur de `markers` qui ouvre la ligne, sinon None."""
+    for m in markers:
+        if line.startswith(m):
+            rest = line[len(m):]
+            if rest.lstrip().startswith(TRANSLATE_ARROW):
+                return None  # ligne de traduction cible, pas une valeur de référence
+            return rest.strip()
+    return None
 
 
 # =============================================================================
@@ -58,6 +70,12 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
     current_key = None
     current_en_value = None
 
+    ref_lang = get_reference_lang()
+    # Rétrocompatibilité : anciens fichiers écrits avec [EN] / [EN APRÈS] (marqueurs
+    # codés en dur, passés par _() donc parfois traduits en [EN AFTER]) avant #21.
+    ref_markers = (translate_ref_marker(ref_lang), "[EN]")
+    after_markers = (translate_after_marker(ref_lang), "[EN APRÈS]", "[EN AFTER]")
+
     # Préparer les valeurs EN depuis update_data
     en_values = {}
     if update_data:
@@ -77,19 +95,19 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                 continue
 
             # Détecter la clé
-            if line.startswith('[KEY]'):
-                current_key = line.replace('[KEY]', '').strip()
+            if line.startswith(TRANSLATE_KEY):
+                current_key = line[len(TRANSLATE_KEY):].strip()
                 current_en_value = en_values.get(current_key, '')
 
-            # Détecter la valeur EN (pour les clés non dans update_data)
-            elif line.startswith('[EN]') and not line.startswith('[EN '):
-                if current_key and not current_en_value:
-                    current_en_value = line.replace('[EN]', '').strip()
-
-            # Détecter [EN APRÈS] pour les clés modifiées
-            elif line.startswith('[EN APRÈS]'):
+            # Détecter [<REF> AFTER] pour les clés modifiées
+            elif _marker_value(line, after_markers) is not None:
                 if current_key:
-                    current_en_value = line.replace('[EN APRÈS]', '').strip()
+                    current_en_value = _marker_value(line, after_markers)
+
+            # Détecter la valeur de référence (pour les clés non dans update_data)
+            elif _marker_value(line, ref_markers) is not None:
+                if current_key and not current_en_value:
+                    current_en_value = _marker_value(line, ref_markers)
 
             # Détecter la traduction (ligne avec →)
             elif '] → ' in line or '] →' in line:
@@ -98,8 +116,9 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                     translation = parts[1].strip()
 
                     if translation:
-                        # Traduction fournie
-                        translations[current_key] = translation
+                        # Traduction fournie : « " » brut échappé, sinon la ligne
+                        # écrite ne serait plus relisible (KEY_LINE_RE)
+                        translations[current_key] = escape_translation_value(translation)
                     else:
                         # Pas de traduction → utiliser valeur EN
                         translations[current_key] = current_en_value or ''
@@ -122,7 +141,7 @@ def run_inject(translate_file: str, target_file: str,
         target_file: Fichier TranslatedStrings_xx.txt cible
         update_dir: Répertoire contenant UPDATE_{lang}.json (pour valeurs EN par défaut)
         create_backup: Créer une sauvegarde .bak
-        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
 
     Returns:
         Statistiques d'injection
@@ -147,14 +166,13 @@ def run_inject(translate_file: str, target_file: str,
         existing = parse_translation_file(target_file)
         if create_backup:
             if backup_dir:
-                # Backup dans le répertoire spécifié
-                os.makedirs(backup_dir, exist_ok=True)
-                backup_filename = os.path.basename(target_file) + '.bak'
-                backup_path = os.path.join(backup_dir, backup_filename)
-                shutil.copy2(target_file, backup_path)
+                # Backup de session : ne jamais écraser l'original déjà sauvegardé
+                backup_once(target_file, os.path.dirname(target_file), backup_dir)
             else:
-                # Backup classique à côté du fichier
-                shutil.copy2(target_file, target_file + '.bak')
+                # Par défaut : sous-dossier backups/ à côté du fichier cible
+                backup_path = local_backup_path(target_file)
+                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+                shutil.copy2(target_file, backup_path)
     else:
         existing = {}
 
@@ -182,12 +200,6 @@ def run_inject(translate_file: str, target_file: str,
 
     stats['total'] = len(existing)
 
-    # Détecter la langue depuis le nom du fichier
-    lang = 'xx'
-    basename = os.path.basename(target_file)
-    if 'TranslatedStrings_' in basename:
-        lang = basename.replace('TranslatedStrings_', '').replace('.txt', '')
-
     # Métadonnées pour l'entête
     metadata = {
         'new_keys': stats['injected'] + stats['from_ref'],
@@ -202,7 +214,8 @@ def run_inject(translate_file: str, target_file: str,
 
 def run_inject_from_dir(translate_dir: str, locales_dir: str,
                         update_dir: Optional[str] = None,
-                        create_backup: bool = True) -> Dict[str, Dict]:
+                        create_backup: bool = True,
+                        backup_dir: Optional[str] = None) -> Dict[str, Dict]:
     """
     Injecte tous les fichiers TRANSLATE_*.txt dans les fichiers de langue.
 
@@ -211,6 +224,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
         locales_dir: Répertoire des fichiers TranslatedStrings_*.txt
         update_dir: Répertoire UPDATE (défaut: translate_dir)
         create_backup: Créer des sauvegardes .bak
+        backup_dir: Répertoire des sauvegardes (défaut: backups/ à côté de chaque fichier cible)
 
     Returns:
         Statistiques par langue
@@ -229,7 +243,7 @@ def run_inject_from_dir(translate_dir: str, locales_dir: str,
             target_file = os.path.join(locales_dir, f'TranslatedStrings_{lang}.txt')
 
             try:
-                stats = run_inject(translate_file, target_file, update_dir, create_backup)
+                stats = run_inject(translate_file, target_file, update_dir, create_backup, backup_dir)
                 results[lang] = stats
             except Exception as e:
                 results[lang] = {'error': str(e)}
@@ -257,7 +271,7 @@ def menu_inject(plugin_path: str = ""):
 
     print(_("\n{var0}Mode{var1}:").format(var0=c.KEY, var1=c.RESET))
     print(_("  {var0}1{var1}. Injecter un fichier TRANSLATE_xx.txt spécifique").format(var0=c.YELLOW, var1=c.RESET))
-    print(f"  {c.YELLOW}2{c.RESET}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier")
+    print(_("  {var0}2{var1}. Injecter tous les fichiers TRANSLATE_*.txt d'un dossier").format(var0=c.YELLOW, var1=c.RESET))
     mode = input(_("\n{var0}  Choix (1-2): {var1}").format(var0=c.PROMPT, var1=c.RESET)).strip()
 
     if mode == '1':
@@ -281,7 +295,8 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
-            stats = run_inject(translate_file, target_file, update_dir)
+            stats = run_inject(translate_file, target_file, update_dir,
+                               backup_dir=get_translator_backup_dir(plugin_path))
 
             print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")
             print(_("{var0}  RÉSULTAT{var1}").format(var0=c.TITLE, var1=c.RESET))
@@ -292,7 +307,7 @@ def menu_inject(plugin_path: str = ""):
             print(_("  {var0}Total clés dans fichier{var1}: {var2}{var3}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.WHITE, var3=stats['total'], var4=c.RESET))
             print()
             print(c.success(_("Fichier mis à jour: {var0}{target_file}{var2}").format(var0=c.VALUE, target_file=target_file, var2=c.RESET)))
-            print(_("{var0}  (Backup .bak créé){var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("{var0}  (Backup .bak créé dans backups/){var1}").format(var0=c.DIM, var1=c.RESET))
 
             return stats
 
@@ -320,7 +335,8 @@ def menu_inject(plugin_path: str = ""):
 
         try:
             print(_("\n{var0}[INFO]{var1} Injection en cours...").format(var0=c.INFO, var1=c.RESET))
-            results = run_inject_from_dir(translate_dir, locales_dir, update_dir)
+            results = run_inject_from_dir(translate_dir, locales_dir, update_dir,
+                                          backup_dir=get_translator_backup_dir(plugin_path))
 
             if results:
                 print(f"\n{c.HEADER}{'=' * 66}{c.RESET}")

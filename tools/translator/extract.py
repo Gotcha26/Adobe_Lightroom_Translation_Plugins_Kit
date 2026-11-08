@@ -16,7 +16,7 @@ Produit des fichiers de traduction contenant :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -24,11 +24,16 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-from .common import parse_translation_file, load_update_json, find_languages, c
+from .common import (
+    parse_translation_file, load_update_json, find_languages, c,
+    TRANSLATE_KEY, translate_ref_marker, translate_before_marker,
+    translate_after_marker, translate_target_marker,
+)
 from .config_loader import get_update_filename, get_reference_lang
 from core.i18n import _
+from core.paths import find_latest_update_dir, find_update_dir_in
 
 
 # =============================================================================
@@ -70,6 +75,7 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
     # Générer le fichier TRANSLATE
     output_file = os.path.join(output_dir, f'TRANSLATE_{lang}.txt')
 
+    ref_lang = get_reference_lang()
     added_keys = update_data.get('added', {})
     changed_keys = update_data.get('changed', {})
 
@@ -80,12 +86,13 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
         f.write(_("# Généré: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         f.write(_("# Source: {update_dir}\n").format(update_dir=update_dir))
         f.write("# " + "=" * 70 + "\n")
-        f.write(_("#\n"))
+        f.write("#\n")
         f.write(_("# INSTRUCTIONS:\n"))
         f.write(_("# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n"))
         f.write(_("# 2. Laissez vide pour garder la valeur EN par défaut\n"))
         f.write(_("# 3. Les lignes commençant par # sont ignorées\n"))
-        f.write(_("#\n"))
+        f.write(_("# 4. Un guillemet double \" doit être écrit \\\" (sinon il est échappé automatiquement)\n"))
+        f.write("#\n")
         f.write("# " + "=" * 70 + "\n\n")
 
         # Section: Nouvelles clés
@@ -96,16 +103,15 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
 
             for key in sorted(added_keys.keys()):
                 en_value = added_keys[key]
-                f.write(_("[KEY] {key}\n").format(key=key))
-                f.write(_("[EN]  {en_value}\n").format(en_value=en_value))
-                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
+                f.write(f"{TRANSLATE_KEY} {key}\n")
+                f.write(f"{translate_ref_marker(ref_lang)}  {en_value}\n")
+                f.write(translate_target_marker(lang) + "\n")
                 f.write("\n")
 
         # Section: Clés modifiées
         if changed_keys:
             f.write("# " + "-" * 70 + "\n")
-            ref_lang = get_reference_lang().upper()
-            f.write(_("# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n").format(var0=len(changed_keys), ref_lang=ref_lang))
+            f.write(_("# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n").format(var0=len(changed_keys), ref_lang=ref_lang.upper()))
             f.write("# " + "-" * 70 + "\n\n")
 
             for key in sorted(changed_keys.keys()):
@@ -114,12 +120,12 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
                 new_ref = change['new']
                 current_trans = existing_translations.get(key, '')
 
-                f.write(_("[KEY] {key}\n").format(key=key))
-                f.write(_("[{ref_lang} AVANT]  {old_ref}\n").format(ref_lang=ref_lang, old_ref=old_ref))
-                f.write(_("[{ref_lang} APRÈS]  {new_ref}\n").format(ref_lang=ref_lang, new_ref=new_ref))
+                f.write(f"{TRANSLATE_KEY} {key}\n")
+                f.write(f"{translate_before_marker(ref_lang)}  {old_ref}\n")
+                f.write(f"{translate_after_marker(ref_lang)}  {new_ref}\n")
                 if current_trans and current_trans != old_ref:
-                    f.write(_("[{var0} ACTUEL] {current_trans}\n").format(var0=lang.upper(), current_trans=current_trans))
-                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
+                    f.write(f"[{lang.upper()} CURRENT] {current_trans}\n")
+                f.write(translate_target_marker(lang) + "\n")
                 f.write("\n")
 
         # Résumé
@@ -175,7 +181,6 @@ def menu_extract(plugin_path: str = ""):
         plugin_path: Chemin du plugin (optionnel) pour auto-détection
     """
     from .common import clear_screen, print_header, load_update_json
-    from core.paths import find_latest_tool_output
     from core.menu_helpers import select_tool_output_dir
 
     clear_screen()
@@ -186,7 +191,15 @@ def menu_extract(plugin_path: str = ""):
     # Auto-détection et sélection interactive du dossier UPDATE
     update_dir = None
     if plugin_path:
-        update_dir = select_tool_output_dir(plugin_path, "Translator", "")
+        selected = select_tool_output_dir(plugin_path, "Translator", "")
+        if selected == "":
+            # Annulé par l'utilisateur : retour au menu
+            return None
+        # selected None = erreur déjà affichée : pas d'auto-détection, saisie manuelle ci-dessous.
+        # Le dossier choisi peut être une sortie sans UPDATE (COMPARE-LANGS, ADD LANGUAGE)
+        if selected:
+            update_dir = find_update_dir_in(selected, get_update_filename()) \
+                or find_latest_update_dir(plugin_path, get_update_filename())
         if update_dir:
             print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
         else:

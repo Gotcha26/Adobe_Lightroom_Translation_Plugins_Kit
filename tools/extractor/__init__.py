@@ -17,3 +17,5 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 from .main import run_extraction
 from .menu import show_interactive_menu
+
+__all__ = ["run_extraction", "show_interactive_menu"]

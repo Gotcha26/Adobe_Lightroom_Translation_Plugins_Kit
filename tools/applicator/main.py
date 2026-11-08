@@ -28,8 +28,14 @@ Usage CLI :
         --extraction-dir PATH       Dossier Extractor (défaut : auto-détection)
         --dry-run                   Mode simulation (affichage sans modification)
         --no-backup                 Ne pas créer de .bak (défaut : backups activées)
+        --yes                       Aucune question (pas de gestion interactive des traductions)
+        --default-plugin PATH       Plugin pré-configuré pour le menu interactif
 
-Date : 2026-02-04
+    Sans --plugin-path : menu interactif. En CLI, la gestion des fichiers de
+    traduction n'est proposée que sans --yes et si l'entrée standard est un terminal.
+    Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments invalides.
+
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -41,36 +47,33 @@ import sys
 import json
 import shutil
 import argparse
-from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output
-from core.colors import Colors
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative
+from core.colors import c, stdin_is_interactive
 from core.i18n import _
 import glob
 import subprocess
 
+from tools.extractor.utils import build_loc_call as _build_loc_call
+from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
-c = Colors()
 
 
 def _shorten(path: str, plugin_path: str) -> str:
     """Remplace le préfixe plugin_path par <plugin> dans un chemin."""
-    plugin_norm = os.path.normpath(plugin_path)
-    path_norm = os.path.normpath(path)
-    if path_norm.startswith(plugin_norm):
-        return "<plugin>" + path_norm[len(plugin_norm):]
-    return path
+    return display_relative(path, plugin_path)
 
 
 class LocalizationReport:
     """Genere un rapport detaille des modifications."""
 
-    def __init__(self):
+    def __init__(self, plugin_name: str = ""):
+        self.plugin_name = plugin_name
         self.changes = []
         self.skipped = []
         self.errors = []
@@ -112,7 +115,7 @@ class LocalizationReport:
         from core.i18n import debug_i18n_context
         with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
-            f.write(_("RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n"))
+            f.write(_("RAPPORT DE LOCALISATION - {var0}\n").format(var0=self.plugin_name))
             f.write("=" * 80 + "\n\n")
 
             f.write(_("STATISTIQUES GLOBALES\n"))
@@ -172,58 +175,61 @@ class LocalizationReport:
             f.write(_("4. Tester les textes dans l'interface\n\n"))
 
 
-def load_replacements_json(extraction_dir: str) -> Optional[Dict]:
-    """Charge le fichier replacements.json."""
+def load_replacements_json(extraction_dir: str, silent: bool = False,
+                           report: Optional["LocalizationReport"] = None) -> Optional[Dict]:
+    """Charge le fichier replacements.json.
+
+    Args:
+        silent: Si True, aucun affichage (les erreurs vont dans `report` s'il est fourni)
+        report: Rapport où consigner l'erreur de chargement éventuelle
+    """
     replacements_file = os.path.join(extraction_dir, "replacements.json")
 
     if not os.path.exists(replacements_file):
-        print(_("ERREUR: Fichier replacements.json introuvable dans {dir}").format(dir=extraction_dir))
+        message = _("ERREUR: Fichier replacements.json introuvable dans {dir}").format(dir=extraction_dir)
+        if report is not None:
+            report.add_error(replacements_file, 0, message)
+        if not silent:
+            print(message)
         return None
 
     try:
         with open(replacements_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            print(_("* replacements.json chargé"))
-            print(_("  - {n} fichiers avec remplacements").format(n=len(data.get('files', {}))))
-            total_replacements = sum(
-                f_data.get('total_replacements', 0)
-                for f_data in data.get('files', {}).values()
-            )
-            print(_("  - {n} remplacements prévus").format(n=total_replacements))
-            return data
     except Exception as e:
-        print(_("ERREUR lors du chargement de replacements.json: {error}").format(error=e))
+        message = _("ERREUR lors du chargement de replacements.json: {error}").format(error=e)
+        if report is not None:
+            report.add_error(replacements_file, 0, message)
+        if not silent:
+            print(message)
         return None
+
+    if not silent:
+        print(_("* replacements.json chargé"))
+        print(_("  - {n} fichiers avec remplacements").format(n=len(data.get('files', {}))))
+        total_replacements = sum(
+            f_data.get('total_replacements', 0)
+            for f_data in data.get('files', {}).values()
+        )
+        print(_("  - {n} remplacements prévus").format(n=total_replacements))
+    return data
 
 
 def build_loc_call(member: Dict) -> str:
     """
     Construit l'appel LOC pour un membre.
 
-    Format SDK Lightroom: LOC _("$$$/Key=Default Value")
+    Délègue à tools.extractor.utils.build_loc_call (source unique), qui
+    ré-échappe `"` et `\\` de base_text (texte réel). original_text, lui,
+    reste la forme source échappée recherchée dans la ligne.
     """
-    loc_key = member['loc_key']
-    base_text = member['base_text']
-    leading_spaces = member.get('leading_spaces', 0)
-    trailing_spaces = member.get('trailing_spaces', 0)
-    suffix = member.get('suffix', '')
-
-    parts = []
-
-    # Espaces en debut
-    if leading_spaces > 0:
-        parts.append('_("' + ' ' * leading_spaces + '") .. ')
-
-    # Appel LOC avec valeur par defaut
-    parts.append(f'LOC "{loc_key}={base_text}"')
-
-    # Suffixe ou espaces en fin
-    if suffix:
-        parts.append(f' .. "{suffix}"')
-    elif trailing_spaces > 0:
-        parts.append(' .. _("' + ' ' * trailing_spaces + '")')
-
-    return ''.join(parts)
+    return _build_loc_call(
+        member['loc_key'],
+        member['base_text'],
+        member.get('leading_spaces', 0),
+        member.get('trailing_spaces', 0),
+        member.get('suffix', ''),
+    )
 
 
 def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, List[Dict]]:
@@ -263,7 +269,7 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
         # Verifier que cette chaine n'est pas deja dans un LOC
         # Chercher "LOC" avant la position
         before_context = result[max(0, pos-20):pos]
-        if 'LOC ' in before_context or 'LOC_("' in before_context or ")LOC'" in before_context:
+        if 'LOC ' in before_context or 'LOC("' in before_context or "LOC'" in before_context:
             continue  # Deja localisee
 
         # Construire le remplacement
@@ -278,7 +284,8 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
 
 def process_file_with_replacements(file_path: str, file_replacements: Dict,
                                     report: LocalizationReport, dry_run: bool,
-                                    backup_dir: Optional[str] = None, create_backup: bool = True) -> int:
+                                    backup_dir: Optional[str] = None, create_backup: bool = True,
+                                    plugin_path: Optional[str] = None) -> int:
     """
     Traite un fichier en utilisant les remplacements du JSON.
 
@@ -288,8 +295,14 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
         report.add_error(file_path, 0, _("Fichier introuvable"))
         return 0
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except UnicodeDecodeError as exc:
+        # Fichier non UTF-8 (ex. latin-1) : le signaler et passer au fichier suivant
+        # plutôt que d'interrompre une passe qui a déjà modifié d'autres fichiers
+        report.add_error(file_path, 0, _("Encodage non UTF-8, fichier ignoré: {error}").format(error=exc))
+        return 0
 
     # Indexer les remplacements par numero de ligne
     replacements_by_line = {}
@@ -314,25 +327,15 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 new_lines.append(new_line)
                 modified = True
                 total_applied += len(applied_members)
+            elif 'LOC "$$$/' in line:
+                # Ligne deja localisee : rien a faire, pas un echec
+                new_lines.append(line)
             else:
-                # Verifier si c'est parce que c'est deja localise
-                if 'LOC "$$$/' in line:
-                    # Ligne deja (partiellement?) localisee
-                    # Essayer quand meme d'appliquer les membres non-localises
-                    new_line, applied_members = apply_replacements_to_line(line, members)
-                    if new_line != line and applied_members:
-                        report.add_change(file_path, line_num, line, new_line, applied_members)
-                        new_lines.append(new_line)
-                        modified = True
-                        total_applied += len(applied_members)
-                    else:
-                        new_lines.append(line)
-                else:
-                    # Pas de modification possible
-                    report.add_skip(file_path, line_num,
-                                   _("Chaine non trouvee ou deja localisee"),
-                                   line)
-                    new_lines.append(line)
+                # Pas de modification possible
+                report.add_skip(file_path, line_num,
+                               _("Chaine non trouvee ou deja localisee"),
+                               line)
+                new_lines.append(line)
         else:
             new_lines.append(line)
 
@@ -341,11 +344,10 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
         # Créer le backup si demandé
         if create_backup:
             if backup_dir:
-                os.makedirs(backup_dir, exist_ok=True)
-                backup_path = os.path.join(backup_dir, os.path.basename(file_path) + '.bak')
+                # Backup de session : le premier écrivain gagne (état d'origine)
+                backup_once(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
             else:
-                backup_path = file_path + '.bak'
-            shutil.copy2(file_path, backup_path)
+                shutil.copy2(file_path, file_path + '.bak')
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 
@@ -353,16 +355,26 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
 
 
 def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = None, dry_run: bool = False,
-                              create_backup: bool = True, silent: bool = False) -> bool:
+                              create_backup: bool = True, silent: bool = False,
+                              backup_dir: Optional[str] = None) -> Tuple[bool, LocalizationReport]:
     """Traite tous les fichiers Lua du plugin en utilisant replacements.json.
 
     Args:
         silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
+        backup_dir: Dossier de sauvegarde d'une session Applicator existante
+            (<session>/backups). S'il est fourni, aucune nouvelle session n'est
+            créée : sauvegardes et rapport vont dans cette session (AUTO-SYNC).
+
+    Returns:
+        Tuple (succès, rapport). Succès vaut False si report.errors n'est pas
+        vide (fichier introuvable ou non UTF-8). En dry-run, le rapport décrit les lignes qui
+        seraient modifiées (report.stats['total_replacements']).
     """
+    report = LocalizationReport(os.path.basename(os.path.normpath(plugin_path)))
 
     if not os.path.isdir(plugin_path):
         print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
-        return False
+        return False, report
 
     # Auto-détection du dossier d'extraction si non spécifié
     if not extraction_dir:
@@ -370,38 +382,44 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         if not extraction_dir:
             print(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"))
             print(_("        Lancez d'abord Extractor sur ce plugin."))
-            return False
+            return False, report
         print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
 
     if not os.path.isdir(extraction_dir):
         print(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
-        return False
+        return False, report
 
-    # Créer le dossier de sortie Applicator
-    applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
-    backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
+    if backup_dir:
+        # Session Applicator fournie par l'appelant : ne pas en créer une seconde
+        applicator_output = os.path.dirname(os.path.normpath(backup_dir))
+        os.makedirs(applicator_output, exist_ok=True)
+        if not create_backup:
+            backup_dir = None
+    else:
+        # Créer le dossier de sortie Applicator
+        applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
+        backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
 
     if not silent:
         print()
 
     # Charger replacements.json
-    replacements_data = load_replacements_json(extraction_dir)
+    replacements_data = load_replacements_json(extraction_dir, silent=silent, report=report)
 
     if not replacements_data:
         if not silent:
             print(_("ERREUR: Impossible de charger les remplacements"))
-        return False
+        return False, report
 
     files_data = replacements_data.get('files', {})
 
     if not files_data:
         if not silent:
             print(_("Aucun remplacement à effectuer"))
-        return True
+        return True, report
 
     if not silent:
         print()
-    report = LocalizationReport()
 
     for file_rel_path, file_replacements in sorted(files_data.items()):
         file_path = os.path.join(plugin_path, file_rel_path)
@@ -409,11 +427,15 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         if os.path.exists(file_path):
             if not silent:
                 print(_("Traitement de {file}...").format(file=file_rel_path))
+            errors_before = len(report.errors)
             replacements_count = process_file_with_replacements(
-                file_path, file_replacements, report, dry_run, backup_dir, create_backup
+                file_path, file_replacements, report, dry_run, backup_dir, create_backup, plugin_path
             )
             report.stats['files_processed'] += 1
-            if replacements_count > 0:
+            if len(report.errors) > errors_before:
+                if not silent:
+                    print("  ! " + report.errors[-1]['error'])
+            elif replacements_count > 0:
                 report.stats['files_modified'] += 1
                 if not silent:
                     print(_("  * {n} chaîne(s) remplacée(s)").format(n=replacements_count))
@@ -452,7 +474,8 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
         print(c.separator("═", 70))
 
-    return True
+    # Échec si des fichiers attendus sont introuvables (report.errors)
+    return not report.errors, report
 
 
 def find_translation_files(plugin_path: str) -> List[str]:
@@ -636,7 +659,7 @@ def _propose_additional_langs(template_file: str, plugin_path: str, installed_la
             # Ligne 2 : "-- Plugin Localization - XX" → remplacer XX par le nouveau code
             if len(lines) >= 2:
                 lines[1] = re.sub(
-                    r'^(-- Plugin Localization - )\w+',
+                    r'^(' + re.escape(HEADER_TITLE_PREFIX) + r' )\w+',
                     rf'\g<1>{lang_code.upper()}',
                     lines[1]
                 )
@@ -849,18 +872,55 @@ def handle_translation_files(plugin_path: str, extraction_dir: Optional[str] = N
     print(c.info(_("Aucun template d'extraction ne correspond. Rien à faire.")))
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    """Parseur unique : mode interactif (sans --plugin-path) et mode CLI."""
+    parser = argparse.ArgumentParser(
+        description=_("Applique les localisations generees par Extractor au plugin"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=_("""
+Exemples:
+  # Mode interactif (menu)
+  python -m tools.applicator.main
+  python -m tools.applicator.main --default-plugin ./plugin.lrplugin
+
+  # Mode CLI avec auto-detection de l'extraction
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --dry-run
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --yes
+
+  # Mode CLI avec extraction specifique
+  python -m tools.applicator.main --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
+
+Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments invalides.
+        """)
+    )
+
+    parser.add_argument('--default-plugin', default="",
+                        help=_("Plugin pré-configuré pour le menu interactif"))
+    parser.add_argument('--plugin-path', default=None,
+                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    parser.add_argument('--yes', action='store_true',
+                        help=_("Aucune question : ne pas lancer la gestion des fichiers de traduction"))
+    parser.add_argument('--extraction-dir', default=None,
+                        help=_("Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)"))
+    parser.add_argument('--dry-run', action='store_true',
+                        help=_("Mode simulation (affiche sans modifier)"))
+    parser.add_argument('--no-backup', action='store_true',
+                        help=_("Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)"))
+    return parser
+
+
 def main():
-    """Point d'entree principal."""
+    """Point d'entree principal.
 
-    # Verifier si mode interactif (aucun argument ou seulement --default-plugin)
-    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
-        # Recuperer le chemin par defaut si fourni
-        default_plugin = ""
-        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
-            default_plugin = sys.argv[2]
+    Mode interactif si --plugin-path est absent (--default-plugin pré-configure
+    alors le plugin du menu) ; sinon mode CLI.
+    """
+    args = _build_parser().parse_args()
 
+    if not args.plugin_path:
         # Menu interactif avec plugin pre-configure
-        result = show_interactive_menu(default_plugin)
+        result = show_interactive_menu(args.default_plugin)
 
         if result is None:
             print("\n" + _("Application annulée"))
@@ -868,7 +928,7 @@ def main():
 
         plugin_path, extraction_dir, dry_run, create_backup = result
 
-        success = process_plugin_directory(plugin_path, extraction_dir, dry_run, create_backup)
+        success, _report = process_plugin_directory(plugin_path, extraction_dir, dry_run, create_backup)
 
         # Proposer la gestion des fichiers de traduction si succes et pas en dry-run
         if success and not dry_run:
@@ -877,43 +937,16 @@ def main():
         sys.exit(0 if success else 1)
     else:
         # Arguments en ligne de commande
-        parser = argparse.ArgumentParser(
-            description=_("Applique les localisations generees par Extractor au plugin"),
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Exemples:
-  # Mode interactif (menu)
-  python Applicator_main.py
-
-  # Mode CLI avec auto-detection de l'extraction
-  python Applicator_main.py --plugin-path ./plugin.lrplugin
-  python Applicator_main.py --plugin-path ./plugin.lrplugin --dry-run
-
-  # Mode CLI avec extraction specifique
-  python Applicator_main.py --plugin-path ./plugin.lrplugin --extraction-dir ./plugin.lrplugin/__i18n_tmp__/Extractor/20260127_091234
-            """
-        )
-
-        parser.add_argument('--plugin-path', required=True,
-                            help='Chemin vers le repertoire du plugin (OBLIGATOIRE)')
-        parser.add_argument('--extraction-dir', default=None,
-                            help='Repertoire Extractor (defaut: auto-detection __i18n_tmp__/Extractor/)')
-        parser.add_argument('--dry-run', action='store_true',
-                            help='Mode simulation (affiche sans modifier)')
-        parser.add_argument('--no-backup', action='store_true',
-                            help='Ne pas creer de fichiers de sauvegarde .bak (par defaut: backup active)')
-
-        args = parser.parse_args()
-
-        success = process_plugin_directory(
+        success, _report = process_plugin_directory(
             args.plugin_path,
             args.extraction_dir,
             args.dry_run,
             create_backup=not args.no_backup
         )
 
-        # Proposer la gestion des fichiers de traduction si succes et pas en dry-run
-        if success and not args.dry_run:
+        # Gestion des fichiers de traduction (interactive) : seulement si succès,
+        # hors dry-run, sans --yes et avec un terminal capable de répondre
+        if success and not args.dry_run and not args.yes and stdin_is_interactive():
             handle_translation_files(args.plugin_path, args.extraction_dir)
 
         sys.exit(0 if success else 1)

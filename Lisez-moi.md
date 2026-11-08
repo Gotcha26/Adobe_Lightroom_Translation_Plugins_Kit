@@ -122,7 +122,7 @@ Le toolkit regroupe trois outils complémentaires, accessibles via un menu uniqu
 | ***Applicator*** | Remplace les textes par des appels `LOC()` |
 | ***Translator*** | Synchronise tous les fichiers de langue |
 
-Chaque outil peut fonctionner seul, mais le lanceur ***LocalisationToolKit*** les orchestre intelligemment en conservant votre configuration.
+Chaque outil peut fonctionner seul, mais le lanceur ***LocalizationToolKit*** les orchestre intelligemment en conservant votre configuration.
 
 ---
 
@@ -136,10 +136,10 @@ git clone https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit.gi
 cd Adobe_Lightroom_Translation_Plugins_Kit
 
 # 3. Lancer le menu
-python LocalisationToolKit.py
+python LocalizationToolKit.py
 ```
 
-**Aucune dépendance externe** — uniquement Python 3.7+ et la bibliothèque standard.
+**Aucune dépendance externe** — uniquement Python 3.10+ et la bibliothèque standard.
 
 ---
 

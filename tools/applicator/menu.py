@@ -13,7 +13,7 @@ sauvegardes).
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -26,13 +26,11 @@ from typing import Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import find_latest_tool_output, validate_plugin_path, get_i18n_dir
-from core.colors import Colors
+from core.paths import find_latest_tool_output, validate_plugin_path, get_i18n_dir, display_relative
+from core.colors import c
 from core.menu_helpers import select_tool_output_dir
 from core.i18n import _
 
-# Instance couleurs
-c = Colors()
 
 
 class ApplicatorMenu:
@@ -92,20 +90,7 @@ class ApplicatorMenu:
         Returns:
             Chemin raccourci
         """
-        if not self.plugin_path or not extraction_path:
-            return extraction_path
-
-        # Normaliser les chemins pour la comparaison
-        plugin_norm = os.path.normpath(self.plugin_path)
-        extraction_norm = os.path.normpath(extraction_path)
-
-        # Si le chemin d'extraction commence par le chemin du plugin
-        if extraction_norm.startswith(plugin_norm):
-            # Remplacer la partie plugin par <plugin>
-            relative_part = extraction_norm[len(plugin_norm):]
-            return "<plugin>{relative_part}".format(relative_part=relative_part)
-
-        return extraction_path
+        return display_relative(extraction_path, self.plugin_path)
 
     def print_config(self):
         """Affiche la configuration actuelle."""
@@ -236,6 +221,13 @@ class ApplicatorMenu:
         """Demande le répertoire d'extraction avec choix multiple si plusieurs disponibles."""
         selected_dir = select_tool_output_dir(self.plugin_path, "Extractor", self.extraction_dir)
 
+        if selected_dir is None:
+            # Erreur (chemin introuvable, choix invalide) déjà affichée
+            return False
+        if selected_dir == self.extraction_dir:
+            # Annulé : dossier actuel conservé tel quel
+            return bool(selected_dir)
+
         if selected_dir:
             # Vérifier les fichiers requis
             required = ["replacements.json"]
@@ -263,7 +255,7 @@ class ApplicatorMenu:
         print(f"  {c.VALUE}" + _("Non") + f"{c.RESET} = " + _("Applique les modifications (crée des backups)"))
         print()
 
-        current = "O_(" if self.dry_run else ")N"
+        current = "O/n" if self.dry_run else "N/o"
         response = input(c.prompt(_("Mode simulation? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
@@ -290,7 +282,7 @@ class ApplicatorMenu:
             input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
             return
 
-        current = "O_(" if self.create_backup else ")N"
+        current = "O/n" if self.create_backup else "N/o"
         response = input(c.prompt(_("Créer des sauvegardes? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes', '']:

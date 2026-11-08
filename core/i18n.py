@@ -12,7 +12,7 @@ locale/<lang>/LC_MESSAGES/ et chargées dynamiquement selon la langue sélection
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -21,6 +21,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import gettext
 import os
 import locale
+import sys
 from pathlib import Path
 from typing import Optional, Callable
 
@@ -56,6 +57,9 @@ _locale_dir: Optional[Path] = None
 # Langue actuelle (initialisée plus tard)
 _current_language: str = "fr"
 
+# Catalogue gettext chargé (None pour la langue source : pas de traduction)
+_translation: Optional[gettext.NullTranslations] = None
+
 # Fonction de traduction active
 _translator: Callable[[str], str] = lambda s: s  # Par défaut: pas de traduction
 
@@ -68,7 +72,7 @@ def _get_toolkit_root() -> Path:
     """Retourne le répertoire racine du toolkit."""
     global _toolkit_root
     if _toolkit_root is None:
-        # Ce fichier est dans common/, donc parent = racine
+        # Ce fichier est dans core/, donc parent = racine
         _toolkit_root = Path(__file__).parent.parent.resolve()
     return _toolkit_root
 
@@ -86,8 +90,9 @@ def _detect_system_language() -> str:
 
     Ordre de priorité :
         1. Variable d'environnement TOOLKIT_LANG (ex: "de", "en_US", "fr")
-        2. Locale système via locale.getdefaultlocale()
-        3. FALLBACK_LANGUAGE
+        2. Variables LC_ALL, LC_MESSAGES, LANG, LANGUAGE
+        3. Locale système via locale.getlocale() (mapping Windows French*/English*)
+        4. FALLBACK_LANGUAGE
     """
     # Override via variable d'environnement (utile pour tester)
     env_lang = os.environ.get("TOOLKIT_LANG", "").strip()
@@ -98,15 +103,39 @@ def _detect_system_language() -> str:
         # Langue valide mais non supportée → fallback (ne pas ignorer silencieusement)
         return FALLBACK_LANGUAGE
 
-    try:
-        lang_code = locale.getdefaultlocale()[0]
-        if lang_code:
-            lang = lang_code.split("_")[0].lower()
-            if lang in SUPPORTED_LANGUAGES:
+    for var in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"):
+        for part in os.environ.get(var, "").split(":"):
+            lang = _language_from_code(part)
+            if lang:
                 return lang
-    except Exception:
-        pass
+
+    lang = _language_from_code(_get_locale_code())
+    if lang:
+        return lang
     return FALLBACK_LANGUAGE
+
+
+def _language_from_code(code: Optional[str]) -> Optional[str]:
+    """Convertit un code de locale (fr_FR.UTF-8, French_France, en...) en langue supportée."""
+    if not code:
+        return None
+    code = code.strip().lower()
+    if code.startswith("french"):
+        return "fr"
+    if code.startswith("english"):
+        return "en"
+    lang = code[:2]
+    if lang in SUPPORTED_LANGUAGES:
+        return lang
+    return None
+
+
+def _get_locale_code() -> Optional[str]:
+    """Retourne le code de locale courant via locale.getlocale() (None si indisponible)."""
+    try:
+        return locale.getlocale()[0]
+    except Exception:
+        return None
 
 
 def _get_initial_language() -> str:
@@ -124,43 +153,39 @@ def _get_initial_language() -> str:
         return FALLBACK_LANGUAGE
 
 
-def _load_translator(language: str) -> Callable[[str], str]:
-    """Charge le traducteur pour une langue donnée.
+def _load_translation(language: str) -> Optional[gettext.NullTranslations]:
+    """Charge le catalogue gettext d'une langue donnée.
 
     Args:
         language: Code langue (ex: "en", "fr", "es")
 
     Returns:
-        Fonction de traduction
+        Objet de traduction gettext (NullTranslations si aucun .mo n'est trouvé),
+        ou None pour la langue source (français) ou en cas d'erreur de lecture.
     """
-    locale_dir = _get_locale_dir()
-
     # Si c'est la langue source (français), pas de traduction
     if language == "fr":
-        return lambda s: s
-
-    # Vérifier si la traduction existe
-    mo_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.mo".format(DOMAIN=DOMAIN)
-
-    if not mo_file.exists():
-        # Pas de fichier .mo, essayer avec le .po (moins performant)
-        po_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.po".format(DOMAIN=DOMAIN)
-        if not po_file.exists():
-            # Aucune traduction disponible
-            return lambda s: s
+        return None
 
     try:
-        # Charger les traductions
-        translation = gettext.translation(
+        return gettext.translation(
             DOMAIN,
-            localedir=str(locale_dir),
+            localedir=str(_get_locale_dir()),
             languages=[language],
             fallback=True
         )
-        return translation.gettext
-    except Exception:
-        # En cas d'erreur, retourner la fonction identité
-        return lambda s: s
+    except Exception as exc:
+        # Catalogue illisible : on continue en langue source, mais on le signale
+        print("[i18n] {lang}: {error}".format(lang=language, error=exc), file=sys.stderr)
+        return None
+
+
+def _activate(language: str) -> None:
+    """Active une langue : charge son catalogue et met à jour le traducteur."""
+    global _current_language, _translation, _translator
+    _current_language = language
+    _translation = _load_translation(language)
+    _translator = _translation.gettext if _translation is not None else (lambda s: s)
 
 
 def init(language: Optional[str] = None) -> str:
@@ -172,8 +197,6 @@ def init(language: Optional[str] = None) -> str:
     Returns:
         Code de la langue initialisée
     """
-    global _current_language, _translator
-
     if language is None:
         language = _get_initial_language()
 
@@ -184,8 +207,7 @@ def init(language: Optional[str] = None) -> str:
     if language not in SUPPORTED_LANGUAGES:
         language = FALLBACK_LANGUAGE
 
-    _current_language = language
-    _translator = _load_translator(language)
+    _activate(language)
 
     return _current_language
 
@@ -199,8 +221,6 @@ def set_language(language: str) -> bool:
     Returns:
         True si la langue a été changée, False sinon
     """
-    global _current_language, _translator
-
     # Normaliser
     language = language.lower().split("_")[0]
 
@@ -210,8 +230,7 @@ def set_language(language: str) -> bool:
     if language == _current_language:
         return True
 
-    _current_language = language
-    _translator = _load_translator(language)
+    _activate(language)
     return True
 
 
@@ -247,23 +266,26 @@ def _(message: str) -> str:
 def ngettext(singular: str, plural: str, n: int) -> str:
     """Traduction avec support du pluriel.
 
-    Usage:
-        print(ngettext(_("{n} fichier"), _("{n} fichiers"), count).format(n=count))
+    Usage (les deux formes sont des littéraux, sans _() autour) :
+        print(ngettext("{n} fichier", "{n} fichiers", count).format(n=count))
+
+    Quand un catalogue est chargé, la forme est choisie par
+    gettext.GNUTranslations.ngettext selon l'en-tête Plural-Forms du .po
+    (entrée msgid/msgid_plural/msgstr[N]) ; sans entrée plurielle dans le
+    catalogue, gettext applique la règle anglaise (n == 1 → singulier).
+    Pour la langue source (français, pas de catalogue) : règle n == 1.
 
     Args:
-        singular: Forme singulière
-        plural: Forme plurielle
+        singular: Forme singulière (français)
+        plural: Forme plurielle (français)
         n: Nombre pour déterminer la forme
 
     Returns:
         Message traduit avec la forme appropriée
     """
-    # Pour l'instant, implémentation simple basée sur n
-    # TODO: Utiliser gettext.ngettext quand les traductions seront prêtes
-    if n == 1:
-        return _translator(singular)
-    else:
-        return _translator(plural)
+    if _translation is not None:
+        return _translation.ngettext(singular, plural, n)
+    return singular if n == 1 else plural
 
 
 # =============================================================================
@@ -341,8 +363,10 @@ def debug_i18n_context():
 
         if get_debug_i18n():
             return temporary_language("en")
-    except Exception:
-        pass
+    except Exception as exc:
+        # Config illisible : génération en langue courante, mais on le signale
+        # (texte brut : core.colors dépend de ce module)
+        print("[i18n] debug_i18n: {error}".format(error=exc), file=sys.stderr)
 
     # Si le flag n'est pas activé ou config indisponible, no-op context
     from contextlib import nullcontext
@@ -361,11 +385,12 @@ def debug_language_detection() -> str:
     if env_lang:
         info.append(_("Locale système: {locale}").format(locale=f"TOOLKIT_LANG={env_lang}"))
     else:
-        try:
-            lang_code = locale.getdefaultlocale()[0]
-            info.append(_("Locale système: {locale}").format(locale=lang_code or "None"))
-        except Exception as e:
-            info.append(_("Locale système: {locale}").format(locale=f"Erreur: {e}"))
+        env_value = next(
+            (f"{v}={os.environ[v]}" for v in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE") if os.environ.get(v)),
+            None,
+        )
+        lang_code = env_value or _get_locale_code()
+        info.append(_("Locale système: {locale}").format(locale=lang_code or "None"))
 
     info.append(_("Langue détectée: {lang}").format(lang=_current_language))
 

@@ -15,12 +15,13 @@ Usage CLI :
     - Éditer les paramètres TEXT, DURATION, FADE_DURATION, etc. en haut du fichier
     - Lancer le script pour voir l'animation
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
 
+import os
 import time
 import random
 import sys
@@ -67,6 +68,18 @@ BG_COLORS = {
     "white": "\033[47m",
 }
 
+def can_animate() -> bool:
+    """Vrai si la sortie est un terminal et que NO_COLOR n'est pas défini.
+
+    L'animation n'écrit que des séquences ANSI : redirigée vers un fichier ou un
+    tube, ou avec NO_COLOR, elle ne produirait que du bruit.
+    """
+    if os.environ.get("NO_COLOR"):
+        return False
+    stdout = sys.stdout
+    return bool(stdout is not None and hasattr(stdout, "isatty") and stdout.isatty())
+
+
 def airport_display_intro(text="GOTCHA Solutions", duration=5.0, line_width=80, color="yellow", bg_color="default", fade_duration=1.0, framerate=20, line_symbol="_", final_pause=1.0):
     """
     Animation style panneau aéroport avec flip progressif des caractères.
@@ -82,6 +95,9 @@ def airport_display_intro(text="GOTCHA Solutions", duration=5.0, line_width=80, 
         line_symbol: Symbole pour la ligne de part et d'autre du texte (défaut: "_")
         final_pause: Durée de la pause sur la frame finale avant clear en secondes (défaut: 1.0)
     """
+    if not can_animate():
+        return
+
     color_code = COLORS.get(color.lower(), COLORS["yellow"])
     bg_code = BG_COLORS.get(bg_color.lower(), "") if bg_color.lower() != "default" else ""
     frame_delay = 1.0 / framerate

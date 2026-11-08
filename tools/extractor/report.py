@@ -2,7 +2,7 @@
 """
 Nom du fichier : report.py
 
-Dépendances : .models
+Dépendances : .models, core.paths
 
 Description :
 Génération des rapports détaillés d'extraction. Classe ReportGenerator pour créer des rapports
@@ -11,7 +11,7 @@ texte avec statistiques, légende des émojis, détails par fichier et chaînes 
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -27,8 +27,10 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
+from core.paths import display_relative
 
 from .models import ExtractedString, ExtractionStats
+from .utils import escape_lua_string
 
 
 class ReportGenerator:
@@ -43,12 +45,7 @@ class ReportGenerator:
     @staticmethod
     def _shorten_path(full_path: str, plugin_path: str) -> str:
         """Raccourcit le chemin en chemin relatif au plugin."""
-        if plugin_path and plugin_path in full_path:
-            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
-            # Normaliser les slashes en forward slashes
-            relative = relative.replace("\\", "/")
-            return "<plugin>/{relative}".format(relative=relative)
-        return full_path
+        return display_relative(full_path, plugin_path)
 
     def generate_report(self, extracted: List[ExtractedString], spacing_metadata: Dict[str, Dict],
                        output_path: str):
@@ -204,8 +201,8 @@ class ReportGenerator:
 
             for entry in sorted(unique_keys.values(), key=lambda e: e.suggested_key):
                 markers = self._get_markers(entry)
-                # Utiliser base_text (sans suffixe) pour la valeur
-                f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
+                # Utiliser base_text (sans suffixe) pour la valeur, sous forme échappée
+                f.write(f'"{entry.suggested_key}={escape_lua_string(entry.base_text)}"{markers}\n')
 
         short_path = self._shorten_path(output_path, self.plugin_path)
         if not self.silent:

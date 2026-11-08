@@ -2,7 +2,7 @@
 """
 Nom du fichier : output.py
 
-Dépendances : .models
+Dépendances : .models, core.paths
 
 Description :
 Génération des fichiers de sortie d'extraction: TranslatedStrings_xx.txt, JSON de remplacement,
@@ -11,7 +11,7 @@ métadonnées d'espaces/suffixes. Classe OutputGenerator pour gérer la sériali
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -28,35 +28,14 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
+from core.paths import display_relative
+from tools.translator.common import (
+    section_for_key, HEADER_SEPARATOR, HEADER_TITLE_PREFIX, HEADER_GENERATED_PREFIX,
+    HEADER_TOTAL_KEYS_PREFIX, HEADER_SOURCE_PREFIX, TRANSLATION_WARNING_NOTE,
+)
 
-from .models import ExtractedString, ExtractionStats
-
-# =============================================================================
-# TRANSLATION WARNING NOTE
-# This note is added to all TranslatedStrings_xx.txt files to guide translators
-# =============================================================================
-TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------------------------------------
--- IMPORTANT NOTES FOR TRANSLATORS:
--- -----------------------------------------------------------------------------
--- 1. DO NOT translate the following patterns (keep them exactly as-is):
---    - %s, %d, %f, %i, %u, %x, %X, %o, %c, %e, %E, %g, %G (format specifiers)
---    - %1, %2, %3... (numbered placeholders)
---    - \\n (newline character)
---    - \\t (tab character)
---    - \\" (escaped quote)
---    - \\\\ (escaped backslash)
---    - ... (ellipsis used as placeholder)
---    - Technical terms in UPPERCASE (API, URL, HTTP, JSON, etc.)
---
--- 2. PRESERVE spaces around text exactly as they appear:
---    - Leading spaces (before text) are used for layout/alignment
---    - Trailing spaces (after text) are used for concatenation
---    - Example: "  Hello  " must keep both leading and trailing spaces
---
--- 3. Keep the same punctuation style (colons, periods, etc.)
--- -----------------------------------------------------------------------------
-
-"""
+from .models import ExtractedString
+from .utils import build_loc_call, escape_lua_string
 
 
 class OutputGenerator:
@@ -70,12 +49,7 @@ class OutputGenerator:
     @staticmethod
     def _shorten_path(full_path: str, plugin_path: str) -> str:
         """Raccourcit le chemin en chemin relatif au plugin."""
-        if plugin_path and plugin_path in full_path:
-            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
-            # Normaliser les slashes en forward slashes
-            relative = relative.replace("\\", "/")
-            return "<plugin>/{relative}".format(relative=relative)
-        return full_path
+        return display_relative(full_path, plugin_path)
 
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
         """Génère le fichier TranslatedStrings_xx.txt avec les clés uniques (fichier de référence)."""
@@ -89,18 +63,16 @@ class OutputGenerator:
         # Grouper par catégorie
         by_category: Dict[str, List[ExtractedString]] = defaultdict(list)
         for entry in unique_keys.values():
-            parts = entry.suggested_key.split('/')
-            category = parts[2] if len(parts) >= 3 else 'General'
-            by_category[category].append(entry)
+            by_category[section_for_key(entry.suggested_key)].append(entry)
 
-        from core.i18n import debug_i18n_context
-        with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
-            f.write(_("-- =============================================================================\n"))
-            f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-            f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            f.write(_("-- Total keys: {var0}\n").format(var0=len(unique_keys)))
-            f.write(_("-- SOURCE: Extractor\n"))
-            f.write(_("-- =============================================================================\n\n"))
+        # En-tête relu par le Translator : jamais traduit
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(HEADER_SEPARATOR + "\n")
+            f.write(f"{HEADER_TITLE_PREFIX} {lang.upper()}\n")
+            f.write(f"{HEADER_GENERATED_PREFIX} {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"{HEADER_TOTAL_KEYS_PREFIX} {len(unique_keys)}\n")
+            f.write(f"{HEADER_SOURCE_PREFIX.upper()} Extractor\n")
+            f.write(HEADER_SEPARATOR + "\n\n")
 
             # Add translation warning note for translators
             f.write(TRANSLATION_WARNING_NOTE)
@@ -110,8 +82,9 @@ class OutputGenerator:
                 f.write(f"-- {category}\n")
 
                 for entry in sorted(entries, key=lambda e: e.suggested_key):
-                    # Fichier propre : uniquement clé=valeur, sans émojis ni métadonnées
-                    f.write(f'"{entry.suggested_key}={entry.base_text}"\n')
+                    # Fichier propre : uniquement clé=valeur, sans émojis ni métadonnées.
+                    # La valeur est écrite sous forme échappée (\" et \\), comme dans le Lua.
+                    f.write(f'"{entry.suggested_key}={escape_lua_string(entry.base_text)}"\n')
 
                 f.write("\n")
 
@@ -242,25 +215,11 @@ class OutputGenerator:
         """
         Construit l'appel LOC pour une entrée.
 
-        Format ZString du SDK Lightroom: LOC _("$$$/Key=Default Value")
-        La valeur par défaut EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
+        Délègue à utils.build_loc_call (source unique). La valeur par défaut
+        EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
         """
-        parts = []
-
-        # Espaces en début
-        if entry.leading_spaces > 0:
-            parts.append('_("' + ' ' * entry.leading_spaces + '") .. ')
-
-        # Appel LOC avec valeur par défaut (base_text)
-        parts.append(f'LOC "{entry.suggested_key}={entry.base_text}"')
-
-        # Suffixe ou espaces en fin
-        if entry.suffix:
-            parts.append(f' .. "{entry.suffix}"')
-        elif entry.trailing_spaces > 0:
-            parts.append(' .. _("' + ' ' * entry.trailing_spaces + '")')
-
-        return ''.join(parts)
+        return build_loc_call(entry.suggested_key, entry.base_text, entry.leading_spaces,
+                              entry.trailing_spaces, entry.suffix)
 
     def _build_replaced_line(self, original_line: str, entries: List[ExtractedString]) -> str:
         """

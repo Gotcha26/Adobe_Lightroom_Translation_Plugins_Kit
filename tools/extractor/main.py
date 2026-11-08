@@ -11,16 +11,20 @@ Gère le mode CLI et le mode menu interactif. Lance l'extracteur, génère les f
 Usage CLI :
     python -m tools.extractor.main --plugin-path /path/to/plugin.lrplugin [options]
 
+    python -m tools.extractor.main [--default-plugin PATH]   # Menu interactif
+
     Options:
-        --plugin-path PATH    Chemin du plugin (OBLIGATOIRE)
+        --plugin-path PATH    Chemin du plugin (active le mode CLI ; sans lui : menu)
+        --default-plugin PATH Plugin pré-configuré pour le menu interactif
+        --yes                 Aucune question (l'Extractor n'en pose pas en CLI)
         --output-dir PATH     Override du répertoire de sortie
-        --prefix PREFIX       Préfixe LOC (défaut: $$$/Piwigo)
+        --prefix PREFIX       Préfixe LOC (défaut: config.json, sinon $$$/Plugin)
         --lang LANG           Code langue (défaut: en)
         --exclude FILE        Fichiers à exclure (répétable)
         --min-length N        Longueur minimale (défaut: 3)
         --no-ignore-log       NE PAS ignorer les logs
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -37,6 +41,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from core.paths import get_tool_output_path
 from core.output_formatters import OutputFormatter
 from core.i18n import _
+from core.defaults import DEFAULT_PREFIX
 
 from .engine import LocalizableStringExtractor
 from .output import OutputGenerator
@@ -52,10 +57,9 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
     """
 
-    # Vérifier le chemin du plugin
+    # Vérifier le chemin du plugin (l'appelant décide de la sortie : CLI, AUTO-SYNC…)
     if not os.path.isdir(plugin_path):
-        print(_("ERREUR: Répertoire introuvable: {path}").format(path=plugin_path))
-        sys.exit(1)
+        raise FileNotFoundError(_("Répertoire introuvable: {path}").format(path=plugin_path))
 
     # Déterminer le répertoire de sortie
     # Nouvelle structure: <plugin>/__i18n_tmp__/Extractor/<timestamp>/
@@ -69,7 +73,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
 
     if not silent:
-        print(f"\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(_("Analyse de {plugin}...").format(plugin=os.path.basename(plugin_path)) + "\n")
 
     # Créer l'extracteur
@@ -88,7 +92,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     strings_file = os.path.join(timestamped_output_dir, "TranslatedStrings_{lang}.txt".format(lang=lang))
     spacing_file = os.path.join(timestamped_output_dir, "spacing_metadata.json")
     replacements_file = os.path.join(timestamped_output_dir, "replacements.json")
-    report_file = os.path.join(timestamped_output_dir, f"extraction_report.txt")
+    report_file = os.path.join(timestamped_output_dir, "extraction_report.txt")
 
     # Générateurs
     output_gen = OutputGenerator(plugin_path, prefix, silent=silent)
@@ -146,18 +150,69 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         formatter.print_files_generated(files_generated, timestamped_output_dir, plugin_path)
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    """Parseur unique : mode interactif (sans --plugin-path) et mode CLI."""
+    parser = argparse.ArgumentParser(
+        description=_("Extrait les chaînes localisables d'un plugin Lightroom Classic"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=_("""
+Exemples:
+  # Mode interactif (menu)
+  python -m tools.extractor.main
+  python -m tools.extractor.main --default-plugin ./piwigoPublish.lrplugin
+
+  # Mode CLI
+  python -m tools.extractor.main --plugin-path ./piwigoPublish.lrplugin
+  python -m tools.extractor.main --plugin-path ./plugin --output-dir ./output
+        """)
+    )
+
+    parser.add_argument('--default-plugin', default="",
+                        help=_("Plugin pré-configuré pour le menu interactif"))
+    parser.add_argument('--plugin-path', default=None,
+                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    parser.add_argument('--yes', action='store_true',
+                        help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
+    parser.add_argument('--output-dir', default=None,
+                        help=_("Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)"))
+    # Charger le préfixe et la langue par défaut depuis la configuration
+    try:
+        from tools.translator.config_loader import get_prefix
+        default_prefix = get_prefix()
+    except Exception as e:
+        print(_("Préfixe illisible, {prefix} utilisé : {error}").format(prefix=DEFAULT_PREFIX, error=e))
+        default_prefix = DEFAULT_PREFIX
+    parser.add_argument('--prefix', default=default_prefix,
+                        help=_("Préfixe des clés LOC (défaut: {prefix})").format(prefix=default_prefix))
+    try:
+        from tools.translator.config_loader import get_reference_lang
+        default_lang = get_reference_lang()
+    except Exception as e:
+        print(_("Langue de référence illisible, « en » utilisée : {error}").format(error=e))
+        default_lang = 'en'
+
+    parser.add_argument('--lang', default=default_lang,
+                        help=_("Code langue (défaut: {lang})").format(lang=default_lang))
+    parser.add_argument('--exclude', action='append', default=[],
+                        help=_("Fichiers à exclure (répétable)"))
+    parser.add_argument('--min-length', type=int, default=3,
+                        help=_("Longueur minimale des chaînes (défaut: 3)"))
+    parser.add_argument('--no-ignore-log', action='store_true',
+                        help=_("NE PAS ignorer les lignes de log"))
+    return parser
+
+
 def main():
-    """Point d'entree principal."""
+    """Point d'entree principal.
 
-    # Verifier si mode interactif (aucun argument ou seulement --default-plugin)
-    if len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == '--default-plugin'):
-        # Recuperer le chemin par defaut si fourni
-        default_plugin = ""
-        if len(sys.argv) == 3 and sys.argv[1] == '--default-plugin':
-            default_plugin = sys.argv[2]
+    Mode interactif si --plugin-path est absent (--default-plugin pré-configure
+    alors le plugin du menu) ; sinon mode CLI.
+    """
+    args = _build_parser().parse_args()
 
+    if not args.plugin_path:
         # Menu interactif avec plugin pre-configure
-        result = show_interactive_menu(default_plugin)
+        result = show_interactive_menu(args.default_plugin)
 
         if result is None:
             print("\n" + _("Extraction annulée"))
@@ -165,64 +220,34 @@ def main():
 
         plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log = result
 
-        run_extraction(
-            plugin_path=plugin_path,
-            output_dir=output_dir,
-            prefix=prefix,
-            lang=lang,
-            exclude_files=exclude_files,
-            min_length=min_length,
-            ignore_log=ignore_log
-        )
-    else:
-        # Arguments en ligne de commande
-        parser = argparse.ArgumentParser(
-            description=_("Extrait les chaînes localisables d'un plugin Lightroom Classic"),
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Exemples:
-  # Mode interactif (menu)
-  python Extractor_main.py
-
-  # Mode CLI
-  python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
-  python Extractor_main.py --plugin-path ./plugin --output-dir ./output
-            """
-        )
-
-        parser.add_argument('--plugin-path', required=True,
-                            help='Chemin vers le répertoire du plugin (OBLIGATOIRE)')
-        parser.add_argument('--output-dir', default=None,
-                            help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
-        parser.add_argument('--prefix', default='$$$/Piwigo',
-                            help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
-        # Charger la langue par défaut depuis config.json
         try:
-            from tools.translator.config_loader import get_reference_lang
-            default_lang = get_reference_lang()
-        except Exception:
-            default_lang = 'en'
-
-        parser.add_argument('--lang', default=default_lang,
-                            help=f'Code langue (défaut: {default_lang})')
-        parser.add_argument('--exclude', action='append', default=[],
-                            help='Fichiers à exclure (répétable)')
-        parser.add_argument('--min-length', type=int, default=3,
-                            help='Longueur minimale des chaînes (défaut: 3)')
-        parser.add_argument('--no-ignore-log', action='store_true',
-                            help='NE PAS ignorer les lignes de log')
-
-        args = parser.parse_args()
-
-        run_extraction(
-            plugin_path=args.plugin_path,
-            output_dir=args.output_dir or "",
-            prefix=args.prefix,
-            lang=args.lang,
-            exclude_files=args.exclude,
-            min_length=args.min_length,
-            ignore_log=not args.no_ignore_log
-        )
+            run_extraction(
+                plugin_path=plugin_path,
+                output_dir=output_dir,
+                prefix=prefix,
+                lang=lang,
+                exclude_files=exclude_files,
+                min_length=min_length,
+                ignore_log=ignore_log
+            )
+        except FileNotFoundError as e:
+            print(_("ERREUR: {error}").format(error=e))
+            sys.exit(1)
+    else:
+        # Arguments en ligne de commande (l'Extractor ne pose aucune question en CLI)
+        try:
+            run_extraction(
+                plugin_path=args.plugin_path,
+                output_dir=args.output_dir or "",
+                prefix=args.prefix,
+                lang=args.lang,
+                exclude_files=args.exclude,
+                min_length=args.min_length,
+                ignore_log=not args.no_ignore_log
+            )
+        except FileNotFoundError as e:
+            print(_("ERREUR: {error}").format(error=e))
+            sys.exit(1)
 
 
 if __name__ == "__main__":

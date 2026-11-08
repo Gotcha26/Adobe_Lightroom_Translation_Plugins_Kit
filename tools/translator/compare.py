@@ -6,11 +6,11 @@ Dépendances : common
 
 Description :
 Module COMPARE pour Translator.
-Compare deux versions du fichier EN et génère UPDATE_en.json + CHANGELOG.txt
+Compare deux versions du fichier EN et génère UPDATE_<ref>.json + CHANGELOG.txt
 
 Analyse les différences entre deux versions :
   - Détecte les clés ajoutées, modifiées ou supprimées
-  - Génère UPDATE_en.json pour tracer les changements
+  - Génère UPDATE_<ref>.json pour tracer les changements
   - Crée CHANGELOG.txt lisible pour le suivi des modifications
   - Aide à synchroniser les fichiers de langue avec les changements
 
@@ -26,10 +26,12 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import json
 import shutil
+import tempfile
 from datetime import datetime
 from typing import Dict, Optional
 
 from .common import parse_translation_file, resolve_path, c
+from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
 
 
@@ -97,19 +99,19 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     Args:
         old_path: Ancien fichier EN (ou répertoire)
         new_path: Nouveau fichier EN (ou répertoire)
-        output_dir: Répertoire de sortie (défaut: timestampé)
+        output_dir: Répertoire de sortie (défaut: dossier temporaire système)
 
     Returns:
         Chemin du répertoire de sortie
     """
     # Résoudre les chemins
-    _, old_file = resolve_path(old_path)
-    _, new_file = resolve_path(new_path)
+    _dir, old_file = resolve_path(old_path)
+    _dir, new_file = resolve_path(new_path)
 
     # Créer répertoire de sortie
     if not output_dir:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), timestamp)
+        output_dir = tempfile.mkdtemp(prefix="i18n_kit_")
+        print(_("Dossier de sortie temporaire : {path}").format(path=output_dir))
     os.makedirs(output_dir, exist_ok=True)
 
     # Parser les fichiers
@@ -120,7 +122,7 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     comparator = VersionComparator(old_strings, new_strings)
     result = comparator.compare()
 
-    # Générer UPDATE_en.json
+    # Générer UPDATE_<ref>.json
     update_data = {
         'generated': datetime.now().isoformat(),
         'old_file': os.path.abspath(old_file),
@@ -141,7 +143,7 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
         'all_new_strings': new_strings  # Toutes les clés de la nouvelle version
     }
 
-    update_file = os.path.join(output_dir, 'UPDATE_en.json')
+    update_file = os.path.join(output_dir, get_update_filename())
     with open(update_file, 'w', encoding='utf-8') as f:
         json.dump(update_data, f, indent=2, ensure_ascii=False)
 
@@ -150,11 +152,11 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     _generate_changelog(changelog_file, result, old_file, new_file)
 
     # Copier l'ancien fichier EN pour traçabilité
-    old_en_file = os.path.join(output_dir, 'old_TranslatedStrings_en.txt')
+    old_en_file = os.path.join(output_dir, 'old_' + get_reference_filename())
     shutil.copy2(old_file, old_en_file)
 
     # Copier le nouveau fichier EN comme référence
-    new_en_file = os.path.join(output_dir, 'TranslatedStrings_en.txt')
+    new_en_file = os.path.join(output_dir, get_reference_filename())
     shutil.copy2(new_file, new_en_file)
 
     return output_dir
@@ -215,8 +217,8 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
         f.write(_("PROCHAINE ÉTAPE\n"))
         f.write("=" * 80 + "\n")
         f.write(_("Lancez EXTRACT puis INJECT, ou directement SYNC:\n"))
-        f.write("  python Translator_main.py extract --update {var0}\n".format(var0=os.path.dirname(file_path)))
-        f.write("  python Translator_main.py sync --update {var0}\n".format(var0=os.path.dirname(file_path)))
+        f.write("  python -m tools.translator.main extract --update {var0}\n".format(var0=os.path.dirname(file_path)))
+        f.write("  python -m tools.translator.main sync --update {var0}\n".format(var0=os.path.dirname(file_path)))
 
 
 # =============================================================================
@@ -237,14 +239,14 @@ def menu_compare(plugin_path: str = ""):
     print(_("\n{var0}COMPARE{var1}: Comparer deux versions EN").format(var0=c.INFO, var1=c.RESET))
     print(c.separator())
 
-    print(_("\n{var0}Fichier ANCIEN{var1} (TranslatedStrings_en.txt ou répertoire):").format(var0=c.KEY, var1=c.RESET))
+    print(_("\n{var0}Fichier ANCIEN{var1} ({var2} ou répertoire):").format(var0=c.KEY, var1=c.RESET, var2=get_reference_filename()))
     old_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not old_path:
         print(c.error(_("Chemin requis.")))
         input(_("\nAppuyez sur Entrée..."))
         return None
 
-    print(_("\n{var0}Fichier NOUVEAU{var1} (TranslatedStrings_en.txt ou répertoire):").format(var0=c.KEY, var1=c.RESET))
+    print(_("\n{var0}Fichier NOUVEAU{var1} ({var2} ou répertoire):").format(var0=c.KEY, var1=c.RESET, var2=get_reference_filename()))
     new_path = input(f"{c.PROMPT}  > {c.RESET}").strip()
     if not new_path:
         print(c.error(_("Chemin requis.")))
@@ -258,12 +260,12 @@ def menu_compare(plugin_path: str = ""):
         if plugin_path:
             output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
         else:
-            output_dir = None  # run_compare créera un dossier local
+            output_dir = None  # run_compare utilisera un dossier temporaire
 
         output_dir = run_compare(old_path, new_path, output_dir)
 
         # Charger le résultat pour affichage
-        with open(os.path.join(output_dir, 'UPDATE_en.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(output_dir, get_update_filename()), 'r', encoding='utf-8') as f:
             result = json.load(f)
 
         summary = result['summary']
@@ -276,9 +278,9 @@ def menu_compare(plugin_path: str = ""):
         print(_("  {var0}Clés inchangées {var1}: {var2}{var3:4d}{var4}").format(var0=c.KEY, var1=c.RESET, var2=c.DIM, var3=summary['unchanged'], var4=c.RESET))
         print()
         print(c.success(_("Fichiers générés dans: {var0}{output_dir}{var2}").format(var0=c.VALUE, output_dir=output_dir, var2=c.RESET)))
-        print(_("    {var0}• UPDATE_en.json{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("    {var0}• {var2}{var1}").format(var0=c.DIM, var1=c.RESET, var2=get_update_filename()))
         print(_("    {var0}• CHANGELOG.txt{var1}").format(var0=c.DIM, var1=c.RESET))
-        print(_("    {var0}• TranslatedStrings_en.txt{var1}").format(var0=c.DIM, var1=c.RESET))
+        print(_("    {var0}• {var2}{var1}").format(var0=c.DIM, var1=c.RESET, var2=get_reference_filename()))
 
         if summary['added'] or summary['changed'] or summary['deleted']:
             print()

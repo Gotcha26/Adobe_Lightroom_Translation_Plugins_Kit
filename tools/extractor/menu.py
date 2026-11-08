@@ -11,7 +11,7 @@ pour configurer et lancer l'extraction avec options de modification en ligne.
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -24,12 +24,11 @@ from typing import Tuple, List, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import validate_plugin_path, get_i18n_dir
-from core.colors import Colors
+from core.paths import validate_plugin_path, get_i18n_dir, TOOL_FOLDER_NAMES
+from core.colors import c
 from core.i18n import _
+from core.defaults import DEFAULT_PREFIX
 
-# Instance couleurs
-c = Colors()
 
 
 class InteractiveMenu:
@@ -52,9 +51,17 @@ class InteractiveMenu:
         except Exception:
             default_lang = "en"
 
+        # Préfixe configuré (get_prefix retombe sur DEFAULT_PREFIX si absent)
+        try:
+            from tools.translator.config_loader import get_prefix
+            default_prefix = get_prefix()
+        except Exception as e:
+            print(_("Préfixe illisible, {prefix} utilisé : {error}").format(prefix=DEFAULT_PREFIX, error=e))
+            default_prefix = DEFAULT_PREFIX
+
         self.plugin_path = default_plugin_path
         self.output_dir = ""
-        self.prefix = "$$$/Piwigo"
+        self.prefix = default_prefix
         self.lang = default_lang
         self.exclude_files: List[str] = []
         self.min_length = 3
@@ -62,13 +69,18 @@ class InteractiveMenu:
 
         # Valider le chemin par défaut s'il est fourni
         if default_plugin_path:
-            is_valid, normalized, _ = validate_plugin_path(default_plugin_path)
+            is_valid, normalized, _error = validate_plugin_path(default_plugin_path)
             if is_valid:
                 self.plugin_path = normalized
 
     def clear_screen(self):
         """Efface l'écran (compatible Windows et Linux)."""
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    @staticmethod
+    def _default_output_display() -> str:
+        """Chemin de sortie par défaut affiché (dossier temporaire configuré + dossier de l'outil)."""
+        return f"<plugin>/{get_i18n_dir()}/{TOOL_FOLDER_NAMES['Extractor']}/<timestamp>/"
 
     def print_header(self):
         """Affiche l'en-tête du menu."""
@@ -100,8 +112,8 @@ class InteractiveMenu:
         if self.output_dir:
             print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
-            default_output = f"<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
-            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + "(auto)" + f"{c.RESET}"))
+            default_output = self._default_output_display()
+            print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
 
         # Autres options
         print(c.config_line("3. " + _("Préfixe LOC"), self.prefix))
@@ -183,7 +195,7 @@ class InteractiveMenu:
         print()
         print(c.title("2. " + _("Dossier temporaire")))
         print(c.separator())
-        print(_("Par défaut:") + f" {c.VALUE}<plugin>/__i18n_tmp__/Extractor/<timestamp>/{c.RESET}")
+        print(_("Par défaut:") + f" {c.VALUE}{self._default_output_display()}{c.RESET}")
         print()
         print(_("Pour forcer un autre emplacement, entrez un chemin."))
         print(_("Sinon, appuyez sur ENTRÉE pour utiliser le défaut."))
@@ -201,7 +213,7 @@ class InteractiveMenu:
             print(c.success(_("Override: {path}").format(path=normalized_path)))
         else:
             self.output_dir = ""
-            print(c.success(_("Utilisera: <plugin>/__i18n_tmp__/Extractor/<timestamp>/")))
+            print(c.success(_("Utilisera: {path}").format(path=self._default_output_display())))
 
     def input_prefix(self):
         """Demande le préfixe LOC."""
@@ -291,7 +303,7 @@ class InteractiveMenu:
 
         # ignore_log=True signifie "ignorer les logs" (donc ne pas les inclure)
         # current affiche si les logs sont inclus (inverse de ignore_log)
-        current = "N_(" if self.ignore_log else ")O"
+        current = "N/o" if self.ignore_log else "O/n"
         response = input(c.prompt(_("Inclure les messages de log? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:

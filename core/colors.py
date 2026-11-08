@@ -12,15 +12,48 @@ Compatible avec Windows (Git Bash, PowerShell, Terminal, etc.), Linux et Mac.
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
 
+import ctypes
 import os
 import sys
 from typing import Optional
+
+from core.i18n import _
+
+
+def stdin_is_interactive() -> bool:
+    """
+    Indique si l'entrée standard est un terminal capable de répondre aux questions.
+
+    Sous Windows, le périphérique NUL (entrée redirigée vers /dev/null, CI,
+    subprocess.DEVNULL) est un périphérique caractère : isatty() renvoie True.
+    Seule une vraie console accepte GetConsoleMode, d'où la vérification
+    supplémentaire.
+
+    Returns:
+        True si des questions peuvent être posées via input()
+    """
+    stdin = sys.stdin
+    if stdin is None or not hasattr(stdin, 'isatty'):
+        return False
+    try:
+        if not stdin.isatty():
+            return False
+        if os.name != 'nt':
+            return True
+        import msvcrt
+        handle = msvcrt.get_osfhandle(stdin.fileno())
+        mode = ctypes.c_uint32()
+        return bool(ctypes.windll.kernel32.GetConsoleMode(ctypes.c_void_p(handle), ctypes.byref(mode)))
+    except (OSError, ValueError, AttributeError, ctypes.ArgumentError):
+        # Flux fermé ou sans descripteur réel (ex. remplacé par un tampon) :
+        # ce n'est pas un terminal, la réponse est simplement « non »
+        return False
 
 
 def supports_color() -> bool:
@@ -50,16 +83,19 @@ def supports_color() -> bool:
         # Windows Terminal et PowerShell Core supportent les couleurs
         if os.environ.get('WT_SESSION') or os.environ.get('ConEmuANSI') == 'ON':
             return True
-        # Essayer d'activer le mode ANSI sur Windows 10+
+        # Essayer d'activer le mode ANSI sur Windows 10+ : les couleurs ne sont
+        # émises que si la console accepte réellement le mode (console legacy = refus)
         try:
-            import ctypes
             kernel32 = ctypes.windll.kernel32
-            # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
-            kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-            return True
-        except Exception:
-            pass
-        return False
+            handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            mode = ctypes.c_uint32()
+            if not kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+                return False
+            # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004, ajouté au mode courant
+            return bool(kernel32.SetConsoleMode(handle, mode.value | 0x0004))
+        except (AttributeError, OSError, ValueError):
+            # ctypes/windll indisponible : pas de couleurs
+            return False
 
     # Unix/Linux/Mac: supporter par defaut
     return True
@@ -185,19 +221,19 @@ class Colors:
     # Méthodes pour formater du texte
     def success(self, text: str) -> str:
         """Formate un texte de succès (vert)."""
-        return "{var0}[OK]{var1} {text}".format(var0=self.OK, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.OK, tag=_("OK"), var1=self.RESET, text=text)
 
     def error(self, text: str) -> str:
         """Formate un texte d'erreur (rouge)."""
-        return "{var0}[ERREUR]{var1} {text}".format(var0=self.ERROR, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.ERROR, tag=_("ERREUR"), var1=self.RESET, text=text)
 
     def warning(self, text: str) -> str:
         """Formate un texte d'avertissement (jaune)."""
-        return "{var0}[ATTENTION]{var1} {text}".format(var0=self.WARNING, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.WARNING, tag=_("ATTENTION"), var1=self.RESET, text=text)
 
     def info(self, text: str) -> str:
         """Formate un texte d'information (bleu)."""
-        return "{var0}[INFO]{var1} {text}".format(var0=self.INFO, var1=self.RESET, text=text)
+        return "{var0}[{tag}]{var1} {text}".format(var0=self.INFO, tag=_("INFO"), var1=self.RESET, text=text)
 
     def header(self, text: str) -> str:
         """Formate un titre/header (cyan gras)."""
@@ -221,15 +257,15 @@ class Colors:
 
     def ok_marker(self) -> str:
         """Retourne un marqueur OK vert."""
-        return "{var0}[OK]{var1}".format(var0=self.OK, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.OK, tag=_("OK"), var1=self.RESET)
 
     def error_marker(self) -> str:
         """Retourne un marqueur ERREUR rouge."""
-        return "{var0}[ERREUR]{var1}".format(var0=self.ERROR, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.ERROR, tag=_("ERREUR"), var1=self.RESET)
 
     def warn_marker(self) -> str:
         """Retourne un marqueur ATTENTION jaune."""
-        return "{var0}[ATTENTION]{var1}".format(var0=self.WARNING, var1=self.RESET)
+        return "{var0}[{tag}]{var1}".format(var0=self.WARNING, tag=_("ATTENTION"), var1=self.RESET)
 
     def menu_option(self, number: str, text: str) -> str:
         """Formate une option de menu."""

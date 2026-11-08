@@ -7,11 +7,12 @@ Dépendances : Aucune
 Description :
 Configuration et constantes pour l'extraction des chaînes localisables des plugins Lightroom.
 Définit les patterns regex, suffixes, contextes UI, listes d'exclusion, patterns techniques, etc.
+Les règles propres à un plugin sont lues dans <plugin>/.i18n_kit.json (load_plugin_rules).
 
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -20,9 +21,12 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import re
-from typing import List, Set, Dict
+import json
+from dataclasses import dataclass, field
+from typing import List, Set
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from core.defaults import PLUGIN_RULES_FILE
 from core.i18n import _
 
 
@@ -38,8 +42,15 @@ LOG_LINE_REGEX = re.compile(
     re.IGNORECASE
 )
 
+# Littéral Lua entre guillemets doubles, tolérant aux échappements (\" et \\).
+# Le groupe 1 contient le texte tel qu'écrit dans le source (forme échappée).
+LUA_STRING_LITERAL_PATTERN = re.compile(r'"((?:[^"\\]|\\.)*)"')
+
 # Pattern pour extraire TOUTES les chaînes littérales d'une ligne
-ALL_STRINGS_PATTERN = re.compile(r'"([^"]*)"')
+ALL_STRINGS_PATTERN = LUA_STRING_LITERAL_PATTERN
+
+# Ouverture d'un commentaire bloc Lua : --[[ ou --[=*[ (le niveau = nombre de '=')
+BLOCK_COMMENT_OPEN_PATTERN = re.compile(r'--\[(=*)\[')
 
 
 # =============================================================================
@@ -80,33 +91,12 @@ UI_CONTEXT_PATTERNS: List[tuple] = [
     ('caption', re.compile(r'\bcaption\s*=\s*')),
     # Status messages (callStatus.statusMsg, etc.)
     ('statusMsg', re.compile(r'\bstatusMsg\s*=\s*')),
-    # LrPluginName - MAIS sera filtré par IGNORE_EXACT pour "Piwigo Publisher"
+    # LrPluginName - filtré par les règles du plugin (ignore_exact) si besoin
     ('LrPluginName', re.compile(r'LrPluginName\s*=\s*')),
     ('popup_item', re.compile(r'\{\s*title\s*=\s*"[^"]*"\s*,\s*value\s*=')),
     # ATTENTION: 'value' est trop générique et capture des valeurs techniques
     # On le garde mais avec filtrage renforcé dans is_technical_string
     ('value', re.compile(r'\bvalue\s*=\s*')),
-]
-
-# Anciens patterns pour compatibilité (chaîne simple)
-UI_PATTERNS: List[tuple] = [
-    ('title', re.compile(r'\btitle\s*=\s*"([^"]*)"')),
-    ('tooltip', re.compile(r'\btooltip\s*=\s*"([^"]*)"')),
-    ('label', re.compile(r'\blabel\s*=\s*"([^"]*)"')),
-    ('value', re.compile(r'\bvalue\s*=\s*"([^"]*)"')),
-    ('placeholder', re.compile(r'\bplaceholder\s*=\s*"([^"]*)"')),
-    ('LrDialogs.message', re.compile(r'LrDialogs\.message\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.confirm', re.compile(r'LrDialogs\.confirm\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.showError', re.compile(r'LrDialogs\.showError\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.showBezel', re.compile(r'LrDialogs\.showBezel\s*\(\s*"([^"]*)"')),
-    ('actionVerb', re.compile(r'\bactionVerb\s*=\s*"([^"]*)"')),
-    ('cancelVerb', re.compile(r'\bcancelVerb\s*=\s*"([^"]*)"')),
-    ('otherVerb', re.compile(r'\botherVerb\s*=\s*"([^"]*)"')),
-    ('message', re.compile(r'\bmessage\s*=\s*"([^"]*)"')),
-    ('info', re.compile(r'\binfo\s*=\s*"([^"]*)"')),
-    ('caption', re.compile(r'\bcaption\s*=\s*"([^"]*)"')),
-    ('LrPluginName', re.compile(r'LrPluginName\s*=\s*"([^"]*)"')),
-    ('popup_item', re.compile(r'\{\s*title\s*=\s*"([^"]*)"\s*,\s*value\s*=')),
 ]
 
 
@@ -128,10 +118,6 @@ IGNORE_EXACT: Set[str] = {
     'text/plain', 'text/html', 'text/xml',
     'application/vnd.github.v3+json',
     'multipart/form-data',
-    # Identifiants techniques
-    'PiwigoPublish-Lightroom-Plugin',
-    # Nom du plugin (non traduisible car identifiant technique)
-    'Piwigo Publisher',
     # Boutons standards LrDialogs (identifiants internes, pas des labels UI)
     'ok', 'cancel', 'other',
     'Ok', 'Cancel', 'Other',
@@ -151,7 +137,6 @@ TECHNICAL_PATTERNS: List[re.Pattern] = [
     re.compile(r'^application/'),         # MIME types
     re.compile(r'^text/'),                # MIME types text/*
     re.compile(r'^image/'),               # MIME types image/*
-    re.compile(r'^pwg\.'),                # API Piwigo
     re.compile(r'^[a-z_]+$'),             # snake_case pur (identifiants)
     re.compile(r'^[a-z]{3,15}$'),         # Mots courts minuscules = variables (boundary, length, etc.)
     re.compile(r'^[A-Z][a-z]+(-[A-Z][a-z]+)+$'),  # Headers HTTP (Content-Type, User-Agent)
@@ -166,7 +151,7 @@ TECHNICAL_PATTERNS: List[re.Pattern] = [
 # Patterns de contexte technique - si la ligne matche, ignorer les chaînes 'value'
 # Utilisé pour éviter d'extraire les valeurs dans des contextes techniques
 TECHNICAL_CONTEXT_PATTERNS: List[re.Pattern] = [
-    re.compile(r'\bfield\s*=\s*[_("\']'),       # { field = ")Accept", value = "..." }
+    re.compile(r'\bfield\s*=\s*[\"\']'),       # { field = "Accept", value = "..." }
     re.compile(r'headers?\s*=\s*\{'),          # headers = { ... }
     re.compile(r'http\.request'),              # Requêtes HTTP
     re.compile(r'LrHttp\.'),                   # SDK Lightroom HTTP
@@ -190,15 +175,79 @@ DEFAULT_EXCLUDED_FILES: Set[str] = {'JSON.lua'}
 
 # Patterns de clés LOC existantes à ignorer (éléments techniques non-traduisibles)
 # Ces clés sont utilisées pour des headers HTTP, identifiants, etc.
-IGNORE_LOC_KEY_PATTERNS: List[re.Pattern] = [
-    re.compile(r'/UpdateChecker/Accept$'),      # Header HTTP Accept
-    re.compile(r'/UpdateChecker/UserAgent$'),   # Header HTTP User-Agent
-    re.compile(r'/UpdateChecker/PiwigopublishLightroomPlugin$'),  # Identifiant User-Agent
-]
+IGNORE_LOC_KEY_PATTERNS: List[re.Pattern] = []
 
 # Valeurs techniques à ignorer dans les LOC existantes
 IGNORE_LOC_VALUES: Set[str] = {
     'Accept',
     'User-Agent',
-    'PiwigoPublish-Lightroom-Plugin',
 }
+
+
+# =============================================================================
+# RÈGLES PROPRES À UN PLUGIN (<plugin>/.i18n_kit.json, optionnel)
+# =============================================================================
+
+@dataclass
+class PluginRules:
+    """Règles d'extraction : défauts génériques fusionnés avec celles du plugin."""
+    ignore_exact: Set[str] = field(default_factory=lambda: set(IGNORE_EXACT))
+    technical_patterns: List[re.Pattern] = field(default_factory=lambda: list(TECHNICAL_PATTERNS))
+    ignore_loc_key_patterns: List[re.Pattern] = field(default_factory=lambda: list(IGNORE_LOC_KEY_PATTERNS))
+    ignore_loc_values: Set[str] = field(default_factory=lambda: set(IGNORE_LOC_VALUES))
+    technical_context_patterns: List[re.Pattern] = field(default_factory=lambda: list(TECHNICAL_CONTEXT_PATTERNS))
+    strip_file_prefixes: List[str] = field(default_factory=list)
+
+
+def _str_list(data: dict, key: str, path: str) -> List[str]:
+    """Lit une liste de chaînes dans le JSON ; avertit et ignore si invalide."""
+    value = data.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(v, str) for v in value):
+        print(_("AVERTISSEMENT: '{key}' doit être une liste de chaînes ({path})").format(key=key, path=path))
+        return []
+    return value
+
+
+def _compile_list(patterns: List[str], key: str, path: str) -> List[re.Pattern]:
+    """Compile des regex ; une regex invalide est signalée puis ignorée."""
+    compiled = []
+    for pattern in patterns:
+        try:
+            compiled.append(re.compile(pattern))
+        except re.error as exc:
+            print(_("AVERTISSEMENT: regex invalide dans '{key}' ({pattern}): {error} ({path})").format(
+                key=key, pattern=repr(pattern), error=exc, path=path))
+    return compiled
+
+
+def load_plugin_rules(plugin_path: str) -> PluginRules:
+    """
+    Charge les règles d'extraction d'un plugin.
+
+    Lit <plugin>/.i18n_kit.json s'il existe et fusionne ses valeurs avec les
+    défauts génériques. Sans fichier (ou fichier illisible), seuls les défauts
+    génériques s'appliquent.
+    """
+    rules = PluginRules()
+    path = os.path.join(plugin_path, PLUGIN_RULES_FILE)
+    if not os.path.isfile(path):
+        return rules
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError) as exc:
+        print(_("AVERTISSEMENT: impossible de lire {path}: {error}").format(path=path, error=exc))
+        return rules
+    if not isinstance(data, dict):
+        print(_("AVERTISSEMENT: {path} doit contenir un objet JSON").format(path=path))
+        return rules
+
+    rules.ignore_exact |= set(_str_list(data, "ignore_exact", path))
+    rules.ignore_loc_values |= set(_str_list(data, "ignore_loc_values", path))
+    rules.technical_patterns += _compile_list(
+        _str_list(data, "technical_patterns", path), "technical_patterns", path)
+    rules.ignore_loc_key_patterns += _compile_list(
+        _str_list(data, "ignore_loc_key_patterns", path), "ignore_loc_key_patterns", path)
+    rules.strip_file_prefixes = _str_list(data, "strip_file_prefixes", path)
+    return rules

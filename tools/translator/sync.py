@@ -18,7 +18,7 @@ de référence lorsqu'il y a des modifications du code.
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -26,15 +26,15 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 import shutil
-from datetime import datetime
-from typing import Dict, List, Set, Optional
+from typing import Dict, Set, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file, update_translation_file_surgical,
-    resolve_path, load_update_json, find_languages, c
+    parse_translation_file, update_translation_file_surgical,
+    resolve_path, load_update_json, find_languages, c, MARKER_NEW, MARKER_NEEDS_REVIEW
 )
-from .config_loader import get_reference_filename
+from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
+from core.paths import backup_once, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
 
 
 # =============================================================================
@@ -54,7 +54,7 @@ def run_sync(reference_path: Optional[str] = None, locales_dir: Optional[str] = 
         reference_path: Fichier de référence (ou répertoire)
         locales_dir: Répertoire des fichiers de langues
         update_dir: Répertoire contenant UPDATE_{lang}.json (optionnel)
-        backup_dir: Répertoire pour les backups (si None, crée .bak à côté du fichier)
+        backup_dir: Répertoire pour les backups (si None, sous-dossier backups/ à côté du fichier)
 
     Returns:
         Dict par langue avec les statistiques
@@ -124,12 +124,12 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         lang_strings = parse_translation_file(lang_file)
         # Créer backup
         if backup_dir:
-            os.makedirs(backup_dir, exist_ok=True)
-            backup_filename = os.path.basename(lang_file) + '.bak'
-            backup_path = os.path.join(backup_dir, backup_filename)
-            shutil.copy2(lang_file, backup_path)
+            # Backup de session : ne jamais écraser l'original déjà sauvegardé
+            backup_once(lang_file, os.path.dirname(lang_file), backup_dir)
         else:
-            shutil.copy2(lang_file, lang_file + '.bak')
+            backup_path = local_backup_path(lang_file)
+            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+            shutil.copy2(lang_file, backup_path)
     else:
         lang_strings = {}
 
@@ -158,7 +158,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
 
         # Marquer si le texte de référence a changé (UNIQUEMENT si update_data fourni via COMPARE)
         if update_data and key in changed_keys:
-            markers[key] = _("-- [NEEDS_REVIEW] Reference text was modified")
+            markers[key] = f"{MARKER_NEEDS_REVIEW} " + _("Texte de référence modifié")
             stats['needs_review'] += 1
 
     # Clés manquantes : ajouter avec valeur de référence
@@ -166,7 +166,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         new_strings[key] = ref_strings[key]  # Valeur de référence par défaut
         # Marquer UNIQUEMENT si update_data fourni via COMPARE
         if update_data:
-            markers[key] = _("-- [NEW] To translate")
+            markers[key] = f"{MARKER_NEW} " + _("À traduire")
         stats['added'] += 1
 
     # Clés en trop : ne pas copier (= supprimées)
@@ -182,7 +182,10 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
 
     # Écrire le fichier avec mise à jour chirurgicale
     output_file = os.path.join(output_dir, f'TranslatedStrings_{lang}.txt')
-    update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata)
+    # remove_unlisted : new_strings est le contenu complet attendu (clés en trop
+    # réellement supprimées, clés manquantes réellement ajoutées, comme annoncé au rapport)
+    update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata,
+                                     remove_unlisted=True)
 
     return {
         'kept': stats['kept'],
@@ -251,6 +254,16 @@ def generate_sync_report(results: Dict[str, Dict]) -> str:
 # MENU INTERACTIF
 # =============================================================================
 
+def _resolve_update_dir(chosen, plugin_path):
+    """Dossier réellement porteur de l'UPDATE : le choix s'il en contient un, sinon le plus récent valide."""
+    filename = get_update_filename()
+    if chosen:
+        found = find_update_dir_in(chosen, filename)
+        if found:
+            return found
+    return find_latest_update_dir(plugin_path, filename)
+
+
 def menu_sync(plugin_path: str = ""):
     """Menu interactif pour SYNC.
 
@@ -258,7 +271,6 @@ def menu_sync(plugin_path: str = ""):
         plugin_path: Chemin du plugin (optionnel) pour auto-détection
     """
     from .common import clear_screen, print_header
-    from core.paths import find_latest_tool_output
     from core.menu_helpers import select_tool_output_dir
 
     clear_screen()
@@ -277,7 +289,13 @@ def menu_sync(plugin_path: str = ""):
     if has_update in ['o', 'y', '', 'oui', 'yes']:
         # Auto-détection et sélection interactive si plugin_path fourni
         if plugin_path:
-            update_dir = select_tool_output_dir(plugin_path, "Translator", "")
+            selected = select_tool_output_dir(plugin_path, "Translator", "")
+            if selected == "":
+                # Annulé par l'utilisateur : retour au menu
+                return None
+            # selected None = erreur déjà affichée : pas d'auto-détection, saisie manuelle ci-dessous
+            if selected:
+                update_dir = _resolve_update_dir(selected, plugin_path)
             if update_dir:
                 print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
             else:
@@ -305,7 +323,7 @@ def menu_sync(plugin_path: str = ""):
 
     try:
         print(_("\n{var0}[INFO]{var1} Synchronisation en cours...").format(var0=c.INFO, var1=c.RESET))
-        results = run_sync(ref_path, locales_dir, update_dir)
+        results = run_sync(ref_path, locales_dir, update_dir, get_translator_backup_dir(plugin_path))
 
         if not results:
             print(c.warning(_("Aucune langue étrangère trouvée.")))

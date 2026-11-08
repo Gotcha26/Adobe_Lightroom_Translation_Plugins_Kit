@@ -17,3 +17,5 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 from .main import process_plugin_directory
 from .menu import show_interactive_menu
+
+__all__ = ["process_plugin_directory", "show_interactive_menu"]

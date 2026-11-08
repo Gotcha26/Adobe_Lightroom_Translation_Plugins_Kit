@@ -46,7 +46,7 @@ Internationaliser un plugin Lightroom implique :
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   LocalisationToolKit.py                    │
+│                   LocalizationToolKit.py                    │
 │                       Menu principal                        │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -122,7 +122,7 @@ Pour des besoins spécifiques, consultez la [documentation détaillée de Transl
 ```
 Code Lua hardcodé
          │
-         ▼  [1] python LocalisationToolKit.py → Extractor
+         ▼  [1] python LocalizationToolKit.py → Extractor
 TranslatedStrings_en.txt
          │
          ▼  [2] Translator → INSTALL
@@ -136,7 +136,7 @@ Validation fonctionnelle
 ```
 
 **Commandes :**
-1. Configurer le chemin du plugin : `[Option 6]`
+1. Configurer le chemin du plugin : `[Option 7]`
 2. Extraire les chaînes : `[Option 1] Extractor`
 3. Installer : `[Option 3] Translator → INSTALL`
 4. Appliquer les clés : `[Option 2] Applicator`
@@ -316,8 +316,7 @@ Le fichier `config.json` stocke vos préférences :
   "auto_add_gitignore": true,
   "enable_flip_anim": false,
   "prefix": "$$$/Piwigo",
-  "lang": "en",
-  "last_used": ""
+  "lang": "en"
 }
 ```
 
@@ -332,9 +331,8 @@ Le fichier `config.json` stocke vos préférences :
 | `enable_flip_anim` | Afficher l'animation au démarrage du menu | `true` |
 | `prefix` | Préfixe des clés de localisation (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Langue par défaut du code source du plugin LrC cicblé | `en` |
-| `last_used` | Horodatage de la dernière utilisation (usage interne) | *(vide)* |
 
-Modifiable via : `[Option 6] Configurer le plugin`
+Modifiable via : `[Option 7] Configurer le plugin`
 
 > **Note** : Lorsque `auto_add_gitignore` est activé, le toolkit détecte automatiquement si le plugin est dans un dépôt Git et propose d'ajouter le dossier temporaire au `.gitignore` pour éviter de versionner les fichiers générés qui peuvent être nombreux et non essentiel à versionner.
 
@@ -343,7 +341,7 @@ Modifiable via : `[Option 6] Configurer le plugin`
 ## 🛠️ Installation du toolkit
 
 ### Prérequis
-- Python 3.7+
+- Python 3.10+
 - Un plugin Adobe Lightroom Classic (`.lua`)
 - Windows, Linux ou macOS
 
@@ -351,7 +349,7 @@ Modifiable via : `[Option 6] Configurer le plugin`
 ```bash
 git clone https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit.git
 cd Adobe_Lightroom_Translation_Plugins_Kit
-python LocalisationToolKit.py
+python LocalizationToolKit.py
 ```
 
 **Aucune dépendance externe requise** (uniquement la bibliothèque standard Python).

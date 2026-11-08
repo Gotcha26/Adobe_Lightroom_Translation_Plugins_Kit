@@ -11,7 +11,7 @@ Traitement du texte, extraction d'espaces/suffixes, détection des chaînes tech
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -20,15 +20,106 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import re
 import os
 import sys
-from typing import Tuple, List, Optional, Dict, Set
+from typing import Tuple, List
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.i18n import _
 
 from .config import (
-    COMMON_SUFFIXES, IGNORE_EXACT, TECHNICAL_PATTERNS, STOP_WORDS,
-    TECHNICAL_CONTEXT_PATTERNS
+    COMMON_SUFFIXES, STOP_WORDS,
+    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN,
+    PluginRules
 )
+
+# Échappements simples d'un littéral Lua (forme source -> caractère)
+_LUA_SIMPLE_ESCAPES = {
+    '\\': '\\', '"': '"', "'": "'",
+    'n': '\n', 'r': '\r', 't': '\t',
+    'a': '\a', 'b': '\b', 'f': '\f', 'v': '\v',
+}
+# Caractères à ré-échapper dans un littéral Lua entre guillemets doubles
+_LUA_ESCAPE_OUT = {
+    '\\': '\\\\', '"': '\\"',
+    '\n': '\\n', '\r': '\\r', '\t': '\\t',
+    '\a': '\\a', '\b': '\\b', '\f': '\\f', '\v': '\\v',
+}
+_LUA_ESCAPE_SEQ = re.compile(r'\\(.)', re.DOTALL)
+
+
+def unescape_lua_string(text: str) -> str:
+    """
+    Dés-échappe le contenu d'un littéral Lua (forme source -> texte réel).
+
+    Seuls les échappements simples sont décodés (\\\\, \\", \\', \\n, \\r, \\t,
+    \\a, \\b, \\f, \\v). Les autres séquences (\\ddd, \\xXX, \\z, \\u{...}) sont
+    conservées telles quelles.
+    """
+    if '\\' not in text:
+        return text
+
+    def _decode(match: re.Match) -> str:
+        char = match.group(1)
+        return _LUA_SIMPLE_ESCAPES.get(char, match.group(0))
+
+    return _LUA_ESCAPE_SEQ.sub(_decode, text)
+
+
+def escape_lua_string(text: str) -> str:
+    """
+    Échappe un texte pour l'insérer entre guillemets doubles Lua
+    (inverse de unescape_lua_string pour les échappements simples).
+    """
+    return ''.join(_LUA_ESCAPE_OUT.get(ch, ch) for ch in text)
+
+
+# Littéraux Lua d'une ligne : "…", '…' (échappements tolérés) et chaînes longues
+# [[…]] / [=*[…]=*] fermées sur la même ligne (hors --[[, qui ouvre un commentaire)
+_ANY_LUA_LITERAL_PATTERN = re.compile(
+    r'"(?:[^"\\]|\\.)*"'
+    r"|'(?:[^'\\]|\\.)*'"
+    r'|(?<!-)\[(=*)\[.*?\]\1\]'
+)
+
+
+def _mask_string_literals(text: str) -> str:
+    """Remplace chaque littéral Lua de la ligne par des espaces (même longueur)."""
+    return _ANY_LUA_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
+
+
+def block_comment_state(line: str, open_level: str | None) -> str | None:
+    """
+    Calcule l'état « commentaire bloc » Lua à la fin d'une ligne.
+
+    Un commentaire bloc s'ouvre par --[[ ou --[=*[ et se ferme par ]] ou ]=*]
+    de même niveau (même nombre de '='). Un `--` hors chaîne qui n'est pas
+    suivi de [=*[ est un commentaire de ligne : il clôt l'analyse de la ligne.
+
+    Args:
+        line: La ligne de code Lua
+        open_level: Niveau ('=' * n) du commentaire bloc ouvert au début de la
+                    ligne, ou None si la ligne commence hors commentaire
+
+    Returns:
+        Le niveau du commentaire bloc encore ouvert en fin de ligne, ou None
+    """
+    pos = 0
+    while True:
+        if open_level is not None:
+            closing = ']' + open_level + ']'
+            idx = line.find(closing, pos)
+            if idx == -1:
+                return open_level
+            pos = idx + len(closing)
+            open_level = None
+
+        rest = _mask_string_literals(line[pos:])
+        dash = rest.find('--')
+        if dash == -1:
+            return None
+        opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
+        if not opening:
+            return None  # Commentaire de ligne : le reste est ignoré
+        open_level = opening.group(1)
+        pos += opening.end()
 
 
 def extract_spacing(text: str) -> Tuple[str, int, int]:
@@ -55,7 +146,8 @@ def extract_spacing(text: str) -> Tuple[str, int, int]:
     trailing = len(text) - len(text.rstrip(' '))
 
     # Texte nettoyé
-    clean = text.strip()
+    # Seuls les espaces sont du formatage : \n, \t (texte réel) restent dans la valeur
+    clean = text.strip(' ')
 
     return clean, leading, trailing
 
@@ -66,18 +158,19 @@ def extract_all_string_literals(line: str) -> List[Tuple[str, int, int]]:
 
     Note: Les guillemets simples ne sont PAS supportés volontairement.
     Le plugin doit utiliser des guillemets doubles conformément au SDK Adobe.
+    Les guillemets échappés (\\") font partie du littéral.
 
     Args:
         line: La ligne de code Lua
 
     Returns:
-        Liste de (texte, position_debut, position_fin)
+        Liste de (texte, position_debut, position_fin) ; le texte est la forme
+        source (échappée), à dés-échapper avec unescape_lua_string
     """
     results = []
 
-    # Guillemets doubles uniquement
-    pattern_double = re.compile(r'"([^"]*)"')
-    for match in pattern_double.finditer(line):
+    # Guillemets doubles uniquement, échappements tolérés
+    for match in LUA_STRING_LITERAL_PATTERN.finditer(line):
         text = match.group(1)
 
         # Filtrer les fausses captures qui contiennent du code Lua
@@ -134,7 +227,7 @@ def extract_suffix(text: str) -> Tuple[str, str]:
     return text, ""
 
 
-def is_in_technical_context(line: str) -> bool:
+def is_in_technical_context(line: str, rules: PluginRules | None = None) -> bool:
     """
     Vérifie si la ligne est dans un contexte technique.
 
@@ -143,41 +236,47 @@ def is_in_technical_context(line: str) -> bool:
 
     Args:
         line: La ligne de code complète
+        rules: Règles du plugin (défaut: motifs génériques TECHNICAL_CONTEXT_PATTERNS)
 
     Returns:
         True si la ligne est dans un contexte technique
     """
-    for pattern in TECHNICAL_CONTEXT_PATTERNS:
+    patterns = TECHNICAL_CONTEXT_PATTERNS if rules is None else rules.technical_context_patterns
+    for pattern in patterns:
         if pattern.search(line):
             return True
     return False
 
 
-def is_technical_string(text: str, line_context: str | None = None) -> bool:
+def is_technical_string(text: str, line_context: str | None = None,
+                        rules: PluginRules | None = None) -> bool:
     """
     Vérifie si une chaîne est technique et doit être ignorée.
 
     Args:
         text: Le texte à vérifier
         line_context: La ligne complète (optionnel, pour contexte)
+        rules: Règles du plugin (défaut: règles génériques seules)
 
     Returns:
         True si la chaîne est technique
     """
+    if rules is None:
+        rules = PluginRules()
     text_clean = text.strip().lower()
     text_original = text.strip()
 
     # Chaînes exactes à ignorer (insensible à la casse pour certaines)
-    if text_clean in IGNORE_EXACT or text_original in IGNORE_EXACT:
+    if text_clean in rules.ignore_exact or text_original in rules.ignore_exact:
         return True
 
     # Patterns techniques
-    for pattern in TECHNICAL_PATTERNS:
+    for pattern in rules.technical_patterns:
         if pattern.search(text_original):
             return True
 
     # Si on a le contexte de la ligne, vérifier le contexte technique
-    if line_context and is_in_technical_context(line_context):
+    if line_context and is_in_technical_context(line_context, rules):
         # Dans un contexte technique, filtrer plus agressivement
         # Ignorer les chaînes qui ressemblent à des identifiants/headers
         if re.match(r'^[A-Za-z][-A-Za-z0-9]*$', text_original):
@@ -186,15 +285,17 @@ def is_technical_string(text: str, line_context: str | None = None) -> bool:
     return False
 
 
-def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set) -> str:
+def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set,
+                     strip_file_prefixes: List[str] | None = None) -> str:
     """
     Génère une clé LOC unique à partir du texte et du nom de fichier.
 
     Args:
         text: Texte à convertir en clé
         file_name: Nom du fichier source
-        prefix: Préfixe LOC (ex: $$$/Piwigo)
+        prefix: Préfixe LOC (ex: $$$/MyApp)
         existing_keys: Set des clés déjà utilisées pour éviter les doublons
+        strip_file_prefixes: Préfixes à retirer du nom de fichier pour la catégorie (défaut: aucun)
 
     Returns:
         Clé LOC unique
@@ -227,10 +328,14 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
         key_part += "Ellipsis"
     elif has_question:
         key_part += "Question"
+    elif has_colon:
+        key_part += "Colon"
 
     # Catégorie basée sur le fichier
     file_base = os.path.splitext(file_name)[0]
-    category = file_base.replace('PW', '').replace('Piwigo', '')
+    category = file_base
+    for file_prefix in strip_file_prefixes or []:
+        category = category.replace(file_prefix, '')
     if not category:
         category = 'General'
 
@@ -246,6 +351,35 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
     return final_key
 
 
+def build_loc_call(loc_key: str, base_text: str, leading_spaces: int = 0,
+                   trailing_spaces: int = 0, suffix: str = "") -> str:
+    """
+    Construit l'appel LOC Lua (source unique, partagée Extractor/Applicator).
+
+    Les espaces et suffixes sont des littéraux Lua ordinaires : jamais de `_()`,
+    qui n'existe pas dans un plugin Lightroom.
+
+    base_text et suffix sont des textes réels (dés-échappés) : `"` et `\\`
+    y sont ré-échappés pour produire un littéral Lua valide.
+
+    Exemples:
+    - LOC "$$$/K=V"
+    - " " .. LOC "$$$/K=V" .. " "
+    - LOC "$$$/K=V" .. " - "
+    - LOC "$$$/K=Say \\"hi\\""
+    """
+    parts = []
+    if leading_spaces > 0:
+        parts.append('"' + ' ' * leading_spaces + '" .. ')
+    parts.append('LOC "' + escape_lua_string(loc_key) + '=' + escape_lua_string(base_text) + '"')
+    # Le suffixe remplace trailing_spaces (il inclut souvent l'espace)
+    if suffix:
+        parts.append(' .. "' + escape_lua_string(suffix) + '"')
+    elif trailing_spaces > 0:
+        parts.append(' .. "' + ' ' * trailing_spaces + '"')
+    return ''.join(parts)
+
+
 def generate_replacement_code(pattern_name: str, loc_key: str,
                                leading: int, trailing: int,
                                suffix: str,
@@ -254,7 +388,7 @@ def generate_replacement_code(pattern_name: str, loc_key: str,
     """
     Génère le code de remplacement Lua avec gestion des espaces ET des suffixes.
 
-    Format ZString du SDK Lightroom: LOC _("$$$/Key=Default Value")
+    Format ZString du SDK Lightroom: LOC "$$$/Key=Default Value"
     La valeur par défaut EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
 
     Exemples:
@@ -263,25 +397,6 @@ def generate_replacement_code(pattern_name: str, loc_key: str,
     - Suffixe " - ": LOC "$$$/key=My Text" .. " - "
     - 2 espaces début + suffixe: "  " .. LOC "$$$/key=My Text" .. " - "
     """
-    # Appel LOC avec valeur par défaut
-    loc_call = f'LOC "{loc_key}={base_text}"'
-
-    # Construire les parties
-    parts = []
-
-    # Espaces en début
-    if leading > 0:
-        parts.append(f'"{" " * leading}" .. ')
-
-    # Appel LOC
-    parts.append(loc_call)
-
-    # Suffixe (remplace trailing_spaces si présent, car le suffixe inclut souvent un espace)
-    if suffix:
-        parts.append(f' .. "{suffix}"')
-    elif trailing > 0:
-        parts.append(f' .. "{" " * trailing}"')
-
-    replace_str = ''.join(parts)
+    replace_str = build_loc_call(loc_key, base_text, leading, trailing, suffix)
 
     return f'"{original_text}" → {replace_str}'

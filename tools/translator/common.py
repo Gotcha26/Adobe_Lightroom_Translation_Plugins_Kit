@@ -2,7 +2,7 @@
 """
 Nom du fichier : common.py
 
-Dépendances : common.colors
+Dépendances : core.colors
 
 Description :
 Module commun pour Translator.
@@ -18,7 +18,7 @@ Fournit :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -35,12 +35,66 @@ from collections import defaultdict
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.colors import Colors
+from core import __version__
+from core.colors import c
 from core.i18n import _
-from .config_loader import get_reference_lang, get_reference_filename, get_update_filename, is_reference_lang
+from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
 
-# Instance couleurs
-c = Colors()
+
+# =============================================================================
+# MARQUEURS DU FORMAT TRANSLATE_xx.txt (jamais traduits : lus par la machine)
+# =============================================================================
+
+TRANSLATE_KEY = "[KEY]"
+TRANSLATE_ARROW = "→"
+
+
+def translate_ref_marker(lang: str) -> str:
+    return f"[{lang.upper()}]"
+
+
+def translate_before_marker(lang: str) -> str:
+    return f"[{lang.upper()} BEFORE]"
+
+
+def translate_after_marker(lang: str) -> str:
+    return f"[{lang.upper()} AFTER]"
+
+
+def translate_target_marker(lang: str) -> str:
+    return f"[{lang.upper()}] {TRANSLATE_ARROW} "
+
+
+# =============================================================================
+# EN-TÊTE DES FICHIERS TranslatedStrings_xx.txt (jamais traduit : relu par la machine)
+# =============================================================================
+
+HEADER_SEPARATOR = "-- " + "=" * 77
+HEADER_SEPARATOR_PREFIX = "-- ===="
+HEADER_TITLE_PREFIX = "-- Plugin Localization -"
+HEADER_GENERATED_PREFIX = "-- Generated:"
+HEADER_TOTAL_KEYS_PREFIX = "-- Total keys:"
+HEADER_NEW_KEYS_PREFIX = "-- New keys:"
+HEADER_CHANGED_KEYS_PREFIX = "-- Changed keys:"
+HEADER_SOURCE_PREFIX = "-- Source:"
+
+# Marqueurs posés par SYNC au-dessus d'une clé, relus par AUTOSYNC et la mise à
+# jour chirurgicale : seul le préfixe est fixe, le commentaire qui suit est traduit
+MARKER_NEW = "-- [NEW]"
+MARKER_NEEDS_REVIEW = "-- [NEEDS_REVIEW]"
+MARKER_PREFIXES = (MARKER_NEW, MARKER_NEEDS_REVIEW)
+
+
+def is_marker_line(line: str) -> bool:
+    """Vrai si la ligne est un marqueur [NEW] / [NEEDS_REVIEW] posé par SYNC."""
+    return line.strip().startswith(MARKER_PREFIXES)
+
+
+def _header_line(prefix: str, value) -> str:
+    """Ligne d'en-tête « prefix value » terminée par un saut de ligne."""
+    return f"{prefix} {value}\n"
+
+
 
 
 # =============================================================================
@@ -75,6 +129,44 @@ TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------
 # PARSER
 # =============================================================================
 
+# Ligne clé/valeur : "$$$/Key=Value". La valeur peut contenir des séquences
+# d'échappement (\" et \\), conservées telles quelles.
+KEY_LINE_RE = re.compile(r'"(\$\$\$/[^"=]+)=((?:[^"\\]|\\.)*)"')
+
+# Ligne de section : "-- Nom" (un seul mot ; exclut marqueurs "-- [NEW] ..." et séparateurs)
+SECTION_LINE_RE = re.compile(r'^--\s+(\w[\w.-]*)$')
+
+# Séquences d'échappement reconnues dans une valeur ("\" suivi de l'un de ces caractères)
+VALID_ESCAPES = '"\\nrt'
+
+
+def escape_translation_value(value: str) -> str:
+    """
+    Échappe une traduction saisie à la main pour qu'elle reste relisible par KEY_LINE_RE.
+
+    - `"` non précédé d'un `\\` devient `\\"` ;
+    - un `\\` qui n'ouvre pas une séquence valide (`\\"`, `\\\\`, `\\n`, `\\r`, `\\t`)
+      devient `\\\\` ;
+    - les séquences déjà valides sont conservées telles quelles (idempotent).
+    """
+    out = []
+    i = 0
+    while i < len(value):
+        ch = value[i]
+        if ch == '\\':
+            if i + 1 < len(value) and value[i + 1] in VALID_ESCAPES:
+                out.append(value[i:i + 2])
+                i += 2
+                continue
+            out.append('\\\\')
+        elif ch == '"':
+            out.append('\\"')
+        else:
+            out.append(ch)
+        i += 1
+    return ''.join(out)
+
+
 def parse_translation_file(file_path: str) -> Dict[str, str]:
     """
     Parse un fichier TranslatedStrings_*.txt
@@ -100,7 +192,7 @@ def parse_translation_file(file_path: str) -> Dict[str, str]:
             # non spécial, soit une séquence d'échappement \X. Les escapes
             # sont conservés tels quels dans la valeur — l'écriture symétrique
             # via write_translation_file les préserve.
-            match = re.match(r'"(\$\$\$/[^"=]+)=((?:[^"\\]|\\.)*)"', line)
+            match = KEY_LINE_RE.match(line)
             if match:
                 key = match.group(1)
                 value = match.group(2)
@@ -128,26 +220,23 @@ def write_translation_file(file_path: str, lang: str, translations: Dict[str, st
     # Grouper par catégorie
     by_category = defaultdict(list)
     for key in sorted(translations.keys()):
-        parts = key.split('/')
-        category = parts[1] if len(parts) > 1 else 'General'
-        by_category[category].append(key)
+        by_category[section_for_key(key)].append(key)
 
-    from core.i18n import debug_i18n_context
-    with debug_i18n_context(), open(file_path, 'w', encoding='utf-8') as f:
-        f.write(_("-- =============================================================================\n"))
-        f.write(_("-- Plugin Localization - {var0}\n").format(var0=lang.upper()))
-        f.write(_("-- Generated: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        f.write(_("-- Total keys: {var0}\n").format(var0=len(translations)))
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(HEADER_SEPARATOR + "\n")
+        f.write(_header_line(HEADER_TITLE_PREFIX, lang.upper()))
+        f.write(_header_line(HEADER_GENERATED_PREFIX, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        f.write(_header_line(HEADER_TOTAL_KEYS_PREFIX, len(translations)))
 
         # Infos supplémentaires depuis metadata
         if metadata.get('new_keys'):
-            f.write(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+            f.write(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
         if metadata.get('changed_keys'):
-            f.write(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
+            f.write(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
         if metadata.get('source'):
-            f.write(_("-- Source: {var0}\n").format(var0=metadata['source']))
+            f.write(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
 
-        f.write(_("-- =============================================================================\n\n"))
+        f.write(HEADER_SEPARATOR + "\n\n")
 
         # Add translation warning note for translators
         f.write(TRANSLATION_WARNING_NOTE)
@@ -168,33 +257,42 @@ def update_translation_file_surgical(
     update_data: Optional[Dict],
     translations: Dict[str, str],
     markers: Optional[Dict[str, str]] = None,
-    metadata: Optional[Dict] = None
+    metadata: Optional[Dict] = None,
+    remove_unlisted: bool = False
 ) -> None:
     """
     Mise à jour chirurgicale d'un fichier de traduction.
     Préserve la structure originale, sections, lignes vides et commentaires.
 
-    Utilise UPDATE_en.json pour appliquer uniquement les changements nécessaires :
+    Structure reconnue :
+    - en-tête : du début du fichier jusqu'à la deuxième ligne « -- ==== » incluse
+      (ses métadonnées sont mises à jour via _update_header) ;
+    - note aux traducteurs : bloc commençant à la première ligne « -- ---- » qui
+      suit l'en-tête, recopié tel quel et jamais interprété comme section ;
+    - sections : lignes « -- <mot> » rencontrées après ces deux blocs.
+
+    Utilise UPDATE_<lang>.json pour appliquer uniquement les changements nécessaires :
     - deleted : Supprime les lignes de clés obsolètes
     - changed : Modifie uniquement la valeur des clés existantes
     - added : Insère les nouvelles clés au bon endroit (après la dernière clé de leur section)
 
     Args:
         target_file: Chemin du fichier à modifier
-        update_data: Données de UPDATE_en.json (peut être None)
+        update_data: Données de UPDATE_<lang>.json (peut être None)
         translations: Dict {clé: nouvelle_valeur} avec toutes les traductions
         markers: Dict {clé: marqueur} pour ajouter des commentaires [NEW] ou [NEEDS_REVIEW]
-        metadata: Dict avec infos pour l'entête (new_keys, changed_keys, source)
+        metadata: Dict avec infos pour l'entête (new_keys, changed_keys, source, total_keys)
+        remove_unlisted: Si True, `translations` décrit le contenu complet attendu :
+            les clés du fichier absentes de `translations` sont supprimées et les
+            clés de `translations` absentes du fichier sont ajoutées.
     """
     markers = markers or {}
     metadata = metadata or {}
 
     # Extraire les changements depuis update_data
     deleted_keys = set(update_data.get('deleted', [])) if update_data else set()
-    changed_keys = set(update_data.get('changed', {}).keys()) if update_data else set()
     added_keys = set(update_data.get('added', {}).keys()) if update_data else set()
 
-    # Lire le fichier ligne par ligne
     if not os.path.isfile(target_file):
         # Fichier n'existe pas : utiliser write_translation_file standard
         lang = 'xx'
@@ -207,127 +305,140 @@ def update_translation_file_surgical(
     with open(target_file, 'r', encoding='utf-8') as f:
         original_lines = f.readlines()
 
-    # Structures pour tracking
-    output_lines = []
-    keys_processed = set()
+    if original_lines and not original_lines[-1].endswith('\n'):
+        original_lines[-1] += '\n'
+
+    header_end, body_start = _locate_header_and_note(original_lines)
+
+    # En-tête (métadonnées mises à jour) puis note aux traducteurs recopiée telle quelle
+    output_lines = _update_header(original_lines[:header_end], metadata) if header_end else []
+    output_lines.extend(original_lines[header_end:body_start])
+
     current_section = None
-    last_key_in_section = {}  # {section: line_index}
-    keys_to_add_by_section = defaultdict(list)  # {section: [keys]}
+    section_insert_pos = {}  # {section: index d'insertion après sa dernière clé}
+    keys_in_file = set()
 
-    # Première passe : identifier les sections et clés à ajouter
-    for key in added_keys:
-        section = _extract_section_from_key(key)
-        keys_to_add_by_section[section].append(key)
-
-    # Deuxième passe : traiter le fichier ligne par ligne
-    i = 0
-    in_header = True
-    header_updated = False
-
-    while i < len(original_lines):
-        line = original_lines[i]
+    for line in original_lines[body_start:]:
         stripped = line.strip()
 
-        # Détecter fin de l'entête
-        if in_header and stripped.startswith('-- ') and not stripped.startswith('-- =') and not stripped.startswith('-- -') and not stripped.startswith('-- Plugin') and not stripped.startswith('-- Generated') and not stripped.startswith('-- Total') and not stripped.startswith('-- New') and not stripped.startswith('-- Changed') and not stripped.startswith('-- Source') and not stripped.startswith('-- IMPORTANT'):
-            # C'est une section, fin de l'entête
-            in_header = False
+        # Section (-- Nom)
+        section_match = SECTION_LINE_RE.match(stripped)
+        if section_match:
+            current_section = section_match.group(1)
+            output_lines.append(line)
+            section_insert_pos[current_section] = len(output_lines)
+            continue
 
-            # Mettre à jour l'entête si nécessaire
-            if not header_updated:
-                output_lines = _update_header(output_lines, metadata)
-                header_updated = True
-
-        # Détecter les sections (-- SectionName)
-        if stripped.startswith('-- ') and not stripped.startswith('-- =') and not stripped.startswith('-- -') and not stripped.startswith('-- IMPORTANT'):
-            # Vérifier si c'est vraiment une section (pas un commentaire dans l'entête)
-            if not in_header:
-                # Avant de changer de section, insérer les clés ajoutées de la section précédente
-                if current_section and current_section in keys_to_add_by_section:
-                    for key in keys_to_add_by_section[current_section]:
-                        if key not in keys_processed:
-                            marker = markers.get(key, '')
-                            if marker:
-                                output_lines.append(f'{marker}\n')
-                            output_lines.append(f'"{key}={translations[key]}"\n')
-                            keys_processed.add(key)
-                    del keys_to_add_by_section[current_section]
-
-                current_section = stripped[3:].strip()  # Enlever "-- "
-                output_lines.append(line)
-                i += 1
-                continue
-
-        # Détecter les clés
-        key_match = re.match(r'"(\$\$\$/[^"=]+)=([^"]*)"', stripped)
+        key_match = KEY_LINE_RE.match(stripped)
         if key_match:
             key = key_match.group(1)
+            keys_in_file.add(key)
 
-            # Clé à supprimer ?
-            if key in deleted_keys:
-                # Skip cette ligne (et le marqueur précédent s'il existe)
-                if output_lines and output_lines[-1].strip().startswith('-- ['):
-                    output_lines.pop()  # Retirer le marqueur
-                keys_processed.add(key)
-                i += 1
+            # Clé à supprimer (obsolète ou absente des traductions attendues)
+            if key in deleted_keys or (remove_unlisted and key not in translations):
+                # Retirer aussi le marqueur qui la précède s'il existe
+                if output_lines and is_marker_line(output_lines[-1]):
+                    output_lines.pop()
                 continue
 
-            # Clé à modifier ?
             if key in translations:
-                new_value = translations[key]
-
-                # Ajouter marqueur si nécessaire
                 marker = markers.get(key, '')
                 if marker:
+                    # Remplacer le marqueur déjà présent au-dessus de la clé au lieu
+                    # de l'empiler (relances successives de SYNC)
+                    if output_lines and is_marker_line(output_lines[-1]):
+                        output_lines.pop()
                     output_lines.append(f'{marker}\n')
-
-                # Écrire la clé avec la nouvelle valeur
-                output_lines.append(f'"{key}={new_value}"\n')
-                keys_processed.add(key)
-
-                # Tracker la dernière clé de cette section
-                if current_section:
-                    last_key_in_section[current_section] = len(output_lines) - 1
-
-                i += 1
-                continue
-
-        # Ligne standard (commentaire, ligne vide, entête)
-        output_lines.append(line)
-        i += 1
-
-    # Ajouter les clés restantes de la dernière section
-    if current_section and current_section in keys_to_add_by_section:
-        for key in keys_to_add_by_section[current_section]:
-            if key not in keys_processed:
-                marker = markers.get(key, '')
-                if marker:
-                    output_lines.append(f'{marker}\n')
+                # Sans marqueur demandé, un marqueur existant est conservé : c'est
+                # un repère pour le traducteur (INJECT ne transmet jamais de marqueurs)
                 output_lines.append(f'"{key}={translations[key]}"\n')
-                keys_processed.add(key)
-        del keys_to_add_by_section[current_section]
+            else:
+                output_lines.append(line)
 
-    # Ajouter les clés orphelines (sections non trouvées dans le fichier)
-    for section, keys in keys_to_add_by_section.items():
-        if keys:
-            # Créer une nouvelle section
-            output_lines.append(f'\n-- {section}\n')
-            for key in keys:
-                if key not in keys_processed:
-                    marker = markers.get(key, '')
-                    if marker:
-                        output_lines.append(f'{marker}\n')
-                    output_lines.append(f'"{key}={translations[key]}"\n')
-                    keys_processed.add(key)
+            if current_section is not None:
+                section_insert_pos[current_section] = len(output_lines)
+            continue
 
-    # Écrire le fichier final
+        # Ligne standard (commentaire, ligne vide)
+        output_lines.append(line)
+
+    # Clés à ajouter, regroupées par section
+    keys_to_add = set(added_keys)
+    if remove_unlisted:
+        keys_to_add |= set(translations)
+    keys_to_add_by_section = defaultdict(list)
+    for key in sorted(keys_to_add - keys_in_file):
+        if key in translations:
+            keys_to_add_by_section[section_for_key(key)].append(key)
+
+    def _key_lines(keys: List[str]) -> List[str]:
+        lines = []
+        for key in keys:
+            marker = markers.get(key, '')
+            if marker:
+                lines.append(f'{marker}\n')
+            lines.append(f'"{key}={translations[key]}"\n')
+        return lines
+
+    # Sections existantes : insertion après leur dernière clé (de la fin vers le début
+    # pour ne pas décaler les positions restant à traiter)
+    existing = [s for s in keys_to_add_by_section if s in section_insert_pos]
+    for section in sorted(existing, key=lambda s: section_insert_pos[s], reverse=True):
+        pos = section_insert_pos[section]
+        output_lines[pos:pos] = _key_lines(keys_to_add_by_section.pop(section))
+
+    # Sections absentes du fichier : créées en fin de fichier
+    for section in sorted(keys_to_add_by_section):
+        if output_lines and output_lines[-1].strip():
+            output_lines.append('\n')
+        output_lines.append(f'-- {section}\n')
+        output_lines.extend(_key_lines(keys_to_add_by_section[section]))
+        output_lines.append('\n')
+
     with open(target_file, 'w', encoding='utf-8') as f:
         f.writelines(output_lines)
 
 
-def _extract_section_from_key(key: str) -> str:
+def _locate_header_and_note(lines: List[str]) -> Tuple[int, int]:
     """
-    Extrait le nom de section depuis une clé.
+    Repère l'en-tête et la note aux traducteurs.
+
+    Returns:
+        (fin_entete, debut_corps) : indices de ligne (exclusifs). fin_entete vaut 0
+        si le fichier n'a pas d'en-tête reconnaissable (deux lignes « -- ==== »).
+        debut_corps est la première ligne après la note (ou après l'en-tête).
+    """
+    header_end = 0
+    separators = 0
+    for idx, line in enumerate(lines):
+        if line.strip().startswith(HEADER_SEPARATOR_PREFIX):
+            separators += 1
+            if separators == 2:
+                header_end = idx + 1
+                break
+
+    # Note : commence à la première ligne « -- ---- » qui suit l'en-tête (seules des
+    # lignes vides peuvent les séparer) et s'étend jusqu'à la dernière ligne
+    # « -- ---- » précédant la première clé.
+    idx = header_end
+    while idx < len(lines) and not lines[idx].strip():
+        idx += 1
+    if idx >= len(lines) or not lines[idx].strip().startswith('-- ----'):
+        return header_end, header_end
+
+    note_end = idx + 1
+    for j in range(idx + 1, len(lines)):
+        stripped = lines[j].strip()
+        if KEY_LINE_RE.match(stripped):
+            break
+        if stripped.startswith('-- ----'):
+            note_end = j + 1
+    return header_end, note_end
+
+
+def section_for_key(key: str) -> str:
+    """
+    Nom de section d'une clé (partagé par Translator et Extractor).
     Ex: $$$/Piwigo/API/AddTags -> API
         $$$/FionaBoston/Title -> FionaBoston
     """
@@ -345,8 +456,6 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
     Remplace Generated, Total keys, New keys, Changed keys, Source.
     """
     updated = []
-    generated_updated = False
-    total_keys_found = False
     new_keys_found = False
     changed_keys_found = False
     source_found = False
@@ -355,31 +464,29 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
         stripped = line.strip()
 
         # Remplacer Generated
-        if stripped.startswith('-- Generated:'):
-            updated.append(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            generated_updated = True
+        if stripped.startswith(HEADER_GENERATED_PREFIX):
+            updated.append(_header_line(HEADER_GENERATED_PREFIX, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         # Remplacer Total keys
-        elif stripped.startswith('-- Total keys:'):
-            total_keys_found = True
+        elif stripped.startswith(HEADER_TOTAL_KEYS_PREFIX):
             if metadata.get('total_keys') is not None:
-                updated.append(_("-- Total keys: {var0}\n").format(var0=metadata['total_keys']))
+                updated.append(_header_line(HEADER_TOTAL_KEYS_PREFIX, metadata['total_keys']))
             else:
                 updated.append(line)
         # Remplacer ou supprimer New keys
-        elif stripped.startswith('-- New keys:'):
+        elif stripped.startswith(HEADER_NEW_KEYS_PREFIX):
             new_keys_found = True
             if metadata.get('new_keys'):
-                updated.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+                updated.append(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
         # Remplacer ou supprimer Changed keys
-        elif stripped.startswith('-- Changed keys:'):
+        elif stripped.startswith(HEADER_CHANGED_KEYS_PREFIX):
             changed_keys_found = True
             if metadata.get('changed_keys'):
-                updated.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
-        # Remplacer Source
-        elif stripped.startswith('-- Source:') or stripped.startswith('-- SOURCE:'):
+                updated.append(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
+        # Remplacer Source (« -- SOURCE: » : graphie écrite par l'Extractor)
+        elif stripped.startswith(HEADER_SOURCE_PREFIX) or stripped.startswith(HEADER_SOURCE_PREFIX.upper()):
             source_found = True
             if metadata.get('source'):
-                updated.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
+                updated.append(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
             else:
                 updated.append(line)
         else:
@@ -388,17 +495,17 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
     # Ajouter les métadonnées manquantes (avant la ligne de séparation finale)
     insert_index = len(updated)
     for i in range(len(updated) - 1, -1, -1):
-        if updated[i].strip().startswith('-- ='):
+        if updated[i].strip().startswith(HEADER_SEPARATOR_PREFIX):
             insert_index = i
             break
 
     additions = []
     if not new_keys_found and metadata.get('new_keys'):
-        additions.append(_("-- New keys: {var0}\n").format(var0=metadata['new_keys']))
+        additions.append(_header_line(HEADER_NEW_KEYS_PREFIX, metadata['new_keys']))
     if not changed_keys_found and metadata.get('changed_keys'):
-        additions.append(_("-- Changed keys: {var0}\n").format(var0=metadata['changed_keys']))
+        additions.append(_header_line(HEADER_CHANGED_KEYS_PREFIX, metadata['changed_keys']))
     if not source_found and metadata.get('source'):
-        additions.append(_("-- Source: {var0}\n").format(var0=metadata['source']))
+        additions.append(_header_line(HEADER_SOURCE_PREFIX, metadata['source']))
 
     if additions:
         updated = updated[:insert_index] + additions + updated[insert_index:]
@@ -482,7 +589,7 @@ def clear_screen():
 def print_header(version: str = None):
     """Affiche l'entete du menu avec couleurs."""
     if version is None:
-        version = "6.0"
+        version = __version__
     print()
     print(c.HEADER + "=" * 70 + c.RESET)
     title = _("  TRANSLATION MANAGER v{version}").format(version=version).center(70)

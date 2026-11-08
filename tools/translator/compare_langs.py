@@ -20,8 +20,8 @@ Cas d'usage :
   3. Suivi de versions (comparer avant/après révision)
 
 Usage CLI :
-    python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
-    python Translator_main.py compare-langs --file1 ./v1/fr.txt --file2 ./v2/fr.txt
+    python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./Locales
+    python -m tools.translator.main compare-langs --file1 ./v1/fr.txt --file2 ./v2/fr.txt
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
@@ -32,8 +32,9 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import json
+import tempfile
 from datetime import datetime
-from typing import Dict, Set, Tuple, Optional
+from typing import Dict, Optional
 
 # Ajouter la racine du projet au path pour importer core
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -145,15 +146,15 @@ def run_compare_langs(file1_path: str, file2_path: str,
         file2_path: Chemin du second fichier (ou répertoire)
         lang1_name: Nom de la langue 1 (auto-détecté si None)
         lang2_name: Nom de la langue 2 (auto-détecté si None)
-        output_dir: Répertoire de sortie (défaut: timestampé local)
+        output_dir: Répertoire de sortie (défaut: dossier temporaire)
         comparison_mode: Mode de comparaison ("keys" ou "values")
 
     Returns:
         Chemin du répertoire de sortie
     """
     # Résoudre les chemins
-    _, file1 = resolve_path(file1_path)
-    _, file2 = resolve_path(file2_path)
+    _dir, file1 = resolve_path(file1_path)
+    _dir, file2 = resolve_path(file2_path)
 
     # Auto-détecter les noms de langues depuis les noms de fichiers
     if not lang1_name:
@@ -163,11 +164,8 @@ def run_compare_langs(file1_path: str, file2_path: str,
 
     # Créer répertoire de sortie
     if not output_dir:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            f"compare_langs_{timestamp}"
-        )
+        output_dir = tempfile.mkdtemp(prefix="i18n_kit_")
+        print(_("Dossier de sortie temporaire : {path}").format(path=output_dir))
     os.makedirs(output_dir, exist_ok=True)
 
     # Parser les fichiers
@@ -414,14 +412,14 @@ def menu_compare_langs(plugin_path: str = ""):
 
     print(_("\n{var0}Vous pouvez comparer:{var1}").format(var0=c.DIM, var1=c.RESET))
     print(_("  {var0}• Deux langues différentes (ex: FR vs DE){var1}").format(var0=c.DIM, var1=c.RESET))
-    print(f"  {c.DIM}• Deux versions d'une même langue (ex: ancien FR vs nouveau FR){c.RESET}")
-    print(f"  {c.DIM}• Une langue vs EN (pour voir ce qui n'est pas traduit){c.RESET}")
+    print(_("  {var0}• Deux versions d'une même langue (ex: ancien FR vs nouveau FR){var1}").format(var0=c.DIM, var1=c.RESET))
+    print(_("  {var0}• Une langue vs EN (pour voir ce qui n'est pas traduit){var1}").format(var0=c.DIM, var1=c.RESET))
 
     print(_("\n{var0}Mode de comparaison:{var1}").format(var0=c.KEY, var1=c.RESET))
     print(_("  {var0}1{var1}. {var2}Par clés{var3} - Identifie les clés manquantes/ajoutées (recommandé pour synchronisation)").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
     print(_("  {var0}2{var1}. {var2}Par valeurs{var3} - Identifie les traductions identiques (recommandé pour audit qualité)").format(var0=c.YELLOW, var1=c.RESET, var2=c.INFO, var3=c.RESET))
 
-    comparison_mode = input(c.prompt(_("Mode de comparaison") + " (1-2, défaut=1): ")).strip()
+    comparison_mode = input(c.prompt(_("Mode de comparaison (1-2, défaut=1): "))).strip()
     if not comparison_mode:
         comparison_mode = "1"  # Défaut: mode clés
 
@@ -465,7 +463,8 @@ def menu_compare_langs(plugin_path: str = ""):
             input(_("\nAppuyez sur Entrée..."))
             return None
 
-        print(f"\n{c.INFO}Langues disponibles{c.RESET}: {c.VALUE}{', '.join(available_langs)}{c.RESET}")
+        print(_("\n{var0}Langues disponibles{var1}: {var2}{langs}{var3}").format(
+            var0=c.INFO, var1=c.RESET, var2=c.VALUE, langs=', '.join(available_langs), var3=c.RESET))
 
         print(_("\n{var0}Code de la première langue{var1} (ex: fr, en, de):").format(var0=c.KEY, var1=c.RESET))
         lang1_name = input(f"{c.PROMPT}  > {c.RESET}").strip().lower()
@@ -513,7 +512,7 @@ def menu_compare_langs(plugin_path: str = ""):
         if plugin_path:
             output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
         else:
-            output_dir = None  # run_compare_langs créera un dossier local
+            output_dir = None  # run_compare_langs utilisera un dossier temporaire
 
         # Convertir le mode de comparaison
         comp_mode = "keys" if comparison_mode == "1" else "values"

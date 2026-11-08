@@ -14,3 +14,5 @@ GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
+
+__version__ = "1.1.0"

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : Delete_temp_dir.py
+Nom du fichier : delete_temp_dir.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Script pour supprimer le dossier temporaire i18n d'un plugin Lightroom.
@@ -20,10 +20,10 @@ Options:
   - Supprimer tout le dossier temporaire
 
 Usage CLI :
-    python Delete_temp_dir.py                           # Menu interactif
-    python Delete_temp_dir.py --default-plugin <path>   # Avec plugin pré-configuré
+    python -m tools.toolbox.delete_temp_dir                           # Menu interactif
+    python -m tools.toolbox.delete_temp_dir --default-plugin <path>   # Avec plugin pré-configuré
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -38,11 +38,10 @@ from typing import Optional, Tuple, List
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
-from core.colors import Colors
+from core import __version__
+from core.colors import c
 from core.i18n import _
 
-# Instance globale des couleurs
-c = Colors()
 
 
 def get_dir_size(path: str) -> Tuple[int, int]:
@@ -73,11 +72,12 @@ def get_dir_size(path: str) -> Tuple[int, int]:
 def format_size(size_bytes: int) -> str:
     """Formate une taille en octets en format lisible."""
     size: float = float(size_bytes)
-    for unit in ['octets', 'Ko', 'Mo', 'Go']:
+    for unit in [_("octets"), _("Ko"), _("Mo"), _("Go")]:
         if size < 1024:
             return f"{size:.1f} {unit}"
         size /= 1024
-    return f"{size:.1f} To"
+    unit = _("To")
+    return f"{size:.1f} {unit}"
 
 
 def list_subdirs(path: str) -> list:
@@ -145,8 +145,9 @@ def find_backup_dirs(temp_dir_path: str) -> List[dict]:
 
 
 def clear_screen():
-    """Efface l'écran."""
-    os.system('cls' if os.name == 'nt' else 'clear')
+    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
+    if sys.stdout is not None and sys.stdout.isatty():
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:
@@ -412,10 +413,10 @@ def main():
         if idx + 1 < len(args):
             default_plugin = args[idx + 1]
 
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear_screen()
 
     print()
-    print(c.box_header(_("NETTOYAGE DU DOSSIER TEMPORAIRE (v2.0)")))
+    print(c.box_header(_("NETTOYAGE DU DOSSIER TEMPORAIRE (v{version})").format(version=__version__)))
     print()
 
     # Demander le chemin du plugin (ou utiliser celui fourni)

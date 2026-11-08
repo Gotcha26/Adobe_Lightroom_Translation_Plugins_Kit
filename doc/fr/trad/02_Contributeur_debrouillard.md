@@ -55,7 +55,7 @@ cd Adobe_Lightroom_Translation_Plugins_Kit
 
 ```bash
 python LocalisationToolKit.py
-# Choisir [6] Configuration
+# Choisir [7] Configuration
 # Entrer le chemin vers le plugin
 ```
 
