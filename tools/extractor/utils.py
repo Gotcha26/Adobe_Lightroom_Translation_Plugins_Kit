@@ -70,9 +70,18 @@ def escape_lua_string(text: str) -> str:
     return ''.join(_LUA_ESCAPE_OUT.get(ch, ch) for ch in text)
 
 
+# Littéraux Lua d'une ligne : "…", '…' (échappements tolérés) et chaînes longues
+# [[…]] / [=*[…]=*] fermées sur la même ligne (hors --[[, qui ouvre un commentaire)
+_ANY_LUA_LITERAL_PATTERN = re.compile(
+    r'"(?:[^"\\]|\\.)*"'
+    r"|'(?:[^'\\]|\\.)*'"
+    r'|(?<!-)\[(=*)\[.*?\]\1\]'
+)
+
+
 def _mask_string_literals(text: str) -> str:
-    """Remplace chaque littéral entre guillemets doubles par des espaces (même longueur)."""
-    return LUA_STRING_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
+    """Remplace chaque littéral Lua de la ligne par des espaces (même longueur)."""
+    return _ANY_LUA_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
 
 
 def block_comment_state(line: str, open_level: str | None) -> str | None:
@@ -136,7 +145,8 @@ def extract_spacing(text: str) -> Tuple[str, int, int]:
     trailing = len(text) - len(text.rstrip(' '))
 
     # Texte nettoyé
-    clean = text.strip()
+    # Seuls les espaces sont du formatage : \n, \t (texte réel) restent dans la valeur
+    clean = text.strip(' ')
 
     return clean, leading, trailing
 

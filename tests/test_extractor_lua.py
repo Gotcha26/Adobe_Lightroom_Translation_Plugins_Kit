@@ -62,6 +62,60 @@ def test_block_comment_state():
     assert block_comment_state('x = f() --[[ trailing opener', None) == ""
     assert block_comment_state("-- line comment --[[", None) is None
     assert block_comment_state('x = "--[[ not a comment"', None) is None
+    assert block_comment_state("s = '--[['", None) is None
+    assert block_comment_state("s = 'it''s' --[[", None) == ""
+    assert block_comment_state("s = [[--[[ long string]]", None) is None
+    assert block_comment_state("s = [==[ x --[[ ]==] .. y", None) is None
+
+
+def test_single_quoted_opener_does_not_swallow_file(plugin_dir):
+    path = os.path.join(plugin_dir, "PWExport.lua")
+    with open(path, "a", encoding="utf-8") as f:
+        f.write("\nlocal marker = '--[['\nlocal t = { title = \"Visible after marker\" }\n")
+    entries = _export_entries(_extract(plugin_dir))
+    assert "Visible after marker" in [e.base_text for e in entries]
+
+
+# --- Espaces de formatage : seuls les espaces sont extraits -----------------
+
+def _entry_for(line, tmp_path):
+    plugin = tmp_path / "p.lrplugin"
+    plugin.mkdir()
+    (plugin / "PWExport.lua").write_text(line + "\n", encoding="utf-8")
+    entries = _export_entries(_extract(str(plugin)))
+    assert len(entries) == 1
+    return entries[0]
+
+
+def test_trailing_newline_is_kept(tmp_path):
+    entry = _entry_for('local t = { title = "Error:\\n" }', tmp_path)
+    assert entry.base_text == "Error:\n"
+    loc = build_loc_call(entry.suggested_key, entry.base_text, entry.leading_spaces,
+                         entry.trailing_spaces, entry.suffix)
+    assert loc.endswith('=Error:\\n"')
+
+
+def test_leading_newline_is_kept(tmp_path):
+    entry = _entry_for('local t = { title = "\\nDetails" }', tmp_path)
+    assert entry.base_text == "\nDetails"
+    loc = build_loc_call(entry.suggested_key, entry.base_text, entry.leading_spaces,
+                         entry.trailing_spaces, entry.suffix)
+    assert loc.endswith('=\\nDetails"')
+
+
+def test_backslash_path_still_technical(tmp_path):
+    plugin = tmp_path / "p.lrplugin"
+    plugin.mkdir()
+    (plugin / "PWExport.lua").write_text('local t = { title = "\\\\server\\\\share" }\n', encoding="utf-8")
+    assert _export_entries(_extract(str(plugin))) == []
+
+
+def test_trailing_tab_is_kept(tmp_path):
+    entry = _entry_for('local t = { title = "Tab\\t" }', tmp_path)
+    assert entry.base_text == "Tab\t"
+    loc = build_loc_call(entry.suggested_key, entry.base_text, entry.leading_spaces,
+                         entry.trailing_spaces, entry.suffix)
+    assert loc.endswith('=Tab\\t"')
 
 
 # --- Extraction sur la fixture -----------------------------------------------

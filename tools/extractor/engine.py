@@ -339,7 +339,7 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(original_text, combined):
+            if is_technical_string(unescape_lua_string(original_text), combined):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -403,7 +403,7 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(original_text, line if is_tech_context else None):
+            if is_technical_string(unescape_lua_string(original_text), line if is_tech_context else None):
                 self.stats.technical_ignored += 1
                 continue
 
