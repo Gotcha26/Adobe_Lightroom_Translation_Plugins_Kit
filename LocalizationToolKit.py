@@ -160,21 +160,33 @@ class ConfigManager:
         """
         return self.local, self.config_local_path
 
-    def save(self):
-        """Sauvegarde uniquement config.local.json (jamais config.json)."""
+    def save(self) -> bool:
+        """Sauvegarde uniquement config.local.json (jamais config.json).
+
+        Returns:
+            True si le fichier a été écrit
+        """
         data, path = self._target()
         try:
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception as e:
             print(_("Erreur sauvegarde config: {error}").format(error=e))
+            return False
+        return True
 
     def get(self, key: str, default=None):
         """Récupère une valeur de configuration."""
         return self.config.get(key, default)
 
-    def set(self, key: str, value):
-        """Définit une valeur de configuration dans le fichier cible."""
+    def set(self, key: str, value) -> bool:
+        """Définit une valeur de configuration dans le fichier cible.
+
+        La valeur est toujours appliquée en mémoire (session en cours).
+
+        Returns:
+            True si elle a aussi été enregistrée dans config.local.json
+        """
         data, path = self._target()
         data[key] = value
         self.config[key] = value
@@ -182,9 +194,11 @@ class ConfigManager:
             # Fichier présent mais illisible : on ne l'écrase pas (valeur gardée en mémoire)
             print(c.error(_("{file} est illisible : la modification n'est pas enregistrée. "
                             "Corrigez ou supprimez ce fichier.").format(file=os.path.basename(path))))
-            return
-        self.save()
+            return False
+        if not self.save():
+            return False
         print(_("Configuration mise à jour dans {file}").format(file=os.path.basename(path)))
+        return True
 
     def display(self):
         """Affiche la configuration actuelle."""
@@ -710,6 +724,18 @@ class MainMenu:
         print(c.menu_option("0", _("Quitter")))
         print()
 
+    @staticmethod
+    def print_setting_result(saved: bool, message: str):
+        """Confirme une modification de configuration (retour de ConfigManager.set).
+
+        Non enregistrée (config.local.json illisible ou écriture impossible) :
+        la valeur ne vaut que pour la session en cours, ce que dit le message.
+        """
+        if saved:
+            print(c.success(message))
+        else:
+            print(c.warning(_("{message} (pour cette session uniquement)").format(message=message)))
+
     def input_plugin_path(self):
         """Configure le chemin du plugin."""
         print()
@@ -744,8 +770,8 @@ class MainMenu:
                     print(c.error(_("Configuration annulée")))
                     return
 
-            self.config.set("plugin_path", normalized)
-            print(c.success(_("Plugin configuré: {path}").format(path=normalized)))
+            saved = self.config.set("plugin_path", normalized)
+            self.print_setting_result(saved, _("Plugin configuré: {path}").format(path=normalized))
 
             # Afficher le chemin du dossier temporaire
             i18n_path = get_i18n_kit_path(normalized)
@@ -780,9 +806,9 @@ class MainMenu:
                 print(c.error(_("Caractères invalides dans le nom: {chars}").format(chars=invalid_chars)))
                 continue
 
-            self.config.set("temp_dir", name)
+            saved = self.config.set("temp_dir", name)
             set_i18n_dir(name)
-            print(c.success(_("Dossier temporaire: {name}").format(name=name)))
+            self.print_setting_result(saved, _("Dossier temporaire: {name}").format(name=name))
 
             plugin_path = self.config.get("plugin_path", "")
             if plugin_path:
@@ -860,9 +886,9 @@ class MainMenu:
             # Toggle auto-ajout .gitignore
             current = self.config.get("auto_add_gitignore", True)
             new_value = not current
-            self.config.set("auto_add_gitignore", new_value)
+            saved = self.config.set("auto_add_gitignore", new_value)
             status = _("activé") if new_value else _("désactivé")
-            print(c.success(_("Auto-ajout au .gitignore: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Auto-ajout au .gitignore: {status}").format(status=status))
             print()
             temp_dir_name = self.config.get('temp_dir', DEFAULT_I18N_DIR)
             if new_value:
@@ -873,9 +899,9 @@ class MainMenu:
             # Toggle animation Flip-anim
             current = self.config.get("enable_flip_anim", True)
             new_value = not current
-            self.config.set("enable_flip_anim", new_value)
+            saved = self.config.set("enable_flip_anim", new_value)
             status = _("activée") if new_value else _("désactivée")
-            print(c.success(_("Animation au démarrage: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Animation au démarrage: {status}").format(status=status))
         elif choice == '5':
             # Modifier le préfixe
             print()
@@ -885,8 +911,8 @@ class MainMenu:
             print()
             new_prefix = input(c.prompt(_("Nouveau préfixe (ENTRÉE pour garder):") + " ")).strip()
             if new_prefix:
-                self.config.set("prefix", new_prefix)
-                print(c.success(_("Préfixe: {prefix}").format(prefix=new_prefix)))
+                saved = self.config.set("prefix", new_prefix)
+                self.print_setting_result(saved, _("Préfixe: {prefix}").format(prefix=new_prefix))
             else:
                 print(c.success(_("Préfixe inchangé")))
         elif choice == '6':
@@ -900,17 +926,17 @@ class MainMenu:
             print()
             new_lang = input(c.prompt(_("Nouvelle langue (ENTRÉE pour garder):") + " ")).strip()
             if new_lang:
-                self.config.set("lang", new_lang)
-                print(c.success(_("Langue: {lang}").format(lang=new_lang)))
+                saved = self.config.set("lang", new_lang)
+                self.print_setting_result(saved, _("Langue: {lang}").format(lang=new_lang))
             else:
                 print(c.success(_("Langue inchangée")))
         elif choice == '7':
             # Toggle debug i18n
             current = self.config.get("debug_i18n", False)
             new_value = not current
-            self.config.set("debug_i18n", new_value)
+            saved = self.config.set("debug_i18n", new_value)
             status = _("activé") if new_value else _("désactivé")
-            print(c.success(_("Debug i18n: {status}").format(status=status)))
+            self.print_setting_result(saved, _("Debug i18n: {status}").format(status=status))
 
         input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE pour continuer...") + f"{c.RESET}")
 
