@@ -54,6 +54,7 @@ from typing import Dict, List, Tuple, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative, fallback_backup_dir
 from core.colors import c, stdin_is_interactive
+from core.cli import add_default_plugin_arg, add_plugin_path_arg
 from core.i18n import _
 import glob
 import subprocess
@@ -906,10 +907,8 @@ Codes retour : 0 succès, 1 erreur (dont fichiers introuvables), 2 arguments inv
         """)
     )
 
-    parser.add_argument('--default-plugin', default="",
-                        help=_("Plugin pré-configuré pour le menu interactif"))
-    parser.add_argument('--plugin-path', default=None,
-                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    add_default_plugin_arg(parser)
+    add_plugin_path_arg(parser)
     parser.add_argument('--yes', action='store_true',
                         help=_("Aucune question : ne pas lancer la gestion des fichiers de traduction"))
     parser.add_argument('--extraction-dir', default=None,

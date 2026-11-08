@@ -40,6 +40,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_tool_output_path
 from core.output_formatters import OutputFormatter
+from core.cli import add_default_plugin_arg, add_plugin_path_arg
 from core.i18n import _
 from core.defaults import DEFAULT_PREFIX
 
@@ -167,10 +168,8 @@ Exemples:
         """)
     )
 
-    parser.add_argument('--default-plugin', default="",
-                        help=_("Plugin pré-configuré pour le menu interactif"))
-    parser.add_argument('--plugin-path', default=None,
-                        help=_("Chemin vers le répertoire du plugin (active le mode CLI)"))
+    add_default_plugin_arg(parser)
+    add_plugin_path_arg(parser)
     parser.add_argument('--yes', action='store_true',
                         help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
     parser.add_argument('--output-dir', default=None,

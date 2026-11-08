@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AUTOSYNC: declining the confirmation (or closed stdin) now removes the sessions created by that run (Extractor, Applicator, Translator, including the `_original_TranslatedStrings_xx.txt` copy) and lists what was cleaned; sessions that existed before are never touched (#37)
 - `process_plugin_directory(..., silent=True)` printed messages when `extraction_dir` was auto-detected or invalid; it now prints nothing and records those errors in `report.errors` (#37)
 - AUTOSYNC tests now cover the accepted-confirmation path (Lua modified, both reports present) (#37)
+- Launcher: `--yes` / `--dry-run` were silently ignored by commands that do not support them. Each command now declares the options it handles (`extract`: `--yes`; `apply`: `--dry-run`, `--yes`; `autosync`: `--yes`; others: none) and any other option is refused with an error and exit code 2 (#37)
+- Applicator menu: re-selecting the current extraction folder was treated as a cancellation and skipped the `replacements.json` check; it is now validated and confirmed like any other selection (#37)
+- Translator EXTRACT menu: cancelling the folder selection is now reported (message and pause) before going back to the menu (#37)
+- `clear_screen` is now only run on a terminal everywhere (launcher, Extractor, Applicator, Translator menus), through a single `core.cli.clear_screen` also used by the Toolbox (#37)
+- COMPARE no longer hard-codes "EN": the CHANGELOG title, value lines, menu texts and docstrings use the configured reference language code (#37)
+
+### Changed
+- `--default-plugin` and `--plugin-path` argparse definitions shared by the Extractor, Applicator and Translator moved to `core.cli` (same names, help and defaults) (#37)
 
 ---
 

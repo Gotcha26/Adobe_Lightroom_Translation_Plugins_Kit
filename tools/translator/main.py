@@ -51,6 +51,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from core.paths import get_tool_output_path, find_latest_update_dir, get_translator_backup_dir
 from core.colors import c
+from core.cli import add_default_plugin_arg
 from core.i18n import _
 
 from .common import clear_screen, print_header
@@ -259,8 +260,7 @@ Exemples:
   python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin --yes
         """)
     )
-    parser.add_argument('--default-plugin', default="",
-                        help=_("Plugin pré-configuré pour le menu interactif"))
+    add_default_plugin_arg(parser)
 
     subparsers = parser.add_subparsers(dest='command', help=_("Commande"))
 

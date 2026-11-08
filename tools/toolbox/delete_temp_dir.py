@@ -39,6 +39,7 @@ from typing import Optional, Tuple, List
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path, find_session_dirs
 from core import __version__
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _
 
@@ -131,12 +132,6 @@ def find_backup_dirs(temp_dir_path: str) -> List[dict]:
     # Trier du plus récent au plus ancien
     backups.sort(key=lambda x: x['session'], reverse=True)
     return backups
-
-
-def clear_screen():
-    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
-    if sys.stdout is not None and sys.stdout.isatty():
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def input_plugin_path(default_plugin_path: str = "") -> Optional[str]:

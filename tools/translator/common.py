@@ -36,6 +36,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core import __version__
+from core.cli import clear_screen  # noqa: F401 (réexporté pour les modules du Translator)
 from core.colors import c
 from core.i18n import _
 from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
@@ -579,11 +580,6 @@ def find_languages(directory: str, exclude_reference: bool = True) -> List[str]:
                 languages.append(lang)
 
     return sorted(languages)
-
-
-def clear_screen():
-    """Efface l'écran (compatible Windows et Linux)."""
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def print_header(version: str = None):

@@ -26,7 +26,8 @@ Les outils génèrent leurs sorties dans:
 
 Usage CLI :
     python LocalizationToolkit.py               # Menu interactif
-    python LocalizationToolkit.py extract       # Lancer Extractor
+    python LocalizationToolkit.py extract [--yes]
+                                                # Lancer Extractor (--yes : mode CLI avec la config)
     python LocalizationToolkit.py apply         # Lancer Applicator (menu)
     python LocalizationToolkit.py apply [--dry-run] [--yes]
                                                 # Applicator en CLI (simulation seulement avec --dry-run)
@@ -59,6 +60,7 @@ from core.paths import (
     get_i18n_kit_path, find_latest_tool_output, get_i18n_dir, set_i18n_dir,
     validate_plugin_path, find_git_root, DEFAULT_I18N_DIR
 )
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _, debug_language_detection
 from core.defaults import DEFAULT_PREFIX
@@ -634,8 +636,8 @@ class MainMenu:
         self.launcher = ToolLauncher(self.base_dir, self.config)
 
     def clear_screen(self):
-        """Efface l'écran."""
-        os.system('cls' if os.name == 'nt' else 'clear')
+        """Efface l'écran, seulement sur un terminal."""
+        clear_screen()
 
     def has_translated_strings(self) -> bool:
         """Détecte si le plugin contient au moins un fichier TranslatedStrings_xx.txt."""
@@ -979,15 +981,34 @@ class MainMenu:
 # POINT D'ENTRÉE
 # =============================================================================
 
-# Options CLI acceptées après la commande du lanceur
+# Options CLI acceptées après chaque commande du lanceur (prise en charge réelle) :
+# toute autre option est refusée (code 2) au lieu d'être ignorée en silence
 CLI_OPTIONS = ("--dry-run", "--yes")
+COMMAND_OPTIONS = {
+    'extract': ("--yes",),
+    'apply': ("--dry-run", "--yes"),
+    'translate': (),
+    'restore': (),
+    'delete': (),
+    'autosync': ("--yes",),
+    'config': (),
+}
+COMMAND_ALIASES = {
+    'extract': 'extract', 'extractor': 'extract', '1': 'extract',
+    'apply': 'apply', 'applicator': 'apply', '2': 'apply',
+    'translate': 'translate', 'translation': 'translate', '3': 'translate',
+    'restore': 'restore', '4': 'restore',
+    'delete': 'delete', 'clean': 'delete', '5': 'delete',
+    'autosync': 'autosync', '6': 'autosync',
+    '--config': 'config', 'config': 'config', '7': 'config',
+}
 
 
 def print_cli_usage():
     """Affiche l'aide du mode CLI du lanceur."""
     print("\n" + _("Usage:"))
     print("  python LocalizationToolKit.py                     # " + _("Menu interactif"))
-    print("  python LocalizationToolKit.py extract   (1)       # " + _("Lancer Extractor"))
+    print("  python LocalizationToolKit.py extract   (1) [--yes]  # " + _("Lancer Extractor"))
     print("  python LocalizationToolKit.py apply     (2)       # " + _("Lancer Applicator (menu)"))
     print("  python LocalizationToolKit.py apply [--dry-run] [--yes]  # "
           + _("Appliquer en CLI (simulation seulement avec --dry-run)"))
@@ -998,7 +1019,7 @@ def print_cli_usage():
           + _("Mettre à jour plugin + langues (AUTOSYNC)"))
     print("  python LocalizationToolKit.py config    (7)       # " + _("Afficher config"))
     print("  python LocalizationToolKit.py --help    (-h)      # " + _("Afficher cette aide"))
-    print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue."))
+    print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue ou non prise en charge."))
 
 
 def main():
@@ -1020,6 +1041,16 @@ def main():
             print(_("Option inconnue: {option}").format(option=" ".join(unknown)))
             print_cli_usage()
             sys.exit(2)
+
+        # Option connue mais non prise en charge par la commande : refus explicite
+        command = COMMAND_ALIASES.get(cmd)
+        if command is not None:
+            unsupported = [arg for arg in extra if arg not in COMMAND_OPTIONS[command]]
+            if unsupported:
+                print(_("Option non prise en charge par la commande {cmd}: {option}").format(
+                    cmd=cmd, option=" ".join(unsupported)))
+                print_cli_usage()
+                sys.exit(2)
         dry_run = "--dry-run" in extra
         assume_yes = "--yes" in extra
 
@@ -1027,19 +1058,19 @@ def main():
         config = ConfigManager(base_dir)
         launcher = ToolLauncher(base_dir, config)
 
-        if cmd in ['extract', 'extractor', '1']:
+        if command == 'extract':
             success = launcher.run_extractor(interactive=not extra)
-        elif cmd in ['apply', 'applicator', '2']:
+        elif command == 'apply':
             success = launcher.run_applicator(interactive=not extra, dry_run=dry_run, assume_yes=assume_yes)
-        elif cmd in ['translate', 'translation', '3']:
+        elif command == 'translate':
             success = launcher.run_translation_manager()
-        elif cmd in ['restore', '4']:
+        elif command == 'restore':
             success = launcher.run_restore_backup()
-        elif cmd in ['delete', 'clean', '5']:
+        elif command == 'delete':
             success = launcher.run_delete_temp_dir()
-        elif cmd in ['autosync', '6']:
+        elif command == 'autosync':
             success = launcher.run_autosync(assume_yes=assume_yes)
-        elif cmd in ['--config', 'config', '7']:
+        elif command == 'config':
             config.display()
             success = True
         else:

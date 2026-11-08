@@ -29,6 +29,7 @@ from typing import List, Tuple, Optional
 # (remonter de 2 niveaux: tools/toolbox/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path, find_session_dirs, count_bak_files
+from core.cli import clear_screen
 from core.colors import c
 from core.i18n import _
 
@@ -157,12 +158,6 @@ def delete_backups(pairs: List[Tuple[str, str]]) -> int:
             print(_("  {var0}[FAIL]{var1} {rel_path} {var3}- Erreur: {e}{var5}").format(var0=c.ERROR, var1=c.RESET, rel_path=rel_path, var3=c.DIM, e=e, var5=c.RESET))
 
     return deleted
-
-
-def clear_screen():
-    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
-    if sys.stdout is not None and sys.stdout.isatty():
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def count_backup_files(backup_dir: str) -> int:

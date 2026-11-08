@@ -6,7 +6,7 @@ Dépendances : common
 
 Description :
 Module COMPARE pour Translator.
-Compare deux versions du fichier EN et génère UPDATE_<ref>.json + CHANGELOG.txt
+Compare deux versions du fichier de la langue de référence et génère UPDATE_<ref>.json + CHANGELOG.txt
 
 Analyse les différences entre deux versions :
   - Détecte les clés ajoutées, modifiées ou supprimées
@@ -17,7 +17,7 @@ Analyse les différences entre deux versions :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -31,7 +31,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 from .common import parse_translation_file, resolve_path, c
-from .config_loader import get_reference_filename, get_update_filename
+from .config_loader import get_reference_filename, get_reference_lang, get_update_filename
 from core.i18n import _
 
 
@@ -40,7 +40,7 @@ from core.i18n import _
 # =============================================================================
 
 class VersionComparator:
-    """Compare deux versions du fichier EN."""
+    """Compare deux versions du fichier de la langue de référence."""
 
     def __init__(self, old_strings: Dict[str, str], new_strings: Dict[str, str]):
         self.old = old_strings
@@ -94,11 +94,11 @@ class VersionComparator:
 
 def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) -> str:
     """
-    Compare deux versions du fichier EN.
+    Compare deux versions du fichier de la langue de référence.
 
     Args:
-        old_path: Ancien fichier EN (ou répertoire)
-        new_path: Nouveau fichier EN (ou répertoire)
+        old_path: Ancien fichier de référence (ou répertoire)
+        new_path: Nouveau fichier de référence (ou répertoire)
         output_dir: Répertoire de sortie (défaut: dossier temporaire système)
 
     Returns:
@@ -151,13 +151,13 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     changelog_file = os.path.join(output_dir, 'CHANGELOG.txt')
     _generate_changelog(changelog_file, result, old_file, new_file)
 
-    # Copier l'ancien fichier EN pour traçabilité
-    old_en_file = os.path.join(output_dir, 'old_' + get_reference_filename())
-    shutil.copy2(old_file, old_en_file)
+    # Copier l'ancien fichier de référence pour traçabilité
+    old_ref_file = os.path.join(output_dir, 'old_' + get_reference_filename())
+    shutil.copy2(old_file, old_ref_file)
 
-    # Copier le nouveau fichier EN comme référence
-    new_en_file = os.path.join(output_dir, get_reference_filename())
-    shutil.copy2(new_file, new_en_file)
+    # Copier le nouveau fichier de référence comme référence
+    new_ref_file = os.path.join(output_dir, get_reference_filename())
+    shutil.copy2(new_file, new_ref_file)
 
     return output_dir
 
@@ -166,9 +166,10 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
     """Génère le fichier CHANGELOG lisible."""
     from core.i18n import debug_i18n_context
 
+    ref_lang = get_reference_lang()
     with debug_i18n_context(), open(file_path, 'w', encoding='utf-8') as f:
         f.write("=" * 80 + "\n")
-        f.write(_("CHANGELOG - Modifications des traductions EN\n"))
+        f.write(_("CHANGELOG - Modifications des traductions {lang}\n").format(lang=ref_lang))
         f.write("=" * 80 + "\n\n")
 
         f.write(_("Date: {var0}\n").format(var0=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -192,12 +193,12 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
             for key in sorted(result['added'].keys()):
                 value = result['added'][key]
                 f.write(_("  [NEW] {key}\n").format(key=key))
-                f.write(_("        EN: {value}\n\n").format(value=value))
+                f.write(_("        {lang}: {value}\n\n").format(lang=ref_lang, value=value))
 
         if result['changed']:
             f.write("=" * 80 + "\n")
             f.write(_("CLÉS MODIFIÉES ({var0})\n").format(var0=len(result['changed'])))
-            f.write(_("Le texte anglais a changé. Les traductions doivent être révisées.\n"))
+            f.write(_("Le texte {lang} a changé. Les traductions doivent être révisées.\n").format(lang=ref_lang))
             f.write("=" * 80 + "\n\n")
             for key in sorted(result['changed'].keys()):
                 change = result['changed'][key]
@@ -236,7 +237,7 @@ def menu_compare(plugin_path: str = ""):
 
     clear_screen()
     print_header()
-    print(_("\n{var0}COMPARE{var1}: Comparer deux versions EN").format(var0=c.INFO, var1=c.RESET))
+    print(_("\n{var0}COMPARE{var1}: Comparer deux versions {lang}").format(var0=c.INFO, var1=c.RESET, lang=get_reference_lang()))
     print(c.separator())
 
     print(_("\n{var0}Fichier ANCIEN{var1} ({var2} ou répertoire):").format(var0=c.KEY, var1=c.RESET, var2=get_reference_filename()))
@@ -286,7 +287,7 @@ def menu_compare(plugin_path: str = ""):
             print()
             print(_("{var0}[INFO]{var1} PROCHAINE ÉTAPE:").format(var0=c.INFO, var1=c.RESET))
             print(_("  {var0}• EXTRACT pour générer les fichiers de traduction{var1}").format(var0=c.DIM, var1=c.RESET))
-            print(_("  {var0}• ou SYNC directement pour utiliser EN par défaut{var1}").format(var0=c.DIM, var1=c.RESET))
+            print(_("  {var0}• ou SYNC directement pour utiliser {lang} par défaut{var1}").format(var0=c.DIM, var1=c.RESET, lang=get_reference_lang()))
 
         return output_dir
 
