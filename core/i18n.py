@@ -86,8 +86,9 @@ def _detect_system_language() -> str:
 
     Ordre de priorité :
         1. Variable d'environnement TOOLKIT_LANG (ex: "de", "en_US", "fr")
-        2. Locale système via locale.getdefaultlocale()
-        3. FALLBACK_LANGUAGE
+        2. Variables LC_ALL, LC_MESSAGES, LANG, LANGUAGE
+        3. Locale système via locale.getlocale() (mapping Windows French*/English*)
+        4. FALLBACK_LANGUAGE
     """
     # Override via variable d'environnement (utile pour tester)
     env_lang = os.environ.get("TOOLKIT_LANG", "").strip()
@@ -98,15 +99,39 @@ def _detect_system_language() -> str:
         # Langue valide mais non supportée → fallback (ne pas ignorer silencieusement)
         return FALLBACK_LANGUAGE
 
-    try:
-        lang_code = locale.getdefaultlocale()[0]
-        if lang_code:
-            lang = lang_code.split("_")[0].lower()
-            if lang in SUPPORTED_LANGUAGES:
+    for var in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"):
+        for part in os.environ.get(var, "").split(":"):
+            lang = _language_from_code(part)
+            if lang:
                 return lang
-    except Exception:
-        pass
+
+    lang = _language_from_code(_get_locale_code())
+    if lang:
+        return lang
     return FALLBACK_LANGUAGE
+
+
+def _language_from_code(code: Optional[str]) -> Optional[str]:
+    """Convertit un code de locale (fr_FR.UTF-8, French_France, en...) en langue supportée."""
+    if not code:
+        return None
+    code = code.strip().lower()
+    if code.startswith("french"):
+        return "fr"
+    if code.startswith("english"):
+        return "en"
+    lang = code[:2]
+    if lang in SUPPORTED_LANGUAGES:
+        return lang
+    return None
+
+
+def _get_locale_code() -> Optional[str]:
+    """Retourne le code de locale courant via locale.getlocale() (None si indisponible)."""
+    try:
+        return locale.getlocale()[0]
+    except Exception:
+        return None
 
 
 def _get_initial_language() -> str:
@@ -138,16 +163,6 @@ def _load_translator(language: str) -> Callable[[str], str]:
     # Si c'est la langue source (français), pas de traduction
     if language == "fr":
         return lambda s: s
-
-    # Vérifier si la traduction existe
-    mo_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.mo".format(DOMAIN=DOMAIN)
-
-    if not mo_file.exists():
-        # Pas de fichier .mo, essayer avec le .po (moins performant)
-        po_file = locale_dir / language / "LC_MESSAGES" / "{DOMAIN}.po".format(DOMAIN=DOMAIN)
-        if not po_file.exists():
-            # Aucune traduction disponible
-            return lambda s: s
 
     try:
         # Charger les traductions
@@ -361,11 +376,12 @@ def debug_language_detection() -> str:
     if env_lang:
         info.append(_("Locale système: {locale}").format(locale=f"TOOLKIT_LANG={env_lang}"))
     else:
-        try:
-            lang_code = locale.getdefaultlocale()[0]
-            info.append(_("Locale système: {locale}").format(locale=lang_code or "None"))
-        except Exception as e:
-            info.append(_("Locale système: {locale}").format(locale=f"Erreur: {e}"))
+        env_value = next(
+            (f"{v}={os.environ[v]}" for v in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE") if os.environ.get(v)),
+            None,
+        )
+        lang_code = env_value or _get_locale_code()
+        info.append(_("Locale système: {locale}").format(locale=lang_code or "None"))
 
     info.append(_("Langue détectée: {lang}").format(lang=_current_language))
 
