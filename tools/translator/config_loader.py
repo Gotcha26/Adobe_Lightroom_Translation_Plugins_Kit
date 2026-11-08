@@ -27,6 +27,7 @@ from core.i18n import _
 # =============================================================================
 
 DEFAULT_REFERENCE_LANG = "en"  # Fallback si config.json absent ou invalide
+DEFAULT_PREFIX = "$$$/Plugin"  # Préfixe LOC par défaut si config.json["prefix"] absent
 
 
 # =============================================================================
@@ -111,6 +112,17 @@ def get_reference_lang() -> str:
     """
     config = load_config()
     return config.get("lang", DEFAULT_REFERENCE_LANG)
+
+
+def get_prefix() -> str:
+    """
+    Récupère le préfixe des clés LOC depuis config.json["prefix"].
+
+    Returns:
+        Préfixe LOC (ex: "$$$/Piwigo"), DEFAULT_PREFIX si absent ou vide
+    """
+    config = load_config()
+    return config.get("prefix") or DEFAULT_PREFIX
 
 
 def get_reference_filename(prefix: str = "TranslatedStrings", extension: str = ".txt") -> str:

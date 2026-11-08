@@ -52,10 +52,9 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
     """
 
-    # Vérifier le chemin du plugin
+    # Vérifier le chemin du plugin (l'appelant décide de la sortie : CLI, AUTO-SYNC…)
     if not os.path.isdir(plugin_path):
-        print(_("ERREUR: Répertoire introuvable: {path}").format(path=plugin_path))
-        sys.exit(1)
+        raise FileNotFoundError(_("Répertoire introuvable: {path}").format(path=plugin_path))
 
     # Déterminer le répertoire de sortie
     # Nouvelle structure: <plugin>/__i18n_tmp__/Extractor/<timestamp>/
@@ -165,15 +164,19 @@ def main():
 
         plugin_path, output_dir, prefix, lang, exclude_files, min_length, ignore_log = result
 
-        run_extraction(
-            plugin_path=plugin_path,
-            output_dir=output_dir,
-            prefix=prefix,
-            lang=lang,
-            exclude_files=exclude_files,
-            min_length=min_length,
-            ignore_log=ignore_log
-        )
+        try:
+            run_extraction(
+                plugin_path=plugin_path,
+                output_dir=output_dir,
+                prefix=prefix,
+                lang=lang,
+                exclude_files=exclude_files,
+                min_length=min_length,
+                ignore_log=ignore_log
+            )
+        except FileNotFoundError as e:
+            print(_("ERREUR: {error}").format(error=e))
+            sys.exit(1)
     else:
         # Arguments en ligne de commande
         parser = argparse.ArgumentParser(
@@ -214,15 +217,19 @@ Exemples:
 
         args = parser.parse_args()
 
-        run_extraction(
-            plugin_path=args.plugin_path,
-            output_dir=args.output_dir or "",
-            prefix=args.prefix,
-            lang=args.lang,
-            exclude_files=args.exclude,
-            min_length=args.min_length,
-            ignore_log=not args.no_ignore_log
-        )
+        try:
+            run_extraction(
+                plugin_path=args.plugin_path,
+                output_dir=args.output_dir or "",
+                prefix=args.prefix,
+                lang=args.lang,
+                exclude_files=args.exclude,
+                min_length=args.min_length,
+                ignore_log=not args.no_ignore_log
+            )
+        except FileNotFoundError as e:
+            print(_("ERREUR: {error}").format(error=e))
+            sys.exit(1)
 
 
 if __name__ == "__main__":

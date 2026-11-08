@@ -594,8 +594,13 @@ class ToolLauncher:
         script = os.path.join(self.base_dir, "assets", "flip_anim.py")
         return self._run_script(script)
 
-    def run_autosync(self) -> bool:
-        """Lance la commande AUTOSYNC du Translator."""
+    def run_autosync(self, assume_yes: bool = False) -> bool:
+        """Lance la commande AUTOSYNC du Translator.
+
+        Args:
+            assume_yes: Si True (CLI non interactif), transmet --yes : les
+                remplacements Lua sont appliqués sans demander confirmation.
+        """
         script = self._get_tool_path("translator", "main.py")
 
         if not script:
@@ -608,6 +613,8 @@ class ToolLauncher:
             return False
 
         args = ["--plugin-path", plugin_path, "--autosync"]
+        if assume_yes:
+            args.append("--yes")
         return self._run_script(script, args)
 
 
@@ -999,7 +1006,7 @@ def main():
         elif cmd in ['delete', 'clean', '5']:
             success = launcher.run_delete_temp_dir()
         elif cmd in ['autosync', '6']:
-            success = launcher.run_autosync()
+            success = launcher.run_autosync(assume_yes=True)
         elif cmd == '--config':
             config.display()
             success = True

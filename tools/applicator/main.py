@@ -29,7 +29,7 @@ Usage CLI :
         --dry-run                   Mode simulation (affichage sans modification)
         --no-backup                 Ne pas créer de .bak (défaut : backups activées)
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -341,16 +341,25 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
 
 
 def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = None, dry_run: bool = False,
-                              create_backup: bool = True, silent: bool = False) -> bool:
+                              create_backup: bool = True, silent: bool = False,
+                              backup_dir: Optional[str] = None) -> Tuple[bool, LocalizationReport]:
     """Traite tous les fichiers Lua du plugin en utilisant replacements.json.
 
     Args:
         silent: Si True, supprime tous les affichages (pour utilisation dans AUTO-SYNC)
+        backup_dir: Dossier de sauvegarde d'une session Applicator existante
+            (<session>/backups). S'il est fourni, aucune nouvelle session n'est
+            créée : sauvegardes et rapport vont dans cette session (AUTO-SYNC).
+
+    Returns:
+        Tuple (succès, rapport). En dry-run, le rapport décrit les lignes qui
+        seraient modifiées (report.stats['total_replacements']).
     """
+    report = LocalizationReport()
 
     if not os.path.isdir(plugin_path):
         print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))
-        return False
+        return False, report
 
     # Auto-détection du dossier d'extraction si non spécifié
     if not extraction_dir:
@@ -358,16 +367,23 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         if not extraction_dir:
             print(_("ERREUR: Aucune extraction trouvée dans __i18n_tmp__/Extractor/"))
             print(_("        Lancez d'abord Extractor sur ce plugin."))
-            return False
+            return False, report
         print(_("* Auto-détection: {dir}").format(dir=extraction_dir))
 
     if not os.path.isdir(extraction_dir):
         print(_("ERREUR: Répertoire Extractor introuvable: {dir}").format(dir=extraction_dir))
-        return False
+        return False, report
 
-    # Créer le dossier de sortie Applicator
-    applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
-    backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
+    if backup_dir:
+        # Session Applicator fournie par l'appelant : ne pas en créer une seconde
+        applicator_output = os.path.dirname(os.path.normpath(backup_dir))
+        os.makedirs(applicator_output, exist_ok=True)
+        if not create_backup:
+            backup_dir = None
+    else:
+        # Créer le dossier de sortie Applicator
+        applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
+        backup_dir = os.path.join(applicator_output, "backups") if create_backup else None
 
     if not silent:
         print()
@@ -378,18 +394,17 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
     if not replacements_data:
         if not silent:
             print(_("ERREUR: Impossible de charger les remplacements"))
-        return False
+        return False, report
 
     files_data = replacements_data.get('files', {})
 
     if not files_data:
         if not silent:
             print(_("Aucun remplacement à effectuer"))
-        return True
+        return True, report
 
     if not silent:
         print()
-    report = LocalizationReport()
 
     for file_rel_path, file_replacements in sorted(files_data.items()):
         file_path = os.path.join(plugin_path, file_rel_path)
@@ -440,7 +455,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print(f"{c.DIM}" + _("           (le rechargement du plugin ne suffit pas)") + f"{c.RESET}")
         print(c.separator("═", 70))
 
-    return True
+    return True, report
 
 
 def find_translation_files(plugin_path: str) -> List[str]:
@@ -856,7 +871,7 @@ def main():
 
         plugin_path, extraction_dir, dry_run, create_backup = result
 
-        success = process_plugin_directory(plugin_path, extraction_dir, dry_run, create_backup)
+        success, _report = process_plugin_directory(plugin_path, extraction_dir, dry_run, create_backup)
 
         # Proposer la gestion des fichiers de traduction si succes et pas en dry-run
         if success and not dry_run:
@@ -893,7 +908,7 @@ Exemples:
 
         args = parser.parse_args()
 
-        success = process_plugin_directory(
+        success, _report = process_plugin_directory(
             args.plugin_path,
             args.extraction_dir,
             args.dry_run,

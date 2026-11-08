@@ -236,12 +236,14 @@ def main():
         return
 
     # Mode AUTO-SYNC direct (lancé depuis LocalizationToolKit)
-    if len(sys.argv) == 4 and sys.argv[1] == '--plugin-path' and sys.argv[3] == '--autosync':
+    # --yes (5e argument optionnel) : appliquer sans confirmation
+    if (len(sys.argv) in (4, 5) and sys.argv[1] == '--plugin-path' and sys.argv[3] == '--autosync'
+            and (len(sys.argv) == 4 or sys.argv[4] == '--yes')):
         plugin_path = sys.argv[2]
         if not os.path.isdir(plugin_path):
             print(c.error(_("Plugin introuvable: {plugin_path}").format(plugin_path=plugin_path)))
             sys.exit(1)
-        results = run_autosync(plugin_path)
+        results = run_autosync(plugin_path, assume_yes=len(sys.argv) == 5)
         from .autosync import print_autosync_report
         print_autosync_report(results, plugin_path)
         return

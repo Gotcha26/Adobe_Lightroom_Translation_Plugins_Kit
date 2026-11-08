@@ -28,7 +28,7 @@ Usage CLI :
     python autosync.py                    # Menu interactif
     python autosync.py /path/to/plugin    # Chemin direct du plugin
 
-Date : 2026-02-06
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -48,7 +48,9 @@ from core.i18n import _
 from tools.extractor.main import run_extraction
 from tools.applicator.main import process_plugin_directory
 from .compare import run_compare
-from .config_loader import get_reference_filename, get_update_filename, get_reference_lang
+from .config_loader import (
+    get_prefix, get_reference_filename, get_reference_lang, get_update_filename, load_config
+)
 from .extract import run_extract
 from .inject import run_inject
 from .sync import run_sync
@@ -186,15 +188,22 @@ def menu_autosync(plugin_path: str):
     print_autosync_report(results, plugin_path)
 
 
-def run_autosync(plugin_path: str) -> Dict:
+def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
     """
     Orchestrateur AUTO-SYNC : EXTRACTOR -> APPLICATOR -> COMPARE -> EXTRACT -> INJECT -> SYNC
 
     Lance les 6 commandes en séquence avec rapport consolidé.
     Les fichiers sont modifiés directement dans le plugin (par APPLICATOR, INJECT et SYNC).
 
+    Le préfixe LOC, la langue de référence, les fichiers exclus et la longueur
+    minimale sont lus dans la configuration. Avant de réécrire le code Lua,
+    l'Applicator est lancé à blanc pour annoncer le nombre de lignes concernées
+    et demander confirmation (sauf si assume_yes). Toutes les sauvegardes vont
+    dans une seule session Applicator.
+
     Args:
         plugin_path: Chemin du plugin
+        assume_yes: Si True, applique les remplacements sans demander confirmation
 
     Returns:
         Dict avec les résultats de chaque étape
@@ -217,13 +226,16 @@ def run_autosync(plugin_path: str) -> Dict:
     # Créer le dossier de sortie pour les rapports/artefacts
     output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
 
-    # Créer un dossier backup centralisé dans Applicator
-    applicator_output = get_tool_output_path(plugin_path, "Applicator", create=False)
-    if applicator_output:
-        backup_dir = os.path.join(applicator_output, "backups")
-        os.makedirs(backup_dir, exist_ok=True)
-    else:
-        backup_dir = None
+    # Une seule session Applicator pour toute l'exécution : sauvegardes des .lua
+    # (étape 2) et des TranslatedStrings (étapes 5, 6 et finale) au même endroit
+    applicator_output = get_tool_output_path(plugin_path, "Applicator", create=True)
+    backup_dir = os.path.join(applicator_output, "backups")
+    os.makedirs(backup_dir, exist_ok=True)
+
+    # Paramètres d'extraction issus de la configuration
+    config = load_config()
+    exclude_files = config.get("exclude_files") or []
+    min_length = config.get("min_length", 3)
 
     # SAUVEGARDE CRITIQUE: Copier le fichier EN actuel du plugin AVANT toute modification
     # Ce fichier servira de référence "ANCIEN" pour COMPARE
@@ -240,14 +252,14 @@ def run_autosync(plugin_path: str) -> Dict:
     print(_("{var0}  → Extraction fraîche pour comparer AVANT vs MAINTENANT{var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
-        # Lancer Extractor avec paramètres par défaut
+        # Lancer Extractor avec les paramètres de la configuration
         run_extraction(
             plugin_path=plugin_path,
             output_dir="",  # Chaîne vide = utilise le répertoire par défaut (__i18n_tmp__/1_Extractor)
-            prefix="$$$/Piwigo",  # Préfixe par défaut (ajuster si besoin)
+            prefix=get_prefix(),  # config.json["prefix"]
             lang=get_reference_lang(),  # Utilise la langue de référence configurée
-            exclude_files=[],
-            min_length=3,
+            exclude_files=exclude_files,
+            min_length=min_length,
             ignore_log=True,
             silent=True  # Désactive l'affichage du rapport détaillé
         )
@@ -281,20 +293,49 @@ def run_autosync(plugin_path: str) -> Dict:
     print(_("{var0}  → Remplacement des chaînes hardcodées par les clés LOC{var1}").format(var0=c.DIM, var1=c.RESET))
 
     try:
-        # Lancer Applicator avec le répertoire d'extraction
         extraction_dir = results['extractor']['output_dir']
-        success = process_plugin_directory(
+
+        # Passage à blanc : compter les lignes Lua qui seraient réécrites
+        success, preview = process_plugin_directory(
+            plugin_path=plugin_path,
+            extraction_dir=extraction_dir,
+            dry_run=True,
+            create_backup=True,
+            silent=True,
+            backup_dir=backup_dir
+        )
+        if not success:
+            raise RuntimeError(_("Applicator a échoué"))
+
+        lines_to_modify = preview.stats['total_replacements']
+        files_to_modify = preview.stats['files_modified']
+        results['applicator']['lines_to_modify'] = lines_to_modify
+        print(_("{var0}  Lignes à modifier : {var1}{lines}{var2} dans {files} fichier(s){var3}").format(
+            var0=c.DIM, var1=c.VALUE, lines=lines_to_modify, var2=c.DIM, files=files_to_modify, var3=c.RESET))
+
+        if lines_to_modify > 0 and not assume_yes:
+            answer = input(_("{var0}  Appliquer ces modifications au code Lua ? [o/N] : {var1}").format(
+                var0=c.PROMPT, var1=c.RESET)).strip().lower()
+            if answer not in ('o', 'oui', 'y', 'yes'):
+                print(c.warning(_("Annulé par l'utilisateur")))
+                results['errors'].append(_("Annulé par l'utilisateur"))
+                return results
+
+        # Exécution réelle, dans la même session Applicator
+        success, report = process_plugin_directory(
             plugin_path=plugin_path,
             extraction_dir=extraction_dir,
             dry_run=False,
             create_backup=True,
-            silent=True  # Désactive l'affichage du rapport détaillé
+            silent=True,  # Désactive l'affichage du rapport détaillé
+            backup_dir=backup_dir
         )
 
         if not success:
             raise RuntimeError(_("Applicator a échoué"))
 
         results['applicator']['success'] = True
+        results['applicator']['lines_modified'] = report.stats['total_replacements']
         print(_("{var0}  Remplacements appliqués au code source{var1}").format(var0=c.DIM, var1=c.RESET))
 
     except Exception as e:
@@ -510,21 +551,16 @@ def run_autosync(plugin_path: str) -> Dict:
 
         # Backup de l'ancien si existe
         if os.path.isfile(new_en_target):
-            if backup_dir:
-                backup_path = backup_path_for(new_en_target, plugin_path, backup_dir)
-                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-                shutil.copy2(new_en_target, backup_path)
-                plugin_name = os.path.basename(plugin_path)
-                rel_backup = os.path.relpath(backup_dir, plugin_path).replace('\\', '/')
-                print(_("{var0}  Backup      : {var1}{plugin_name}/{rel_backup}/{var4}{var5}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_backup=rel_backup, var4=os.path.basename(backup_path), var5=c.RESET))
-            else:
-                backup_path = new_en_target + ".bak"
-                shutil.copy2(new_en_target, backup_path)
-                print(_("{var0}  Backup      : {var1}{var2}{var3}").format(var0=c.DIM, var1=c.VALUE, var2=os.path.basename(backup_path), var3=c.RESET))
+            backup_path = backup_path_for(new_en_target, plugin_path, backup_dir)
+            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+            shutil.copy2(new_en_target, backup_path)
+            plugin_name = os.path.basename(plugin_path)
+            rel_backup = os.path.relpath(backup_dir, plugin_path).replace('\\', '/')
+            print(_("{var0}  Backup      : {var1}{plugin_name}/{rel_backup}/{var4}{var5}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_backup=rel_backup, var4=os.path.basename(backup_path), var5=c.RESET))
 
         # Copier le nouveau
         shutil.copy2(new_en_source, new_en_target)
-        print(f"{c.DIM}  " + get_reference_filename() + " → mis à jour{c.RESET}")
+        print(_("{var0}  {filename} → mis à jour{var1}").format(var0=c.DIM, filename=get_reference_filename(), var1=c.RESET))
 
     except Exception as e:
         print(c.error(_("ERREUR copie EN: {e}").format(e=e)))

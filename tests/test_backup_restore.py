@@ -32,7 +32,8 @@ def test_same_basename_backups_and_restore(plugin_dir, isolated_config):
     }
 
     run_extraction(plugin_dir, "", "$$$/Test", "en", [], 3, False, silent=True)
-    assert process_plugin_directory(plugin_dir, silent=True)
+    success, _report = process_plugin_directory(plugin_dir, silent=True)
+    assert success
 
     for rel in originals:
         assert _read(os.path.join(plugin_dir, rel)) != originals[rel]
