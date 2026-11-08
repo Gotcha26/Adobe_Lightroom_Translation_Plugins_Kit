@@ -43,16 +43,14 @@ _LUA_ESCAPE_OUT = {
     '\n': '\\n', '\r': '\\r', '\t': '\\t',
     '\a': '\\a', '\b': '\\b', '\f': '\\f', '\v': '\\v',
 }
-# Morceaux d'un littéral : séquence \ddd, \xXX, \u{X...}, autre \c, texte brut,
-# ou \ final isolé
-_LUA_ESCAPE_TOKEN = re.compile(
-    r'\\(?:(\d{1,3})|x([0-9A-Fa-f]{2})|u\{([0-9A-Fa-f]+)\}|(.))|([^\\]+)|\\',
-    re.DOTALL
-)
+# Morceaux d'un littéral : séquence \ddd, autre \c, texte brut, ou \ final isolé.
+# \xXX et \u{...} n'existent pas en Lua 5.1 (celui de Lightroom) : ils tombent
+# dans « autre \c » et sont conservés tels quels.
+_LUA_ESCAPE_TOKEN = re.compile(r'\\(?:(\d{1,3})|(.))|([^\\]+)|\\', re.DOTALL)
 
 # Marque le `\` d'une séquence conservée telle quelle par unescape_lua_string
 # (non décodable sans ambiguïté). Surrogate isolé : n'apparaît jamais dans un
-# texte lu depuis un fichier ni dans un \u{...} décodé, donc aucune confusion
+# texte lu depuis un fichier ni dans une séquence décodée, donc aucune confusion
 # avec une barre oblique réelle. escape_lua_string le rend en `\` simple.
 # Un texte qui le contient n'est pas représentable dans un fichier UTF-8 :
 # l'Extractor ignore la chaîne (voir has_undecoded_escape).
@@ -68,15 +66,17 @@ def unescape_lua_string(text: str) -> str:
     """
     Dés-échappe le contenu d'un littéral Lua (forme source -> texte réel).
 
+    Lightroom exécute Lua 5.1 : seuls les échappements de Lua 5.1 sont décodés.
+
     - Échappements simples (\\\\, \\", \\', \\n, \\r, \\t, \\a, \\b, \\f, \\v,
       \\ + saut de ligne) : décodés.
-    - \\ddd (<= 255) et \\xXX : octets. Une suite contiguë de ces séquences
-      est décodée en UTF-8 (« \\195\\169 » -> « é ») ; si la suite n'est pas
-      de l'UTF-8 valide, elle est conservée telle quelle.
-    - \\u{X...} : décodé si c'est un point de code Unicode valide (hors
-      surrogates), conservé sinon.
-    - \\z, \\ddd > 255 et tout autre échappement : conservés tels quels
-      (\\z dépend de la version de Lua, les autres sont du Lua invalide).
+    - \\ddd (<= 255) : octets. Une suite contiguë de ces séquences est décodée
+      en UTF-8 (« \\195\\169 » -> « é ») ; si la suite n'est pas de l'UTF-8
+      valide, elle est conservée telle quelle.
+    - \\xXX, \\u{X...}, \\z, \\ddd > 255 et tout autre échappement : conservés
+      tels quels. \\xXX, \\u{...} et \\z n'existent qu'à partir de Lua 5.2/5.3 :
+      en Lua 5.1, « \\x41 » s'affiche « x41 » ; les décoder changerait le texte
+      que Lightroom affiche.
 
     Une séquence conservée garde son texte source, son `\\` remplacé par
     VERBATIM_BACKSLASH : escape_lua_string la restitue à l'identique, sans
@@ -88,7 +88,7 @@ def unescape_lua_string(text: str) -> str:
         return text
 
     out: List[str] = []
-    run_bytes = bytearray()   # Octets \ddd / \xXX contigus en attente
+    run_bytes = bytearray()   # Octets \ddd contigus en attente
     run_source: List[str] = []
 
     def _flush_run():
@@ -102,31 +102,21 @@ def unescape_lua_string(text: str) -> str:
         run_source.clear()
 
     for match in _LUA_ESCAPE_TOKEN.finditer(text):
-        decimal, hexa, code_point, other, plain = match.groups()
+        decimal, other, plain = match.groups()
         source = match.group(0)
 
         if decimal is not None and int(decimal) <= 255:
             run_bytes.append(int(decimal))
             run_source.append(source)
             continue
-        if hexa is not None:
-            run_bytes.append(int(hexa, 16))
-            run_source.append(source)
-            continue
 
         _flush_run()
         if plain is not None:
             out.append(plain)
-        elif code_point is not None:
-            value = int(code_point, 16)
-            if value <= 0x10FFFF and not 0xD800 <= value <= 0xDFFF:
-                out.append(chr(value))
-            else:
-                out.append(_verbatim(source))
         elif other is not None and other in _LUA_SIMPLE_ESCAPES:
             out.append(_LUA_SIMPLE_ESCAPES[other])
         else:
-            # \z, \ddd > 255, échappement inconnu, \ final isolé
+            # \xXX, \u{...}, \z, \ddd > 255, échappement inconnu, \ final isolé
             out.append(_verbatim(source))
 
     _flush_run()

@@ -57,14 +57,19 @@ def _read_translated_strings(plugin_dir) -> str:
 @pytest.mark.parametrize("source, real", [
     # Octets UTF-8 en décimal (\ddd), forme courante en Lua 5.1 : « é »
     ("Caf\\195\\169", "Café"),
-    ("Caf\\xC3\\xA9", "Café"),
     # Suite d'octets en UTF-8 invalide : conservée telle quelle, son \ marqué
     # par VERBATIM_BACKSLASH pour ne pas être doublé au ré-échappement
-    ("Caf\\xc3\\251x", "Caf" + VERBATIM_BACKSLASH + "xc3" + VERBATIM_BACKSLASH + "251x"),
+    ("Caf\\251x", "Caf" + VERBATIM_BACKSLASH + "251x"),
     ("Skip \\z  x", "Skip " + VERBATIM_BACKSLASH + "z  x"),
     ("\\65BC", "ABC"),
-    ("\\u{E9}t\\u{E9}", "été"),
     ("A\\0B", "A\x00B"),
+    # \xXX et \u{...} n'existent pas en Lua 5.1 (celui de Lightroom) : « \x41 »
+    # y vaut « x41 ». Jamais décodés, conservés tels quels.
+    ("Caf\\xC3\\xA9", "Caf" + VERBATIM_BACKSLASH + "xC3" + VERBATIM_BACKSLASH + "xA9"),
+    ("\\x41", VERBATIM_BACKSLASH + "x41"),
+    ("\\u{E9}t\\u{E9}", VERBATIM_BACKSLASH + "u{E9}t" + VERBATIM_BACKSLASH + "u{E9}"),
+    # Un \xXX coupe une suite d'octets décimaux : \195 seul n'est pas de l'UTF-8
+    ("\\195\\xA9", VERBATIM_BACKSLASH + "195" + VERBATIM_BACKSLASH + "xA9"),
 ])
 def test_unescape_decodes_numeric_escapes(source, real):
     assert unescape_lua_string(source) == real
@@ -73,8 +78,6 @@ def test_unescape_decodes_numeric_escapes(source, real):
 @pytest.mark.parametrize("source, back", [
     # Séquences décodées : ressortent sous une forme de même valeur Lua
     ("Caf\\195\\169", "Café"),
-    ("Caf\\xC3\\xA9", "Café"),
-    ("Code \\u{48}", "Code H"),
     ("NUL \\0 then 1\\0001", "NUL \\000 then 1\\0001"),
     ('Mixed \\"q\\" \\\\ \\n \\t \\195\\169', 'Mixed \\"q\\" \\\\ \\n \\t é'),
 ])
@@ -86,6 +89,7 @@ def test_unescape_escape_roundtrip_preserves_lua_value(source, back):
 @pytest.mark.parametrize("source", [
     "Bad \\200 byte", "\\xff\\xfe", "Skip \\z   spaces", "Bad \\q escape",
     "Too big \\300", "Big \\u{7FFFFFFF}", "Code \\u{D800}",
+    "Caf\\xC3\\xA9", "Code \\u{48}", "\\x41\\u{E9}",
 ])
 def test_undecoded_sequences_come_back_verbatim(source):
     """Une séquence non décodée ressort identique (\\ jamais doublé devant elle)."""
@@ -122,6 +126,18 @@ def test_undecodable_string_is_not_extracted(tmp_path):
     extractor = _extract(plugin)
     assert extractor.extracted == []
     assert extractor.stats.technical_ignored == 1
+
+
+def test_hex_and_unicode_escapes_are_not_extracted(tmp_path, isolated_config):
+    # Lua 5.1 affiche « Cafx41 » et « u{E9}t » : décoder changerait le texte affiché
+    plugin = _plugin_with(tmp_path, 'local t = { title = "Caf\\x41 open" }\n'
+                                    'local u = { title = "\\u{E9}t\\u{E9} label" }\n')
+    extractor = _extract(plugin)
+    assert extractor.extracted == []
+    assert extractor.stats.technical_ignored == 2
+    lua = _run_pipeline(plugin)
+    assert lua == ('local t = { title = "Caf\\x41 open" }\n'
+                   'local u = { title = "\\u{E9}t\\u{E9} label" }\n')
 
 
 # --- Point 5 : recherche ancrée sur des littéraux entiers ----------------------
