@@ -28,10 +28,23 @@ from typing import Dict, Optional
 
 from .common import (
     parse_translation_file, update_translation_file_surgical,
-    load_update_json, c
+    load_update_json, c,
+    TRANSLATE_KEY, TRANSLATE_ARROW, translate_ref_marker, translate_after_marker,
 )
+from .config_loader import get_reference_lang
 from core.i18n import _
 from core.paths import backup_path_for
+
+
+def _marker_value(line, markers):
+    """Valeur après le premier marqueur de `markers` qui ouvre la ligne, sinon None."""
+    for m in markers:
+        if line.startswith(m):
+            rest = line[len(m):]
+            if rest.lstrip().startswith(TRANSLATE_ARROW):
+                return None  # ligne de traduction cible, pas une valeur de référence
+            return rest.strip()
+    return None
 
 
 # =============================================================================
@@ -57,6 +70,12 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
     current_key = None
     current_en_value = None
 
+    ref_lang = get_reference_lang()
+    # Rétrocompatibilité : anciens fichiers écrits avec [EN] / [EN APRÈS] (marqueurs
+    # codés en dur, passés par _() donc parfois traduits en [EN AFTER]) avant #21.
+    ref_markers = (translate_ref_marker(ref_lang), "[EN]")
+    after_markers = (translate_after_marker(ref_lang), "[EN APRÈS]", "[EN AFTER]")
+
     # Préparer les valeurs EN depuis update_data
     en_values = {}
     if update_data:
@@ -76,19 +95,19 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                 continue
 
             # Détecter la clé
-            if line.startswith('[KEY]'):
-                current_key = line.replace('[KEY]', '').strip()
+            if line.startswith(TRANSLATE_KEY):
+                current_key = line[len(TRANSLATE_KEY):].strip()
                 current_en_value = en_values.get(current_key, '')
 
-            # Détecter la valeur EN (pour les clés non dans update_data)
-            elif line.startswith('[EN]') and not line.startswith('[EN '):
-                if current_key and not current_en_value:
-                    current_en_value = line.replace('[EN]', '').strip()
-
-            # Détecter [EN APRÈS] pour les clés modifiées
-            elif line.startswith('[EN APRÈS]'):
+            # Détecter [<REF> AFTER] pour les clés modifiées
+            elif _marker_value(line, after_markers) is not None:
                 if current_key:
-                    current_en_value = line.replace('[EN APRÈS]', '').strip()
+                    current_en_value = _marker_value(line, after_markers)
+
+            # Détecter la valeur de référence (pour les clés non dans update_data)
+            elif _marker_value(line, ref_markers) is not None:
+                if current_key and not current_en_value:
+                    current_en_value = _marker_value(line, ref_markers)
 
             # Détecter la traduction (ligne avec →)
             elif '] → ' in line or '] →' in line:

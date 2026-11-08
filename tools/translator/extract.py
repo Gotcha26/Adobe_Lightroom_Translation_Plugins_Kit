@@ -26,7 +26,11 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
-from .common import parse_translation_file, load_update_json, find_languages, c
+from .common import (
+    parse_translation_file, load_update_json, find_languages, c,
+    TRANSLATE_KEY, translate_ref_marker, translate_before_marker,
+    translate_after_marker, translate_target_marker,
+)
 from .config_loader import get_update_filename, get_reference_lang
 from core.i18n import _
 
@@ -70,6 +74,7 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
     # Générer le fichier TRANSLATE
     output_file = os.path.join(output_dir, f'TRANSLATE_{lang}.txt')
 
+    ref_lang = get_reference_lang()
     added_keys = update_data.get('added', {})
     changed_keys = update_data.get('changed', {})
 
@@ -96,16 +101,15 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
 
             for key in sorted(added_keys.keys()):
                 en_value = added_keys[key]
-                f.write(_("[KEY] {key}\n").format(key=key))
-                f.write(_("[EN]  {en_value}\n").format(en_value=en_value))
-                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
+                f.write(f"{TRANSLATE_KEY} {key}\n")
+                f.write(f"{translate_ref_marker(ref_lang)}  {en_value}\n")
+                f.write(translate_target_marker(lang) + "\n")
                 f.write("\n")
 
         # Section: Clés modifiées
         if changed_keys:
             f.write("# " + "-" * 70 + "\n")
-            ref_lang = get_reference_lang().upper()
-            f.write(_("# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n").format(var0=len(changed_keys), ref_lang=ref_lang))
+            f.write(_("# CLÉS MODIFIÉES ({var0}) - Le texte {ref_lang} a changé\n").format(var0=len(changed_keys), ref_lang=ref_lang.upper()))
             f.write("# " + "-" * 70 + "\n\n")
 
             for key in sorted(changed_keys.keys()):
@@ -114,12 +118,12 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
                 new_ref = change['new']
                 current_trans = existing_translations.get(key, '')
 
-                f.write(_("[KEY] {key}\n").format(key=key))
-                f.write(_("[{ref_lang} AVANT]  {old_ref}\n").format(ref_lang=ref_lang, old_ref=old_ref))
-                f.write(_("[{ref_lang} APRÈS]  {new_ref}\n").format(ref_lang=ref_lang, new_ref=new_ref))
+                f.write(f"{TRANSLATE_KEY} {key}\n")
+                f.write(f"{translate_before_marker(ref_lang)}  {old_ref}\n")
+                f.write(f"{translate_after_marker(ref_lang)}  {new_ref}\n")
                 if current_trans and current_trans != old_ref:
-                    f.write(_("[{var0} ACTUEL] {current_trans}\n").format(var0=lang.upper(), current_trans=current_trans))
-                f.write(_("[{var0}] → \n").format(var0=lang.upper()))
+                    f.write(f"[{lang.upper()} CURRENT] {current_trans}\n")
+                f.write(translate_target_marker(lang) + "\n")
                 f.write("\n")
 
         # Résumé

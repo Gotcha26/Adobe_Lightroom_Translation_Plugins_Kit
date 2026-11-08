@@ -39,6 +39,30 @@ from core.colors import Colors
 from core.i18n import _
 from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
 
+
+# =============================================================================
+# MARQUEURS DU FORMAT TRANSLATE_xx.txt (jamais traduits : lus par la machine)
+# =============================================================================
+
+TRANSLATE_KEY = "[KEY]"
+TRANSLATE_ARROW = "→"
+
+
+def translate_ref_marker(lang: str) -> str:
+    return f"[{lang.upper()}]"
+
+
+def translate_before_marker(lang: str) -> str:
+    return f"[{lang.upper()} BEFORE]"
+
+
+def translate_after_marker(lang: str) -> str:
+    return f"[{lang.upper()} AFTER]"
+
+
+def translate_target_marker(lang: str) -> str:
+    return f"[{lang.upper()}] {TRANSLATE_ARROW} "
+
 # Instance couleurs
 c = Colors()
 
