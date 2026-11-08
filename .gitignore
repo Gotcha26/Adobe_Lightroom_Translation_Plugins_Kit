@@ -6,3 +6,6 @@ __pycache__/
 i18n/
 *.bak
 config.local.json
+.superpowers/
+.pytest_cache/
+.ruff_cache/
