@@ -30,8 +30,9 @@ from core.colors import Colors
 from core.i18n import _
 
 from .config import (
-    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, IGNORE_LOC_KEY_PATTERNS, IGNORE_LOC_VALUES
+    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, load_plugin_rules
 )
+from core.defaults import DEFAULT_PREFIX
 from .models import ExtractedString, ExtractionStats
 from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
@@ -140,7 +141,7 @@ class MultiLineContext:
 class LocalizableStringExtractor:
     """Moteur d'extraction des chaînes localisables."""
 
-    def __init__(self, plugin_path: str, prefix: str = "$$$/Piwigo",
+    def __init__(self, plugin_path: str, prefix: str = DEFAULT_PREFIX,
                  min_length: int = 3, exclude_files: Optional[List[str]] = None,
                  ignore_log: bool = True):
         self.plugin_path = plugin_path
@@ -149,6 +150,7 @@ class LocalizableStringExtractor:
         self.ignore_log = ignore_log
         self.exclude_files = set(exclude_files or [])
         self.exclude_files.add('JSON.lua')
+        self.rules = load_plugin_rules(plugin_path)
 
         self.extracted: List[ExtractedString] = []
         self.stats = ExtractionStats()
@@ -339,7 +341,7 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), combined):
+            if is_technical_string(unescape_lua_string(original_text), combined, self.rules):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -403,7 +405,8 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), line if is_tech_context else None):
+            if is_technical_string(unescape_lua_string(original_text), line if is_tech_context else None,
+                                   self.rules):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -461,7 +464,8 @@ class LocalizableStringExtractor:
         if text_key in self.text_to_key:
             loc_key = self.text_to_key[text_key]
         else:
-            loc_key = generate_loc_key(base_text, file_name, self.prefix, self.used_keys)
+            loc_key = generate_loc_key(base_text, file_name, self.prefix, self.used_keys,
+                                   self.rules.strip_file_prefixes)
             if not loc_key:
                 return None
 
@@ -542,14 +546,14 @@ class LocalizableStringExtractor:
 
             # Ignorer les clés techniques (headers HTTP, identifiants, etc.)
             is_technical_key = any(
-                pattern.search(existing_key) for pattern in IGNORE_LOC_KEY_PATTERNS
+                pattern.search(existing_key) for pattern in self.rules.ignore_loc_key_patterns
             )
             if is_technical_key:
                 self.stats.technical_ignored += 1
                 continue
 
             # Ignorer les valeurs techniques
-            if existing_value in IGNORE_LOC_VALUES:
+            if existing_value in self.rules.ignore_loc_values:
                 self.stats.technical_ignored += 1
                 continue
 

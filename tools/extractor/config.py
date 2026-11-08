@@ -7,6 +7,7 @@ Dépendances : Aucune
 Description :
 Configuration et constantes pour l'extraction des chaînes localisables des plugins Lightroom.
 Définit les patterns regex, suffixes, contextes UI, listes d'exclusion, patterns techniques, etc.
+Les règles propres à un plugin sont lues dans <plugin>/.i18n_kit.json (load_plugin_rules).
 
 Usage CLI :
     Non pourvu
@@ -20,9 +21,12 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import re
+import json
+from dataclasses import dataclass, field
 from typing import List, Set
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from core.defaults import PLUGIN_RULES_FILE
 
 
 # =============================================================================
@@ -86,7 +90,7 @@ UI_CONTEXT_PATTERNS: List[tuple] = [
     ('caption', re.compile(r'\bcaption\s*=\s*')),
     # Status messages (callStatus.statusMsg, etc.)
     ('statusMsg', re.compile(r'\bstatusMsg\s*=\s*')),
-    # LrPluginName - MAIS sera filtré par IGNORE_EXACT pour "Piwigo Publisher"
+    # LrPluginName - filtré par les règles du plugin (ignore_exact) si besoin
     ('LrPluginName', re.compile(r'LrPluginName\s*=\s*')),
     ('popup_item', re.compile(r'\{\s*title\s*=\s*"[^"]*"\s*,\s*value\s*=')),
     # ATTENTION: 'value' est trop générique et capture des valeurs techniques
@@ -134,10 +138,6 @@ IGNORE_EXACT: Set[str] = {
     'text/plain', 'text/html', 'text/xml',
     'application/vnd.github.v3+json',
     'multipart/form-data',
-    # Identifiants techniques
-    'PiwigoPublish-Lightroom-Plugin',
-    # Nom du plugin (non traduisible car identifiant technique)
-    'Piwigo Publisher',
     # Boutons standards LrDialogs (identifiants internes, pas des labels UI)
     'ok', 'cancel', 'other',
     'Ok', 'Cancel', 'Other',
@@ -157,7 +157,6 @@ TECHNICAL_PATTERNS: List[re.Pattern] = [
     re.compile(r'^application/'),         # MIME types
     re.compile(r'^text/'),                # MIME types text/*
     re.compile(r'^image/'),               # MIME types image/*
-    re.compile(r'^pwg\.'),                # API Piwigo
     re.compile(r'^[a-z_]+$'),             # snake_case pur (identifiants)
     re.compile(r'^[a-z]{3,15}$'),         # Mots courts minuscules = variables (boundary, length, etc.)
     re.compile(r'^[A-Z][a-z]+(-[A-Z][a-z]+)+$'),  # Headers HTTP (Content-Type, User-Agent)
@@ -196,15 +195,78 @@ DEFAULT_EXCLUDED_FILES: Set[str] = {'JSON.lua'}
 
 # Patterns de clés LOC existantes à ignorer (éléments techniques non-traduisibles)
 # Ces clés sont utilisées pour des headers HTTP, identifiants, etc.
-IGNORE_LOC_KEY_PATTERNS: List[re.Pattern] = [
-    re.compile(r'/UpdateChecker/Accept$'),      # Header HTTP Accept
-    re.compile(r'/UpdateChecker/UserAgent$'),   # Header HTTP User-Agent
-    re.compile(r'/UpdateChecker/PiwigopublishLightroomPlugin$'),  # Identifiant User-Agent
-]
+IGNORE_LOC_KEY_PATTERNS: List[re.Pattern] = []
 
 # Valeurs techniques à ignorer dans les LOC existantes
 IGNORE_LOC_VALUES: Set[str] = {
     'Accept',
     'User-Agent',
-    'PiwigoPublish-Lightroom-Plugin',
 }
+
+
+# =============================================================================
+# RÈGLES PROPRES À UN PLUGIN (<plugin>/.i18n_kit.json, optionnel)
+# =============================================================================
+
+@dataclass
+class PluginRules:
+    """Règles d'extraction : défauts génériques fusionnés avec celles du plugin."""
+    ignore_exact: Set[str] = field(default_factory=lambda: set(IGNORE_EXACT))
+    technical_patterns: List[re.Pattern] = field(default_factory=lambda: list(TECHNICAL_PATTERNS))
+    ignore_loc_key_patterns: List[re.Pattern] = field(default_factory=lambda: list(IGNORE_LOC_KEY_PATTERNS))
+    ignore_loc_values: Set[str] = field(default_factory=lambda: set(IGNORE_LOC_VALUES))
+    technical_context_patterns: List[re.Pattern] = field(default_factory=lambda: list(TECHNICAL_CONTEXT_PATTERNS))
+    strip_file_prefixes: List[str] = field(default_factory=list)
+
+
+def _str_list(data: dict, key: str, path: str) -> List[str]:
+    """Lit une liste de chaînes dans le JSON ; avertit et ignore si invalide."""
+    value = data.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(v, str) for v in value):
+        print(f"AVERTISSEMENT: '{key}' doit être une liste de chaînes ({path})")
+        return []
+    return value
+
+
+def _compile_list(patterns: List[str], key: str, path: str) -> List[re.Pattern]:
+    """Compile des regex ; une regex invalide est signalée puis ignorée."""
+    compiled = []
+    for pattern in patterns:
+        try:
+            compiled.append(re.compile(pattern))
+        except re.error as exc:
+            print(f"AVERTISSEMENT: regex invalide dans '{key}' ({pattern!r}): {exc} ({path})")
+    return compiled
+
+
+def load_plugin_rules(plugin_path: str) -> PluginRules:
+    """
+    Charge les règles d'extraction d'un plugin.
+
+    Lit <plugin>/.i18n_kit.json s'il existe et fusionne ses valeurs avec les
+    défauts génériques. Sans fichier (ou fichier illisible), seuls les défauts
+    génériques s'appliquent.
+    """
+    rules = PluginRules()
+    path = os.path.join(plugin_path, PLUGIN_RULES_FILE)
+    if not os.path.isfile(path):
+        return rules
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError) as exc:
+        print(f"AVERTISSEMENT: impossible de lire {path}: {exc}")
+        return rules
+    if not isinstance(data, dict):
+        print(f"AVERTISSEMENT: {path} doit contenir un objet JSON")
+        return rules
+
+    rules.ignore_exact |= set(_str_list(data, "ignore_exact", path))
+    rules.ignore_loc_values |= set(_str_list(data, "ignore_loc_values", path))
+    rules.technical_patterns += _compile_list(
+        _str_list(data, "technical_patterns", path), "technical_patterns", path)
+    rules.ignore_loc_key_patterns += _compile_list(
+        _str_list(data, "ignore_loc_key_patterns", path), "ignore_loc_key_patterns", path)
+    rules.strip_file_prefixes = _str_list(data, "strip_file_prefixes", path)
+    return rules

@@ -60,6 +60,7 @@ from core.paths import (
 )
 from core.colors import Colors
 from core.i18n import _, debug_language_detection
+from core.defaults import DEFAULT_PREFIX
 
 # Instance couleurs
 c = Colors()
@@ -75,7 +76,7 @@ CONFIG_LOCAL_FILE = "config.local.json"   # Surcharge locale, ignorée par git
 DEFAULT_CONFIG = {
     "plugin_path": "",
     "output_base_dir": "",  # Vide = à côté du script
-    "prefix": "$$$/Piwigo",
+    "prefix": DEFAULT_PREFIX,
     "lang": "en",
     "temp_dir": DEFAULT_I18N_DIR,  # Nom du dossier temporaire (__i18n_tmp__ par défaut)
     "enable_flip_anim": True,  # 🎬 Lancer Flip-anim.py au démarrage (true = activé, false = désactivé)
@@ -180,7 +181,7 @@ class ConfigManager:
         print(c.config_line(_("Plugin path"), str(short_plugin)))
         print(c.config_line(_("Dossier temporaire"), str(temp_dir)))
         print(c.config_line(_("Chemin complet"), str(i18n_path)))
-        print(c.config_line(_("Préfixe LOC"), str(self.config.get('prefix', '$$$/Piwigo'))))
+        print(c.config_line(_("Préfixe LOC"), str(self.config.get('prefix', DEFAULT_PREFIX))))
         print(c.config_line(_("Langue par défaut"), str(self.config.get('lang', 'en'))))
         print()
 
@@ -487,7 +488,7 @@ class ToolLauncher:
         else:
             # Mode CLI avec config
             plugin_path = self.config.get("plugin_path")
-            prefix = self.config.get("prefix", "$$$/Piwigo")
+            prefix = self.config.get("prefix", DEFAULT_PREFIX)
             lang = self.config.get("lang", "en")
             output_dir = self.config.get("output_base_dir")
 
@@ -813,7 +814,7 @@ class MainMenu:
         plugin_path = self.config.get('plugin_path', '')
         temp_dir = self.config.get('temp_dir', DEFAULT_I18N_DIR)
         i18n_path = get_i18n_kit_path(plugin_path) if plugin_path else '(non défini)'
-        prefix = self.config.get('prefix', '$$$/Piwigo')
+        prefix = self.config.get('prefix', DEFAULT_PREFIX)
         lang = self.config.get('lang', 'en')
         auto_gitignore = self.config.get("auto_add_gitignore", True)
         enable_flip = self.config.get("enable_flip_anim", True)

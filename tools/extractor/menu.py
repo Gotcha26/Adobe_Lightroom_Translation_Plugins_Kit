@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from core.paths import validate_plugin_path
 from core.colors import Colors
 from core.i18n import _
+from core.defaults import DEFAULT_PREFIX
 
 # Instance couleurs
 c = Colors()
@@ -54,7 +55,7 @@ class InteractiveMenu:
 
         self.plugin_path = default_plugin_path
         self.output_dir = ""
-        self.prefix = "$$$/Piwigo"
+        self.prefix = DEFAULT_PREFIX
         self.lang = default_lang
         self.exclude_files: List[str] = []
         self.min_length = 3

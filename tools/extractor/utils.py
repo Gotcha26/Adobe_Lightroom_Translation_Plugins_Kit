@@ -25,8 +25,9 @@ from typing import Tuple, List
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from .config import (
-    COMMON_SUFFIXES, IGNORE_EXACT, TECHNICAL_PATTERNS, STOP_WORDS,
-    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN
+    COMMON_SUFFIXES, STOP_WORDS,
+    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN,
+    PluginRules
 )
 
 # Échappements simples d'un littéral Lua (forme source -> caractère)
@@ -245,26 +246,30 @@ def is_in_technical_context(line: str) -> bool:
     return False
 
 
-def is_technical_string(text: str, line_context: str | None = None) -> bool:
+def is_technical_string(text: str, line_context: str | None = None,
+                        rules: PluginRules | None = None) -> bool:
     """
     Vérifie si une chaîne est technique et doit être ignorée.
 
     Args:
         text: Le texte à vérifier
         line_context: La ligne complète (optionnel, pour contexte)
+        rules: Règles du plugin (défaut: règles génériques seules)
 
     Returns:
         True si la chaîne est technique
     """
+    if rules is None:
+        rules = PluginRules()
     text_clean = text.strip().lower()
     text_original = text.strip()
 
     # Chaînes exactes à ignorer (insensible à la casse pour certaines)
-    if text_clean in IGNORE_EXACT or text_original in IGNORE_EXACT:
+    if text_clean in rules.ignore_exact or text_original in rules.ignore_exact:
         return True
 
     # Patterns techniques
-    for pattern in TECHNICAL_PATTERNS:
+    for pattern in rules.technical_patterns:
         if pattern.search(text_original):
             return True
 
@@ -278,15 +283,17 @@ def is_technical_string(text: str, line_context: str | None = None) -> bool:
     return False
 
 
-def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set) -> str:
+def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set,
+                     strip_file_prefixes: List[str] | None = None) -> str:
     """
     Génère une clé LOC unique à partir du texte et du nom de fichier.
 
     Args:
         text: Texte à convertir en clé
         file_name: Nom du fichier source
-        prefix: Préfixe LOC (ex: $$$/Piwigo)
+        prefix: Préfixe LOC (ex: $$$/MyApp)
         existing_keys: Set des clés déjà utilisées pour éviter les doublons
+        strip_file_prefixes: Préfixes à retirer du nom de fichier pour la catégorie (défaut: aucun)
 
     Returns:
         Clé LOC unique
@@ -322,7 +329,9 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
 
     # Catégorie basée sur le fichier
     file_base = os.path.splitext(file_name)[0]
-    category = file_base.replace('PW', '').replace('Piwigo', '')
+    category = file_base
+    for file_prefix in strip_file_prefixes or []:
+        category = category.replace(file_prefix, '')
     if not category:
         category = 'General'
 

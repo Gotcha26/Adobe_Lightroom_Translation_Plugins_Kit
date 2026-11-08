@@ -76,7 +76,8 @@ def _shorten(path: str, plugin_path: str) -> str:
 class LocalizationReport:
     """Genere un rapport detaille des modifications."""
 
-    def __init__(self):
+    def __init__(self, plugin_name: str = ""):
+        self.plugin_name = plugin_name
         self.changes = []
         self.skipped = []
         self.errors = []
@@ -118,7 +119,7 @@ class LocalizationReport:
         from core.i18n import debug_i18n_context
         with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
-            f.write(_("RAPPORT DE LOCALISATION - PiwigoPublish Plugin\n"))
+            f.write(_("RAPPORT DE LOCALISATION - {var0}\n").format(var0=self.plugin_name))
             f.write("=" * 80 + "\n\n")
 
             f.write(_("STATISTIQUES GLOBALES\n"))
@@ -362,7 +363,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         vide (fichier introuvable). En dry-run, le rapport décrit les lignes qui
         seraient modifiées (report.stats['total_replacements']).
     """
-    report = LocalizationReport()
+    report = LocalizationReport(os.path.basename(os.path.normpath(plugin_path)))
 
     if not os.path.isdir(plugin_path):
         print(_("ERREUR: Répertoire du plugin introuvable: {path}").format(path=plugin_path))

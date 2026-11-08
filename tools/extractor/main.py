@@ -18,7 +18,7 @@ Usage CLI :
         --default-plugin PATH Plugin pré-configuré pour le menu interactif
         --yes                 Aucune question (l'Extractor n'en pose pas en CLI)
         --output-dir PATH     Override du répertoire de sortie
-        --prefix PREFIX       Préfixe LOC (défaut: $$$/Piwigo)
+        --prefix PREFIX       Préfixe LOC (défaut: $$$/Plugin)
         --lang LANG           Code langue (défaut: en)
         --exclude FILE        Fichiers à exclure (répétable)
         --min-length N        Longueur minimale (défaut: 3)
@@ -41,6 +41,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from core.paths import get_tool_output_path
 from core.output_formatters import OutputFormatter
 from core.i18n import _
+from core.defaults import DEFAULT_PREFIX
 
 from .engine import LocalizableStringExtractor
 from .output import OutputGenerator
@@ -174,8 +175,8 @@ Exemples:
                         help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
     parser.add_argument('--output-dir', default=None,
                         help='Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)')
-    parser.add_argument('--prefix', default='$$$/Piwigo',
-                        help='Préfixe des clés LOC (défaut: $$$/Piwigo)')
+    parser.add_argument('--prefix', default=DEFAULT_PREFIX,
+                        help=f'Préfixe des clés LOC (défaut: {DEFAULT_PREFIX})')
     # Charger la langue par défaut depuis config.json
     try:
         from tools.translator.config_loader import get_reference_lang

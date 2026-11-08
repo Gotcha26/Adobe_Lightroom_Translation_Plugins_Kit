@@ -1,0 +1,18 @@
+{
+  "ignore_exact": [
+    "PiwigoPublish-Lightroom-Plugin",
+    "Piwigo Publisher"
+  ],
+  "technical_patterns": [
+    "^pwg\\."
+  ],
+  "ignore_loc_key_patterns": [
+    "/UpdateChecker/Accept$",
+    "/UpdateChecker/UserAgent$",
+    "/UpdateChecker/PiwigopublishLightroomPlugin$"
+  ],
+  "ignore_loc_values": [
+    "PiwigoPublish-Lightroom-Plugin"
+  ],
+  "strip_file_prefixes": ["PW", "Piwigo"]
+}
