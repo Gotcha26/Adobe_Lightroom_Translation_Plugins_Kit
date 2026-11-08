@@ -1,6 +1,6 @@
 # Commande INSTALL
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -96,10 +96,10 @@ flowchart TD
 
 ```bash
 # Installation standard
-python Translator_main.py install --plugin-path ./plugin.lrplugin
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin
 
 # Depuis un dossier source spécifique
-python Translator_main.py install --plugin-path ./plugin.lrplugin --source ./custom_extraction/
+python -m tools.translator.main install --plugin-path ./plugin.lrplugin --source ./custom_extraction/
 ```
 
 ### Options CLI

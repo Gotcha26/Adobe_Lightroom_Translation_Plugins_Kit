@@ -92,7 +92,7 @@ flowchart TD
 ### Mode interactif (recommandé)
 
 ```bash
-python Restore_backup.py
+python -m tools.toolbox.restore_backup
 ```
 
 Le menu interactif guide l'utilisateur à travers :
@@ -105,10 +105,10 @@ Le menu interactif guide l'utilisateur à travers :
 
 ```bash
 # Restauration de la dernière session
-python Restore_backup.py /path/to/plugin.lrplugin
+python -m tools.toolbox.restore_backup /path/to/plugin.lrplugin
 
 # Avec plugin pré-configuré (via LocalisationToolKit)
-python Restore_backup.py --default-plugin /path/to/plugin.lrplugin
+python -m tools.toolbox.restore_backup --default-plugin /path/to/plugin.lrplugin
 ```
 
 ### Options CLI
@@ -291,7 +291,7 @@ flowchart LR
         B["Création des .bak"]
     end
 
-    subgraph Tools["9_Tools"]
+    subgraph Tools["tools/toolbox"]
         C["Restore_backup"]
         D["Delete_temp_dir"]
     end
@@ -315,7 +315,7 @@ flowchart LR
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `Restore_backup.py` |
+| Module source | `restore_backup.py` |
 | Fonction principale | `main()` |
 | Recherche sessions | `find_applicator_sessions()` |
 | Paires fichiers | `find_backup_pairs_in_dir()` |
@@ -330,6 +330,6 @@ flowchart LR
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
 | **Nom** | *RESTORE_BACKUP.md* | **Version** | 3.1 |
-| **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../../en/RESTORE_BACKUP.md)* |
+| **Type** | Guide utilisateur RESTORE - Avancé | **Langue** | FR - *[EN](../../en/tools/RESTORE_BACKUP.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-03 |
 | **Licence** | [MIT](../../../../../LICENSE) | | |

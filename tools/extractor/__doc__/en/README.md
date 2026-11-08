@@ -55,22 +55,22 @@ flowchart LR
 
 ### Prerequisites
 
-- **Python 3.8+** installed on your system
+- **Python 3.10+** installed on your system
 - No external dependencies required (standard library only)
 
 ### File Structure
 
 ```
-1_Extractor/
-├── Extractor_main.py      ← Entry point, orchestration
-├── Extractor_config.py    ← Regex patterns and constants
-├── Extractor_models.py    ← Data classes
-├── Extractor_utils.py     ← Utility functions
-├── Extractor_engine.py    ← Main extraction engine
-├── Extractor_output.py    ← Output file generation
-├── Extractor_report.py    ← Report generation
-├── Extractor_menu.py      ← Interactive interface
-└── __doc/
+tools/extractor/
+├── main.py    ← Entry point, orchestration
+├── config.py  ← Regex patterns and constants
+├── models.py  ← Data classes
+├── utils.py   ← Utility functions
+├── engine.py  ← Main extraction engine
+├── output.py  ← Output file generation
+├── report.py  ← Report generation
+├── menu.py    ← Interactive interface
+└── __doc__/
     └── en/
         └── README.md      ← This file
 ```
@@ -88,7 +88,7 @@ However, using the central launcher ***LocalizationToolKit.py*** is generally pr
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Standalone mode"]
-        S["python Extractor_main.py<br/>--plugin-path ..."]
+        S["python -m tools.extractor.main<br/>--plugin-path ..."]
     end
 
     subgraph Launcher["🚀 Launcher mode (recommended)"]
@@ -110,7 +110,7 @@ flowchart TB
 Simply run the script without arguments:
 
 ```bash
-python Extractor_main.py
+python -m tools.extractor.main
 ```
 
 A "Ready to go" menu displays with the current configuration:
@@ -123,7 +123,7 @@ A "Ready to go" menu displays with the current configuration:
 Configuration:
 
   1. Target plugin      : D:\plugins\myPlugin.lrplugin [OK]
-  2. Output             : <plugin>/__i18n_tmp__/Extractor/<timestamp>/ (auto)
+  2. Output             : <plugin>/__i18n_tmp__/1_Extractor/<timestamp>/ (auto)
   3. LOC prefix         : $$$/MyPlugin
   4. Extracted language : en
   5. Exclusions         : (none)
@@ -143,7 +143,7 @@ Press **Enter** to start extraction, or type a number to modify an option.
 For scripted or automated use:
 
 ```bash
-python Extractor_main.py --plugin-path /path/to/plugin.lrplugin [OPTIONS]
+python -m tools.extractor.main --plugin-path /path/to/plugin.lrplugin [OPTIONS]
 ```
 
 #### Available Options
@@ -151,7 +151,7 @@ python Extractor_main.py --plugin-path /path/to/plugin.lrplugin [OPTIONS]
 | Option | Description | Default | Example |
 |--------|-------------|---------|---------|
 | `--plugin-path` | Plugin path **(required)** | — | `./myPlugin.lrplugin` |
-| `--output-dir` | Custom output directory | `<plugin>/__i18n_tmp__/Extractor/` | `./output` |
+| `--output-dir` | Custom output directory | `<plugin>/__i18n_tmp__/1_Extractor/` | `./output` |
 | `--prefix` | LOC key prefix | `$$$/Piwigo` | `$$$/MyApp` |
 | `--lang` | Base language code | `en` | `fr`, `de`, `es` |
 | `--exclude` | Files to exclude (repeatable) | — | `--exclude test.lua` |
@@ -162,13 +162,13 @@ python Extractor_main.py --plugin-path /path/to/plugin.lrplugin [OPTIONS]
 
 ```bash
 # Standard extraction
-python Extractor_main.py --plugin-path ./piwigoPublish.lrplugin
+python -m tools.extractor.main --plugin-path ./piwigoPublish.lrplugin
 
 # With custom prefix
-python Extractor_main.py --plugin-path ./myPlugin.lrplugin --prefix '$$$/MyApp'
+python -m tools.extractor.main --plugin-path ./myPlugin.lrplugin --prefix '$$$/MyApp'
 
 # Plugin in French with exclusions
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./monPlugin.lrplugin \
   --lang fr \
   --prefix '$$$/MonApp' \
@@ -180,7 +180,7 @@ python Extractor_main.py \
 
 ## 📄 Generated Files
 
-Files are created in: `<plugin>/__i18n_tmp__/Extractor/<timestamp>/`
+Files are created in: `<plugin>/__i18n_tmp__/1_Extractor/<timestamp>/`
 
 ### `TranslatedStrings_xx.txt`
 
@@ -301,23 +301,23 @@ Technical strings ignored  : 23
 ```mermaid
 flowchart TB
     subgraph Orchestration
-        MAIN["<b>Extractor_main.py</b><br/>Entry point"]
+        MAIN["<b>main.py</b><br/>Entry point"]
     end
 
     subgraph Core["Core Business"]
-        ENGINE["<b>Extractor_engine.py</b><br/>LocalizableStringExtractor"]
-        CONFIG["Extractor_config.py<br/>Patterns & constants"]
-        MODELS["Extractor_models.py<br/>Data classes"]
-        UTILS["Extractor_utils.py<br/>Utility functions"]
+        ENGINE["<b>engine.py</b><br/>LocalizableStringExtractor"]
+        CONFIG["config.py<br/>Patterns & constants"]
+        MODELS["models.py<br/>Data classes"]
+        UTILS["utils.py<br/>Utility functions"]
     end
 
     subgraph Outputs
-        OUTPUT["Extractor_output.py<br/>OutputGenerator"]
-        REPORT["Extractor_report.py<br/>ReportGenerator"]
+        OUTPUT["output.py<br/>OutputGenerator"]
+        REPORT["report.py<br/>ReportGenerator"]
     end
 
     subgraph Interface
-        MENU["Extractor_menu.py<br/>InteractiveMenu"]
+        MENU["menu.py<br/>InteractiveMenu"]
     end
 
     MAIN --> ENGINE
@@ -339,14 +339,14 @@ Each module has a clear responsibility:
 
 | Module | Responsibility |
 |--------|----------------|
-| `Extractor_main.py` | Orchestration, CLI argument parsing |
-| `Extractor_engine.py` | Lua file analysis, string extraction |
-| `Extractor_config.py` | Definition of regex patterns, exclusion lists |
-| `Extractor_models.py` | Data classes (`ExtractedString`, `ExtractionStats`...) |
-| `Extractor_utils.py` | Space extraction, LOC key generation |
-| `Extractor_output.py` | Generation of `TranslatedStrings_xx.txt`, JSON |
-| `Extractor_report.py` | Generation of detailed report |
-| `Extractor_menu.py` | Interactive menu interface |
+| `main.py` | Orchestration, CLI argument parsing |
+| `engine.py` | Lua file analysis, string extraction |
+| `config.py` | Definition of regex patterns, exclusion lists |
+| `models.py` | Data classes (`ExtractedString`, `ExtractionStats`...) |
+| `utils.py` | Space extraction, LOC key generation |
+| `output.py` | Generation of `TranslatedStrings_xx.txt`, JSON |
+| `report.py` | Generation of detailed report |
+| `menu.py` | Interactive menu interface |
 
 ---
 
@@ -682,7 +682,7 @@ $$$/Piwigo/Dialog/AreYouSure3  → "Are you sure you want to reset?"
 If your plugin is written in French and you want to localize it:
 
 ```bash
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./monPlugin.lrplugin \
   --lang fr \
   --prefix '$$$/MonApp'
@@ -696,12 +696,12 @@ This generates `TranslatedStrings_fr.txt`. You can then create `TranslatedString
 
 ```bash
 # First extraction
-python Extractor_main.py --plugin-path ./plugin.lrplugin
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin
 
 # ... development, new features ...
 
 # New extraction (does not touch existing keys)
-python Extractor_main.py --plugin-path ./plugin.lrplugin
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin
 ```
 
 Already localized keys appear in the report but are not added to replacement files.
@@ -709,7 +709,7 @@ Already localized keys appear in the report but are not added to replacement fil
 ### Targeted Extraction with Exclusions
 
 ```bash
-python Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path ./plugin.lrplugin \
   --exclude test.lua \
   --exclude debug.lua \
@@ -726,7 +726,7 @@ Example bash script for automation:
 #!/bin/bash
 PLUGIN_PATH="./myPlugin.lrplugin"
 
-python 1_Extractor/Extractor_main.py \
+python -m tools.extractor.main \
   --plugin-path "$PLUGIN_PATH" \
   --prefix '$$$/MyApp'
 
@@ -753,7 +753,7 @@ fi
 **Solutions**:
 ```bash
 # Reduce minimum length
-python Extractor_main.py --plugin-path ./plugin.lrplugin --min-length 1
+python -m tools.extractor.main --plugin-path ./plugin.lrplugin --min-length 1
 
 # Verify path
 ls ./plugin.lrplugin/*.lua
@@ -789,7 +789,7 @@ If generated keys are unreadable:
 
 ### Can I Modify Detection Patterns?
 
-Yes, edit `Extractor_config.py`. Patterns are defined in `UI_CONTEXT_PATTERNS`:
+Yes, edit `config.py`. Patterns are defined in `UI_CONTEXT_PATTERNS`:
 
 ```python
 UI_CONTEXT_PATTERNS: List[tuple] = [

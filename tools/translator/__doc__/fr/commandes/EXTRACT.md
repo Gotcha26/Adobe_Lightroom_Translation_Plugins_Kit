@@ -1,6 +1,6 @@
 # Commande EXTRACT
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -17,7 +17,7 @@
 ```mermaid
 flowchart LR
     subgraph Input["📂 Entrées"]
-        I1["UPDATE_en.json<br/>(généré par COMPARE)"]
+        I1["UPDATE_&lt;ref&gt;.json<br/>(généré par COMPARE)"]
         I2["TranslatedStrings_fr.txt<br/>(existant, optionnel)"]
     end
 
@@ -40,7 +40,7 @@ flowchart LR
 
 | Type | Fichiers |
 |------|----------|
-| **Entrée** | `UPDATE_en.json` (obligatoire) |
+| **Entrée** | `UPDATE_<ref>.json` (obligatoire) |
 | **Entrée** | `TranslatedStrings_xx.txt` existants (optionnel) |
 | **Sortie** | `TRANSLATE_xx.txt` par langue |
 
@@ -52,7 +52,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A["Charger UPDATE_en.json"] --> B{"Clés ADDED ?"}
+    A["Charger UPDATE_&lt;ref&gt;.json"] --> B{"Clés ADDED ?"}
     B -->|Oui| C["Section NOUVELLES CLÉS"]
 
     A --> D{"Clés CHANGED ?"}
@@ -97,7 +97,7 @@ Pour chaque clé :
 ```
 
 Le menu demande :
-1. Dossier UPDATE (contenant `UPDATE_en.json`)
+1. Dossier UPDATE (contenant `UPDATE_<ref>.json`)
 2. Dossier Locales (traductions existantes, optionnel)
 3. Langue(s) à générer (ou toutes)
 
@@ -105,13 +105,13 @@ Le menu demande :
 
 ```bash
 # Toutes les langues détectées
-python Translator_main.py extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main extract --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 
 # Langue spécifique
-python Translator_main.py extract --update ./20260201_151234 --locales ./Locales --lang fr
+python -m tools.translator.main extract --update ./20260201_151234 --locales ./Locales --lang fr
 
 # Sans plugin-path (mode legacy)
-python Translator_main.py extract --update ./20260201_151234
+python -m tools.translator.main extract --update ./20260201_151234
 ```
 
 ### Options CLI

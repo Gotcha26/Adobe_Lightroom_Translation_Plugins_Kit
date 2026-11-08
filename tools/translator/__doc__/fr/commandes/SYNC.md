@@ -1,6 +1,6 @@
 # Commande SYNC
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -19,7 +19,7 @@ flowchart LR
     subgraph Input["📂 Entrées"]
         I1["TranslatedStrings_en.txt<br/>(référence)"]
         I2["TranslatedStrings_fr.txt<br/>(à synchroniser)"]
-        I3["UPDATE_en.json<br/>(optionnel)"]
+        I3["UPDATE_&lt;ref&gt;.json<br/>(optionnel)"]
     end
 
     subgraph Process["⚙️ Synchronisation"]
@@ -42,7 +42,7 @@ flowchart LR
 |------|----------|
 | **Entrée** | `TranslatedStrings_en.txt` (référence) |
 | **Entrée** | `TranslatedStrings_xx.txt` (à synchroniser) |
-| **Entrée** | `UPDATE_en.json` (optionnel, pour marqueurs détaillés) |
+| **Entrée** | `UPDATE_<ref>.json` (optionnel, pour marqueurs détaillés) |
 | **Sortie** | `TranslatedStrings_xx.txt` synchronisé |
 
 ---
@@ -63,7 +63,7 @@ flowchart TD
     F --> G["→ Supprimer (obsolètes)"]
 
     C --> H["Clés communes"]
-    H --> I{"UPDATE_en.json<br/>fourni ?"}
+    H --> I{"UPDATE_&lt;ref&gt;.json<br/>fourni ?"}
 
     I -->|Oui| J{"Clé dans CHANGED ?"}
     J -->|Oui| K["→ Conserver traduction<br/>+ marqueur [NEEDS_REVIEW]"]
@@ -114,13 +114,13 @@ Le menu demande :
 
 ```bash
 # Avec dossier UPDATE (marqueurs [NEEDS_REVIEW])
-python Translator_main.py sync --update ./20260201_151234 --locales ./plugin.lrplugin
+python -m tools.translator.main sync --update ./20260201_151234 --locales ./plugin.lrplugin
 
 # Avec fichier EN direct (pas de [NEEDS_REVIEW])
-python Translator_main.py sync --ref ./TranslatedStrings_en.txt --locales ./plugin.lrplugin
+python -m tools.translator.main sync --ref ./TranslatedStrings_en.txt --locales ./plugin.lrplugin
 
 # Avec plugin-path (auto-détection)
-python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
+python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./plugin.lrplugin
 ```
 
 ### Options CLI
@@ -128,7 +128,7 @@ python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./plugi
 | Option | Description | Requis |
 |--------|-------------|--------|
 | `--ref` | Fichier EN de référence | Conditionnel |
-| `--update` | Dossier UPDATE (avec UPDATE_en.json) | Conditionnel |
+| `--update` | Dossier UPDATE (avec `UPDATE_<ref>.json`) | Conditionnel |
 | `--plugin-path` | Auto-détection dossier Translator | ❌ Non |
 | `--locales` | Répertoire des fichiers de langue | ✅ Oui |
 
@@ -249,7 +249,7 @@ TOTAL
 
 | Commande | Lien | Relation |
 |----------|------|----------|
-| **COMPARE** | [COMPARE.md](COMPARE.md) | Génère UPDATE_en.json |
+| **COMPARE** | [COMPARE.md](COMPARE.md) | Génère `UPDATE_<ref>.json` |
 | **INJECT** | [INJECT.md](INJECT.md) | Étape précédente (optionnel) |
 | **AUTO-SYNC** | [AUTOSYNC.md](AUTOSYNC.md) | Alternative automatique |
 

@@ -1,6 +1,6 @@
 # Commande AUTO-SYNC ⭐
 
-📚 **Retour à la documentation principale** : [Lisez-moi.md](../Lisez-moi.md)
+📚 **Retour à la documentation principale** : [Translator_fr.md](../Translator_fr.md)
 
 ---
 
@@ -58,7 +58,7 @@ flowchart TB
 | **Sortie (code)** | Fichiers `.lua` avec remplacements LOC appliqués |
 | **Sortie (traductions)** | `plugin.lrplugin/TranslatedStrings_*.txt` (synchronisés) |
 | **Sortie (backups)** | `__i18n_tmp__/2_Applicator/<timestamp>/backups/` |
-| **Sortie (rapports)** | `__i18n_tmp__/3_Translator/<timestamp>/` (CHANGELOG, UPDATE_en.json) |
+| **Sortie (rapports)** | `__i18n_tmp__/3_Translator/<timestamp>/` (CHANGELOG, `UPDATE_<ref>.json`) |
 
 ---
 
@@ -97,7 +97,7 @@ flowchart TD
 |-------|-------|--------|--------|
 | **1** | Extractor | Extrait les clés LOC du code Lua | `TranslatedStrings_en.txt` fraîchement généré |
 | **2** | Applicator | Applique les remplacements dans le code Lua | Fichiers `.lua` modifiés avec backups |
-| **3** | COMPARE | Compare ancien EN vs nouveau EN | `UPDATE_en.json` + `CHANGELOG.txt` |
+| **3** | COMPARE | Compare ancien EN vs nouveau EN | `UPDATE_<ref>.json` + `CHANGELOG.txt` |
 | **4** | EXTRACT | Génère fichiers de traduction | `TRANSLATE_xx.txt` (clés modifiées uniquement) |
 | **5** | INJECT | Injecte traductions dans plugin | Fichiers `TranslatedStrings_*.txt` mis à jour |
 | **6** | SYNC | Synchronise avec référence EN | Fichiers finaux alignés, sans marqueurs |
@@ -136,7 +136,7 @@ Pour chaque fichier de langue (fr, de, es...) :
 ### Mode CLI
 
 ```bash
-python Translator_main.py autosync --plugin-path ./plugin.lrplugin
+python -m tools.translator.main autosync --plugin-path ./plugin.lrplugin
 ```
 
 ### Options CLI
@@ -160,7 +160,7 @@ python Translator_main.py autosync --plugin-path ./plugin.lrplugin
 Workflow:
   1. Extractor  → extrait clés depuis code Lua
   2. Applicator → applique les remplacements dans le code
-  3. COMPARE    → génère UPDATE_en.json
+  3. COMPARE    → génère UPDATE_<ref>.json
   4. EXTRACT    → génère fichiers TRANSLATE_xx.txt
   5. INJECT     → applique les traductions complétées
   6. SYNC       → synchronise FR avec la référence EN
@@ -216,7 +216,7 @@ AUTO-SYNC génère plusieurs fichiers de rapport :
 
 | Fichier | Emplacement | Contenu |
 |---------|-------------|---------|
-| **UPDATE_en.json** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Détail complet des changements (JSON) |
+| **`UPDATE_<ref>.json`** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Détail complet des changements (JSON) |
 | **CHANGELOG.txt** | `__i18n_tmp__/3_Translator/<timestamp>/compare/` | Liste lisible des modifications |
 | **Backups** | `__i18n_tmp__/2_Applicator/<timestamp>/backups/` | Copies de sauvegarde (`.bak`) |
 
@@ -252,8 +252,8 @@ Pour chaque langue, le rapport indique :
 | Commande | Lien | Relation |
 |----------|------|----------|
 | **INSTALL** | [INSTALL.md](INSTALL.md) | Première installation (avant AUTO-SYNC) |
-| **Extractor** | [Extractor.md](../../extractor/Extractor.md) | Étape 1 du workflow |
-| **Applicator** | [Applicator.md](../../applicator/Applicator.md) | Étape 2 du workflow |
+| **Extractor** | [Extractor.md](../../../../extractor/__doc__/fr/Lisez-moi.md) | Étape 1 du workflow |
+| **Applicator** | [Applicator.md](../../../../applicator/__doc__/fr/Lisez-moi.md) | Étape 2 du workflow |
 | **COMPARE** | [COMPARE.md](COMPARE.md) | Étape 3 du workflow |
 | **EXTRACT** | [EXTRACT.md](EXTRACT.md) | Étape 4 du workflow |
 | **INJECT** | [INJECT.md](INJECT.md) | Étape 5 du workflow |

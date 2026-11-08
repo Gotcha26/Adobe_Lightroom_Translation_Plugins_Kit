@@ -1,6 +1,6 @@
 # COMPARE Command
 
-📚 **Back to main documentation**: [README.md](../README.md)
+📚 **Back to main documentation**: [Translator_en.md](../Translator_en.md)
 
 ---
 
@@ -26,7 +26,7 @@ flowchart LR
     end
 
     subgraph Output["📂 Outputs"]
-        O1["UPDATE_en.json"]
+        O1["UPDATE_&lt;ref&gt;.json"]
         O2["CHANGELOG.txt"]
         O3["TranslatedStrings_en.txt<br/>(copy of new version)"]
     end
@@ -42,7 +42,7 @@ flowchart LR
 |------|-------|
 | **Input** | Old `TranslatedStrings_en.txt` |
 | **Input** | New `TranslatedStrings_en.txt` |
-| **Output** | `UPDATE_en.json` (structured data) |
+| **Output** | `UPDATE_<ref>.json` (structured data) |
 | **Output** | `CHANGELOG.txt` (readable report) |
 | **Output** | `TranslatedStrings_en.txt` (reference copy) |
 
@@ -73,7 +73,7 @@ flowchart TD
     L -->|Yes| M["→ UNCHANGED"]
     L -->|No| N["→ CHANGED"]
 
-    H & J & M & N --> O["Generate UPDATE_en.json"]
+    H & J & M & N --> O["Generate UPDATE_&lt;ref&gt;.json"]
     O --> P["Generate CHANGELOG.txt"]
 
     style O fill:#FFEB3B,color:#000
@@ -102,7 +102,7 @@ flowchart TD
 │                                                                  │
 │  3. COMPARE                                                      │  ◄── Select
 │     Compare old EN vs new EN                                     │
-│     → Generates UPDATE_en.json + CHANGELOG.txt                   │
+│     → Generates UPDATE_<ref>.json + CHANGELOG.txt                   │
 │                                                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -115,16 +115,16 @@ The menu then asks:
 
 ```bash
 # Compare two files
-python Translator_main.py compare --old ./v1/TranslatedStrings_en.txt --new ./v2/TranslatedStrings_en.txt
+python -m tools.translator.main compare --old ./v1/TranslatedStrings_en.txt --new ./v2/TranslatedStrings_en.txt
 
 # Compare two directories (auto-detection of EN file)
-python Translator_main.py compare --old ./old_extraction/ --new ./new_extraction/
+python -m tools.translator.main compare --old ./old_extraction/ --new ./new_extraction/
 
 # With output in __i18n_tmp__
-python Translator_main.py compare --old ./old.txt --new ./new.txt --plugin-path ./plugin.lrplugin
+python -m tools.translator.main compare --old ./old.txt --new ./new.txt --plugin-path ./plugin.lrplugin
 
 # Custom output
-python Translator_main.py compare --old ./old.txt --new ./new.txt --output ./my_output/
+python -m tools.translator.main compare --old ./old.txt --new ./new.txt --output ./my_output/
 ```
 
 ### CLI Options
@@ -161,7 +161,7 @@ NEW file (TranslatedStrings_en.txt or directory):
   Keys unchanged  :  130
 
 ✓ Files generated in: __i18n_tmp__/3_Translator/20260201_151234/
-    • UPDATE_en.json
+    • UPDATE_<ref>.json
     • CHANGELOG.txt
     • TranslatedStrings_en.txt
 
@@ -174,7 +174,7 @@ NEW file (TranslatedStrings_en.txt or directory):
 
 ## 📁 Format of Generated Files
 
-### UPDATE_en.json
+### `UPDATE_<ref>.json`
 
 ```json
 {
@@ -262,8 +262,8 @@ These keys no longer exist and will be removed from translations.
 NEXT STEP
 ================================================================================
 Run EXTRACT then INJECT, or directly SYNC:
-  python Translator_main.py extract --update ./20260201_151234
-  python Translator_main.py sync --update ./20260201_151234
+  python -m tools.translator.main extract --update ./20260201_151234
+  python -m tools.translator.main sync --update ./20260201_151234
 ```
 
 ---
@@ -292,6 +292,6 @@ Run EXTRACT then INJECT, or directly SYNC:
 | 📜 | Traceability |  |  |
 |--|--|--|--|
 | **Name** | *COMPARE.md* | **Version** | 1.0 |
-| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commands/COMPARE.md)* |
+| **Type** | User Guide - Advanced | **Language** | EN - *[FR](../../fr/commandes/COMPARE.md)* |
 | **GitHub Project** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **License** | Open source | | |

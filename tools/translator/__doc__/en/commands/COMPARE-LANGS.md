@@ -103,7 +103,7 @@ flowchart TD
 
 ```bash
 # Compare FR vs EN to see what's missing in French
-python Translator_main.py compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
 ```
 
 **Utility**: Identify missing keys and untranslated strings (values identical to English).
@@ -112,7 +112,7 @@ python Translator_main.py compare-langs --lang1 fr --lang2 en --locales ./plugin
 
 ```bash
 # Compare FR vs DE to see differences
-python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin
 ```
 
 **Utility**: Ensure two languages have the same keys.
@@ -121,7 +121,7 @@ python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin
 
 ```bash
 # Compare old FR version vs new FR version
-python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
+python -m tools.translator.main compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
 ```
 
 **Utility**: See changes made to a language between two versions.
@@ -130,9 +130,9 @@ python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --
 
 ```bash
 # Compare each language vs EN to generate completeness report
-python Translator_main.py compare-langs --lang1 de --lang2 en --locales ./plugin.lrplugin
-python Translator_main.py compare-langs --lang1 es --lang2 en --locales ./plugin.lrplugin
-python Translator_main.py compare-langs --lang1 it --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 de --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 es --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 it --lang2 en --locales ./plugin.lrplugin
 ```
 
 **Utility**: Complete quality audit of translations for all languages.
@@ -180,26 +180,26 @@ The menu first offers the choice of comparison mode:
 
 ```bash
 # Compare FR vs DE
-python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin
 
 # Compare FR vs EN to see what's not translated
-python Translator_main.py compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 en --locales ./plugin.lrplugin
 
 # With output in __i18n_tmp__
-python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin --plugin-path ./plugin.lrplugin
+python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./plugin.lrplugin --plugin-path ./plugin.lrplugin
 ```
 
 #### With full file paths
 
 ```bash
 # Compare two versions of the same file
-python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
+python -m tools.translator.main compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
 
 # Compare two files from different languages
-python Translator_main.py compare-langs --file1 ./Locales/TranslatedStrings_fr.txt --file2 ./Locales/TranslatedStrings_de.txt
+python -m tools.translator.main compare-langs --file1 ./Locales/TranslatedStrings_fr.txt --file2 ./Locales/TranslatedStrings_de.txt
 
 # Custom output
-python Translator_main.py compare-langs --file1 ./fr.txt --file2 ./de.txt --output ./my_output/
+python -m tools.translator.main compare-langs --file1 ./fr.txt --file2 ./de.txt --output ./my_output/
 ```
 
 ### CLI Options
@@ -311,7 +311,7 @@ Files generated in: __i18n_tmp__/3_Translator/20260206_150230/
 ### CLI Mode - Compare two versions
 
 ```bash
-$ python Translator_main.py compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
+$ python -m tools.translator.main compare-langs --file1 ./v1/TranslatedStrings_fr.txt --file2 ./v2/TranslatedStrings_fr.txt
 
 [INFO] Comparing languages...
 
@@ -590,7 +590,7 @@ LOCALES="./plugin.lrplugin"
 
 for lang in de es fr it; do
     echo "Comparing $lang vs EN..."
-    python Translator_main.py compare-langs \
+    python -m tools.translator.main compare-langs \
         --lang1 $lang \
         --lang2 en \
         --locales $LOCALES \

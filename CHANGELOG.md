@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `--default-plugin` and `--plugin-path` argparse definitions shared by the Extractor, Applicator and Translator moved to `core.cli` (same names, help and defaults) (#37)
+- Embedded help pages (`tools/*/__doc__`) now use the current module names and `python -m tools.<tool>.main` commands, present the update file as `UPDATE_<ref>.json`, document the Applicator `--yes` option, its two reports and the fallback backup folder, and no longer contain broken relative links (#38)
+- Added an Upgrade note on the `Colon` key suffix to `[1.1.0]` (#38)
 
 ---
 
@@ -44,6 +46,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > **Upgrade note:** `replacements.json` files produced by an Extractor older than 1.1.0
 > must be regenerated. Escape handling changed (escaped quotes, block comments), so
 > positions and texts recorded by earlier versions no longer match.
+>
+> **Upgrade note (`Colon` key suffix):** `generate_loc_key` now appends a `Colon` suffix to the
+> key of any string ending with `:` (as it already does with `Ellipsis` for `...` and `Question`
+> for `?`). `"Name:"` now gets `$$$/<Category>/NameColon` instead of sharing `$$$/<Category>/Name`
+> with `"Name"` (whichever came second got a numeric `2`). Re-extracting a plugin extracted with
+> an older version therefore changes these keys, and the translations recorded under the old
+> keys in `TranslatedStrings_xx.txt` become orphaned. To upgrade: re-extract with the Extractor,
+> then run COMPARE (old reference file vs new one) and
+> SYNC for each language: the old keys appear as removed and the `...Colon` keys as added, and
+> the added ones must be translated again (the old value can be copied over).
 
 ### Fixed
 - **Critical**: AUTOSYNC was inoperative because file names were corrupted by the automatic i18n pass (#11)

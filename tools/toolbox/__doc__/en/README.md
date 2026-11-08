@@ -55,16 +55,16 @@ flowchart LR
 
 ### Prerequisites
 
-- **Python 3.8+** installed on your system
+- **Python 3.10+** installed on your system
 - No external dependencies required (standard library only)
 
 ### File Structure
 
 ```
-9_Tools/
-├── Delete_temp_dir.py      ← Temporary folder cleanup
-├── Restore_backup.py       ← Backup restoration
-└── __doc/
+tools/toolbox/
+├── delete_temp_dir.py  ← Temporary folder cleanup
+├── restore_backup.py   ← Backup restoration
+└── __doc__/
     └── en/
         ├── README.md       ← This file
         └── tools/
@@ -77,8 +77,8 @@ flowchart LR
 Both tools can run **independently**:
 
 ```bash
-python Delete_temp_dir.py
-python Restore_backup.py
+python -m tools.toolbox.delete_temp_dir
+python -m tools.toolbox.restore_backup
 ```
 
 However, using ***LocalizationToolKit.py*** is recommended because the plugin path is automatically passed.
@@ -86,8 +86,8 @@ However, using ***LocalizationToolKit.py*** is recommended because the plugin pa
 ```mermaid
 flowchart TB
     subgraph Standalone["🔧 Standalone mode"]
-        S1["python Delete_temp_dir.py"]
-        S2["python Restore_backup.py"]
+        S1["python -m tools.toolbox.delete_temp_dir"]
+        S2["python -m tools.toolbox.restore_backup"]
     end
 
     subgraph Launcher["🚀 Launcher mode (recommended)"]

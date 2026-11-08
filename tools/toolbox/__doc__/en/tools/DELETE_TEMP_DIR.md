@@ -99,7 +99,7 @@ flowchart TD
 ### Interactive Mode (Recommended)
 
 ```bash
-python Delete_temp_dir.py
+python -m tools.toolbox.delete_temp_dir
 ```
 
 The tool displays an interactive menu with information about the folder contents.
@@ -107,7 +107,7 @@ The tool displays an interactive menu with information about the folder contents
 ### Pre-configured Plugin Mode
 
 ```bash
-python Delete_temp_dir.py --default-plugin ./plugin.lrplugin
+python -m tools.toolbox.delete_temp_dir --default-plugin ./plugin.lrplugin
 ```
 
 Automatically used by ***LocalizationToolKit.py*** to pass the plugin path.
@@ -264,7 +264,7 @@ This can happen if:
 
 | Element | Information |
 |---------|-------------|
-| Source module | `Delete_temp_dir.py` |
+| Source module | `delete_temp_dir.py` |
 | Main function | `main()` |
 | Size calculation | `get_dir_size()` |
 | Backup search | `find_backup_dirs()` |

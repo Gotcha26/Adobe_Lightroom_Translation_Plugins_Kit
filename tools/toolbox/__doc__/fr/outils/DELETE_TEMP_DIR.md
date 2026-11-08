@@ -99,7 +99,7 @@ flowchart TD
 ### Mode interactif (recommandé)
 
 ```bash
-python Delete_temp_dir.py
+python -m tools.toolbox.delete_temp_dir
 ```
 
 L'outil affiche un menu interactif avec les informations sur le contenu du dossier.
@@ -107,7 +107,7 @@ L'outil affiche un menu interactif avec les informations sur le contenu du dossi
 ### Mode avec plugin pré-configuré
 
 ```bash
-python Delete_temp_dir.py --default-plugin ./plugin.lrplugin
+python -m tools.toolbox.delete_temp_dir --default-plugin ./plugin.lrplugin
 ```
 
 Utilisé automatiquement par ***LocalizationToolKit.py*** pour passer le chemin du plugin.
@@ -264,7 +264,7 @@ Cela peut arriver si :
 
 | Élément | Information |
 |---------|-------------|
-| Module source | `Delete_temp_dir.py` |
+| Module source | `delete_temp_dir.py` |
 | Fonction principale | `main()` |
 | Calcul taille | `get_dir_size()` |
 | Recherche backups | `find_backup_dirs()` |
@@ -277,6 +277,6 @@ Cela peut arriver si :
 | 📜 | Traçabilité |  |  |
 |--|--|--|--|
 | **Nom** | *DELETE_TEMP_DIR.md* | **Version** | 2.0 |
-| **Type** | Guide utilisateur DELETE - Avancé | **Langue** | FR - *[EN](../../en/DELETE_TEMP_DIR.md)* |
+| **Type** | Guide utilisateur DELETE - Avancé | **Langue** | FR - *[EN](../../en/tools/DELETE_TEMP_DIR.md)* |
 | **Projet GitHub** | [Adobe Lightroom Translation Toolkit](https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit) | **Date** | 2026-02-02 |
 | **Licence** | [MIT](../../../../../LICENSE) | | |
