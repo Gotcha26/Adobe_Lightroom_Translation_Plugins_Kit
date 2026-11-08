@@ -52,7 +52,7 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output, backup_path_for, display_relative
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_once, display_relative
 from core.colors import c, stdin_is_interactive
 from core.i18n import _
 import glob
@@ -175,28 +175,44 @@ class LocalizationReport:
             f.write(_("4. Tester les textes dans l'interface\n\n"))
 
 
-def load_replacements_json(extraction_dir: str) -> Optional[Dict]:
-    """Charge le fichier replacements.json."""
+def load_replacements_json(extraction_dir: str, silent: bool = False,
+                           report: Optional["LocalizationReport"] = None) -> Optional[Dict]:
+    """Charge le fichier replacements.json.
+
+    Args:
+        silent: Si True, aucun affichage (les erreurs vont dans `report` s'il est fourni)
+        report: Rapport où consigner l'erreur de chargement éventuelle
+    """
     replacements_file = os.path.join(extraction_dir, "replacements.json")
 
     if not os.path.exists(replacements_file):
-        print(_("ERREUR: Fichier replacements.json introuvable dans {dir}").format(dir=extraction_dir))
+        message = _("ERREUR: Fichier replacements.json introuvable dans {dir}").format(dir=extraction_dir)
+        if report is not None:
+            report.add_error(replacements_file, 0, message)
+        if not silent:
+            print(message)
         return None
 
     try:
         with open(replacements_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            print(_("* replacements.json chargé"))
-            print(_("  - {n} fichiers avec remplacements").format(n=len(data.get('files', {}))))
-            total_replacements = sum(
-                f_data.get('total_replacements', 0)
-                for f_data in data.get('files', {}).values()
-            )
-            print(_("  - {n} remplacements prévus").format(n=total_replacements))
-            return data
     except Exception as e:
-        print(_("ERREUR lors du chargement de replacements.json: {error}").format(error=e))
+        message = _("ERREUR lors du chargement de replacements.json: {error}").format(error=e)
+        if report is not None:
+            report.add_error(replacements_file, 0, message)
+        if not silent:
+            print(message)
         return None
+
+    if not silent:
+        print(_("* replacements.json chargé"))
+        print(_("  - {n} fichiers avec remplacements").format(n=len(data.get('files', {}))))
+        total_replacements = sum(
+            f_data.get('total_replacements', 0)
+            for f_data in data.get('files', {}).values()
+        )
+        print(_("  - {n} remplacements prévus").format(n=total_replacements))
+    return data
 
 
 def build_loc_call(member: Dict) -> str:
@@ -328,11 +344,10 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
         # Créer le backup si demandé
         if create_backup:
             if backup_dir:
-                backup_path = backup_path_for(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
-                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+                # Backup de session : le premier écrivain gagne (état d'origine)
+                backup_once(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
             else:
-                backup_path = file_path + '.bak'
-            shutil.copy2(file_path, backup_path)
+                shutil.copy2(file_path, file_path + '.bak')
         with open(file_path, 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
 
@@ -389,7 +404,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         print()
 
     # Charger replacements.json
-    replacements_data = load_replacements_json(extraction_dir)
+    replacements_data = load_replacements_json(extraction_dir, silent=silent, report=report)
 
     if not replacements_data:
         if not silent:

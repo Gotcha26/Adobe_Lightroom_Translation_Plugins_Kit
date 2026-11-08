@@ -20,6 +20,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 import re
+import shutil
 from datetime import datetime
 from typing import Optional, List
 
@@ -329,6 +330,24 @@ def backup_path_for(file_path: str, plugin_path: str, backup_dir: str) -> str:
     if rel_path == os.pardir or rel_path.startswith(os.pardir + os.sep) or os.path.isabs(rel_path):
         rel_path = os.path.basename(file_path)
     return os.path.join(backup_dir, rel_path + '.bak')
+
+
+def backup_once(file_path: str, plugin_path: str, backup_dir: str) -> str:
+    """
+    Sauvegarde `file_path` dans `backup_dir`, sauf si un backup existe déjà.
+
+    Dans une même session (même `backup_dir`), le premier écrivain gagne : le
+    `.bak` conserve l'état d'origine du fichier, même si plusieurs étapes
+    (Applicator, INJECT, SYNC…) le modifient successivement.
+
+    Returns:
+        Chemin du backup (existant ou nouvellement créé)
+    """
+    backup_path = backup_path_for(file_path, plugin_path, backup_dir)
+    if not os.path.exists(backup_path):
+        os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+        shutil.copy2(file_path, backup_path)
+    return backup_path
 
 
 def display_relative(path: str, plugin_path: str) -> str:

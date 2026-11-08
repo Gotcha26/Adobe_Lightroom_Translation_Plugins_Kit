@@ -42,7 +42,7 @@ from typing import Dict, List, Tuple
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import find_latest_tool_output, get_tool_output_path, backup_path_for
+from core.paths import find_latest_tool_output, get_tool_output_path, backup_once, display_relative
 from core.colors import c
 from core.i18n import _
 from tools.extractor.main import run_extraction
@@ -188,6 +188,15 @@ def menu_autosync(plugin_path: str):
     print_autosync_report(results, plugin_path)
 
 
+def _applicator_failure(report, plugin_path: str) -> RuntimeError:
+    """Erreur d'échec de l'Applicator citant les fichiers fautifs (5 premiers)."""
+    details = "; ".join(
+        "{file}: {error}".format(file=display_relative(e['file'], plugin_path), error=e['error'])
+        for e in report.errors[:5]
+    )
+    return RuntimeError(_("Applicator a échoué : {details}").format(details=details))
+
+
 def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
     """
     Orchestrateur AUTO-SYNC : EXTRACTOR -> APPLICATOR -> COMPARE -> EXTRACT -> INJECT -> SYNC
@@ -305,7 +314,7 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
             backup_dir=backup_dir
         )
         if not success:
-            raise RuntimeError(_("Applicator a échoué"))
+            raise _applicator_failure(preview, plugin_path)
 
         lines_to_modify = preview.stats['total_replacements']
         files_to_modify = preview.stats['files_modified']
@@ -337,7 +346,7 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
         )
 
         if not success:
-            raise RuntimeError(_("Applicator a échoué"))
+            raise _applicator_failure(report, plugin_path)
 
         results['applicator']['success'] = True
         results['applicator']['lines_modified'] = report.stats['total_replacements']
@@ -481,7 +490,7 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
                 inject_result = run_inject(
                     translate_file=translate_file,
                     target_file=plugin_target,
-                    update_dir=extract_dir,
+                    update_dir=compare_dir,  # UPDATE_<lang>.json est produit par COMPARE
                     create_backup=True,  # Garder une sauvegarde
                     backup_dir=backup_dir  # Centraliser les backups
                 )
@@ -557,9 +566,7 @@ def run_autosync(plugin_path: str, *, assume_yes: bool = False) -> Dict:
 
         # Backup de l'ancien si existe
         if os.path.isfile(new_en_target):
-            backup_path = backup_path_for(new_en_target, plugin_path, backup_dir)
-            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-            shutil.copy2(new_en_target, backup_path)
+            backup_path = backup_once(new_en_target, plugin_path, backup_dir)
             plugin_name = os.path.basename(plugin_path)
             rel_backup = os.path.relpath(backup_dir, plugin_path).replace('\\', '/')
             print(_("{var0}  Backup      : {var1}{plugin_name}/{rel_backup}/{var4}{var5}").format(var0=c.DIM, var1=c.VALUE, plugin_name=plugin_name, rel_backup=rel_backup, var4=os.path.basename(backup_path), var5=c.RESET))

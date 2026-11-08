@@ -136,6 +136,36 @@ KEY_LINE_RE = re.compile(r'"(\$\$\$/[^"=]+)=((?:[^"\\]|\\.)*)"')
 # Ligne de section : "-- Nom" (un seul mot ; exclut marqueurs "-- [NEW] ..." et séparateurs)
 SECTION_LINE_RE = re.compile(r'^--\s+(\w[\w.-]*)$')
 
+# Séquences d'échappement reconnues dans une valeur ("\" suivi de l'un de ces caractères)
+VALID_ESCAPES = '"\\nrt'
+
+
+def escape_translation_value(value: str) -> str:
+    """
+    Échappe une traduction saisie à la main pour qu'elle reste relisible par KEY_LINE_RE.
+
+    - `"` non précédé d'un `\\` devient `\\"` ;
+    - un `\\` qui n'ouvre pas une séquence valide (`\\"`, `\\\\`, `\\n`, `\\r`, `\\t`)
+      devient `\\\\` ;
+    - les séquences déjà valides sont conservées telles quelles (idempotent).
+    """
+    out = []
+    i = 0
+    while i < len(value):
+        ch = value[i]
+        if ch == '\\':
+            if i + 1 < len(value) and value[i + 1] in VALID_ESCAPES:
+                out.append(value[i:i + 2])
+                i += 2
+                continue
+            out.append('\\\\')
+        elif ch == '"':
+            out.append('\\"')
+        else:
+            out.append(ch)
+        i += 1
+    return ''.join(out)
+
 
 def parse_translation_file(file_path: str) -> Dict[str, str]:
     """
@@ -241,14 +271,14 @@ def update_translation_file_surgical(
       suit l'en-tête, recopié tel quel et jamais interprété comme section ;
     - sections : lignes « -- <mot> » rencontrées après ces deux blocs.
 
-    Utilise UPDATE_en.json pour appliquer uniquement les changements nécessaires :
+    Utilise UPDATE_<lang>.json pour appliquer uniquement les changements nécessaires :
     - deleted : Supprime les lignes de clés obsolètes
     - changed : Modifie uniquement la valeur des clés existantes
     - added : Insère les nouvelles clés au bon endroit (après la dernière clé de leur section)
 
     Args:
         target_file: Chemin du fichier à modifier
-        update_data: Données de UPDATE_en.json (peut être None)
+        update_data: Données de UPDATE_<lang>.json (peut être None)
         translations: Dict {clé: nouvelle_valeur} avec toutes les traductions
         markers: Dict {clé: marqueur} pour ajouter des commentaires [NEW] ou [NEEDS_REVIEW]
         metadata: Dict avec infos pour l'entête (new_keys, changed_keys, source, total_keys)

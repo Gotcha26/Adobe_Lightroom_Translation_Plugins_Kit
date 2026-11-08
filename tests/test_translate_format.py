@@ -65,3 +65,43 @@ def test_legacy_markers_still_read(tmp_path):
     result = parse_translate_file(str(p), None)
     assert result["$$$/A/b"] == "new value"
     assert result["$$$/A/c"] == "plain"
+
+
+def test_raw_quotes_in_translation_are_escaped(isolated_config, tmp_path):
+    """#21 #22 : un « " » saisi brut est échappé, sinon la ligne ne se relit plus."""
+    from tools.translator.common import parse_translation_file
+    from tools.translator.inject import run_inject
+
+    p = tmp_path / "TRANSLATE_fr.txt"
+    p.write_text(
+        "[KEY] $$$/Test/Open\n[EN]  Cannot open \\\"file\\\"\n"
+        "[FR] → Impossible d'ouvrir \"fichier\"\n\n"
+        "[KEY] $$$/Test/Kept\n[EN]  x\n[FR] → Déjà \\\"échappé\\\" et \\n saut\n",
+        encoding="utf-8",
+    )
+    assert parse_translate_file(str(p), None)["$$$/Test/Open"] == "Impossible d'ouvrir \\\"fichier\\\""
+
+    target = tmp_path / "TranslatedStrings_fr.txt"
+    run_inject(str(p), str(target), update_dir=str(tmp_path), create_backup=False)
+
+    parsed = parse_translation_file(str(target))
+    assert parsed["$$$/Test/Open"] == "Impossible d'ouvrir \\\"fichier\\\""
+    assert parsed["$$$/Test/Kept"] == "Déjà \\\"échappé\\\" et \\n saut"
+
+
+def test_escape_translation_value():
+    from tools.translator.common import escape_translation_value
+
+    assert escape_translation_value('a "b"') == 'a \\"b\\"'
+    assert escape_translation_value('a \\"b\\"') == 'a \\"b\\"'
+    assert escape_translation_value('C:\\dossier') == 'C:\\\\dossier'
+    assert escape_translation_value('x\\\\y \\n \\t') == 'x\\\\y \\n \\t'
+
+
+def test_translate_header_explains_quote_escaping(isolated_config, plugin_dir, tmp_path):
+    out, _data, _k = _build_update(plugin_dir, tmp_path)
+    with temporary_language("fr"):
+        path = run_extract(out, "fr", None, str(tmp_path / "tr"))
+    with open(path, encoding="utf-8") as f:
+        header = [ln for ln in f if ln.startswith("#")]
+    assert any('\\"' in ln for ln in header), header

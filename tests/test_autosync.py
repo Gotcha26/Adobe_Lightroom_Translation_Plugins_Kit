@@ -160,3 +160,56 @@ def test_autosync_refusal_leaves_lua_untouched(plugin_dir, isolated_config, monk
 
     assert _("Annulé par l'utilisateur") in results["errors"]
     assert _lua_contents(plugin_dir) == before
+
+
+def test_autosync_applicator_failure_names_the_file(plugin_dir, isolated_config):
+    """#25 #32 : l'échec de l'Applicator cite le fichier fautif."""
+    with open(os.path.join(plugin_dir, "Latin1.lua"), "wb") as f:
+        f.write('local t = { title = "Café crème" }\n'.encode("latin-1"))
+
+    results = run_autosync(plugin_dir, assume_yes=True)
+
+    assert results["errors"]
+    assert "Latin1.lua" in results["errors"][0], results["errors"]
+
+
+def _modify_en_value(plugin_dir):
+    """Change une valeur EN du plugin : l'extraction fraîche la verra « modifiée »."""
+    en_path = os.path.join(plugin_dir, "TranslatedStrings_en.txt")
+    with open(en_path, encoding="utf-8") as f:
+        content = f.read()
+    content = content.replace('"$$$/Test/Export/Existing=Existing label"',
+                              '"$$$/Test/Export/Existing=Previous label"')
+    with open(en_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+def test_autosync_backup_keeps_original_translation(plugin_dir, isolated_config):
+    """#17 #25 : dans une même session, le premier .bak (l'original) n'est pas écrasé."""
+    fr_path = os.path.join(plugin_dir, "TranslatedStrings_fr.txt")
+    with open(fr_path, encoding="utf-8") as f:
+        original_fr = f.read()
+    _modify_en_value(plugin_dir)
+
+    results = run_autosync(plugin_dir, assume_yes=True)
+    assert results["errors"] == []
+
+    with open(fr_path, encoding="utf-8") as f:
+        assert f.read() != original_fr, "le test suppose que le FR a été modifié"
+
+    applicator_root = os.path.join(plugin_dir, "__i18n_tmp__", "2_Applicator")
+    (session,) = os.listdir(applicator_root)
+    bak = os.path.join(applicator_root, session, "backups", "TranslatedStrings_fr.txt.bak")
+    with open(bak, encoding="utf-8") as f:
+        assert f.read() == original_fr
+
+
+def test_autosync_inject_uses_reference_values(plugin_dir, isolated_config):
+    """#25 : sans traduction fournie, INJECT reprend la valeur de référence (UPDATE dans compare/)."""
+    _modify_en_value(plugin_dir)
+
+    results = run_autosync(plugin_dir, assume_yes=True)
+
+    assert results["errors"] == []
+    assert results["inject"]["fr"]["from_ref"] > 0, results["inject"]
+

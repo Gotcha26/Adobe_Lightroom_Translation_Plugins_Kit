@@ -91,6 +91,7 @@ def run_extract(update_dir: str, lang: str, locales_dir: Optional[str] = None,
         f.write(_("# 1. Pour chaque entrée, écrivez la traduction après le symbole →\n"))
         f.write(_("# 2. Laissez vide pour garder la valeur EN par défaut\n"))
         f.write(_("# 3. Les lignes commençant par # sont ignorées\n"))
+        f.write(_("# 4. Un guillemet double \" doit être écrit \\\" (sinon il est échappé automatiquement)\n"))
         f.write("#\n")
         f.write("# " + "=" * 70 + "\n\n")
 

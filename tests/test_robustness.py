@@ -119,6 +119,23 @@ def test_applicator_reports_latin1_file_and_continues(plugin_dir, isolated_confi
         assert 'LOC "$$$/Test/' in f.read()
 
 
+def test_load_replacements_json_respects_silent(plugin_dir, isolated_config, capsys):
+    from tools.applicator.main import load_replacements_json, process_plugin_directory
+    from tools.extractor.main import run_extraction
+
+    from core.paths import find_latest_tool_output
+
+    run_extraction(plugin_dir, "", "$$$/Test", "en", [], 3, True, silent=True)
+    capsys.readouterr()
+    extraction_dir = find_latest_tool_output(plugin_dir, "Extractor")
+
+    assert load_replacements_json(extraction_dir, silent=True)
+    assert capsys.readouterr().out == ""
+
+    process_plugin_directory(plugin_dir, extraction_dir=extraction_dir, dry_run=True, silent=True)
+    assert capsys.readouterr().out == ""
+
+
 def test_load_config_reports_invalid_json(isolated_config, capsys):
     from tools.translator import config_loader
 

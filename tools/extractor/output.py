@@ -31,38 +31,11 @@ from core.i18n import _
 from core.paths import display_relative
 from tools.translator.common import (
     section_for_key, HEADER_SEPARATOR, HEADER_TITLE_PREFIX, HEADER_GENERATED_PREFIX,
-    HEADER_TOTAL_KEYS_PREFIX, HEADER_SOURCE_PREFIX,
+    HEADER_TOTAL_KEYS_PREFIX, HEADER_SOURCE_PREFIX, TRANSLATION_WARNING_NOTE,
 )
 
 from .models import ExtractedString
 from .utils import build_loc_call, escape_lua_string
-
-# =============================================================================
-# TRANSLATION WARNING NOTE
-# This note is added to all TranslatedStrings_xx.txt files to guide translators
-# =============================================================================
-TRANSLATION_WARNING_NOTE = """-- -----------------------------------------------------------------------------
--- IMPORTANT NOTES FOR TRANSLATORS:
--- -----------------------------------------------------------------------------
--- 1. DO NOT translate the following patterns (keep them exactly as-is):
---    - %s, %d, %f, %i, %u, %x, %X, %o, %c, %e, %E, %g, %G (format specifiers)
---    - %1, %2, %3... (numbered placeholders)
---    - \\n (newline character)
---    - \\t (tab character)
---    - \\" (escaped quote)
---    - \\\\ (escaped backslash)
---    - ... (ellipsis used as placeholder)
---    - Technical terms in UPPERCASE (API, URL, HTTP, JSON, etc.)
---
--- 2. PRESERVE spaces around text exactly as they appear:
---    - Leading spaces (before text) are used for layout/alignment
---    - Trailing spaces (after text) are used for concatenation
---    - Example: "  Hello  " must keep both leading and trailing spaces
---
--- 3. Keep the same punctuation style (colons, periods, etc.)
--- -----------------------------------------------------------------------------
-
-"""
 
 
 class OutputGenerator:

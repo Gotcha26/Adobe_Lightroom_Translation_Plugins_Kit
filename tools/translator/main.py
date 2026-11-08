@@ -8,7 +8,7 @@ Description :
 Gestionnaire de traductions multilingues pour plugins Adobe Lightroom Classic.
 
 Orchestre le workflow complet de gestion des traductions :
-  1. COMPARE: Compare 2 versions EN et génère UPDATE_en.json + CHANGELOG.txt
+  1. COMPARE: Compare 2 versions EN et génère UPDATE_<lang>.json + CHANGELOG.txt
   2. EXTRACT: Génère fichiers TRANSLATE_xx.txt pour traduction
   3. INJECT: Réinjecte les traductions (valeur EN par défaut si non traduit)
   4. SYNC: Met à jour les langues avec EN
@@ -324,7 +324,7 @@ Exemples:
     sync_parser.add_argument('--ref', help=_("Fichier EN de reference"))
     sync_parser.add_argument('--plugin-path', help=_("Chemin plugin (auto-detection __i18n_tmp__/)"))
     sync_parser.add_argument('--locales', help=_("Repertoire des fichiers de langues"))
-    sync_parser.add_argument('--update', help=_("Dossier UPDATE (avec UPDATE_en.json)"))
+    sync_parser.add_argument('--update', help=_("Dossier UPDATE (avec UPDATE_<lang>.json)"))
 
     args = parser.parse_args()
 

@@ -18,7 +18,7 @@ Usage CLI :
         --default-plugin PATH Plugin pré-configuré pour le menu interactif
         --yes                 Aucune question (l'Extractor n'en pose pas en CLI)
         --output-dir PATH     Override du répertoire de sortie
-        --prefix PREFIX       Préfixe LOC (défaut: $$$/Plugin)
+        --prefix PREFIX       Préfixe LOC (défaut: config.json, sinon $$$/Plugin)
         --lang LANG           Code langue (défaut: en)
         --exclude FILE        Fichiers à exclure (répétable)
         --min-length N        Longueur minimale (défaut: 3)
@@ -175,9 +175,15 @@ Exemples:
                         help=_("Aucune question (l'Extractor n'en pose pas en mode CLI)"))
     parser.add_argument('--output-dir', default=None,
                         help=_("Override répertoire de sortie (défaut: <plugin>/__i18n_tmp__/Extractor/)"))
-    parser.add_argument('--prefix', default=DEFAULT_PREFIX,
-                        help=_("Préfixe des clés LOC (défaut: {prefix})").format(prefix=DEFAULT_PREFIX))
-    # Charger la langue par défaut depuis config.json
+    # Charger le préfixe et la langue par défaut depuis la configuration
+    try:
+        from tools.translator.config_loader import get_prefix
+        default_prefix = get_prefix()
+    except Exception as e:
+        print(_("Préfixe illisible, {prefix} utilisé : {error}").format(prefix=DEFAULT_PREFIX, error=e))
+        default_prefix = DEFAULT_PREFIX
+    parser.add_argument('--prefix', default=default_prefix,
+                        help=_("Préfixe des clés LOC (défaut: {prefix})").format(prefix=default_prefix))
     try:
         from tools.translator.config_loader import get_reference_lang
         default_lang = get_reference_lang()

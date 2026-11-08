@@ -34,7 +34,7 @@ from .common import (
 )
 from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
-from core.paths import backup_path_for, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
+from core.paths import backup_once, local_backup_path, find_latest_update_dir, find_update_dir_in, get_translator_backup_dir
 
 
 # =============================================================================
@@ -124,9 +124,8 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         lang_strings = parse_translation_file(lang_file)
         # Créer backup
         if backup_dir:
-            backup_path = backup_path_for(lang_file, os.path.dirname(lang_file), backup_dir)
-            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-            shutil.copy2(lang_file, backup_path)
+            # Backup de session : ne jamais écraser l'original déjà sauvegardé
+            backup_once(lang_file, os.path.dirname(lang_file), backup_dir)
         else:
             backup_path = local_backup_path(lang_file)
             os.makedirs(os.path.dirname(backup_path), exist_ok=True)

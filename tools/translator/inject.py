@@ -16,7 +16,7 @@ Important :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -28,12 +28,12 @@ from typing import Dict, Optional
 
 from .common import (
     parse_translation_file, update_translation_file_surgical,
-    load_update_json, c,
+    load_update_json, c, escape_translation_value,
     TRANSLATE_KEY, TRANSLATE_ARROW, translate_ref_marker, translate_after_marker,
 )
 from .config_loader import get_reference_lang
 from core.i18n import _
-from core.paths import backup_path_for, local_backup_path, get_translator_backup_dir
+from core.paths import backup_once, local_backup_path, get_translator_backup_dir
 
 
 def _marker_value(line, markers):
@@ -116,8 +116,9 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                     translation = parts[1].strip()
 
                     if translation:
-                        # Traduction fournie
-                        translations[current_key] = translation
+                        # Traduction fournie : « " » brut échappé, sinon la ligne
+                        # écrite ne serait plus relisible (KEY_LINE_RE)
+                        translations[current_key] = escape_translation_value(translation)
                     else:
                         # Pas de traduction → utiliser valeur EN
                         translations[current_key] = current_en_value or ''
@@ -165,10 +166,8 @@ def run_inject(translate_file: str, target_file: str,
         existing = parse_translation_file(target_file)
         if create_backup:
             if backup_dir:
-                # Backup dans le répertoire spécifié
-                backup_path = backup_path_for(target_file, os.path.dirname(target_file), backup_dir)
-                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-                shutil.copy2(target_file, backup_path)
+                # Backup de session : ne jamais écraser l'original déjà sauvegardé
+                backup_once(target_file, os.path.dirname(target_file), backup_dir)
             else:
                 # Par défaut : sous-dossier backups/ à côté du fichier cible
                 backup_path = local_backup_path(target_file)

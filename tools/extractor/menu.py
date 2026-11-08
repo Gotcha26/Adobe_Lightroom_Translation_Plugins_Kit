@@ -11,7 +11,7 @@ pour configurer et lancer l'extraction avec options de modification en ligne.
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -51,9 +51,17 @@ class InteractiveMenu:
         except Exception:
             default_lang = "en"
 
+        # Préfixe configuré (get_prefix retombe sur DEFAULT_PREFIX si absent)
+        try:
+            from tools.translator.config_loader import get_prefix
+            default_prefix = get_prefix()
+        except Exception as e:
+            print(_("Préfixe illisible, {prefix} utilisé : {error}").format(prefix=DEFAULT_PREFIX, error=e))
+            default_prefix = DEFAULT_PREFIX
+
         self.plugin_path = default_plugin_path
         self.output_dir = ""
-        self.prefix = DEFAULT_PREFIX
+        self.prefix = default_prefix
         self.lang = default_lang
         self.exclude_files: List[str] = []
         self.min_length = 3
@@ -61,7 +69,7 @@ class InteractiveMenu:
 
         # Valider le chemin par défaut s'il est fourni
         if default_plugin_path:
-            is_valid, normalized, _ = validate_plugin_path(default_plugin_path)
+            is_valid, normalized, _error = validate_plugin_path(default_plugin_path)
             if is_valid:
                 self.plugin_path = normalized
 
