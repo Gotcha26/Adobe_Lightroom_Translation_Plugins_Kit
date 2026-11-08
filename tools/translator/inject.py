@@ -24,14 +24,12 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 import shutil
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file, update_translation_file_surgical,
-    load_update_json, find_languages, c
+    parse_translation_file, update_translation_file_surgical,
+    load_update_json, c
 )
-from .config_loader import get_update_filename, get_reference_lang
 from core.i18n import _
 
 
@@ -181,12 +179,6 @@ def run_inject(translate_file: str, target_file: str,
             stats['skipped'] += 1
 
     stats['total'] = len(existing)
-
-    # Détecter la langue depuis le nom du fichier
-    lang = 'xx'
-    basename = os.path.basename(target_file)
-    if 'TranslatedStrings_' in basename:
-        lang = basename.replace('TranslatedStrings_', '').replace('.txt', '')
 
     # Métadonnées pour l'entête
     metadata = {

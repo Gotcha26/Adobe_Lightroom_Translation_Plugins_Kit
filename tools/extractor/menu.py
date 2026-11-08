@@ -24,7 +24,7 @@ from typing import Tuple, List, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import validate_plugin_path, get_i18n_dir
+from core.paths import validate_plugin_path
 from core.colors import Colors
 from core.i18n import _
 
@@ -100,7 +100,7 @@ class InteractiveMenu:
         if self.output_dir:
             print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
-            default_output = f"<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
+            default_output = "<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
             print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + "(auto)" + f"{c.RESET}"))
 
         # Autres options

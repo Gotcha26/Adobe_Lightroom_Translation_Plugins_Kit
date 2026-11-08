@@ -51,7 +51,6 @@ def test_import_module(module):
     importlib.import_module(module)
 
 
-@pytest.mark.xfail(strict=True, reason="#13 #14 — corrigé en Task 2")
 def test_ruff_check_clean(toolkit_root):
     result = subprocess.run(
         [sys.executable, "-m", "ruff", "check", "."],
@@ -62,3 +61,5 @@ def test_ruff_check_clean(toolkit_root):
         env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
     assert result.returncode == 0, result.stdout + result.stderr
+    # Garde-fou : un ruff absent ne doit pas faire passer le test en silence
+    assert "All checks passed" in result.stdout, result.stdout + result.stderr

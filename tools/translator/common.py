@@ -37,7 +37,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.colors import Colors
 from core.i18n import _
-from .config_loader import get_reference_lang, get_reference_filename, get_update_filename, is_reference_lang
+from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
 
 # Instance couleurs
 c = Colors()
@@ -191,7 +191,6 @@ def update_translation_file_surgical(
 
     # Extraire les changements depuis update_data
     deleted_keys = set(update_data.get('deleted', [])) if update_data else set()
-    changed_keys = set(update_data.get('changed', {}).keys()) if update_data else set()
     added_keys = set(update_data.get('added', {}).keys()) if update_data else set()
 
     # Lire le fichier ligne par ligne
@@ -345,8 +344,6 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
     Remplace Generated, Total keys, New keys, Changed keys, Source.
     """
     updated = []
-    generated_updated = False
-    total_keys_found = False
     new_keys_found = False
     changed_keys_found = False
     source_found = False
@@ -357,10 +354,8 @@ def _update_header(header_lines: List[str], metadata: Dict) -> List[str]:
         # Remplacer Generated
         if stripped.startswith('-- Generated:'):
             updated.append(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            generated_updated = True
         # Remplacer Total keys
         elif stripped.startswith('-- Total keys:'):
-            total_keys_found = True
             if metadata.get('total_keys') is not None:
                 updated.append(_("-- Total keys: {var0}\n").format(var0=metadata['total_keys']))
             else:

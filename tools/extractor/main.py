@@ -69,7 +69,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
         timestamped_output_dir = get_tool_output_path(plugin_path, "Extractor", create=True)
 
     if not silent:
-        print(f"\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("\n" + _("EXTRACTION") + f" - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(_("Analyse de {plugin}...").format(plugin=os.path.basename(plugin_path)) + "\n")
 
     # Créer l'extracteur
@@ -88,7 +88,7 @@ def run_extraction(plugin_path: str, output_dir: str, prefix: str, lang: str,
     strings_file = os.path.join(timestamped_output_dir, "TranslatedStrings_{lang}.txt".format(lang=lang))
     spacing_file = os.path.join(timestamped_output_dir, "spacing_metadata.json")
     replacements_file = os.path.join(timestamped_output_dir, "replacements.json")
-    report_file = os.path.join(timestamped_output_dir, f"extraction_report.txt")
+    report_file = os.path.join(timestamped_output_dir, "extraction_report.txt")
 
     # Générateurs
     output_gen = OutputGenerator(plugin_path, prefix, silent=silent)

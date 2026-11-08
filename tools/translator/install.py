@@ -25,13 +25,12 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import shutil
-from pathlib import Path
 from typing import Optional
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import find_latest_tool_output, get_tool_output_path
+from core.paths import find_latest_tool_output
 from core.colors import Colors
 from core.i18n import _
 

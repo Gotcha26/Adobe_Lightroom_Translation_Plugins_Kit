@@ -21,7 +21,7 @@ import os
 import sys
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
@@ -30,8 +30,7 @@ from core.colors import Colors
 from core.i18n import _
 
 from .config import (
-    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, ALL_STRINGS_PATTERN,
-    IGNORE_LOC_KEY_PATTERNS, IGNORE_LOC_VALUES
+    LOG_LINE_REGEX, UI_CONTEXT_PATTERNS, IGNORE_LOC_KEY_PATTERNS, IGNORE_LOC_VALUES
 )
 from .models import ExtractedString, ExtractionStats
 from .utils import (
@@ -409,7 +408,7 @@ class LocalizableStringExtractor:
 
         # Traiter chaque membre valide
         for member_idx, (original_text, start_pos, end_pos) in enumerate(valid_members):
-            entry = self._create_entry(
+            self._create_entry(
                 original_text, line_stripped, rel_path, file_name,
                 line_num, matched_pattern,
                 is_concat=(is_concat and len(valid_members) > 1),

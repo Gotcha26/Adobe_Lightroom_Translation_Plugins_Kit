@@ -41,7 +41,6 @@ import sys
 import json
 import shutil
 import argparse
-from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
 # Ajouter la racine du projet au path pour importer core

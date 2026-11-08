@@ -43,15 +43,14 @@ import os
 import sys
 import json
 import subprocess
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, Optional, List
 
 # Ajouter le répertoire courant au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.paths import (
     get_i18n_kit_path, find_latest_tool_output, get_i18n_dir, set_i18n_dir,
-    validate_plugin_path, DEFAULT_I18N_DIR, TIMESTAMP_LENGTH
+    validate_plugin_path, DEFAULT_I18N_DIR
 )
 from core.colors import Colors
 from core.i18n import _, debug_language_detection
@@ -315,7 +314,7 @@ class ConfigManager:
         print()
         print(f"{c.WARNING}" + _("Le dossier temporaire '{dir}' n'est pas dans le .gitignore").format(dir=temp_dir) + f"{c.RESET}")
         print(_("Voulez-vous l'ajouter automatiquement ?"))
-        print(f"  " + _("Ligne à ajouter:") + f" {c.VALUE}{ignore_line}{c.RESET}")
+        print("  " + _("Ligne à ajouter:") + f" {c.VALUE}{ignore_line}{c.RESET}")
         print()
         response = input(f"{c.PROMPT}" + _("Ajouter au .gitignore? [O/n]:") + f" {c.RESET}").strip().lower()
 
@@ -438,7 +437,7 @@ class ToolLauncher:
             cmd.extend(args)
 
         try:
-            print(f"\n" + _("Lancement:") + f" {os.path.basename(script_path)}")
+            print("\n" + _("Lancement:") + f" {os.path.basename(script_path)}")
             print(_("Répertoire:") + f" {working_dir}")
             print("-" * 60)
 
@@ -729,7 +728,7 @@ class MainMenu:
 
             # Afficher le chemin du dossier temporaire
             i18n_path = get_i18n_kit_path(normalized)
-            print(f"     " + _("Sorties dans:") + f" {c.VALUE}{i18n_path}{c.RESET}")
+            print("     " + _("Sorties dans:") + f" {c.VALUE}{i18n_path}{c.RESET}")
         else:
             print(c.success(_("Chemin inchangé")))
 
@@ -766,7 +765,7 @@ class MainMenu:
 
             plugin_path = self.config.get("plugin_path", "")
             if plugin_path:
-                print(f"     " + _("Nouveau chemin:") + f" {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
+                print("     " + _("Nouveau chemin:") + f" {c.VALUE}{get_i18n_kit_path(plugin_path)}{c.RESET}")
             return
 
     def configure_paths(self):

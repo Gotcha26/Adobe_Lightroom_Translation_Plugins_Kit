@@ -24,7 +24,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from .common import parse_translation_file, load_update_json, find_languages, c
 from .config_loader import get_update_filename, get_reference_lang
@@ -175,7 +175,6 @@ def menu_extract(plugin_path: str = ""):
         plugin_path: Chemin du plugin (optionnel) pour auto-détection
     """
     from .common import clear_screen, print_header, load_update_json
-    from core.paths import find_latest_tool_output
     from core.menu_helpers import select_tool_output_dir
 
     clear_screen()

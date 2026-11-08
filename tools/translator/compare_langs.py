@@ -33,7 +33,7 @@ import os
 import sys
 import json
 from datetime import datetime
-from typing import Dict, Set, Tuple, Optional
+from typing import Dict, Optional
 
 # Ajouter la racine du projet au path pour importer core
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

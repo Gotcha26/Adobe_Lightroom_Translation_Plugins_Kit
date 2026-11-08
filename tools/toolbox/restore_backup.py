@@ -23,7 +23,6 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import shutil
-from pathlib import Path
 from typing import List, Tuple, Optional
 
 # Ajouter la racine du projet au path pour importer core

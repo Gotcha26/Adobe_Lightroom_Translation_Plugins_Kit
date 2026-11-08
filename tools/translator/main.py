@@ -53,9 +53,9 @@ from .compare_langs import run_compare_langs, menu_compare_langs
 from .extract import run_extract, run_extract_all, menu_extract
 from .inject import run_inject, run_inject_from_dir, menu_inject
 from .sync import run_sync, generate_sync_report, menu_sync
-from .install import menu_install, run_install
+from .install import menu_install
 from .autosync import menu_autosync, run_autosync
-from .addlang import menu_addlang, run_addlang_cli
+from .addlang import menu_addlang
 
 # Instance couleurs
 c = Colors()

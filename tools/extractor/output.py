@@ -29,7 +29,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
 
-from .models import ExtractedString, ExtractionStats
+from .models import ExtractedString
 
 # =============================================================================
 # TRANSLATION WARNING NOTE

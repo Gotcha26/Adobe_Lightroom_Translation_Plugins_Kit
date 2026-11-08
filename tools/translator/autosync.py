@@ -37,8 +37,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import shutil
-from pathlib import Path
-from typing import Optional, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)

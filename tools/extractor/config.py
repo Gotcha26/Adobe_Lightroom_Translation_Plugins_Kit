@@ -20,10 +20,9 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 import re
-from typing import List, Set, Dict
+from typing import List, Set
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.i18n import _
 
 
 # =============================================================================

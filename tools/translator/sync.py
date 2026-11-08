@@ -26,11 +26,10 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 import shutil
-from datetime import datetime
-from typing import Dict, List, Set, Optional
+from typing import Dict, Set, Optional
 
 from .common import (
-    parse_translation_file, write_translation_file, update_translation_file_surgical,
+    parse_translation_file, update_translation_file_surgical,
     resolve_path, load_update_json, find_languages, c
 )
 from .config_loader import get_reference_filename, get_update_filename
@@ -258,7 +257,6 @@ def menu_sync(plugin_path: str = ""):
         plugin_path: Chemin du plugin (optionnel) pour auto-détection
     """
     from .common import clear_screen, print_header
-    from core.paths import find_latest_tool_output
     from core.menu_helpers import select_tool_output_dir
 
     clear_screen()

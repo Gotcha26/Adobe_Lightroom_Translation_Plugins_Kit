@@ -20,10 +20,9 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import re
 import os
 import sys
-from typing import Tuple, List, Optional, Dict, Set
+from typing import Tuple, List
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.i18n import _
 
 from .config import (
     COMMON_SUFFIXES, IGNORE_EXACT, TECHNICAL_PATTERNS, STOP_WORDS,
@@ -203,7 +202,7 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
 
     # Garder trace de certains suffixes significatifs
     has_ellipsis = clean.endswith('...')
-    has_colon = clean.endswith(':')
+    has_colon = clean.endswith(':')  # noqa: F841  # utilisé par Task 17
     has_question = clean.endswith('?')
 
     # Nettoyer pour extraire les mots

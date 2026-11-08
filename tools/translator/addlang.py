@@ -34,7 +34,7 @@ import os
 import sys
 import re
 import shutil
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Tuple
 from datetime import datetime
 
 # Ajouter la racine du projet au path pour importer core
