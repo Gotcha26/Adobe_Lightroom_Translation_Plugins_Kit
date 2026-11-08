@@ -11,7 +11,7 @@ métadonnées d'espaces/suffixes. Classe OutputGenerator pour gérer la sériali
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -28,6 +28,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
+from tools.translator.common import section_for_key
 
 from .models import ExtractedString
 from .utils import build_loc_call
@@ -90,9 +91,7 @@ class OutputGenerator:
         # Grouper par catégorie
         by_category: Dict[str, List[ExtractedString]] = defaultdict(list)
         for entry in unique_keys.values():
-            parts = entry.suggested_key.split('/')
-            category = parts[2] if len(parts) >= 3 else 'General'
-            by_category[category].append(entry)
+            by_category[section_for_key(entry.suggested_key)].append(entry)
 
         from core.i18n import debug_i18n_context
         with debug_i18n_context(), open(output_path, 'w', encoding='utf-8') as f:

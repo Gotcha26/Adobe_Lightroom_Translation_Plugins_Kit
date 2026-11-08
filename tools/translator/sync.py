@@ -18,7 +18,7 @@ de référence lorsqu'il y a des modifications du code.
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -181,7 +181,10 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
 
     # Écrire le fichier avec mise à jour chirurgicale
     output_file = os.path.join(output_dir, f'TranslatedStrings_{lang}.txt')
-    update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata)
+    # remove_unlisted : new_strings est le contenu complet attendu (clés en trop
+    # réellement supprimées, clés manquantes réellement ajoutées, comme annoncé au rapport)
+    update_translation_file_surgical(output_file, update_data, new_strings, markers, metadata,
+                                     remove_unlisted=True)
 
     return {
         'kept': stats['kept'],
