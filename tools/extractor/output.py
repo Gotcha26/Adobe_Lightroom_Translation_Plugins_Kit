@@ -35,7 +35,7 @@ from tools.translator.common import (
 )
 
 from .models import ExtractedString
-from .utils import build_loc_call, escape_lua_string, find_literal_positions
+from .utils import build_loc_call, escape_lua_string, pick_literal_position
 
 
 class OutputGenerator:
@@ -170,7 +170,9 @@ class OutputGenerator:
                         'leading_spaces': entry.leading_spaces,
                         'trailing_spaces': entry.trailing_spaces,
                         'suffix': entry.suffix,
-                        'replacement': self._build_loc_call(entry)
+                        'replacement': self._build_loc_call(entry),
+                        # Colonne du littéral dans la ligne sans indentation (None si inconnue)
+                        'column': entry.column
                     }
                     members.append(member_info)
 
@@ -227,16 +229,15 @@ class OutputGenerator:
 
         Remplace chaque chaîne originale par son appel LOC correspondant.
         """
-        # Position de chaque entrée : premier littéral entier non encore attribué
-        # (recherche ancrée, jamais à l'intérieur d'un autre littéral)
+        # Position de chaque entrée : littéral entier à sa colonne, sinon premier
+        # littéral non encore attribué (jamais à l'intérieur d'un autre littéral).
+        # original_line est line_content : les colonnes s'y appliquent telles quelles.
         used_positions = set()
         positioned = []
         for entry in entries:
-            for pos in find_literal_positions(original_line, entry.original_text):
-                if pos not in used_positions:
-                    used_positions.add(pos)
-                    positioned.append((pos, entry))
-                    break
+            pos = pick_literal_position(original_line, entry.original_text, used_positions, entry.column)
+            if pos is not None:
+                positioned.append((pos, entry))
 
         # Remplacer par position décroissante pour ne pas décaler les indices
         result = original_line

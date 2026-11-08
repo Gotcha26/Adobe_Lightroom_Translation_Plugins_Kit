@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from .config import (
     COMMON_SUFFIXES, STOP_WORDS,
-    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN,
+    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN, LOG_LINE_REGEX,
     PluginRules
 )
 
@@ -186,6 +186,80 @@ def find_literal_positions(line: str, original_text: str) -> List[int]:
     quoted = f'"{original_text}"'
     return [match.start() for match in _ANY_LUA_LITERAL_PATTERN.finditer(line)
             if match.group(0) == quoted]
+
+
+# Après « log: » : nom de méthode éventuel, puis l'argument
+_LOG_METHOD_TAIL = re.compile(r'\s*(?:\w+\s*)?')
+
+
+def log_call_spans(line: str) -> List[Tuple[int, int]]:
+    """
+    Zones (début, fin) des arguments d'appels de log d'une ligne.
+
+    Un appel de log est repéré par LOG_LINE_REGEX (la même notion que
+    l'option « ignorer les logs » de l'Extractor), cherché hors des
+    littéraux : « log( » à l'intérieur d'une chaîne n'en est pas un.
+    La zone va de la parenthèse ouvrante à la parenthèse fermante
+    correspondante (fin de ligne si l'appel continue sur la ligne suivante).
+    Pour un appel sans parenthèses (`log:trace "msg"`), c'est le littéral
+    argument. Un littéral qui commence dans une zone est un argument de log.
+
+    Returns:
+        Liste de (début, fin) en positions de la ligne
+    """
+    masked = _mask_string_literals(line)
+    spans = []
+    for match in LOG_LINE_REGEX.finditer(masked):
+        if masked[match.end() - 1] == '(':
+            open_pos = match.end() - 1
+        else:
+            # « log: » : sauter le nom de méthode jusqu'à l'argument
+            open_pos = _LOG_METHOD_TAIL.match(line, match.end()).end()
+            if not line.startswith('(', open_pos):
+                literal = _ANY_LUA_LITERAL_PATTERN.match(line, open_pos)
+                if literal:
+                    spans.append(literal.span())
+                continue
+
+        depth = 0
+        close_pos = len(line.rstrip('\r\n'))
+        for index in range(open_pos, len(masked)):
+            if masked[index] == '(':
+                depth += 1
+            elif masked[index] == ')':
+                depth -= 1
+                if depth == 0:
+                    close_pos = index + 1
+                    break
+        spans.append((open_pos, close_pos))
+    return spans
+
+
+def blank_spans(line: str, spans: List[Tuple[int, int]]) -> str:
+    """Remplace les zones par des espaces : même longueur, colonnes inchangées."""
+    for start, end in spans:
+        line = line[:start] + ' ' * (end - start) + line[end:]
+    return line
+
+
+def pick_literal_position(line: str, original_text: str, used: set,
+                          preferred: int | None = None) -> int | None:
+    """
+    Choisit le littéral entier "original_text" à remplacer dans la ligne.
+
+    Parmi les littéraux non encore utilisés (`used`), prend celui qui commence
+    à `preferred` (colonne relevée par l'Extractor) s'il existe, sinon le
+    premier. La position choisie est ajoutée à `used`.
+
+    Returns:
+        Position du guillemet ouvrant, ou None si aucun littéral ne convient
+    """
+    positions = [pos for pos in find_literal_positions(line, original_text) if pos not in used]
+    if not positions:
+        return None
+    position = preferred if preferred in positions else positions[0]
+    used.add(position)
+    return position
 
 
 def _mask_string_literals(text: str) -> str:

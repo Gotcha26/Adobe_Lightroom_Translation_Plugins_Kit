@@ -15,7 +15,8 @@ from tools.extractor.main import run_extraction
 from tools.extractor.models import ExtractedString
 from tools.extractor.output import OutputGenerator
 from tools.extractor.utils import (
-    VERBATIM_BACKSLASH, escape_lua_string, find_literal_positions, unescape_lua_string
+    VERBATIM_BACKSLASH, escape_lua_string, find_literal_positions, log_call_spans,
+    unescape_lua_string
 )
 
 
@@ -175,3 +176,59 @@ def test_anchored_search_end_to_end(tmp_path, isolated_config):
     lua = _run_pipeline(plugin)
     assert lua == ('local t = { title = LOC "$$$/Test/PWExport/OpenExport=Open \\"Export\\"", '
                    'tooltip = LOC "$$$/Test/PWExport/Export=Export\\"" }\n')
+
+
+# --- Point 1 : appel de log + libellé UI sur la même ligne ----------------------
+
+def test_log_call_spans():
+    line = 'log:info("Starting export"); title = "Export file"'
+    assert log_call_spans(line) == [(8, line.index(";"))]
+    assert log_call_spans('logInfo("a", f("b")) x = "c"') == [(7, 20)]
+    # Appel sans parenthèses (sucre Lua) : seul le littéral est l'argument
+    line = 'log:trace "Some message"; title = "Shown"'
+    assert log_call_spans(line) == [(10, 24)]
+    # « log( » à l'intérieur d'une chaîne n'est pas un appel de log
+    assert log_call_spans('title = "See log(s) here"') == []
+    # Appel non fermé sur la ligne : jusqu'à la fin de la ligne
+    assert log_call_spans('log("a", "b"') == [(3, 12)]
+
+
+def test_log_and_ui_literal_on_same_line(tmp_path, isolated_config):
+    plugin = _plugin_with(tmp_path, 'log:info("Starting export"); title = "Export file"\n')
+    extractor = _extract(plugin)
+    assert [e.base_text for e in extractor.extracted] == ["Export file"]
+    assert extractor.stats.log_lines_ignored == 1
+    lua = _run_pipeline(plugin)
+    assert lua == 'log:info("Starting export"); title = LOC "$$$/Test/PWExport/ExportFile=Export file"\n'
+
+
+def test_log_and_ui_literal_with_same_text(tmp_path, isolated_config):
+    # Même texte dans le log et dans l'UI : seul le littéral de l'UI est remplacé
+    plugin = _plugin_with(tmp_path, '  logInfo("Export file"); local t = { title = "Export file" }\n')
+    lua = _run_pipeline(plugin)
+    assert lua == ('  logInfo("Export file"); '
+                   'local t = { title = LOC "$$$/Test/PWExport/ExportFile=Export file" }\n')
+
+
+def test_log_call_sugar_and_ui_literal(tmp_path):
+    plugin = _plugin_with(tmp_path, 'log:trace "Some message"; title = "Shown title"\n')
+    assert [e.base_text for e in _extract(plugin).extracted] == ["Shown title"]
+
+
+def test_log_only_line_extracts_nothing(tmp_path):
+    plugin = _plugin_with(tmp_path, 'logInfo("Saving title = now")\n')
+    assert _extract(plugin).extracted == []
+
+
+def test_log_word_inside_string_is_not_a_log_call(tmp_path):
+    plugin = _plugin_with(tmp_path, 'local t = { title = "See log(s) here" }\n')
+    extractor = _extract(plugin)
+    assert [e.base_text for e in extractor.extracted] == ["See log(s) here"]
+    assert extractor.stats.log_lines_ignored == 0
+
+
+def test_log_literals_skipped_in_multiline_block(tmp_path):
+    plugin = _plugin_with(tmp_path, 'LrDialogs.message("Upload failed",\n'
+                                    '  "Check the server"); log:warn("Upload failed badly")\n')
+    texts = [e.base_text for e in _extract(plugin).extracted]
+    assert texts == ["Upload failed", "Check the server"]

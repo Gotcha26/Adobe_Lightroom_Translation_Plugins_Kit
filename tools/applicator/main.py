@@ -58,7 +58,7 @@ from core.i18n import _
 import glob
 import subprocess
 
-from tools.extractor.utils import build_loc_call as _build_loc_call, find_literal_positions
+from tools.extractor.utils import build_loc_call as _build_loc_call, pick_literal_position
 from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
@@ -245,17 +245,21 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
     members_with_pos = []
     used_positions = set()  # Pour eviter d'utiliser la meme position deux fois
 
+    # Colonne relevée par l'Extractor : relative à la ligne sans indentation
+    indent = len(line) - len(line.lstrip())
+
     for member in members:
         original_text = member['original_text']
         # Guillemets doubles uniquement (conformément au SDK Adobe et à Extractor)
         search_str = f'"{original_text}"'
-        # Littéraux entiers seulement : jamais la fin d'un autre littéral (#34)
-        for pos in find_literal_positions(result, original_text):
-            # Utiliser la premiere occurrence non-utilisee
-            if pos not in used_positions:
-                members_with_pos.append((pos, member, search_str))
-                used_positions.add(pos)
-                break
+        # Littéraux entiers seulement : jamais la fin d'un autre littéral. Le
+        # littéral à la colonne relevée est préféré (même texte dans un appel
+        # de log sur la même ligne, par exemple), sinon le premier libre (#34)
+        column = member.get('column')
+        preferred = indent + column if column is not None else None
+        pos = pick_literal_position(result, original_text, used_positions, preferred)
+        if pos is not None:
+            members_with_pos.append((pos, member, search_str))
 
     # Trier par position decroissante pour ne pas decaler les indices
     members_with_pos.sort(key=lambda x: x[0], reverse=True)
