@@ -43,7 +43,6 @@ import os
 import sys
 import json
 import subprocess
-from datetime import datetime
 from typing import Dict, Optional, List
 
 # Ajouter le répertoire courant au path pour importer common
@@ -67,12 +66,11 @@ CONFIG_FILE       = "config.json"
 CONFIG_LOCAL_FILE = "config.local.json"   # Surcharge locale, ignorée par git
 
 DEFAULT_CONFIG = {
-    "plugin_path": r"D:\Gotcha\Documents\DIY\GitHub\LrC-PublishService\PiwigoPublish-lrc-plugin\piwigoPublish.lrplugin",
+    "plugin_path": "",
     "output_base_dir": "",  # Vide = à côté du script
     "prefix": "$$$/Piwigo",
     "lang": "en",
     "temp_dir": DEFAULT_I18N_DIR,  # Nom du dossier temporaire (__i18n_tmp__ par défaut)
-    "last_used": "",
     "enable_flip_anim": True,  # 🎬 Lancer Flip-anim.py au démarrage (true = activé, false = désactivé)
     "auto_add_gitignore": True,  # Ajouter automatiquement le dossier temporaire au .gitignore du plugin
     "debug_i18n": False  # Afficher les infos de détection de langue i18n dans l'en-tête
@@ -97,46 +95,56 @@ class ConfigManager:
         self.base_dir = base_dir
         self.config_path       = os.path.join(base_dir, CONFIG_FILE)
         self.config_local_path = os.path.join(base_dir, CONFIG_LOCAL_FILE)
+        self.shared: Dict = {}   # contenu de config.json (versionné)
+        self.local: Dict = {}    # contenu de config.local.json (non versionné)
         self.config = self._load()
+
+    @staticmethod
+    def _read_json(path: str, message: str) -> Dict:
+        """Lit un fichier JSON de configuration ; renvoie {} si absent ou illisible."""
+        if not os.path.exists(path):
+            return {}
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else {}
+        except Exception as e:
+            print(message.format(error=e))
+            return {}
 
     # ------------------------------------------------------------------
     # Ordre de priorité :  DEFAULT_CONFIG  <  config.json  <  config.local.json
     # ------------------------------------------------------------------
     def _load(self) -> Dict:
-        """Charge la configuration depuis le fichier JSON.
+        """Charge la configuration depuis les fichiers JSON.
 
         config.local.json (si présent) écrase les valeurs de config.json.
         Ce fichier est ignoré par git : utilisez-le pour des surcharges locales.
+        Les deux dictionnaires sont conservés séparément (self.shared / self.local)
+        afin que save() n'écrive jamais l'un dans l'autre.
         """
-        config = DEFAULT_CONFIG.copy()
+        self.shared = self._read_json(self.config_path, _("Erreur lecture config: {error}"))
+        self.local = self._read_json(self.config_local_path, _("Erreur lecture config locale: {error}"))
 
-        # 1) Charger config.json (base partagée)
-        if os.path.exists(self.config_path):
-            try:
-                with open(self.config_path, 'r', encoding='utf-8') as f:
-                    config = {**config, **json.load(f)}
-            except Exception as e:
-                print(_("Erreur lecture config: {error}").format(error=e))
-
-        # 2) Surcharger avec config.local.json (local, non versionnée)
-        if os.path.exists(self.config_local_path):
-            try:
-                with open(self.config_local_path, 'r', encoding='utf-8') as f:
-                    config = {**config, **json.load(f)}
-            except Exception as e:
-                print(_("Erreur lecture config locale: {error}").format(error=e))
+        config = {**DEFAULT_CONFIG, **self.shared, **self.local}
 
         # Appliquer le nom du dossier temporaire
         set_i18n_dir(config.get("temp_dir", DEFAULT_I18N_DIR))
 
         return config
 
+    def _target(self) -> tuple:
+        """Renvoie (dictionnaire, chemin) du fichier où écrire les modifications."""
+        if os.path.exists(self.config_local_path):
+            return self.local, self.config_local_path
+        return self.shared, self.config_path
+
     def save(self):
-        """Sauvegarde la configuration."""
-        self.config["last_used"] = datetime.now().isoformat()
+        """Sauvegarde uniquement le fichier cible (local s'il existe, sinon config.json)."""
+        data, path = self._target()
         try:
-            with open(self.config_path, 'w', encoding='utf-8') as f:
-                json.dump(self.config, f, indent=2, ensure_ascii=False)
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception as e:
             print(_("Erreur sauvegarde config: {error}").format(error=e))
 
@@ -145,9 +153,12 @@ class ConfigManager:
         return self.config.get(key, default)
 
     def set(self, key: str, value):
-        """Définit une valeur de configuration."""
+        """Définit une valeur de configuration dans le fichier cible."""
+        data, path = self._target()
+        data[key] = value
         self.config[key] = value
         self.save()
+        print(_("Configuration mise à jour dans {file}").format(file=os.path.basename(path)))
 
     def display(self):
         """Affiche la configuration actuelle."""
