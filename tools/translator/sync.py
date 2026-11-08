@@ -33,7 +33,7 @@ from .common import (
     parse_translation_file, write_translation_file, update_translation_file_surgical,
     resolve_path, load_update_json, find_languages, c
 )
-from .config_loader import get_reference_filename
+from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
 
 
