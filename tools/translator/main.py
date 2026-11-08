@@ -48,6 +48,7 @@ from core.colors import Colors
 from core.i18n import _
 
 from .common import clear_screen, print_header
+from .config_loader import get_update_filename
 from .compare import run_compare, menu_compare
 from .compare_langs import run_compare_langs, menu_compare_langs
 from .extract import run_extract, run_extract_all, menu_extract
@@ -325,7 +326,7 @@ Exemples:
             output_dir = run_compare(args.old, args.new, output_dir)
 
             import json
-            with open(os.path.join(output_dir, 'UPDATE_en.json'), 'r', encoding='utf-8') as f:
+            with open(os.path.join(output_dir, get_update_filename()), 'r', encoding='utf-8') as f:
                 result = json.load(f)
 
             summary = result['summary']
