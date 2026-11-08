@@ -295,7 +295,9 @@ def menu_sync(plugin_path: str = ""):
         if plugin_path:
             selected = select_tool_output_dir(plugin_path, "Translator", "")
             if selected == "":
-                # Annulé par l'utilisateur : retour au menu
+                # Annulé par l'utilisateur : le signaler puis revenir au menu
+                print(c.warning(_("Sélection annulée, retour au menu.")))
+                input(_("\nAppuyez sur Entrée..."))
                 return None
             # selected None = erreur déjà affichée : pas d'auto-détection, saisie manuelle ci-dessous
             if selected:

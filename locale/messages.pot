@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LocalizationToolKit 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:55+0100\n"
+"POT-Creation-Date: 2026-11-08 16:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,7 +291,7 @@ msgid "Les plugins Lightroom doivent se terminer par .lrplugin"
 msgstr ""
 
 #: LocalizationToolKit.py:742 tools/applicator/menu.py:204
-#: tools/applicator/menu.py:240 tools/extractor/menu.py:185
+#: tools/applicator/menu.py:243 tools/extractor/menu.py:185
 msgid "Continuer quand même? [o/N]:"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgstr ""
 #: LocalizationToolKit.py:850 LocalizationToolKit.py:924
 #: core/menu_helpers.py:81 core/menu_helpers.py:115
 #: tools/applicator/main.py:724 tools/applicator/main.py:742
-#: tools/applicator/menu.py:319 tools/extractor/menu.py:333
+#: tools/applicator/menu.py:322 tools/extractor/menu.py:333
 #: tools/toolbox/delete_temp_dir.py:267 tools/translator/addlang.py:441
 #: tools/translator/main.py:103 tools/translator/main.py:182
 msgid "Votre choix:"
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Appuyez sur ENTRÉE pour continuer..."
 msgstr ""
 
-#: LocalizationToolKit.py:927 tools/applicator/menu.py:323
+#: LocalizationToolKit.py:927 tools/applicator/menu.py:326
 #: tools/extractor/menu.py:337
 msgid "Au revoir!"
 msgstr ""
@@ -1290,13 +1290,13 @@ msgstr ""
 msgid "Oui (recommandé)"
 msgstr ""
 
-#: tools/applicator/menu.py:141 tools/applicator/menu.py:256
-#: tools/applicator/menu.py:303 tools/extractor/menu.py:130
+#: tools/applicator/menu.py:141 tools/applicator/menu.py:259
+#: tools/applicator/menu.py:306 tools/extractor/menu.py:130
 #: tools/extractor/menu.py:317
 msgid "Non"
 msgstr ""
 
-#: tools/applicator/menu.py:142 tools/applicator/menu.py:275
+#: tools/applicator/menu.py:142 tools/applicator/menu.py:278
 msgid "Sauvegardes .bak"
 msgstr ""
 
@@ -1358,79 +1358,79 @@ msgstr ""
 msgid "Extraction auto-détectée: {name}"
 msgstr ""
 
-#: tools/applicator/menu.py:238
+#: tools/applicator/menu.py:241
 #, python-brace-format
 msgid "Fichiers manquants: {files}"
 msgstr ""
 
-#: tools/applicator/menu.py:239
+#: tools/applicator/menu.py:242
 msgid "Ce n'est peut-être pas un dossier Extractor valide."
 msgstr ""
 
-#: tools/applicator/menu.py:245
+#: tools/applicator/menu.py:248
 #, python-brace-format
 msgid "Dossier d'extraction confirmé: {name}"
 msgstr ""
 
-#: tools/applicator/menu.py:253
+#: tools/applicator/menu.py:256
 msgid "Mode simulation (dry-run)"
 msgstr ""
 
-#: tools/applicator/menu.py:255 tools/applicator/menu.py:303
+#: tools/applicator/menu.py:258 tools/applicator/menu.py:306
 #: tools/extractor/menu.py:130 tools/extractor/menu.py:317
 msgid "Oui"
 msgstr ""
 
-#: tools/applicator/menu.py:255
+#: tools/applicator/menu.py:258
 msgid "Affiche les changements SANS modifier les fichiers"
 msgstr ""
 
-#: tools/applicator/menu.py:256
+#: tools/applicator/menu.py:259
 msgid "Applique les modifications (crée des backups)"
 msgstr ""
 
-#: tools/applicator/menu.py:260
+#: tools/applicator/menu.py:263
 #, python-brace-format
 msgid "Mode simulation? [{current}]:"
 msgstr ""
 
-#: tools/applicator/menu.py:264
+#: tools/applicator/menu.py:267
 msgid "Mode SIMULATION activé"
 msgstr ""
 
-#: tools/applicator/menu.py:267
+#: tools/applicator/menu.py:270
 msgid "Mode MODIFICATION activé"
 msgstr ""
 
-#: tools/applicator/menu.py:269
+#: tools/applicator/menu.py:272
 msgid "Simulation"
 msgstr ""
 
-#: tools/applicator/menu.py:269
+#: tools/applicator/menu.py:272
 msgid "Modification"
 msgstr ""
 
-#: tools/applicator/menu.py:270 tools/applicator/menu.py:304
+#: tools/applicator/menu.py:273 tools/applicator/menu.py:307
 #: tools/extractor/menu.py:318
 #, python-brace-format
 msgid "Option inchangée: {status}"
 msgstr ""
 
-#: tools/applicator/menu.py:277
+#: tools/applicator/menu.py:280
 msgid "Crée des copies de sauvegarde avant modification."
 msgstr ""
 
-#: tools/applicator/menu.py:278
+#: tools/applicator/menu.py:281
 msgid "Fortement recommandé pour pouvoir revenir en arrière."
 msgstr ""
 
-#: tools/applicator/menu.py:282
+#: tools/applicator/menu.py:285
 msgid "(Non utilisé en mode simulation)"
 msgstr ""
 
-#: tools/applicator/menu.py:283 tools/applicator/menu.py:337
-#: tools/applicator/menu.py:341 tools/applicator/menu.py:345
-#: tools/applicator/menu.py:357 tools/applicator/menu.py:362
+#: tools/applicator/menu.py:286 tools/applicator/menu.py:340
+#: tools/applicator/menu.py:344 tools/applicator/menu.py:348
+#: tools/applicator/menu.py:360 tools/applicator/menu.py:365
 #: tools/extractor/menu.py:348 tools/extractor/menu.py:352
 #: tools/extractor/menu.py:356 tools/extractor/menu.py:360
 #: tools/extractor/menu.py:364 tools/extractor/menu.py:368
@@ -1439,44 +1439,44 @@ msgstr ""
 msgid "Appuyez sur ENTRÉE..."
 msgstr ""
 
-#: tools/applicator/menu.py:287
+#: tools/applicator/menu.py:290
 #, python-brace-format
 msgid "Créer des sauvegardes? [{current}]:"
 msgstr ""
 
-#: tools/applicator/menu.py:291 tools/applicator/menu.py:301
+#: tools/applicator/menu.py:294 tools/applicator/menu.py:304
 msgid "Sauvegardes activées"
 msgstr ""
 
-#: tools/applicator/menu.py:294
+#: tools/applicator/menu.py:297
 msgid "Êtes-vous sûr de NE PAS vouloir de sauvegardes?"
 msgstr ""
 
-#: tools/applicator/menu.py:295
+#: tools/applicator/menu.py:298
 msgid "Confirmer [o/N]:"
 msgstr ""
 
-#: tools/applicator/menu.py:298
+#: tools/applicator/menu.py:301
 msgid "Sauvegardes désactivées"
 msgstr ""
 
-#: tools/applicator/menu.py:330
+#: tools/applicator/menu.py:333
 msgid "Lancement de la SIMULATION..."
 msgstr ""
 
-#: tools/applicator/menu.py:332
+#: tools/applicator/menu.py:335
 msgid "Lancement de l'application..."
 msgstr ""
 
-#: tools/applicator/menu.py:354 tools/extractor/menu.py:377
+#: tools/applicator/menu.py:357 tools/extractor/menu.py:377
 msgid "Configurez d'abord le chemin du plugin (option 1)"
 msgstr ""
 
-#: tools/applicator/menu.py:356
+#: tools/applicator/menu.py:359
 msgid "Configurez d'abord le dossier d'extraction (option 2)"
 msgstr ""
 
-#: tools/applicator/menu.py:361 tools/extractor/menu.py:382
+#: tools/applicator/menu.py:364 tools/extractor/menu.py:382
 #, python-brace-format
 msgid "Choix invalide: \"{choice}\""
 msgstr ""
@@ -3465,7 +3465,7 @@ msgstr ""
 
 #: tools/translator/compare.py:246 tools/translator/compare.py:253
 #: tools/translator/compare_langs.py:491 tools/translator/compare_langs.py:498
-#: tools/translator/inject.py:290 tools/translator/sync.py:320
+#: tools/translator/inject.py:290 tools/translator/sync.py:322
 msgid "Chemin requis."
 msgstr ""
 
@@ -3479,7 +3479,8 @@ msgstr ""
 #: tools/translator/extract.py:224 tools/translator/inject.py:284
 #: tools/translator/inject.py:291 tools/translator/inject.py:325
 #: tools/translator/inject.py:332 tools/translator/inject.py:369
-#: tools/translator/sync.py:314 tools/translator/sync.py:321
+#: tools/translator/sync.py:300 tools/translator/sync.py:316
+#: tools/translator/sync.py:323
 msgid ""
 "\n"
 "Appuyez sur Entrée..."
@@ -3543,7 +3544,7 @@ msgid "    {var0}• CHANGELOG.txt{var1}"
 msgstr ""
 
 #: tools/translator/compare.py:288 tools/translator/extract.py:256
-#: tools/translator/sync.py:342
+#: tools/translator/sync.py:344
 #, python-brace-format
 msgid "{var0}[INFO]{var1} PROCHAINE ÉTAPE:"
 msgstr ""
@@ -3559,7 +3560,7 @@ msgid "  {var0}• ou SYNC directement pour utiliser {lang} par défaut{var1}"
 msgstr ""
 
 #: tools/translator/compare.py:295 tools/translator/compare_langs.py:574
-#: tools/translator/sync.py:349
+#: tools/translator/sync.py:351
 #, python-brace-format
 msgid "Fichier non trouvé: {e}"
 msgstr ""
@@ -3569,14 +3570,14 @@ msgstr ""
 #: tools/translator/inject.py:365 tools/translator/main.py:379
 #: tools/translator/main.py:460 tools/translator/main.py:494
 #: tools/translator/main.py:527 tools/translator/main.py:554
-#: tools/translator/sync.py:351
+#: tools/translator/sync.py:353
 #, python-brace-format
 msgid "Erreur: {e}"
 msgstr ""
 
 #: tools/translator/compare.py:299 tools/translator/compare_langs.py:570
 #: tools/translator/extract.py:268 tools/translator/inject.py:372
-#: tools/translator/sync.py:353
+#: tools/translator/sync.py:355
 msgid ""
 "\n"
 "Appuyez sur Entrée pour continuer..."
@@ -3984,7 +3985,7 @@ msgstr ""
 
 #: tools/translator/compare_langs.py:455 tools/translator/extract.py:216
 #: tools/translator/inject.py:324 tools/translator/inject.py:331
-#: tools/translator/sync.py:313
+#: tools/translator/sync.py:315
 msgid "Répertoire invalide."
 msgstr ""
 
@@ -4233,18 +4234,18 @@ msgid ""
 "{var0}EXTRACT{var1}: Générer fichiers de traduction"
 msgstr ""
 
-#: tools/translator/extract.py:197
+#: tools/translator/extract.py:197 tools/translator/sync.py:299
 msgid "Sélection annulée, retour au menu."
 msgstr ""
 
-#: tools/translator/extract.py:206 tools/translator/sync.py:304
+#: tools/translator/extract.py:206 tools/translator/sync.py:306
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}"
 msgstr ""
 
-#: tools/translator/extract.py:208 tools/translator/sync.py:306
+#: tools/translator/extract.py:208 tools/translator/sync.py:308
 msgid "Aucun dossier Translator sélectionné"
 msgstr ""
 
@@ -4252,7 +4253,7 @@ msgstr ""
 msgid "Lancez d'abord COMPARE ou spécifiez le dossier UPDATE manuellement"
 msgstr ""
 
-#: tools/translator/extract.py:213 tools/translator/sync.py:310
+#: tools/translator/extract.py:213 tools/translator/sync.py:312
 #, python-brace-format
 msgid ""
 "\n"
@@ -4468,7 +4469,7 @@ msgid ""
 "{var8}{from_ref}{var10} EN par défaut"
 msgstr ""
 
-#: tools/translator/inject.py:357 tools/translator/sync.py:339
+#: tools/translator/inject.py:357 tools/translator/sync.py:341
 msgid "Fichiers mis à jour"
 msgstr ""
 
@@ -5179,7 +5180,7 @@ msgstr ""
 msgid "{var0}[INFO]{var1} Synchronisation..."
 msgstr ""
 
-#: tools/translator/main.py:548 tools/translator/sync.py:334
+#: tools/translator/main.py:548 tools/translator/sync.py:336
 msgid "Aucune langue étrangère trouvée."
 msgstr ""
 
@@ -5293,38 +5294,38 @@ msgstr ""
 msgid "{var0}  [O/n]: {var1}"
 msgstr ""
 
-#: tools/translator/sync.py:317
+#: tools/translator/sync.py:319
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Fichier EN de référence{var1} (ou répertoire):"
 msgstr ""
 
-#: tools/translator/sync.py:324
+#: tools/translator/sync.py:326
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}Répertoire des fichiers de langues{var1} (Locales):"
 msgstr ""
 
-#: tools/translator/sync.py:325
+#: tools/translator/sync.py:327
 #, python-brace-format
 msgid "{var0}  (Entrée = même répertoire que la référence){var1}"
 msgstr ""
 
-#: tools/translator/sync.py:329
+#: tools/translator/sync.py:331
 #, python-brace-format
 msgid ""
 "\n"
 "{var0}[INFO]{var1} Synchronisation en cours..."
 msgstr ""
 
-#: tools/translator/sync.py:343
+#: tools/translator/sync.py:345
 #, python-brace-format
 msgid "{var0}  Recherchez [NEW] et [NEEDS_REVIEW] dans les fichiers{var1}"
 msgstr ""
 
-#: tools/translator/sync.py:344
+#: tools/translator/sync.py:346
 #, python-brace-format
 msgid "{var0}  pour compléter les traductions.{var1}"
 msgstr ""

@@ -121,7 +121,7 @@ def test_reselecting_current_extraction_dir_confirms_it(tmp_path, plugin_dir, mo
     with open(os.path.join(current, "replacements.json"), "w", encoding="utf-8") as f:
         json.dump({}, f)
     menu = _applicator_menu(plugin_dir, current)
-    monkeypatch.setattr("tools.applicator.menu.select_tool_output_dir", lambda *a, **k: current)
+    monkeypatch.setattr("tools.applicator.menu.choose_tool_output_dir", lambda *a, **k: (current, False))
 
     assert menu.input_extraction_dir() is True
     assert menu.extraction_dir == current
@@ -133,10 +133,44 @@ def test_reselecting_current_extraction_dir_still_validates_it(tmp_path, plugin_
     current = str(tmp_path / "extraction")
     os.makedirs(current)
     menu = _applicator_menu(plugin_dir, current)
-    monkeypatch.setattr("tools.applicator.menu.select_tool_output_dir", lambda *a, **k: current)
+    monkeypatch.setattr("tools.applicator.menu.choose_tool_output_dir", lambda *a, **k: (current, False))
     monkeypatch.setattr("builtins.input", lambda *a: "n")
 
     assert menu.input_extraction_dir() is False
+
+
+def test_cancelling_extraction_dir_selection_keeps_current_silently(tmp_path, plugin_dir, monkeypatch, capsys):
+    """Annuler (vrai helper, ENTRÉE) ne confirme pas et ne relance aucun contrôle ni question."""
+    current = str(tmp_path / "extraction")
+    os.makedirs(current)  # sans replacements.json : une validation poserait une question
+    menu = _applicator_menu(plugin_dir, current)
+    asked = []
+    monkeypatch.setattr("builtins.input", lambda *a: asked.append(a) or "")
+
+    assert menu.input_extraction_dir() is True
+    assert menu.extraction_dir == current
+    assert len(asked) == 1  # seulement la saisie du helper
+    out = capsys.readouterr().out
+    assert "confirmé" not in out
+    assert "Fichiers manquants" not in out
+
+
+def test_choose_tool_output_dir_distinguishes_cancel_from_reselect(tmp_path, monkeypatch):
+    from core.menu_helpers import choose_tool_output_dir
+
+    plugin = str(tmp_path / "p.lrplugin")
+    os.makedirs(plugin)
+    current = str(tmp_path / "extraction")
+    os.makedirs(current)
+
+    monkeypatch.setattr("builtins.input", lambda *a: "")
+    assert choose_tool_output_dir(plugin, "Extractor", current) == (current, True)
+
+    monkeypatch.setattr("builtins.input", lambda *a: current)
+    assert choose_tool_output_dir(plugin, "Extractor", current) == (current, False)
+
+    monkeypatch.setattr("builtins.input", lambda *a: str(tmp_path / "absent"))
+    assert choose_tool_output_dir(plugin, "Extractor", current) == (None, False)
 
 
 # =============================================================================
