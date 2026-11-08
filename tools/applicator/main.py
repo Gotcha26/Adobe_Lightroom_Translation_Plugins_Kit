@@ -52,6 +52,7 @@ from core.i18n import _
 import glob
 import subprocess
 
+from tools.extractor.utils import build_loc_call as _build_loc_call
 from .menu import show_interactive_menu
 
 c = Colors()
@@ -199,30 +200,16 @@ def build_loc_call(member: Dict) -> str:
     """
     Construit l'appel LOC pour un membre.
 
-    Format SDK Lightroom: LOC _("$$$/Key=Default Value")
+    Délègue à tools.extractor.utils.build_loc_call (source unique).
     """
-    loc_key = member['loc_key']
-    base_text = member['base_text']
-    leading_spaces = member.get('leading_spaces', 0)
-    trailing_spaces = member.get('trailing_spaces', 0)
-    suffix = member.get('suffix', '')
-
-    parts = []
-
-    # Espaces en debut
-    if leading_spaces > 0:
-        parts.append('_("' + ' ' * leading_spaces + '") .. ')
-
-    # Appel LOC avec valeur par defaut
-    parts.append(f'LOC "{loc_key}={base_text}"')
-
-    # Suffixe ou espaces en fin
-    if suffix:
-        parts.append(f' .. "{suffix}"')
-    elif trailing_spaces > 0:
-        parts.append(' .. _("' + ' ' * trailing_spaces + '")')
-
-    return ''.join(parts)
+    # Task 9 : l'échappement de `"` et `\` se fait dans utils.build_loc_call
+    return _build_loc_call(
+        member['loc_key'],
+        member['base_text'],
+        member.get('leading_spaces', 0),
+        member.get('trailing_spaces', 0),
+        member.get('suffix', ''),
+    )
 
 
 def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, List[Dict]]:

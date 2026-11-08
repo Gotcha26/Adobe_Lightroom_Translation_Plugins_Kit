@@ -245,6 +245,32 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set)
     return final_key
 
 
+def build_loc_call(loc_key: str, base_text: str, leading_spaces: int = 0,
+                   trailing_spaces: int = 0, suffix: str = "") -> str:
+    """
+    Construit l'appel LOC Lua (source unique, partagée Extractor/Applicator).
+
+    Les espaces et suffixes sont des littéraux Lua ordinaires : jamais de `_()`,
+    qui n'existe pas dans un plugin Lightroom.
+
+    Exemples:
+    - LOC "$$$/K=V"
+    - " " .. LOC "$$$/K=V" .. " "
+    - LOC "$$$/K=V" .. " - "
+    """
+    parts = []
+    if leading_spaces > 0:
+        parts.append('"' + ' ' * leading_spaces + '" .. ')
+    # Task 9 : échapper `"` et `\` dans loc_key/base_text/suffix ici
+    parts.append('LOC "' + loc_key + '=' + base_text + '"')
+    # Le suffixe remplace trailing_spaces (il inclut souvent l'espace)
+    if suffix:
+        parts.append(' .. "' + suffix + '"')
+    elif trailing_spaces > 0:
+        parts.append(' .. "' + ' ' * trailing_spaces + '"')
+    return ''.join(parts)
+
+
 def generate_replacement_code(pattern_name: str, loc_key: str,
                                leading: int, trailing: int,
                                suffix: str,
@@ -262,25 +288,6 @@ def generate_replacement_code(pattern_name: str, loc_key: str,
     - Suffixe " - ": LOC "$$$/key=My Text" .. " - "
     - 2 espaces début + suffixe: "  " .. LOC "$$$/key=My Text" .. " - "
     """
-    # Appel LOC avec valeur par défaut
-    loc_call = f'LOC "{loc_key}={base_text}"'
-
-    # Construire les parties
-    parts = []
-
-    # Espaces en début
-    if leading > 0:
-        parts.append(f'"{" " * leading}" .. ')
-
-    # Appel LOC
-    parts.append(loc_call)
-
-    # Suffixe (remplace trailing_spaces si présent, car le suffixe inclut souvent un espace)
-    if suffix:
-        parts.append(f' .. "{suffix}"')
-    elif trailing > 0:
-        parts.append(f' .. "{" " * trailing}"')
-
-    replace_str = ''.join(parts)
+    replace_str = build_loc_call(loc_key, base_text, leading, trailing, suffix)
 
     return f'"{original_text}" → {replace_str}'

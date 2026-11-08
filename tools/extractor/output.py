@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from core.i18n import _
 
 from .models import ExtractedString
+from .utils import build_loc_call
 
 # =============================================================================
 # TRANSLATION WARNING NOTE
@@ -242,25 +243,11 @@ class OutputGenerator:
         """
         Construit l'appel LOC pour une entrée.
 
-        Format ZString du SDK Lightroom: LOC _("$$$/Key=Default Value")
-        La valeur par défaut EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
+        Délègue à utils.build_loc_call (source unique). La valeur par défaut
+        EST OBLIGATOIRE sinon Lightroom affiche la clé brute.
         """
-        parts = []
-
-        # Espaces en début
-        if entry.leading_spaces > 0:
-            parts.append('_("' + ' ' * entry.leading_spaces + '") .. ')
-
-        # Appel LOC avec valeur par défaut (base_text)
-        parts.append(f'LOC "{entry.suggested_key}={entry.base_text}"')
-
-        # Suffixe ou espaces en fin
-        if entry.suffix:
-            parts.append(f' .. "{entry.suffix}"')
-        elif entry.trailing_spaces > 0:
-            parts.append(' .. _("' + ' ' * entry.trailing_spaces + '")')
-
-        return ''.join(parts)
+        return build_loc_call(entry.suggested_key, entry.base_text, entry.leading_spaces,
+                              entry.trailing_spaces, entry.suffix)
 
     def _build_replaced_line(self, original_line: str, entries: List[ExtractedString]) -> str:
         """
