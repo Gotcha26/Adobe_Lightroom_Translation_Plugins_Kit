@@ -105,7 +105,9 @@ def test_ngettext_uses_catalog_plural_forms(toolkit_root):
 
     with i18n.temporary_language("fr"):
         assert i18n.ngettext("{n} fichier", "{n} fichiers", 1) == "{n} fichier"
-        assert i18n.ngettext("{n} fichier", "{n} fichiers", 0) == "{n} fichiers"
+        # Langue source : règle française, 0 est au singulier (#39)
+        assert i18n.ngettext("{n} fichier", "{n} fichiers", 0) == "{n} fichier"
+        assert i18n.ngettext("{n} fichier", "{n} fichiers", 2) == "{n} fichiers"
     with i18n.temporary_language("en"):
         # Pas d'entrée plurielle : gettext retombe sur la règle anglaise n == 1
         assert i18n.ngettext("{n} fichier", "{n} fichiers", 1) == "{n} fichier"

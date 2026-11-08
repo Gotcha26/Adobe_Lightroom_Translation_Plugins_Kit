@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Translator EXTRACT menu: cancelling the folder selection is now reported (message and pause) before going back to the menu (#37)
 - `clear_screen` is now only run on a terminal everywhere (launcher, Extractor, Applicator, Translator menus), through a single `core.cli.clear_screen` also used by the Toolbox (#37)
 - COMPARE no longer hard-codes "EN": the CHANGELOG title, value lines, menu texts and docstrings use the configured reference language code (#37)
+- INJECT: `parse_translate_file` detected the target line with a hard-coded `→` and `split`, so a reference value starting with `→` (`[EN]  → Next`) was read as a translation. The target line is now recognised from `[XX] →` at the start of the line, using `TRANSLATE_ARROW` (#39)
+- `ngettext` fallback for the source language (French) now uses the French rule (singular for 0 and 1, plural for n > 1) instead of `n == 1` (#39)
+
+### Added
+- Tests for SYNC from the menu, the `inject` CLI (`from_ref`), existing markers surviving INJECT, `parse_translate_file` guards (target equal to the reference, `[XX] →` without trailing space), malformed `.i18n_kit.json`, INJECT backup content, `isolated_config` covering `ConfigManager`, and the `is_technical_string("error\n")` behaviour (#39)
 
 ### Changed
 - `--default-plugin` and `--plugin-path` argparse definitions shared by the Extractor, Applicator and Translator moved to `core.cli` (same names, help and defaults) (#37)

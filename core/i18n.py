@@ -273,7 +273,8 @@ def ngettext(singular: str, plural: str, n: int) -> str:
     gettext.GNUTranslations.ngettext selon l'en-tête Plural-Forms du .po
     (entrée msgid/msgid_plural/msgstr[N]) ; sans entrée plurielle dans le
     catalogue, gettext applique la règle anglaise (n == 1 → singulier).
-    Pour la langue source (français, pas de catalogue) : règle n == 1.
+    Pour la langue source (français, pas de catalogue) : règle française,
+    singulier si n <= 1 (0 et 1), pluriel si n > 1.
 
     Args:
         singular: Forme singulière (français)
@@ -285,7 +286,7 @@ def ngettext(singular: str, plural: str, n: int) -> str:
     """
     if _translation is not None:
         return _translation.ngettext(singular, plural, n)
-    return singular if n == 1 else plural
+    return singular if n <= 1 else plural
 
 
 # =============================================================================

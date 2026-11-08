@@ -23,6 +23,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
 
 import os
+import re
 from typing import Dict, Optional
 
 from .common import (
@@ -41,11 +42,13 @@ def _marker_value(line, markers):
     """Valeur après le premier marqueur de `markers` qui ouvre la ligne, sinon None."""
     for m in markers:
         if line.startswith(m):
-            rest = line[len(m):]
-            if rest.lstrip().startswith(TRANSLATE_ARROW):
-                return None  # ligne de traduction cible, pas une valeur de référence
-            return rest.strip()
+            return line[len(m):].strip()
     return None
+
+
+# Ligne cible : « [XX] → » en début de ligne (un seul espace, cf. translate_target_marker).
+# Une valeur de référence commençant par → s'écrit « [EN]  → … » (deux espaces) : aucune confusion.
+_TARGET_LINE_RE = re.compile(r"^\[[^\]]+\] ?" + re.escape(TRANSLATE_ARROW))
 
 
 # =============================================================================
@@ -100,6 +103,18 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
                 current_key = line[len(TRANSLATE_KEY):].strip()
                 current_en_value = en_values.get(current_key, '')
 
+            # Détecter la traduction : « [XX] → » en début de ligne
+            elif _TARGET_LINE_RE.match(line):
+                if current_key:
+                    translation = line[_TARGET_LINE_RE.match(line).end():].strip()
+                    if translation:
+                        # Traduction fournie : « " » brut échappé, sinon la ligne
+                        # écrite ne serait plus relisible (KEY_LINE_RE)
+                        translations[current_key] = escape_translation_value(translation)
+                    else:
+                        # Pas de traduction → utiliser valeur EN
+                        translations[current_key] = current_en_value or ''
+
             # Détecter [<REF> AFTER] pour les clés modifiées
             elif _marker_value(line, after_markers) is not None:
                 if current_key:
@@ -109,20 +124,6 @@ def parse_translate_file(file_path: str, update_data: Optional[Dict] = None) -> 
             elif _marker_value(line, ref_markers) is not None:
                 if current_key and not current_en_value:
                     current_en_value = _marker_value(line, ref_markers)
-
-            # Détecter la traduction (ligne avec →)
-            elif '] → ' in line or '] →' in line:
-                parts = line.split('→', 1)
-                if len(parts) == 2 and current_key:
-                    translation = parts[1].strip()
-
-                    if translation:
-                        # Traduction fournie : « " » brut échappé, sinon la ligne
-                        # écrite ne serait plus relisible (KEY_LINE_RE)
-                        translations[current_key] = escape_translation_value(translation)
-                    else:
-                        # Pas de traduction → utiliser valeur EN
-                        translations[current_key] = current_en_value or ''
 
     return translations
 
