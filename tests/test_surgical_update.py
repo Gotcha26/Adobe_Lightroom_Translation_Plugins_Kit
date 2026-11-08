@@ -23,8 +23,16 @@ def test_round_trip_is_idempotent_and_handles_escaped_quotes(plugin_dir, isolate
     original = parse_translation_file(target)
 
     # Aller-retour avec des traductions identiques : rien ne change
+    def _without_generated(lines):
+        return [line for line in lines if not line.startswith("-- Generated:")]
+
+    before = _read_lines(target)
+    update_translation_file_surgical(target, None, dict(original))
+    first_pass = _read_lines(target)
     update_translation_file_surgical(target, None, dict(original))
     assert parse_translation_file(target) == original
+    assert _without_generated(first_pass) == _without_generated(before)
+    assert _without_generated(_read_lines(target)) == _without_generated(first_pass)
 
     # Une nouvelle valeur contenant des guillemets échappés doit être écrite
     translations = dict(original)
@@ -57,6 +65,25 @@ def test_remove_unlisted_also_adds_missing_keys(plugin_dir, isolated_config):
 
     assert parse_translation_file(target) == translations
     assert _read_lines(target).count("-- Export") == 1
+
+
+def test_markers_are_replaced_not_stacked(plugin_dir, isolated_config):
+    target = _fr_file(plugin_dir)
+    translations = parse_translation_file(target)
+    translations["$$$/Test/Export/New"] = "Nouveau"
+    review = "-- [NEEDS_REVIEW] Reference text was modified"
+    new = "-- [NEW] To translate"
+    markers = {"$$$/Test/Export/Existing": review, "$$$/Test/Export/New": new}
+    update_data = {"added": {"$$$/Test/Export/New": "New"}, "changed": {"$$$/Test/Export/Existing": {}}}
+
+    for _pass in range(2):
+        update_translation_file_surgical(target, update_data, translations, markers, remove_unlisted=True)
+
+    lines = _read_lines(target)
+    assert lines.count(review) == 1
+    assert lines.count(new) == 1
+    assert lines[lines.index(review) + 1].startswith('"$$$/Test/Export/Existing=')
+    assert lines[lines.index(new) + 1] == '"$$$/Test/Export/New=Nouveau"'
 
 
 def test_added_key_goes_into_its_existing_section(plugin_dir, isolated_config):

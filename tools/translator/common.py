@@ -261,7 +261,13 @@ def update_translation_file_surgical(
             if key in translations:
                 marker = markers.get(key, '')
                 if marker:
+                    # Remplacer le marqueur déjà présent au-dessus de la clé au lieu
+                    # de l'empiler (relances successives de SYNC)
+                    if output_lines and output_lines[-1].strip().startswith('-- ['):
+                        output_lines.pop()
                     output_lines.append(f'{marker}\n')
+                # Sans marqueur demandé, un marqueur existant est conservé : c'est
+                # un repère pour le traducteur (INJECT ne transmet jamais de marqueurs)
                 output_lines.append(f'"{key}={translations[key]}"\n')
             else:
                 output_lines.append(line)
