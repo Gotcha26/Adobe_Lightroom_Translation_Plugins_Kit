@@ -231,6 +231,22 @@ def test_log_call_sugar_and_ui_literal(tmp_path):
     assert [e.base_text for e in _extract(plugin).extracted] == ["Shown title"]
 
 
+def test_log_call_table_sugar_spans():
+    # Appel avec une table pour argument (sucre Lua `f{...}`) : accolades équilibrées
+    line = 'log:info{ title = "In log", n = { 1 } }; t = { title = "Shown" }'
+    assert log_call_spans(line) == [(8, line.index(";"))]
+    # Accolade dans un littéral du log : ignorée ; table non fermée : fin de ligne
+    line = 'log:info { "a } b", title = "x"'
+    assert log_call_spans(line) == [(9, len(line))]
+
+
+def test_log_call_table_sugar_and_ui_literal(tmp_path):
+    plugin = _plugin_with(tmp_path, 'log:info{ title = "Log title" }; local t = { title = "Shown title" }\n')
+    extractor = _extract(plugin)
+    assert [e.base_text for e in extractor.extracted] == ["Shown title"]
+    assert extractor.stats.log_lines_ignored == 1
+
+
 def test_log_only_line_extracts_nothing(tmp_path):
     plugin = _plugin_with(tmp_path, 'logInfo("Saving title = now")\n')
     assert _extract(plugin).extracted == []

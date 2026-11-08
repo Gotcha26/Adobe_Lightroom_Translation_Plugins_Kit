@@ -191,8 +191,10 @@ def log_call_spans(line: str) -> List[Tuple[int, int]]:
     littéraux : « log( » à l'intérieur d'une chaîne n'en est pas un.
     La zone va de la parenthèse ouvrante à la parenthèse fermante
     correspondante (fin de ligne si l'appel continue sur la ligne suivante).
-    Pour un appel sans parenthèses (`log:trace "msg"`), c'est le littéral
-    argument. Un littéral qui commence dans une zone est un argument de log.
+    Pour un appel sans parenthèses (sucre Lua), c'est le littéral argument
+    (`log:trace "msg"`) ou la table argument, de `{` à l'accolade fermante
+    correspondante (`log:info{ ... }`). Un littéral qui commence dans une zone
+    est un argument de log.
 
     Returns:
         Liste de (début, fin) en positions de la ligne
@@ -205,18 +207,20 @@ def log_call_spans(line: str) -> List[Tuple[int, int]]:
         else:
             # « log: » : sauter le nom de méthode jusqu'à l'argument
             open_pos = _LOG_METHOD_TAIL.match(line, match.end()).end()
-            if not line.startswith('(', open_pos):
+            if not line.startswith(('(', '{'), open_pos):
                 literal = _ANY_LUA_LITERAL_PATTERN.match(line, open_pos)
                 if literal:
                     spans.append(literal.span())
                 continue
 
+        opening = masked[open_pos]
+        closing = ')' if opening == '(' else '}'
         depth = 0
         close_pos = len(line.rstrip('\r\n'))
         for index in range(open_pos, len(masked)):
-            if masked[index] == '(':
+            if masked[index] == opening:
                 depth += 1
-            elif masked[index] == ')':
+            elif masked[index] == closing:
                 depth -= 1
                 if depth == 0:
                     close_pos = index + 1
