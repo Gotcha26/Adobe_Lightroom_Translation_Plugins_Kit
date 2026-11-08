@@ -29,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Language detection no longer relies on the deprecated `locale.getdefaultlocale()` and no longer silently falls back to EN (#23)
 - `pyproject.toml` declared Python >= 3.7 while the code requires 3.10; the non-functional pip entry point was removed (#24)
 - Wrong and contradictory references in help texts, docstrings, `epilog`s and the generated `CHANGELOG.txt` (`Translator_main.py`, `common.paths`...), contradictory version numbers, and missing i18n scripts in `CONTRIBUTING.md` (#31)
-- Path handling by `str.replace`, loose folder matching, Applicator encoding, repeated `Colors()` instances and duplicated git blocks (#32)
 
 ### Changed
 - AUTOSYNC uses the configured prefix instead of `$$$/Piwigo`, asks for confirmation before the real Applicator run, and creates a single backup session (#25)

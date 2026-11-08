@@ -46,7 +46,7 @@ Internationalizing a Lightroom plugin involves:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   LocalisationToolKit.py                    │
+│                   LocalizationToolKit.py                    │
 │                       Main Menu                             │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -119,7 +119,7 @@ For specific needs, consult the [detailed Translator documentation](../../3_Tran
 ```
 Hardcoded Lua Code
          │
-         ▼  [1] python LocalisationToolKit.py → Extractor
+         ▼  [1] python LocalizationToolKit.py → Extractor
 TranslatedStrings_en.txt
          │
          ▼  [2] Translator → INSTALL
@@ -344,7 +344,7 @@ Editable via: `[Option 6] Configure Plugin`
 ```bash
 git clone https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit.git
 cd Adobe_Lightroom_Translation_Plugins_Kit
-python LocalisationToolKit.py
+python LocalizationToolKit.py
 ```
 
 **No external dependencies required** (only Python standard library).

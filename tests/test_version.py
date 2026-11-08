@@ -1,7 +1,6 @@
 """Version unique et absence de références obsolètes dans le code (#31)."""
 
 import re
-import tomllib
 from pathlib import Path
 
 import core
@@ -26,8 +25,10 @@ def _python_sources():
 
 
 def test_version_matches_pyproject():
-    with open(ROOT / "pyproject.toml", "rb") as f:
-        declared = tomllib.load(f)["project"]["version"]
+    # Regex plutôt que tomllib (absent en Python 3.10) : version sous [project]
+    text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    section = re.search(r"^\[project\]\s*$(.*?)(?=^\[|\Z)", text, re.S | re.M).group(1)
+    declared = re.search(r'^version\s*=\s*"([^"]+)"', section, re.M).group(1)
     assert core.__version__ == declared == "1.1.0"
 
 
