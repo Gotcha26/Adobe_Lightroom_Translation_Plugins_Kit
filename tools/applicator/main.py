@@ -200,9 +200,10 @@ def build_loc_call(member: Dict) -> str:
     """
     Construit l'appel LOC pour un membre.
 
-    Délègue à tools.extractor.utils.build_loc_call (source unique).
+    Délègue à tools.extractor.utils.build_loc_call (source unique), qui
+    ré-échappe `"` et `\\` de base_text (texte réel). original_text, lui,
+    reste la forme source échappée recherchée dans la ligne.
     """
-    # Task 9 : l'échappement de `"` et `\` se fait dans utils.build_loc_call
     return _build_loc_call(
         member['loc_key'],
         member['base_text'],

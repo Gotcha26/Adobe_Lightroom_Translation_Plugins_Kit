@@ -11,7 +11,7 @@ qui analyse les fichiers Lua, gère les contextes multi-lignes, les concaténati
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -36,7 +36,7 @@ from .models import ExtractedString, ExtractionStats
 from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
-    is_in_technical_context
+    is_in_technical_context, unescape_lua_string, block_comment_state
 )
 
 # Instance couleurs
@@ -115,7 +115,8 @@ class MultiLineContext:
         Trouve le numéro de ligne réel où se trouve une chaîne.
 
         Args:
-            search_text: La chaîne à rechercher
+            search_text: La chaîne à rechercher, sous sa forme source (échappée,
+                         telle que capturée par extract_all_string_literals)
 
         Returns:
             Le numéro de ligne où la chaîne a été trouvée, ou start_line par défaut
@@ -219,9 +220,19 @@ class LocalizableStringExtractor:
 
         file_has_strings = False
         self.multi_line_ctx.reset()
+        # Niveau du commentaire bloc --[=*[ ouvert ('=' * n), None hors commentaire
+        block_comment_level = None
 
         for line_num, line in enumerate(lines, 1):
             line_stripped = line.strip()
+
+            # Lignes dans un commentaire bloc (y compris la ligne de fermeture) : ignorées
+            if block_comment_level is not None:
+                block_comment_level = block_comment_state(line, block_comment_level)
+                continue
+
+            # Un commentaire bloc peut s'ouvrir sur cette ligne (en début ou après du code)
+            block_comment_level = block_comment_state(line, None)
 
             # Ignorer les commentaires Lua
             if line_stripped.startswith('--'):
@@ -425,11 +436,15 @@ class LocalizableStringExtractor:
         """
         Crée une entrée ExtractedString pour une chaîne.
 
+        original_text est la forme source (échappée) : elle reste telle quelle
+        pour que l'Applicator la retrouve dans la ligne. clean_text, base_text
+        et suffix sont dés-échappés (texte réel, base de la clé LOC).
+
         Returns:
             L'entrée créée ou None si déjà vue/invalide
         """
-        # ÉTAPE 1: Extraire les espaces de formatage
-        clean_text, leading, trailing = extract_spacing(original_text)
+        # ÉTAPE 1: Extraire les espaces de formatage (sur le texte réel)
+        clean_text, leading, trailing = extract_spacing(unescape_lua_string(original_text))
 
         if len(clean_text) < self.min_length:
             return None
@@ -517,12 +532,13 @@ class LocalizableStringExtractor:
 
     def _extract_existing_loc(self, line: str, rel_path: str, file_name: str, line_num: int):
         """Extrait les clés LOC existantes d'une ligne déjà localisée."""
-        # Capturer: LOC "$$$/Key=value" (valeur jusqu'au guillemet fermant uniquement)
-        loc_pattern = re.compile(r'LOC\s+"(\$\$\$/[^=]+)=([^"]+)"')
+        # Capturer: LOC "$$$/Key=value" (valeur jusqu'au guillemet fermant non échappé)
+        loc_pattern = re.compile(r'LOC\s+"(\$\$\$/[^=]+)=((?:[^"\\]|\\.)+)"')
 
         for match in loc_pattern.finditer(line):
             existing_key = match.group(1)
-            existing_value = match.group(2)
+            raw_value = match.group(2)  # forme source (échappée)
+            existing_value = unescape_lua_string(raw_value)
 
             # Ignorer les clés techniques (headers HTTP, identifiants, etc.)
             is_technical_key = any(
@@ -538,7 +554,7 @@ class LocalizableStringExtractor:
                 continue
 
             entry = ExtractedString(
-                original_text=existing_value,
+                original_text=raw_value,
                 clean_text=existing_value,
                 base_text=existing_value,
                 file_path=rel_path,
@@ -551,7 +567,7 @@ class LocalizableStringExtractor:
                 trailing_spaces=0,
                 suffix="",
                 replacement_code="",
-                match_context=f'LOC "{existing_key}={existing_value}"',
+                match_context=f'LOC "{existing_key}={raw_value}"',
                 is_concat_member=False,
                 concat_member_index=0,
                 concat_total_members=1

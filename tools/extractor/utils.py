@@ -11,7 +11,7 @@ Traitement du texte, extraction d'espaces/suffixes, détection des chaînes tech
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -26,8 +26,90 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from .config import (
     COMMON_SUFFIXES, IGNORE_EXACT, TECHNICAL_PATTERNS, STOP_WORDS,
-    TECHNICAL_CONTEXT_PATTERNS
+    TECHNICAL_CONTEXT_PATTERNS, LUA_STRING_LITERAL_PATTERN, BLOCK_COMMENT_OPEN_PATTERN
 )
+
+# Échappements simples d'un littéral Lua (forme source -> caractère)
+_LUA_SIMPLE_ESCAPES = {
+    '\\': '\\', '"': '"', "'": "'",
+    'n': '\n', 'r': '\r', 't': '\t',
+    'a': '\a', 'b': '\b', 'f': '\f', 'v': '\v',
+}
+# Caractères à ré-échapper dans un littéral Lua entre guillemets doubles
+_LUA_ESCAPE_OUT = {
+    '\\': '\\\\', '"': '\\"',
+    '\n': '\\n', '\r': '\\r', '\t': '\\t',
+    '\a': '\\a', '\b': '\\b', '\f': '\\f', '\v': '\\v',
+}
+_LUA_ESCAPE_SEQ = re.compile(r'\\(.)', re.DOTALL)
+
+
+def unescape_lua_string(text: str) -> str:
+    """
+    Dés-échappe le contenu d'un littéral Lua (forme source -> texte réel).
+
+    Seuls les échappements simples sont décodés (\\\\, \\", \\', \\n, \\r, \\t,
+    \\a, \\b, \\f, \\v). Les autres séquences (\\ddd, \\xXX, \\z, \\u{...}) sont
+    conservées telles quelles.
+    """
+    if '\\' not in text:
+        return text
+
+    def _decode(match: re.Match) -> str:
+        char = match.group(1)
+        return _LUA_SIMPLE_ESCAPES.get(char, match.group(0))
+
+    return _LUA_ESCAPE_SEQ.sub(_decode, text)
+
+
+def escape_lua_string(text: str) -> str:
+    """
+    Échappe un texte pour l'insérer entre guillemets doubles Lua
+    (inverse de unescape_lua_string pour les échappements simples).
+    """
+    return ''.join(_LUA_ESCAPE_OUT.get(ch, ch) for ch in text)
+
+
+def _mask_string_literals(text: str) -> str:
+    """Remplace chaque littéral entre guillemets doubles par des espaces (même longueur)."""
+    return LUA_STRING_LITERAL_PATTERN.sub(lambda m: ' ' * len(m.group(0)), text)
+
+
+def block_comment_state(line: str, open_level: str | None) -> str | None:
+    """
+    Calcule l'état « commentaire bloc » Lua à la fin d'une ligne.
+
+    Un commentaire bloc s'ouvre par --[[ ou --[=*[ et se ferme par ]] ou ]=*]
+    de même niveau (même nombre de '='). Un `--` hors chaîne qui n'est pas
+    suivi de [=*[ est un commentaire de ligne : il clôt l'analyse de la ligne.
+
+    Args:
+        line: La ligne de code Lua
+        open_level: Niveau ('=' * n) du commentaire bloc ouvert au début de la
+                    ligne, ou None si la ligne commence hors commentaire
+
+    Returns:
+        Le niveau du commentaire bloc encore ouvert en fin de ligne, ou None
+    """
+    pos = 0
+    while True:
+        if open_level is not None:
+            closing = ']' + open_level + ']'
+            idx = line.find(closing, pos)
+            if idx == -1:
+                return open_level
+            pos = idx + len(closing)
+            open_level = None
+
+        rest = _mask_string_literals(line[pos:])
+        dash = rest.find('--')
+        if dash == -1:
+            return None
+        opening = BLOCK_COMMENT_OPEN_PATTERN.match(rest, dash)
+        if not opening:
+            return None  # Commentaire de ligne : le reste est ignoré
+        open_level = opening.group(1)
+        pos += opening.end()
 
 
 def extract_spacing(text: str) -> Tuple[str, int, int]:
@@ -65,18 +147,19 @@ def extract_all_string_literals(line: str) -> List[Tuple[str, int, int]]:
 
     Note: Les guillemets simples ne sont PAS supportés volontairement.
     Le plugin doit utiliser des guillemets doubles conformément au SDK Adobe.
+    Les guillemets échappés (\\") font partie du littéral.
 
     Args:
         line: La ligne de code Lua
 
     Returns:
-        Liste de (texte, position_debut, position_fin)
+        Liste de (texte, position_debut, position_fin) ; le texte est la forme
+        source (échappée), à dés-échapper avec unescape_lua_string
     """
     results = []
 
-    # Guillemets doubles uniquement
-    pattern_double = re.compile(r'"([^"]*)"')
-    for match in pattern_double.finditer(line):
+    # Guillemets doubles uniquement, échappements tolérés
+    for match in LUA_STRING_LITERAL_PATTERN.finditer(line):
         text = match.group(1)
 
         # Filtrer les fausses captures qui contiennent du code Lua
@@ -253,19 +336,22 @@ def build_loc_call(loc_key: str, base_text: str, leading_spaces: int = 0,
     Les espaces et suffixes sont des littéraux Lua ordinaires : jamais de `_()`,
     qui n'existe pas dans un plugin Lightroom.
 
+    base_text et suffix sont des textes réels (dés-échappés) : `"` et `\\`
+    y sont ré-échappés pour produire un littéral Lua valide.
+
     Exemples:
     - LOC "$$$/K=V"
     - " " .. LOC "$$$/K=V" .. " "
     - LOC "$$$/K=V" .. " - "
+    - LOC "$$$/K=Say \\"hi\\""
     """
     parts = []
     if leading_spaces > 0:
         parts.append('"' + ' ' * leading_spaces + '" .. ')
-    # Task 9 : échapper `"` et `\` dans loc_key/base_text/suffix ici
-    parts.append('LOC "' + loc_key + '=' + base_text + '"')
+    parts.append('LOC "' + escape_lua_string(loc_key) + '=' + escape_lua_string(base_text) + '"')
     # Le suffixe remplace trailing_spaces (il inclut souvent l'espace)
     if suffix:
-        parts.append(' .. "' + suffix + '"')
+        parts.append(' .. "' + escape_lua_string(suffix) + '"')
     elif trailing_spaces > 0:
         parts.append(' .. "' + ' ' * trailing_spaces + '"')
     return ''.join(parts)

@@ -11,7 +11,7 @@ Définit les patterns regex, suffixes, contextes UI, listes d'exclusion, pattern
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -37,8 +37,15 @@ LOG_LINE_REGEX = re.compile(
     re.IGNORECASE
 )
 
+# Littéral Lua entre guillemets doubles, tolérant aux échappements (\" et \\).
+# Le groupe 1 contient le texte tel qu'écrit dans le source (forme échappée).
+LUA_STRING_LITERAL_PATTERN = re.compile(r'"((?:[^"\\]|\\.)*)"')
+
 # Pattern pour extraire TOUTES les chaînes littérales d'une ligne
-ALL_STRINGS_PATTERN = re.compile(r'"([^"]*)"')
+ALL_STRINGS_PATTERN = LUA_STRING_LITERAL_PATTERN
+
+# Ouverture d'un commentaire bloc Lua : --[[ ou --[=*[ (le niveau = nombre de '=')
+BLOCK_COMMENT_OPEN_PATTERN = re.compile(r'--\[(=*)\[')
 
 
 # =============================================================================

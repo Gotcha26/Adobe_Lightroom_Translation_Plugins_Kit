@@ -29,6 +29,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from core.i18n import _
 
 from .models import ExtractedString, ExtractionStats
+from .utils import escape_lua_string
 
 
 class ReportGenerator:
@@ -204,8 +205,8 @@ class ReportGenerator:
 
             for entry in sorted(unique_keys.values(), key=lambda e: e.suggested_key):
                 markers = self._get_markers(entry)
-                # Utiliser base_text (sans suffixe) pour la valeur
-                f.write(f'"{entry.suggested_key}={entry.base_text}"{markers}\n')
+                # Utiliser base_text (sans suffixe) pour la valeur, sous forme échappée
+                f.write(f'"{entry.suggested_key}={escape_lua_string(entry.base_text)}"{markers}\n')
 
         short_path = self._shorten_path(output_path, self.plugin_path)
         if not self.silent:

@@ -31,7 +31,7 @@ from core.i18n import _
 from tools.translator.common import section_for_key
 
 from .models import ExtractedString
-from .utils import build_loc_call
+from .utils import build_loc_call, escape_lua_string
 
 # =============================================================================
 # TRANSLATION WARNING NOTE
@@ -110,8 +110,9 @@ class OutputGenerator:
                 f.write(f"-- {category}\n")
 
                 for entry in sorted(entries, key=lambda e: e.suggested_key):
-                    # Fichier propre : uniquement clé=valeur, sans émojis ni métadonnées
-                    f.write(f'"{entry.suggested_key}={entry.base_text}"\n')
+                    # Fichier propre : uniquement clé=valeur, sans émojis ni métadonnées.
+                    # La valeur est écrite sous forme échappée (\" et \\), comme dans le Lua.
+                    f.write(f'"{entry.suggested_key}={escape_lua_string(entry.base_text)}"\n')
 
                 f.write("\n")
 
