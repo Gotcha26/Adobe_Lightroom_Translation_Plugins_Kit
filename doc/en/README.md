@@ -133,7 +133,7 @@ Functional Validation
 ```
 
 **Commands:**
-1. Configure plugin path: `[Option 6]`
+1. Configure plugin path: `[Option 7]`
 2. Extract strings: `[Option 1] Extractor`
 3. Install: `[Option 3] Translator → INSTALL`
 4. Apply keys: `[Option 2] Applicator`
@@ -327,7 +327,7 @@ The `config.json` file stores your preferences:
 | `prefix` | Prefix for localization keys (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Default language of target LrC plugin source code | `en` |
 
-Editable via: `[Option 6] Configure Plugin`
+Editable via: `[Option 7] Configure Plugin`
 
 > **Note**: When `auto_add_gitignore` is enabled, the toolkit automatically detects if the plugin is in a Git repository and offers to add the temporary folder to `.gitignore` to avoid versioning generated files which can be numerous and non-essential to version.
 

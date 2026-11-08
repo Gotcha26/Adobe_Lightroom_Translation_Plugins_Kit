@@ -136,7 +136,7 @@ Validation fonctionnelle
 ```
 
 **Commandes :**
-1. Configurer le chemin du plugin : `[Option 6]`
+1. Configurer le chemin du plugin : `[Option 7]`
 2. Extraire les chaînes : `[Option 1] Extractor`
 3. Installer : `[Option 3] Translator → INSTALL`
 4. Appliquer les clés : `[Option 2] Applicator`
@@ -332,7 +332,7 @@ Le fichier `config.json` stocke vos préférences :
 | `prefix` | Préfixe des clés de localisation (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Langue par défaut du code source du plugin LrC cicblé | `en` |
 
-Modifiable via : `[Option 6] Configurer le plugin`
+Modifiable via : `[Option 7] Configurer le plugin`
 
 > **Note** : Lorsque `auto_add_gitignore` est activé, le toolkit détecte automatiquement si le plugin est dans un dépôt Git et propose d'ajouter le dossier temporaire au `.gitignore` pour éviter de versionner les fichiers générés qui peuvent être nombreux et non essentiel à versionner.
 

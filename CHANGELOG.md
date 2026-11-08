@@ -21,10 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI `inject` raised `KeyError` `from_en` (the function returns `from_ref`) (#15)
 - Residues of the automatic i18n pass: default suffix `"_("`, `[N_(]` prompts, corrupted regexes (#16)
 - Backups were flattened by file name: collisions, and restoration to the plugin root for `.lua` files in subfolders (#17)
-- `ConfigManager.save()` wrote `config.local.json` overrides into the versioned `config.json`; personal path removed from the defaults (#18)
+- `ConfigManager` wrote settings into the versioned `config.json`: they now always go to `config.local.json` (created if absent); personal path and Piwigo prefix removed from the defaults (#18)
 - COMPARE ignored the configured reference language (`UPDATE_en.json` / `TranslatedStrings_en.txt` were hard-coded) (#19)
 - Surgical update of TranslatedStrings: "removed" keys were kept, regexes were not escaped, sections were inconsistent (#20)
-- `TRANSLATE_xx.txt` format: translatable markers and parser are no longer hard-coded to `[EN]` / `[EN APRÈS]`, so INJECT works with any UI language or reference language (#21)
+- `TRANSLATE_xx.txt` format: translatable markers and parser are no longer hard-coded to `[EN]` / `[EN APRÈS]`, so INJECT works with any UI language or reference language; a raw `"` typed in a translation is escaped instead of producing an unreadable line (#21)
 - Extractor: escaped quotes `\"` were split incorrectly and `--[[ ]]` block comments were not ignored (#22)
 - Language detection no longer relies on the deprecated `locale.getdefaultlocale()` and no longer silently falls back to EN (#23)
 - `pyproject.toml` declared Python >= 3.7 while the code requires 3.10; the non-functional pip entry point was removed (#24)
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Robustness: plugin-relative paths computed with `relpath` (case-insensitive on Windows) instead of `str.replace`, exact tool-folder matching merging old and prefixed folders, git repository detected at any depth above the plugin, non-UTF-8 `.lua` files reported by the Applicator instead of aborting the run, invalid config JSON reported, a single shared color instance honouring a failed `SetConsoleMode`, no ANSI animation or screen clearing outside a terminal, `"Export:"` and `"Export"` no longer share a LOC key, SYNC markers re-read through fixed prefixes, and `LocalizationToolKit.py --help` (#32)
 
 ### Changed
-- AUTOSYNC uses the configured prefix instead of `$$$/Piwigo`, asks for confirmation before the real Applicator run, and creates a single backup session (#25)
+- AUTOSYNC uses the configured prefix instead of `$$$/Piwigo`, asks for confirmation before the real Applicator run, creates a single backup session whose `.bak` files keep the original content, and names the offending files when the Applicator fails (#25)
 - Unified CLI: `apply` no longer forces `--dry-run`, `install` / `addlang` / `autosync` sub-commands added, blocking prompts avoided in scripted mode (#26)
 - Piwigo-specific rules moved out of the generic Extractor into an optional per-plugin `.i18n_kit.json` (#27)
 - Outputs are no longer written into the toolkit tree, `.bak` files no longer land at the plugin root, and the Translator output folder is consistent with the other tools (#28)
