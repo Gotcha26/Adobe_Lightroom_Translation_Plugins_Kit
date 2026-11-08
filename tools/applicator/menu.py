@@ -263,7 +263,7 @@ class ApplicatorMenu:
         print(f"  {c.VALUE}" + _("Non") + f"{c.RESET} = " + _("Applique les modifications (crée des backups)"))
         print()
 
-        current = "O_(" if self.dry_run else ")N"
+        current = "O/n" if self.dry_run else "N/o"
         response = input(c.prompt(_("Mode simulation? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
@@ -290,7 +290,7 @@ class ApplicatorMenu:
             input(f"\n{c.DIM}" + _("Appuyez sur ENTRÉE...") + f"{c.RESET}")
             return
 
-        current = "O_(" if self.create_backup else ")N"
+        current = "O/n" if self.create_backup else "N/o"
         response = input(c.prompt(_("Créer des sauvegardes? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes', '']:

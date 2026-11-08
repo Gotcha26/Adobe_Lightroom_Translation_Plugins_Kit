@@ -263,7 +263,7 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
         # Verifier que cette chaine n'est pas deja dans un LOC
         # Chercher "LOC" avant la position
         before_context = result[max(0, pos-20):pos]
-        if 'LOC ' in before_context or 'LOC_("' in before_context or ")LOC'" in before_context:
+        if 'LOC ' in before_context or 'LOC("' in before_context or "LOC'" in before_context:
             continue  # Deja localisee
 
         # Construire le remplacement

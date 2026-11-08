@@ -291,7 +291,7 @@ class InteractiveMenu:
 
         # ignore_log=True signifie "ignorer les logs" (donc ne pas les inclure)
         # current affiche si les logs sont inclus (inverse de ignore_log)
-        current = "N_(" if self.ignore_log else ")O"
+        current = "N/o" if self.ignore_log else "O/n"
         response = input(c.prompt(_("Inclure les messages de log? [{current}]:").format(current=current) + " ")).strip().lower()
 
         if response in ['o', 'y', 'oui', 'yes']:
