@@ -99,27 +99,6 @@ UI_CONTEXT_PATTERNS: List[tuple] = [
     ('value', re.compile(r'\bvalue\s*=\s*')),
 ]
 
-# Anciens patterns pour compatibilité (chaîne simple)
-UI_PATTERNS: List[tuple] = [
-    ('title', re.compile(r'\btitle\s*=\s*"([^"]*)"')),
-    ('tooltip', re.compile(r'\btooltip\s*=\s*"([^"]*)"')),
-    ('label', re.compile(r'\blabel\s*=\s*"([^"]*)"')),
-    ('value', re.compile(r'\bvalue\s*=\s*"([^"]*)"')),
-    ('placeholder', re.compile(r'\bplaceholder\s*=\s*"([^"]*)"')),
-    ('LrDialogs.message', re.compile(r'LrDialogs\.message\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.confirm', re.compile(r'LrDialogs\.confirm\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.showError', re.compile(r'LrDialogs\.showError\s*\(\s*"([^"]*)"')),
-    ('LrDialogs.showBezel', re.compile(r'LrDialogs\.showBezel\s*\(\s*"([^"]*)"')),
-    ('actionVerb', re.compile(r'\bactionVerb\s*=\s*"([^"]*)"')),
-    ('cancelVerb', re.compile(r'\bcancelVerb\s*=\s*"([^"]*)"')),
-    ('otherVerb', re.compile(r'\botherVerb\s*=\s*"([^"]*)"')),
-    ('message', re.compile(r'\bmessage\s*=\s*"([^"]*)"')),
-    ('info', re.compile(r'\binfo\s*=\s*"([^"]*)"')),
-    ('caption', re.compile(r'\bcaption\s*=\s*"([^"]*)"')),
-    ('LrPluginName', re.compile(r'LrPluginName\s*=\s*"([^"]*)"')),
-    ('popup_item', re.compile(r'\{\s*title\s*=\s*"([^"]*)"\s*,\s*value\s*=')),
-]
-
 
 # =============================================================================
 # LISTES D'EXCLUSION

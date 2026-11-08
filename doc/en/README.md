@@ -311,8 +311,7 @@ The `config.json` file stores your preferences:
   "auto_add_gitignore": true,
   "enable_flip_anim": false,
   "prefix": "$$$/Piwigo",
-  "lang": "en",
-  "last_used": ""
+  "lang": "en"
 }
 ```
 
@@ -327,7 +326,6 @@ The `config.json` file stores your preferences:
 | `enable_flip_anim` | Display animation on menu startup | `true` |
 | `prefix` | Prefix for localization keys (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Default language of target LrC plugin source code | `en` |
-| `last_used` | Timestamp of last use (internal use) | *(empty)* |
 
 Editable via: `[Option 6] Configure Plugin`
 
@@ -338,7 +336,7 @@ Editable via: `[Option 6] Configure Plugin`
 ## 🛠️ Toolkit Installation
 
 ### Prerequisites
-- Python 3.7+
+- Python 3.10+
 - An Adobe Lightroom Classic plugin (`.lua`)
 - Windows, Linux, or macOS
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : Translator_main.py
+Nom du fichier : main.py
 
-Dépendances : common, compare, compare_langs, extract, inject, sync, install, autosync, addlang, common.paths, common.colors
+Dépendances : common, compare, compare_langs, extract, inject, sync, install, autosync, addlang, core.paths, core.colors
 
 Description :
 Gestionnaire de traductions multilingues pour plugins Adobe Lightroom Classic.
@@ -22,12 +22,12 @@ Modes :
   - Avancé: Options step-by-step pour la maintenance
 
 Usage CLI :
-    python Translator_main.py                           # Mode interactif
-    python Translator_main.py compare --old old.txt --new new.txt --plugin-path ./plugin.lrplugin
-    python Translator_main.py extract --plugin-path ./plugin.lrplugin --locales ./Locales
-    python Translator_main.py inject --plugin-path ./plugin.lrplugin --locales ./Locales
-    python Translator_main.py sync --plugin-path ./plugin.lrplugin --locales ./Locales
-    python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
+    python -m tools.translator.main                           # Mode interactif
+    python -m tools.translator.main compare --old old.txt --new new.txt --plugin-path ./plugin.lrplugin
+    python -m tools.translator.main extract --plugin-path ./plugin.lrplugin --locales ./Locales
+    python -m tools.translator.main inject --plugin-path ./plugin.lrplugin --locales ./Locales
+    python -m tools.translator.main sync --plugin-path ./plugin.lrplugin --locales ./Locales
+    python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./Locales
     python -m tools.translator.main --default-plugin ./plugin.lrplugin   # Menu, plugin pré-configuré
     python -m tools.translator.main install --plugin-path ./plugin.lrplugin [--source DIR] [--dry-run]
     python -m tools.translator.main addlang --plugin-path ./plugin.lrplugin --lang de [--mode auto|extraction|create] [--force]
@@ -360,7 +360,7 @@ Exemples:
             elif hasattr(args, 'plugin_path') and args.plugin_path:
                 output_dir = get_tool_output_path(args.plugin_path, "Translator", create=True)
             else:
-                output_dir = None  # run_compare creera un dossier timestampe local
+                output_dir = None  # run_compare utilisera un dossier temporaire
             output_dir = run_compare(args.old, args.new, output_dir)
 
             import json
@@ -426,7 +426,7 @@ Exemples:
             elif hasattr(args, 'plugin_path') and args.plugin_path:
                 output_dir = get_tool_output_path(args.plugin_path, "Translator", create=True)
             else:
-                output_dir = None  # run_compare_langs créera un dossier timestampé local
+                output_dir = None  # run_compare_langs utilisera un dossier temporaire
 
             # Exécuter la comparaison
             output_dir = run_compare_langs(file1, file2, lang1_name, lang2_name, output_dir)

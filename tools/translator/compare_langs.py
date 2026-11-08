@@ -20,8 +20,8 @@ Cas d'usage :
   3. Suivi de versions (comparer avant/après révision)
 
 Usage CLI :
-    python Translator_main.py compare-langs --lang1 fr --lang2 de --locales ./Locales
-    python Translator_main.py compare-langs --file1 ./v1/fr.txt --file2 ./v2/fr.txt
+    python -m tools.translator.main compare-langs --lang1 fr --lang2 de --locales ./Locales
+    python -m tools.translator.main compare-langs --file1 ./v1/fr.txt --file2 ./v2/fr.txt
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
@@ -146,7 +146,7 @@ def run_compare_langs(file1_path: str, file2_path: str,
         file2_path: Chemin du second fichier (ou répertoire)
         lang1_name: Nom de la langue 1 (auto-détecté si None)
         lang2_name: Nom de la langue 2 (auto-détecté si None)
-        output_dir: Répertoire de sortie (défaut: timestampé local)
+        output_dir: Répertoire de sortie (défaut: dossier temporaire)
         comparison_mode: Mode de comparaison ("keys" ou "values")
 
     Returns:
@@ -512,7 +512,7 @@ def menu_compare_langs(plugin_path: str = ""):
         if plugin_path:
             output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
         else:
-            output_dir = None  # run_compare_langs créera un dossier local
+            output_dir = None  # run_compare_langs utilisera un dossier temporaire
 
         # Convertir le mode de comparaison
         comp_mode = "keys" if comparison_mode == "1" else "values"

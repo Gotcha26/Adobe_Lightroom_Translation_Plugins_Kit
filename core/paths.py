@@ -84,46 +84,6 @@ def get_i18n_kit_path(plugin_path: str) -> str:
     return os.path.join(plugin_path, get_i18n_dir())
 
 
-def _extract_tool_prefix(tool_name: str) -> str:
-    """
-    Extrait le préfixe numérique du nom de l'outil en inspectant le stack.
-
-    Cette fonction remonte la stack pour trouver le script appelant et
-    extraire son préfixe numérique (ex: "1_" pour 1_Extractor).
-
-    Args:
-        tool_name: Nom de l'outil (Extractor, Applicator, etc.)
-
-    Returns:
-        Nom de l'outil avec préfixe si trouvé (ex: "1_Extractor"), sinon nom original
-    """
-    import inspect
-    import re
-
-    # Parcourir la stack pour trouver le script appelant
-    for frame_info in inspect.stack():
-        frame_filename = frame_info.filename
-
-        # Chercher un dossier avec préfixe numérique dans le chemin
-        # Pattern: /X_ToolName/ où X est 1 ou plusieurs chiffres
-        match = re.search(r'[\\/](\d+)_([^\\/]+)[\\/]', frame_filename)
-
-        if match:
-            prefix = match.group(1)  # Le numéro (ex: "1", "2", "3", "9")
-            folder_name = match.group(2)  # Le nom du dossier sans préfixe
-
-            # Vérifier si le nom du dossier correspond au tool_name
-            # (en ignorant la casse et les underscores vs espaces)
-            normalized_folder = folder_name.lower().replace('_', '').replace('-', '')
-            normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
-
-            if normalized_folder.startswith(normalized_tool) or normalized_tool.startswith(normalized_folder):
-                return f"{prefix}_{tool_name}"
-
-    # Si aucun préfixe trouvé, retourner le nom original
-    return tool_name
-
-
 def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) -> str:
     """
     Retourne le chemin de sortie pour un outil avec timestamp.
@@ -148,10 +108,8 @@ def get_tool_output_path(plugin_path: str, tool_name: str, create: bool = True) 
     """
     timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    # Utiliser le mapping TOOL_FOLDER_NAMES, ou fallback sur _extract_tool_prefix
-    prefixed_tool_name = TOOL_FOLDER_NAMES.get(tool_name)
-    if not prefixed_tool_name:
-        prefixed_tool_name = _extract_tool_prefix(tool_name)
+    # Mapping TOOL_FOLDER_NAMES, sinon le nom de l'outil tel quel
+    prefixed_tool_name = TOOL_FOLDER_NAMES.get(tool_name, tool_name)
 
     path = os.path.join(
         get_i18n_kit_path(plugin_path),

@@ -1,6 +1,6 @@
 [project]
 name = "adobe-lightroom-translation-toolkit"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python CLI toolkit for internationalizing Adobe Lightroom Classic plugins"
 readme = "README.md"
 license = {text = "MIT"}

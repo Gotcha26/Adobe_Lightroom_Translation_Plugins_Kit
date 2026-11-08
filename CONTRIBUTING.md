@@ -40,7 +40,7 @@ Open an issue with the `enhancement` label, describing:
 
 ### Code Style
 
-- **Language**: Python 3.7+
+- **Language**: Python 3.10+
 - **Encoding**: UTF-8
 - **Indentation**: 4 spaces (no tabs)
 - **Max line length**: 100 characters (flexible)
@@ -68,8 +68,8 @@ Adobe_Lightroom_Translation_Plugins_Kit/
 │   ├── translator/
 │   └── toolbox/
 ├── doc/                      # User documentation
-├── i18n/                     # Toolkit translation management
-└── locale/                   # Toolkit translations (.po/.mo)
+├── tests/                    # Test suite (+ tests/tools/extract_messages.py)
+└── locale/                   # Toolkit translations (messages.pot, .po/.mo)
 ```
 
 ---
@@ -78,9 +78,37 @@ Adobe_Lightroom_Translation_Plugins_Kit/
 
 ### For the Toolkit Itself
 
-1. Edit files in `locale/<lang>/LC_MESSAGES/messages.po`
-2. Run `python i18n/compile_po.py` to generate `.mo` files
-3. Test the interface in your language
+The toolkit uses GNU gettext. French is the source language (the `msgid`s);
+`locale/en/LC_MESSAGES/messages.po` holds the English catalog. The GNU gettext
+tools (`xgettext`, `msgmerge`, `msgfmt`) are required, there is no helper script.
+
+1. After changing a string wrapped in `_()` / `ngettext()`, regenerate the template
+   from the repository root:
+
+   ```bash
+   xgettext --language=Python --keyword=_ --keyword=ngettext:1,2 --from-code=UTF-8 \
+            --package-name=LocalizationToolKit --package-version=<version> \
+            -o locale/messages.pot LocalizationToolKit.py $(git ls-files 'core/*.py' 'tools/*.py')
+   ```
+
+2. Merge the template into each language catalog:
+
+   ```bash
+   msgmerge --update locale/en/LC_MESSAGES/messages.po locale/messages.pot
+   ```
+
+3. Translate the new or fuzzy entries in `locale/<lang>/LC_MESSAGES/messages.po`
+4. Compile the binary catalog (the `-c` flag checks placeholders and format strings):
+
+   ```bash
+   cd locale/en/LC_MESSAGES && msgfmt -c -o messages.mo messages.po
+   ```
+
+5. Run `pytest`: `tests/test_i18n_catalog.py` fails if a string used in the code is
+   missing from the `.po` or if a `msgstr` is empty. Without GNU gettext installed,
+   `python tests/tools/extract_messages.py LocalizationToolKit.py core tools` lists
+   the strings found in the code using only the standard library.
+6. Test the interface in your language
 
 ### For Lightroom Plugins
 
@@ -139,7 +167,7 @@ Ouvrez une issue avec le label `enhancement`, décrivant :
 
 ### Style de code
 
-- **Langage** : Python 3.7+
+- **Langage** : Python 3.10+
 - **Encodage** : UTF-8
 - **Indentation** : 4 espaces (pas de tabulations)
 - **Longueur de ligne max** : 100 caractères (flexible)
@@ -167,8 +195,8 @@ Adobe_Lightroom_Translation_Plugins_Kit/
 │   ├── translator/
 │   └── toolbox/
 ├── doc/                      # Documentation utilisateur
-├── i18n/                     # Gestion des traductions du toolkit
-└── locale/                   # Traductions du toolkit (.po/.mo)
+├── tests/                    # Suite de tests (+ tests/tools/extract_messages.py)
+└── locale/                   # Traductions du toolkit (messages.pot, .po/.mo)
 ```
 
 ---
@@ -177,9 +205,37 @@ Adobe_Lightroom_Translation_Plugins_Kit/
 
 ### Pour le toolkit lui-même
 
-1. Éditez les fichiers dans `locale/<lang>/LC_MESSAGES/messages.po`
-2. Lancez `python i18n/compile_po.py` pour générer les fichiers `.mo`
-3. Testez l'interface dans votre langue
+Le toolkit utilise GNU gettext. Le français est la langue source (les `msgid`) ;
+`locale/en/LC_MESSAGES/messages.po` contient le catalogue anglais. Les outils GNU
+gettext (`xgettext`, `msgmerge`, `msgfmt`) sont nécessaires, il n'y a pas de script d'aide.
+
+1. Après modification d'une chaîne passée à `_()` / `ngettext()`, régénérez le modèle
+   depuis la racine du dépôt :
+
+   ```bash
+   xgettext --language=Python --keyword=_ --keyword=ngettext:1,2 --from-code=UTF-8 \
+            --package-name=LocalizationToolKit --package-version=<version> \
+            -o locale/messages.pot LocalizationToolKit.py $(git ls-files 'core/*.py' 'tools/*.py')
+   ```
+
+2. Fusionnez le modèle dans chaque catalogue de langue :
+
+   ```bash
+   msgmerge --update locale/en/LC_MESSAGES/messages.po locale/messages.pot
+   ```
+
+3. Traduisez les entrées nouvelles ou approximatives (fuzzy) de `locale/<lang>/LC_MESSAGES/messages.po`
+4. Compilez le catalogue binaire (l'option `-c` vérifie les placeholders et formats) :
+
+   ```bash
+   cd locale/en/LC_MESSAGES && msgfmt -c -o messages.mo messages.po
+   ```
+
+5. Lancez `pytest` : `tests/test_i18n_catalog.py` échoue si une chaîne du code est absente
+   du `.po` ou si un `msgstr` est vide. Sans GNU gettext,
+   `python tests/tools/extract_messages.py LocalizationToolKit.py core tools` liste les
+   chaînes trouvées dans le code avec la seule bibliothèque standard.
+6. Testez l'interface dans votre langue
 
 ### Pour les plugins Lightroom
 

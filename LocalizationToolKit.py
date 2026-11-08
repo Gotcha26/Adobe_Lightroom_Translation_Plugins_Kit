@@ -425,11 +425,6 @@ class ToolLauncher:
         if os.path.exists(path):
             return path
 
-        # Essayer sans le sous-dossier (structure plate)
-        path_flat = os.path.join(self.base_dir, script_name)
-        if os.path.exists(path_flat):
-            return path_flat
-
         return None
 
     def _run_script(self, script_path: Optional[str], args: Optional[List[str]] = None,

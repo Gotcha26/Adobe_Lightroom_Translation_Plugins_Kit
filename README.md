@@ -139,7 +139,7 @@ cd Adobe_Lightroom_Translation_Plugins_Kit
 python LocalisationToolKit.py
 ```
 
-**No external dependencies** — just Python 3.7+ and the standard library.
+**No external dependencies** — just Python 3.10+ and the standard library.
 
 ---
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : Restore_backup.py
+Nom du fichier : restore_backup.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Script pour restaurer les fichiers .lua à partir de leurs sauvegardes .bak
@@ -11,8 +11,8 @@ générées par Applicator.
 Les backups sont stockés dans: <plugin>/__i18n_tmp__/2_Applicator/<timestamp>/backups/
 
 Usage CLI :
-    python Restore_backup.py                    # Menu interactif
-    python Restore_backup.py /path/to/plugin    # Chemin direct
+    python -m tools.toolbox.restore_backup                    # Menu interactif
+    python -m tools.toolbox.restore_backup /path/to/plugin    # Chemin direct
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit

@@ -6,7 +6,7 @@ Dépendances : Aucune
 
 Description :
 Classes de données (dataclasses) pour la représentation des chaînes extraites et des statistiques d'extraction.
-Fournit les modèles: StringMember, ExtractedLine, ExtractedString, ExtractionStats.
+Fournit les modèles: ExtractedString, ExtractionStats.
 
 Usage CLI :
     Non pourvu
@@ -20,37 +20,9 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-
-@dataclass
-class StringMember:
-    """Représente un membre d'une chaîne (potentiellement concaténée)."""
-    original_text: str          # Texte original entre guillemets
-    clean_text: str             # Texte nettoyé (sans espaces)
-    base_text: str              # Texte de base (sans suffixe)
-    leading_spaces: int = 0
-    trailing_spaces: int = 0
-    suffix: str = ""
-    position: int = 0           # Position dans la ligne
-    loc_key: str = ""           # Clé LOC assignée
-
-
-@dataclass
-class ExtractedLine:
-    """Représente une ligne UI avec potentiellement plusieurs membres concaténés."""
-    file_path: str
-    file_name: str
-    line_num: int
-    line_content: str
-    pattern_name: str
-    members: List[StringMember] = field(default_factory=list)
-    is_concatenated: bool = False
-    
-    def has_multiple_members(self) -> bool:
-        return len(self.members) > 1
 
 
 @dataclass
@@ -67,7 +39,7 @@ class ExtractedString:
     suggested_key: str          # Clé LOC suggérée (basée sur base_text)
     leading_spaces: int = 0     # Espaces en début
     trailing_spaces: int = 0    # Espaces en fin
-    suffix: str = ""          # Suffixe détecté (") - ", " -", "...")
+    suffix: str = ""          # Suffixe détecté (" - ", " -", "...")
     replacement_code: str = ""  # Code de remplacement à utiliser
     match_context: str = ""     # Contexte extrait autour du match
     is_concat_member: bool = False  # Fait partie d'une chaîne concaténée

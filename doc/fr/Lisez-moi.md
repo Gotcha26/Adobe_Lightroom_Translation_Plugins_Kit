@@ -316,8 +316,7 @@ Le fichier `config.json` stocke vos préférences :
   "auto_add_gitignore": true,
   "enable_flip_anim": false,
   "prefix": "$$$/Piwigo",
-  "lang": "en",
-  "last_used": ""
+  "lang": "en"
 }
 ```
 
@@ -332,7 +331,6 @@ Le fichier `config.json` stocke vos préférences :
 | `enable_flip_anim` | Afficher l'animation au démarrage du menu | `true` |
 | `prefix` | Préfixe des clés de localisation (ex: `$$$/Piwigo`) | `$$$/Piwigo` |
 | `lang` | Langue par défaut du code source du plugin LrC cicblé | `en` |
-| `last_used` | Horodatage de la dernière utilisation (usage interne) | *(vide)* |
 
 Modifiable via : `[Option 6] Configurer le plugin`
 
@@ -343,7 +341,7 @@ Modifiable via : `[Option 6] Configurer le plugin`
 ## 🛠️ Installation du toolkit
 
 ### Prérequis
-- Python 3.7+
+- Python 3.10+
 - Un plugin Adobe Lightroom Classic (`.lua`)
 - Windows, Linux ou macOS
 

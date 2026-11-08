@@ -6,11 +6,11 @@ Dépendances : common
 
 Description :
 Module COMPARE pour Translator.
-Compare deux versions du fichier EN et génère UPDATE_en.json + CHANGELOG.txt
+Compare deux versions du fichier EN et génère UPDATE_<ref>.json + CHANGELOG.txt
 
 Analyse les différences entre deux versions :
   - Détecte les clés ajoutées, modifiées ou supprimées
-  - Génère UPDATE_en.json pour tracer les changements
+  - Génère UPDATE_<ref>.json pour tracer les changements
   - Crée CHANGELOG.txt lisible pour le suivi des modifications
   - Aide à synchroniser les fichiers de langue avec les changements
 
@@ -122,7 +122,7 @@ def run_compare(old_path: str, new_path: str, output_dir: Optional[str] = None) 
     comparator = VersionComparator(old_strings, new_strings)
     result = comparator.compare()
 
-    # Générer UPDATE_en.json
+    # Générer UPDATE_<ref>.json
     update_data = {
         'generated': datetime.now().isoformat(),
         'old_file': os.path.abspath(old_file),
@@ -217,8 +217,8 @@ def _generate_changelog(file_path: str, result: Dict, old_file: str, new_file: s
         f.write(_("PROCHAINE ÉTAPE\n"))
         f.write("=" * 80 + "\n")
         f.write(_("Lancez EXTRACT puis INJECT, ou directement SYNC:\n"))
-        f.write("  python Translator_main.py extract --update {var0}\n".format(var0=os.path.dirname(file_path)))
-        f.write("  python Translator_main.py sync --update {var0}\n".format(var0=os.path.dirname(file_path)))
+        f.write("  python -m tools.translator.main extract --update {var0}\n".format(var0=os.path.dirname(file_path)))
+        f.write("  python -m tools.translator.main sync --update {var0}\n".format(var0=os.path.dirname(file_path)))
 
 
 # =============================================================================
@@ -260,7 +260,7 @@ def menu_compare(plugin_path: str = ""):
         if plugin_path:
             output_dir = get_tool_output_path(plugin_path, "Translator", create=True)
         else:
-            output_dir = None  # run_compare créera un dossier local
+            output_dir = None  # run_compare utilisera un dossier temporaire
 
         output_dir = run_compare(old_path, new_path, output_dir)
 

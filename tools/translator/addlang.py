@@ -2,7 +2,7 @@
 """
 Nom du fichier : addlang.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Ajoute ou réinstalle un fichier de langue spécifique dans le plugin.

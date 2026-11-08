@@ -24,7 +24,7 @@ from typing import Tuple, List, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import validate_plugin_path
+from core.paths import validate_plugin_path, get_i18n_dir, TOOL_FOLDER_NAMES
 from core.colors import Colors
 from core.i18n import _
 from core.defaults import DEFAULT_PREFIX
@@ -71,6 +71,11 @@ class InteractiveMenu:
         """Efface l'écran (compatible Windows et Linux)."""
         os.system('cls' if os.name == 'nt' else 'clear')
 
+    @staticmethod
+    def _default_output_display() -> str:
+        """Chemin de sortie par défaut affiché (dossier temporaire configuré + dossier de l'outil)."""
+        return f"<plugin>/{get_i18n_dir()}/{TOOL_FOLDER_NAMES['Extractor']}/<timestamp>/"
+
     def print_header(self):
         """Affiche l'en-tête du menu."""
         print()
@@ -101,7 +106,7 @@ class InteractiveMenu:
         if self.output_dir:
             print(c.config_line("2. " + _("Dossier temporaire"), self.output_dir))
         else:
-            default_output = "<plugin>/__i18n_tmp__/Extractor/<timestamp>/"
+            default_output = self._default_output_display()
             print(c.config_line("2. " + _("Dossier temporaire"), f"{default_output} {c.DIM}" + _("(auto)") + f"{c.RESET}"))
 
         # Autres options
@@ -184,7 +189,7 @@ class InteractiveMenu:
         print()
         print(c.title("2. " + _("Dossier temporaire")))
         print(c.separator())
-        print(_("Par défaut:") + f" {c.VALUE}<plugin>/__i18n_tmp__/Extractor/<timestamp>/{c.RESET}")
+        print(_("Par défaut:") + f" {c.VALUE}{self._default_output_display()}{c.RESET}")
         print()
         print(_("Pour forcer un autre emplacement, entrez un chemin."))
         print(_("Sinon, appuyez sur ENTRÉE pour utiliser le défaut."))
@@ -202,7 +207,7 @@ class InteractiveMenu:
             print(c.success(_("Override: {path}").format(path=normalized_path)))
         else:
             self.output_dir = ""
-            print(c.success(_("Utilisera: <plugin>/__i18n_tmp__/Extractor/<timestamp>/")))
+            print(c.success(_("Utilisera: {path}").format(path=self._default_output_display())))
 
     def input_prefix(self):
         """Demande le préfixe LOC."""

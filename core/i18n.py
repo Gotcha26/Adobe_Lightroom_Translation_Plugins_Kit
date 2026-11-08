@@ -71,7 +71,7 @@ def _get_toolkit_root() -> Path:
     """Retourne le répertoire racine du toolkit."""
     global _toolkit_root
     if _toolkit_root is None:
-        # Ce fichier est dans common/, donc parent = racine
+        # Ce fichier est dans core/, donc parent = racine
         _toolkit_root = Path(__file__).parent.parent.resolve()
     return _toolkit_root
 

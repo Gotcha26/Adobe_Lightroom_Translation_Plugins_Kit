@@ -162,16 +162,6 @@ class LocalizableStringExtractor:
         # Contexte multi-ligne
         self.multi_line_ctx = MultiLineContext()
 
-    def _is_already_localized(self, text: str, line: str) -> bool:
-        """
-        Vérifie si une chaîne spécifique est déjà localisée dans la ligne.
-
-        Cherche si le texte est précédé de 'LOC "$$$/...'
-        """
-        # Chercher toutes les occurrences du texte
-        search_pattern = re.compile(r'LOC\s*[\"\'](\$\$\$/[^=]+=)' + re.escape(text) + r'[\"\']')
-        return search_pattern.search(line) is not None
-
     def _find_non_localized_strings(self, line: str) -> List[Tuple[str, int, int]]:
         """
         Trouve les chaînes qui ne sont PAS encore localisées dans une ligne.
@@ -594,9 +584,3 @@ class LocalizableStringExtractor:
             self.extract_from_file(str(lua_file))
 
         self.stats.unique_strings = len(self.used_keys)
-
-    def print_summary(self):
-        """Deprecated: Utilisez OutputFormatter.print_extraction_summary() à la place."""
-        # Cette méthode est conservée pour la rétrocompatibilité
-        # mais n'affiche plus rien. Le formatting est maintenant géré par OutputFormatter
-        pass

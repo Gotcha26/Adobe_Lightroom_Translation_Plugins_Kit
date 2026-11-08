@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nom du fichier : Delete_temp_dir.py
+Nom du fichier : delete_temp_dir.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Script pour supprimer le dossier temporaire i18n d'un plugin Lightroom.
@@ -20,8 +20,8 @@ Options:
   - Supprimer tout le dossier temporaire
 
 Usage CLI :
-    python Delete_temp_dir.py                           # Menu interactif
-    python Delete_temp_dir.py --default-plugin <path>   # Avec plugin pré-configuré
+    python -m tools.toolbox.delete_temp_dir                           # Menu interactif
+    python -m tools.toolbox.delete_temp_dir --default-plugin <path>   # Avec plugin pré-configuré
 
 Date : 2026-02-03
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
@@ -38,6 +38,7 @@ from typing import Optional, Tuple, List
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
+from core import __version__
 from core.colors import Colors
 from core.i18n import _
 
@@ -416,7 +417,7 @@ def main():
     os.system('cls' if os.name == 'nt' else 'clear')
 
     print()
-    print(c.box_header(_("NETTOYAGE DU DOSSIER TEMPORAIRE (v2.0)")))
+    print(c.box_header(_("NETTOYAGE DU DOSSIER TEMPORAIRE (v{version})").format(version=__version__)))
     print()
 
     # Demander le chemin du plugin (ou utiliser celui fourni)

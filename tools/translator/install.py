@@ -2,7 +2,7 @@
 """
 Nom du fichier : install.py
 
-Dépendances : common.paths, common.colors
+Dépendances : core.paths, core.colors
 
 Description :
 Installe les fichiers TranslatedStrings_xx.txt depuis la dernière extraction

@@ -2,7 +2,7 @@
 """
 Nom du fichier : common.py
 
-Dépendances : common.colors
+Dépendances : core.colors
 
 Description :
 Module commun pour Translator.
@@ -35,6 +35,7 @@ from collections import defaultdict
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from core import __version__
 from core.colors import Colors
 from core.i18n import _
 from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
@@ -549,7 +550,7 @@ def clear_screen():
 def print_header(version: str = None):
     """Affiche l'entete du menu avec couleurs."""
     if version is None:
-        version = "6.0"
+        version = __version__
     print()
     print(c.HEADER + "=" * 70 + c.RESET)
     title = _("  TRANSLATION MANAGER v{version}").format(version=version).center(70)
