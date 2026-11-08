@@ -35,6 +35,7 @@ _LUA_SIMPLE_ESCAPES = {
     '\\': '\\', '"': '"', "'": "'",
     'n': '\n', 'r': '\r', 't': '\t',
     'a': '\a', 'b': '\b', 'f': '\f', 'v': '\v',
+    '\n': '\n',  # \ suivi d'un vrai saut de ligne
 }
 # Caractères à ré-échapper dans un littéral Lua entre guillemets doubles
 _LUA_ESCAPE_OUT = {
@@ -42,33 +43,123 @@ _LUA_ESCAPE_OUT = {
     '\n': '\\n', '\r': '\\r', '\t': '\\t',
     '\a': '\\a', '\b': '\\b', '\f': '\\f', '\v': '\\v',
 }
-_LUA_ESCAPE_SEQ = re.compile(r'\\(.)', re.DOTALL)
+# Morceaux d'un littéral : séquence \ddd, \xXX, \u{X...}, autre \c, texte brut,
+# ou \ final isolé
+_LUA_ESCAPE_TOKEN = re.compile(
+    r'\\(?:(\d{1,3})|x([0-9A-Fa-f]{2})|u\{([0-9A-Fa-f]+)\}|(.))|([^\\]+)|\\',
+    re.DOTALL
+)
+
+# Marque le `\` d'une séquence conservée telle quelle par unescape_lua_string
+# (non décodable sans ambiguïté). Surrogate isolé : n'apparaît jamais dans un
+# texte lu depuis un fichier ni dans un \u{...} décodé, donc aucune confusion
+# avec une barre oblique réelle. escape_lua_string le rend en `\` simple.
+# Un texte qui le contient n'est pas représentable dans un fichier UTF-8 :
+# l'Extractor ignore la chaîne (voir has_undecoded_escape).
+VERBATIM_BACKSLASH = '\udc5c'
+
+
+def _verbatim(sequence: str) -> str:
+    """Séquence source conservée : chaque `\\` devient VERBATIM_BACKSLASH."""
+    return sequence.replace('\\', VERBATIM_BACKSLASH)
 
 
 def unescape_lua_string(text: str) -> str:
     """
     Dés-échappe le contenu d'un littéral Lua (forme source -> texte réel).
 
-    Seuls les échappements simples sont décodés (\\\\, \\", \\', \\n, \\r, \\t,
-    \\a, \\b, \\f, \\v). Les autres séquences (\\ddd, \\xXX, \\z, \\u{...}) sont
-    conservées telles quelles.
+    - Échappements simples (\\\\, \\", \\', \\n, \\r, \\t, \\a, \\b, \\f, \\v,
+      \\ + saut de ligne) : décodés.
+    - \\ddd (<= 255) et \\xXX : octets. Une suite contiguë de ces séquences
+      est décodée en UTF-8 (« \\195\\169 » -> « é ») ; si la suite n'est pas
+      de l'UTF-8 valide, elle est conservée telle quelle.
+    - \\u{X...} : décodé si c'est un point de code Unicode valide (hors
+      surrogates), conservé sinon.
+    - \\z, \\ddd > 255 et tout autre échappement : conservés tels quels
+      (\\z dépend de la version de Lua, les autres sont du Lua invalide).
+
+    Une séquence conservée garde son texte source, son `\\` remplacé par
+    VERBATIM_BACKSLASH : escape_lua_string la restitue à l'identique, sans
+    la confondre avec une barre oblique réelle. L'aller-retour
+    escape_lua_string(unescape_lua_string(s)) donne donc toujours un
+    littéral de même valeur Lua.
     """
     if '\\' not in text:
         return text
 
-    def _decode(match: re.Match) -> str:
-        char = match.group(1)
-        return _LUA_SIMPLE_ESCAPES.get(char, match.group(0))
+    out: List[str] = []
+    run_bytes = bytearray()   # Octets \ddd / \xXX contigus en attente
+    run_source: List[str] = []
 
-    return _LUA_ESCAPE_SEQ.sub(_decode, text)
+    def _flush_run():
+        if not run_bytes:
+            return
+        try:
+            out.append(run_bytes.decode('utf-8'))
+        except UnicodeDecodeError:
+            out.append(_verbatim(''.join(run_source)))
+        run_bytes.clear()
+        run_source.clear()
+
+    for match in _LUA_ESCAPE_TOKEN.finditer(text):
+        decimal, hexa, code_point, other, plain = match.groups()
+        source = match.group(0)
+
+        if decimal is not None and int(decimal) <= 255:
+            run_bytes.append(int(decimal))
+            run_source.append(source)
+            continue
+        if hexa is not None:
+            run_bytes.append(int(hexa, 16))
+            run_source.append(source)
+            continue
+
+        _flush_run()
+        if plain is not None:
+            out.append(plain)
+        elif code_point is not None:
+            value = int(code_point, 16)
+            if value <= 0x10FFFF and not 0xD800 <= value <= 0xDFFF:
+                out.append(chr(value))
+            else:
+                out.append(_verbatim(source))
+        elif other is not None and other in _LUA_SIMPLE_ESCAPES:
+            out.append(_LUA_SIMPLE_ESCAPES[other])
+        else:
+            # \z, \ddd > 255, échappement inconnu, \ final isolé
+            out.append(_verbatim(source))
+
+    _flush_run()
+    return ''.join(out)
+
+
+def has_undecoded_escape(text: str) -> bool:
+    """Vrai si le texte réel contient une séquence Lua conservée telle quelle."""
+    return VERBATIM_BACKSLASH in text
+
+
+def _escape_char(ch: str) -> str:
+    if ch == VERBATIM_BACKSLASH:
+        return '\\'
+    escaped = _LUA_ESCAPE_OUT.get(ch)
+    if escaped is not None:
+        return escaped
+    if ord(ch) < 0x20 or ch == '\x7f':
+        # Toujours 3 chiffres : un chiffre qui suit ne prolonge pas la séquence
+        return '\\%03d' % ord(ch)
+    return ch
 
 
 def escape_lua_string(text: str) -> str:
     """
     Échappe un texte pour l'insérer entre guillemets doubles Lua
-    (inverse de unescape_lua_string pour les échappements simples).
+    (inverse de unescape_lua_string).
+
+    `"` et `\\` réels sont échappés, les caractères de contrôle sans
+    échappement simple deviennent \\ddd, et une séquence conservée par
+    unescape_lua_string (VERBATIM_BACKSLASH) ressort telle qu'elle était.
     """
-    return ''.join(_LUA_ESCAPE_OUT.get(ch, ch) for ch in text)
+    return ''.join(_escape_char(ch) for ch in text)
 
 
 # Littéraux Lua d'une ligne : "…", '…' (échappements tolérés) et chaînes longues

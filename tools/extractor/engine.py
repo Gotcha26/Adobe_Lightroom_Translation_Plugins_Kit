@@ -36,7 +36,7 @@ from .models import ExtractedString, ExtractionStats
 from .utils import (
     extract_spacing, extract_all_string_literals, is_line_concatenated,
     extract_suffix, is_technical_string, generate_loc_key, generate_replacement_code,
-    is_in_technical_context, unescape_lua_string, block_comment_state
+    is_in_technical_context, unescape_lua_string, block_comment_state, has_undecoded_escape
 )
 
 
@@ -158,6 +158,17 @@ class LocalizableStringExtractor:
 
         # Contexte multi-ligne
         self.multi_line_ctx = MultiLineContext()
+
+    def _is_ignored_text(self, real_text: str, line_context: Optional[str]) -> bool:
+        """
+        Vrai si une chaîne (texte réel) ne doit pas être extraite.
+
+        Chaîne technique, ou chaîne contenant une séquence Lua non décodée
+        (octets UTF-8 invalides, \\z...) : pas représentable telle quelle dans
+        un fichier texte UTF-8, elle reste en dur dans le source.
+        """
+        return (has_undecoded_escape(real_text)
+                or is_technical_string(real_text, line_context, self.rules))
 
     def _find_non_localized_strings(self, line: str) -> List[Tuple[str, int, int]]:
         """
@@ -328,7 +339,7 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), combined, self.rules):
+            if self._is_ignored_text(unescape_lua_string(original_text), combined):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -392,8 +403,8 @@ class LocalizableStringExtractor:
             if len(original_text.strip()) < self.min_length:
                 continue
 
-            if is_technical_string(unescape_lua_string(original_text), line if is_tech_context else None,
-                                   self.rules):
+            if self._is_ignored_text(unescape_lua_string(original_text),
+                                     line if is_tech_context else None):
                 self.stats.technical_ignored += 1
                 continue
 
@@ -539,8 +550,9 @@ class LocalizableStringExtractor:
                 self.stats.technical_ignored += 1
                 continue
 
-            # Ignorer les valeurs techniques
-            if existing_value in self.rules.ignore_loc_values:
+            # Ignorer les valeurs techniques, et celles qui gardent une séquence
+            # Lua non décodée (non représentable dans les fichiers UTF-8 générés)
+            if existing_value in self.rules.ignore_loc_values or has_undecoded_escape(existing_value):
                 self.stats.technical_ignored += 1
                 continue
 
