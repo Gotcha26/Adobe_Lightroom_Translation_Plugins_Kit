@@ -330,3 +330,17 @@ def normalize_path(path: str) -> str:
         'C:\\current\\dir\\plugin.lrplugin'  # sur Windows
     """
     return os.path.normpath(os.path.abspath(path))
+
+
+def backup_path_for(file_path: str, plugin_path: str, backup_dir: str) -> str:
+    """
+    Calcule le chemin du backup d'un fichier en conservant son arborescence relative au plugin.
+
+    Exemple : <plugin>/ui/Dialog.lua -> <backup_dir>/ui/Dialog.lua.bak
+    Si le fichier est hors du plugin, seul son nom de base est conservé.
+    Ne crée aucun dossier : l'appelant doit faire os.makedirs(os.path.dirname(...)).
+    """
+    rel_path = os.path.relpath(file_path, plugin_path)
+    if rel_path == os.pardir or rel_path.startswith(os.pardir + os.sep) or os.path.isabs(rel_path):
+        rel_path = os.path.basename(file_path)
+    return os.path.join(backup_dir, rel_path + '.bak')

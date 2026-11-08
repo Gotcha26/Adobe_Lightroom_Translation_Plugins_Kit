@@ -31,6 +31,7 @@ from .common import (
     load_update_json, c
 )
 from core.i18n import _
+from core.paths import backup_path_for
 
 
 # =============================================================================
@@ -146,9 +147,8 @@ def run_inject(translate_file: str, target_file: str,
         if create_backup:
             if backup_dir:
                 # Backup dans le répertoire spécifié
-                os.makedirs(backup_dir, exist_ok=True)
-                backup_filename = os.path.basename(target_file) + '.bak'
-                backup_path = os.path.join(backup_dir, backup_filename)
+                backup_path = backup_path_for(target_file, os.path.dirname(target_file), backup_dir)
+                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
                 shutil.copy2(target_file, backup_path)
             else:
                 # Backup classique à côté du fichier

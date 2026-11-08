@@ -42,7 +42,7 @@ from typing import Dict, List, Tuple
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import find_latest_tool_output, get_tool_output_path
+from core.paths import find_latest_tool_output, get_tool_output_path, backup_path_for
 from core.colors import Colors
 from core.i18n import _
 from tools.extractor.main import run_extraction
@@ -511,9 +511,8 @@ def run_autosync(plugin_path: str) -> Dict:
         # Backup de l'ancien si existe
         if os.path.isfile(new_en_target):
             if backup_dir:
-                os.makedirs(backup_dir, exist_ok=True)
-                backup_filename = os.path.basename(new_en_target) + '.bak'
-                backup_path = os.path.join(backup_dir, backup_filename)
+                backup_path = backup_path_for(new_en_target, plugin_path, backup_dir)
+                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
                 shutil.copy2(new_en_target, backup_path)
                 plugin_name = os.path.basename(plugin_path)
                 rel_backup = os.path.relpath(backup_dir, plugin_path).replace('\\', '/')

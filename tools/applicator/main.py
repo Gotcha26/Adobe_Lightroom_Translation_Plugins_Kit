@@ -46,7 +46,7 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_path_for
 from core.colors import Colors
 from core.i18n import _
 import glob
@@ -264,7 +264,8 @@ def apply_replacements_to_line(line: str, members: List[Dict]) -> Tuple[str, Lis
 
 def process_file_with_replacements(file_path: str, file_replacements: Dict,
                                     report: LocalizationReport, dry_run: bool,
-                                    backup_dir: Optional[str] = None, create_backup: bool = True) -> int:
+                                    backup_dir: Optional[str] = None, create_backup: bool = True,
+                                    plugin_path: Optional[str] = None) -> int:
     """
     Traite un fichier en utilisant les remplacements du JSON.
 
@@ -327,8 +328,8 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
         # Créer le backup si demandé
         if create_backup:
             if backup_dir:
-                os.makedirs(backup_dir, exist_ok=True)
-                backup_path = os.path.join(backup_dir, os.path.basename(file_path) + '.bak')
+                backup_path = backup_path_for(file_path, plugin_path or os.path.dirname(file_path), backup_dir)
+                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
             else:
                 backup_path = file_path + '.bak'
             shutil.copy2(file_path, backup_path)
@@ -396,7 +397,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
             if not silent:
                 print(_("Traitement de {file}...").format(file=file_rel_path))
             replacements_count = process_file_with_replacements(
-                file_path, file_replacements, report, dry_run, backup_dir, create_backup
+                file_path, file_replacements, report, dry_run, backup_dir, create_backup, plugin_path
             )
             report.stats['files_processed'] += 1
             if replacements_count > 0:

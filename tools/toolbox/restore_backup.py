@@ -78,8 +78,8 @@ def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
             if (os.path.isdir(item_path) and len(item) == 15 and item[8] == '_'
                     and os.path.isdir(backup_path)):
                 # Vérifier qu'il y a des fichiers .bak
-                bak_files = [f for f in os.listdir(backup_path) if f.endswith('.bak')]
-                if bak_files:
+                has_bak = any(f.endswith('.bak') for _r, _d, files in os.walk(backup_path) for f in files)
+                if has_bak:
                     sessions.append((item, backup_path))
 
     # Trier du plus récent au plus ancien
@@ -103,16 +103,18 @@ def find_backup_pairs_in_dir(backup_dir: str, plugin_path: str) -> List[Tuple[st
     if not os.path.isdir(backup_dir):
         return pairs
 
-    for file in os.listdir(backup_dir):
-        if file.endswith('.bak'):
-            bak_path = os.path.join(backup_dir, file)
-            # Le fichier original est dans le plugin avec le même nom sans .bak
-            lua_filename = file[:-4]  # Enlever ".bak"
-            lua_path = os.path.join(plugin_path, lua_filename)
+    for root, _dirs, files in os.walk(backup_dir):
+        for file in files:
+            if file.endswith('.bak'):
+                bak_path = os.path.join(root, file)
+                # Cible = chemin relatif du backup (sans .bak) rejoué depuis la racine du plugin.
+                # Un ancien backup plat (à la racine de backup_dir) reste restauré à la racine du plugin.
+                rel_path = os.path.relpath(bak_path, backup_dir)[:-4]
+                lua_path = os.path.join(plugin_path, rel_path)
 
-            pairs.append((lua_path, bak_path))
+                pairs.append((lua_path, bak_path))
 
-    return sorted(pairs, key=lambda x: os.path.basename(x[0]))
+    return sorted(pairs, key=lambda x: x[0])
 
 
 def find_backup_pairs_legacy(directory: str) -> List[Tuple[str, str]]:
