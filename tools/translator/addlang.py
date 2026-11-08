@@ -41,7 +41,7 @@ from datetime import datetime
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
 from .common import (
@@ -50,7 +50,6 @@ from .common import (
 )
 from .config_loader import get_reference_lang, get_reference_filename, is_reference_lang
 
-c = Colors()
 
 
 # =============================================================================

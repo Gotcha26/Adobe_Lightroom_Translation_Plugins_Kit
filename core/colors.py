@@ -18,6 +18,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
 
+import ctypes
 import os
 import sys
 from typing import Optional
@@ -45,15 +46,14 @@ def stdin_is_interactive() -> bool:
             return False
         if os.name != 'nt':
             return True
-        import ctypes
         import msvcrt
         handle = msvcrt.get_osfhandle(stdin.fileno())
-    except (OSError, ValueError):
+        mode = ctypes.c_uint32()
+        return bool(ctypes.windll.kernel32.GetConsoleMode(ctypes.c_void_p(handle), ctypes.byref(mode)))
+    except (OSError, ValueError, AttributeError, ctypes.ArgumentError):
         # Flux fermé ou sans descripteur réel (ex. remplacé par un tampon) :
         # ce n'est pas un terminal, la réponse est simplement « non »
         return False
-    mode = ctypes.c_uint32()
-    return bool(ctypes.windll.kernel32.GetConsoleMode(handle, ctypes.byref(mode)))
 
 
 def supports_color() -> bool:
@@ -83,16 +83,19 @@ def supports_color() -> bool:
         # Windows Terminal et PowerShell Core supportent les couleurs
         if os.environ.get('WT_SESSION') or os.environ.get('ConEmuANSI') == 'ON':
             return True
-        # Essayer d'activer le mode ANSI sur Windows 10+
+        # Essayer d'activer le mode ANSI sur Windows 10+ : les couleurs ne sont
+        # émises que si la console accepte réellement le mode (console legacy = refus)
         try:
-            import ctypes
             kernel32 = ctypes.windll.kernel32
-            # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
-            kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-            return True
-        except Exception:
-            pass
-        return False
+            handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            mode = ctypes.c_uint32()
+            if not kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+                return False
+            # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004, ajouté au mode courant
+            return bool(kernel32.SetConsoleMode(handle, mode.value | 0x0004))
+        except (AttributeError, OSError, ValueError):
+            # ctypes/windll indisponible : pas de couleurs
+            return False
 
     # Unix/Linux/Mac: supporter par defaut
     return True

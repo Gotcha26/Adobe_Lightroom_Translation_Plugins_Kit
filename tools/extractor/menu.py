@@ -25,12 +25,10 @@ from typing import Tuple, List, Optional
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import validate_plugin_path, get_i18n_dir, TOOL_FOLDER_NAMES
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 from core.defaults import DEFAULT_PREFIX
 
-# Instance couleurs
-c = Colors()
 
 
 class InteractiveMenu:

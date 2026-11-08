@@ -227,7 +227,7 @@ def extract_suffix(text: str) -> Tuple[str, str]:
     return text, ""
 
 
-def is_in_technical_context(line: str) -> bool:
+def is_in_technical_context(line: str, rules: PluginRules | None = None) -> bool:
     """
     Vérifie si la ligne est dans un contexte technique.
 
@@ -236,11 +236,13 @@ def is_in_technical_context(line: str) -> bool:
 
     Args:
         line: La ligne de code complète
+        rules: Règles du plugin (défaut: motifs génériques TECHNICAL_CONTEXT_PATTERNS)
 
     Returns:
         True si la ligne est dans un contexte technique
     """
-    for pattern in TECHNICAL_CONTEXT_PATTERNS:
+    patterns = TECHNICAL_CONTEXT_PATTERNS if rules is None else rules.technical_context_patterns
+    for pattern in patterns:
         if pattern.search(line):
             return True
     return False
@@ -274,7 +276,7 @@ def is_technical_string(text: str, line_context: str | None = None,
             return True
 
     # Si on a le contexte de la ligne, vérifier le contexte technique
-    if line_context and is_in_technical_context(line_context):
+    if line_context and is_in_technical_context(line_context, rules):
         # Dans un contexte technique, filtrer plus agressivement
         # Ignorer les chaînes qui ressemblent à des identifiants/headers
         if re.match(r'^[A-Za-z][-A-Za-z0-9]*$', text_original):
@@ -302,7 +304,7 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set,
 
     # Garder trace de certains suffixes significatifs
     has_ellipsis = clean.endswith('...')
-    has_colon = clean.endswith(':')  # noqa: F841  # utilisé par Task 17
+    has_colon = clean.endswith(':')
     has_question = clean.endswith('?')
 
     # Nettoyer pour extraire les mots
@@ -326,6 +328,8 @@ def generate_loc_key(text: str, file_name: str, prefix: str, existing_keys: set,
         key_part += "Ellipsis"
     elif has_question:
         key_part += "Question"
+    elif has_colon:
+        key_part += "Colon"
 
     # Catégorie basée sur le fichier
     file_base = os.path.splitext(file_name)[0]

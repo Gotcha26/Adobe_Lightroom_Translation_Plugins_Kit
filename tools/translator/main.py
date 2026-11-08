@@ -50,7 +50,7 @@ import argparse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from core.paths import get_tool_output_path, find_latest_update_dir, get_translator_backup_dir
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
 from .common import clear_screen, print_header
@@ -64,8 +64,6 @@ from .install import menu_install, run_install
 from .autosync import menu_autosync, run_autosync, print_autosync_report
 from .addlang import menu_addlang, run_addlang_cli
 
-# Instance couleurs
-c = Colors()
 
 
 # =============================================================================

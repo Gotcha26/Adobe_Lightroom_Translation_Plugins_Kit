@@ -30,7 +30,7 @@ from typing import Dict, Set, Optional
 
 from .common import (
     parse_translation_file, update_translation_file_surgical,
-    resolve_path, load_update_json, find_languages, c
+    resolve_path, load_update_json, find_languages, c, MARKER_NEW, MARKER_NEEDS_REVIEW
 )
 from .config_loader import get_reference_filename, get_update_filename
 from core.i18n import _
@@ -159,7 +159,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
 
         # Marquer si le texte de référence a changé (UNIQUEMENT si update_data fourni via COMPARE)
         if update_data and key in changed_keys:
-            markers[key] = _("-- [NEEDS_REVIEW] Reference text was modified")
+            markers[key] = f"{MARKER_NEEDS_REVIEW} " + _("Texte de référence modifié")
             stats['needs_review'] += 1
 
     # Clés manquantes : ajouter avec valeur de référence
@@ -167,7 +167,7 @@ def _sync_language(lang: str, lang_file: str, ref_strings: Dict[str, str],
         new_strings[key] = ref_strings[key]  # Valeur de référence par défaut
         # Marquer UNIQUEMENT si update_data fourni via COMPARE
         if update_data:
-            markers[key] = _("-- [NEW] To translate")
+            markers[key] = f"{MARKER_NEW} " + _("À traduire")
         stats['added'] += 1
 
     # Clés en trop : ne pas copier (= supprimées)
@@ -290,8 +290,13 @@ def menu_sync(plugin_path: str = ""):
     if has_update in ['o', 'y', '', 'oui', 'yes']:
         # Auto-détection et sélection interactive si plugin_path fourni
         if plugin_path:
-            update_dir = select_tool_output_dir(plugin_path, "Translator", "")
-            update_dir = _resolve_update_dir(update_dir, plugin_path)
+            selected = select_tool_output_dir(plugin_path, "Translator", "")
+            if selected == "":
+                # Annulé par l'utilisateur : retour au menu
+                return None
+            # selected None = erreur déjà affichée : pas d'auto-détection, saisie manuelle ci-dessous
+            if selected:
+                update_dir = _resolve_update_dir(selected, plugin_path)
             if update_dir:
                 print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
             else:

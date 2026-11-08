@@ -52,8 +52,8 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.paths import get_tool_output_path, find_latest_tool_output, backup_path_for
-from core.colors import Colors, stdin_is_interactive
+from core.paths import get_tool_output_path, find_latest_tool_output, backup_path_for, display_relative
+from core.colors import c, stdin_is_interactive
 from core.i18n import _
 import glob
 import subprocess
@@ -62,16 +62,11 @@ from tools.extractor.utils import build_loc_call as _build_loc_call
 from tools.translator.common import HEADER_TITLE_PREFIX
 from .menu import show_interactive_menu
 
-c = Colors()
 
 
 def _shorten(path: str, plugin_path: str) -> str:
     """Remplace le préfixe plugin_path par <plugin> dans un chemin."""
-    plugin_norm = os.path.normpath(plugin_path)
-    path_norm = os.path.normpath(path)
-    if path_norm.startswith(plugin_norm):
-        return "<plugin>" + path_norm[len(plugin_norm):]
-    return path
+    return display_relative(path, plugin_path)
 
 
 class LocalizationReport:
@@ -284,8 +279,14 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
         report.add_error(file_path, 0, _("Fichier introuvable"))
         return 0
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except UnicodeDecodeError as exc:
+        # Fichier non UTF-8 (ex. latin-1) : le signaler et passer au fichier suivant
+        # plutôt que d'interrompre une passe qui a déjà modifié d'autres fichiers
+        report.add_error(file_path, 0, _("Encodage non UTF-8, fichier ignoré: {error}").format(error=exc))
+        return 0
 
     # Indexer les remplacements par numero de ligne
     replacements_by_line = {}
@@ -310,25 +311,15 @@ def process_file_with_replacements(file_path: str, file_replacements: Dict,
                 new_lines.append(new_line)
                 modified = True
                 total_applied += len(applied_members)
+            elif 'LOC "$$$/' in line:
+                # Ligne deja localisee : rien a faire, pas un echec
+                new_lines.append(line)
             else:
-                # Verifier si c'est parce que c'est deja localise
-                if 'LOC "$$$/' in line:
-                    # Ligne deja (partiellement?) localisee
-                    # Essayer quand meme d'appliquer les membres non-localises
-                    new_line, applied_members = apply_replacements_to_line(line, members)
-                    if new_line != line and applied_members:
-                        report.add_change(file_path, line_num, line, new_line, applied_members)
-                        new_lines.append(new_line)
-                        modified = True
-                        total_applied += len(applied_members)
-                    else:
-                        new_lines.append(line)
-                else:
-                    # Pas de modification possible
-                    report.add_skip(file_path, line_num,
-                                   _("Chaine non trouvee ou deja localisee"),
-                                   line)
-                    new_lines.append(line)
+                # Pas de modification possible
+                report.add_skip(file_path, line_num,
+                               _("Chaine non trouvee ou deja localisee"),
+                               line)
+                new_lines.append(line)
         else:
             new_lines.append(line)
 
@@ -361,7 +352,7 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
 
     Returns:
         Tuple (succès, rapport). Succès vaut False si report.errors n'est pas
-        vide (fichier introuvable). En dry-run, le rapport décrit les lignes qui
+        vide (fichier introuvable ou non UTF-8). En dry-run, le rapport décrit les lignes qui
         seraient modifiées (report.stats['total_replacements']).
     """
     report = LocalizationReport(os.path.basename(os.path.normpath(plugin_path)))
@@ -421,11 +412,15 @@ def process_plugin_directory(plugin_path: str, extraction_dir: Optional[str] = N
         if os.path.exists(file_path):
             if not silent:
                 print(_("Traitement de {file}...").format(file=file_rel_path))
+            errors_before = len(report.errors)
             replacements_count = process_file_with_replacements(
                 file_path, file_replacements, report, dry_run, backup_dir, create_backup, plugin_path
             )
             report.stats['files_processed'] += 1
-            if replacements_count > 0:
+            if len(report.errors) > errors_before:
+                if not silent:
+                    print("  ! " + report.errors[-1]['error'])
+            elif replacements_count > 0:
                 report.stats['files_modified'] += 1
                 if not silent:
                     print(_("  * {n} chaîne(s) remplacée(s)").format(n=replacements_count))

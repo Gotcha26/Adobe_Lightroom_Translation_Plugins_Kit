@@ -31,10 +31,9 @@ from typing import Optional
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
-c = Colors()
 
 
 def check_existing_translation_files(plugin_path: str) -> tuple[bool, list[str]]:

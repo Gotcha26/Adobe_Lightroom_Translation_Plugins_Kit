@@ -21,6 +21,7 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 import gettext
 import os
 import locale
+import sys
 from pathlib import Path
 from typing import Optional, Callable
 
@@ -175,7 +176,7 @@ def _load_translation(language: str) -> Optional[gettext.NullTranslations]:
         )
     except Exception as exc:
         # Catalogue illisible : on continue en langue source, mais on le signale
-        print("[i18n] {lang}: {error}".format(lang=language, error=exc))
+        print("[i18n] {lang}: {error}".format(lang=language, error=exc), file=sys.stderr)
         return None
 
 
@@ -362,8 +363,10 @@ def debug_i18n_context():
 
         if get_debug_i18n():
             return temporary_language("en")
-    except Exception:
-        pass
+    except Exception as exc:
+        # Config illisible : génération en langue courante, mais on le signale
+        # (texte brut : core.colors dépend de ce module)
+        print("[i18n] debug_i18n: {error}".format(error=exc), file=sys.stderr)
 
     # Si le flag n'est pas activé ou config indisponible, no-op context
     from contextlib import nullcontext

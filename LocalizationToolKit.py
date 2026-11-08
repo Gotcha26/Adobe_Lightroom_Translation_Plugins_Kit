@@ -36,6 +36,7 @@ Usage CLI :
     python LocalizationToolkit.py autosync [--yes]
                                                 # AUTOSYNC (confirmation demandée sans --yes)
     python LocalizationToolkit.py config        # Afficher configuration (alias : 7, --config)
+    python LocalizationToolkit.py --help        # Afficher l'aide CLI (alias : -h)
 
     Alias numériques identiques au menu : 1 extract … 6 autosync, 7 config.
     Codes retour : 0 succès, 1 erreur, 2 option inconnue.
@@ -50,20 +51,18 @@ import os
 import sys
 import json
 import subprocess
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
 
 # Ajouter le répertoire courant au path pour importer common
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.paths import (
     get_i18n_kit_path, find_latest_tool_output, get_i18n_dir, set_i18n_dir,
-    validate_plugin_path, DEFAULT_I18N_DIR
+    validate_plugin_path, find_git_root, DEFAULT_I18N_DIR
 )
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _, debug_language_detection
 from core.defaults import DEFAULT_PREFIX
 
-# Instance couleurs
-c = Colors()
 
 
 # =============================================================================
@@ -215,6 +214,41 @@ class ConfigManager:
         except (IndexError, TypeError):
             return timestamp
 
+    def _gitignore_target(self, plugin_path: str) -> Optional[Tuple[str, str]]:
+        """Cible .gitignore du dossier temporaire du plugin.
+
+        Remonte depuis le plugin jusqu'à la racine du dépôt git (find_git_root),
+        quelle que soit la profondeur du plugin dans le dépôt.
+
+        Args:
+            plugin_path: Chemin vers le plugin
+
+        Returns:
+            (chemin du .gitignore, ligne à ajouter) ou None si le plugin n'est
+            dans aucun dépôt git
+        """
+        git_root = find_git_root(plugin_path)
+        if not git_root:
+            return None
+
+        temp_dir = self.config.get("temp_dir", DEFAULT_I18N_DIR)
+        relative = os.path.relpath(os.path.abspath(plugin_path), git_root)
+        if relative == os.curdir:
+            # .git est dans le plugin lui-même
+            ignore_line = f"{temp_dir}/"
+        else:
+            # Plugin dans un sous-dossier du dépôt : chemin relatif à la racine git
+            ignore_line = "{relative}/{temp_dir}/".format(relative=relative.replace(os.sep, "/"), temp_dir=temp_dir)
+        return os.path.join(git_root, ".gitignore"), ignore_line
+
+    @staticmethod
+    def _read_gitignore(gitignore_path: str) -> List[str]:
+        """Lignes du .gitignore (sans fin de ligne) ; liste vide s'il n'existe pas."""
+        if not os.path.exists(gitignore_path):
+            return []
+        with open(gitignore_path, 'r', encoding='utf-8') as f:
+            return [line.rstrip('\n\r') for line in f.readlines()]
+
     def add_temp_dir_to_gitignore(self, plugin_path: str) -> bool:
         """Ajoute le dossier temporaire au .gitignore du plugin si nécessaire.
 
@@ -230,37 +264,14 @@ class ConfigManager:
         if not plugin_path or not os.path.isdir(plugin_path):
             return False
 
-        # Chercher le dossier .git (peut être dans le plugin ou son parent)
-        git_dir = os.path.join(plugin_path, ".git")
-        git_root = plugin_path
-
-        if not os.path.exists(git_dir):
-            # Essayer dans le dossier parent
-            parent_dir = os.path.dirname(plugin_path)
-            git_dir = os.path.join(parent_dir, ".git")
-            if os.path.exists(git_dir):
-                git_root = parent_dir
-            else:
-                return True  # Pas de dépôt git, rien à faire
-
-        gitignore_path = os.path.join(git_root, ".gitignore")
+        target = self._gitignore_target(plugin_path)
+        if target is None:
+            return True  # Pas de dépôt git, rien à faire
+        gitignore_path, ignore_line = target
         temp_dir = self.config.get("temp_dir", DEFAULT_I18N_DIR)
 
-        # Ligne à ajouter - chemin relatif depuis la racine git
-        if git_root == plugin_path:
-            # .git est dans le plugin lui-même
-            ignore_line = f"{temp_dir}/"
-        else:
-            # .git est dans le parent, inclure le nom du plugin
-            plugin_name = os.path.basename(plugin_path)
-            ignore_line = f"{plugin_name}/{temp_dir}/"
-
         try:
-            # Lire le .gitignore existant
-            existing_lines = []
-            if os.path.exists(gitignore_path):
-                with open(gitignore_path, 'r', encoding='utf-8') as f:
-                    existing_lines = [line.rstrip('\n\r') for line in f.readlines()]
+            existing_lines = self._read_gitignore(gitignore_path)
 
             # Vérifier si déjà présent (avec ou sans / final)
             if ignore_line in existing_lines or temp_dir in existing_lines:
@@ -296,38 +307,20 @@ class ConfigManager:
         if not plugin_path or not os.path.isdir(plugin_path):
             return False
 
-        # Chercher le dossier .git
-        git_dir = os.path.join(plugin_path, ".git")
-        git_root = plugin_path
-
-        if not os.path.exists(git_dir):
-            parent_dir = os.path.dirname(plugin_path)
-            git_dir = os.path.join(parent_dir, ".git")
-            if os.path.exists(git_dir):
-                git_root = parent_dir
-            else:
-                return False  # Pas de dépôt git
-
-        gitignore_path = os.path.join(git_root, ".gitignore")
+        target = self._gitignore_target(plugin_path)
+        if target is None:
+            return False  # Pas de dépôt git
+        gitignore_path, ignore_line = target
         temp_dir = self.config.get("temp_dir", DEFAULT_I18N_DIR)
 
-        # Calculer la ligne à ajouter
-        if git_root == plugin_path:
-            ignore_line = f"{temp_dir}/"
-        else:
-            plugin_name = os.path.basename(plugin_path)
-            ignore_line = f"{plugin_name}/{temp_dir}/"
-
         # Vérifier si déjà présent
-        if os.path.exists(gitignore_path):
-            try:
-                with open(gitignore_path, 'r', encoding='utf-8') as f:
-                    existing_lines = [line.rstrip('\n\r') for line in f.readlines()]
-
-                if ignore_line in existing_lines or temp_dir in existing_lines:
-                    return False  # Déjà présent, pas besoin de demander
-            except Exception:
-                return False
+        try:
+            existing_lines = self._read_gitignore(gitignore_path)
+        except (OSError, UnicodeDecodeError) as e:
+            print(f"     {c.WARNING}[!]{c.RESET} " + _("Impossible de lire le .gitignore: {error}").format(error=e))
+            return False
+        if ignore_line in existing_lines or temp_dir in existing_lines:
+            return False  # Déjà présent, pas besoin de demander
 
         # Demander à l'utilisateur
         print()
@@ -354,28 +347,11 @@ class ConfigManager:
         if not plugin_path or not os.path.isdir(plugin_path):
             return ""
 
-        # Chercher le dossier .git (peut être dans le plugin ou son parent)
-        git_dir = os.path.join(plugin_path, ".git")
-        git_root = plugin_path
-
-        if not os.path.exists(git_dir):
-            # Essayer dans le dossier parent
-            parent_dir = os.path.dirname(plugin_path)
-            git_dir = os.path.join(parent_dir, ".git")
-            if os.path.exists(git_dir):
-                git_root = parent_dir
-            else:
-                return f"  {c.DIM}.gitignore: N/A " + _("(pas de dépôt git)") + f"{c.RESET}"
-
-        gitignore_path = os.path.join(git_root, ".gitignore")
+        target = self._gitignore_target(plugin_path)
+        if target is None:
+            return f"  {c.DIM}.gitignore: N/A " + _("(pas de dépôt git)") + f"{c.RESET}"
+        gitignore_path, ignore_line = target
         temp_dir = self.config.get("temp_dir", DEFAULT_I18N_DIR)
-
-        # Ligne à chercher - chemin relatif depuis la racine git
-        if git_root == plugin_path:
-            ignore_line = f"{temp_dir}/"
-        else:
-            plugin_name = os.path.basename(plugin_path)
-            ignore_line = f"{plugin_name}/{temp_dir}/"
 
         # Vérifier si le .gitignore existe
         if not os.path.exists(gitignore_path):
@@ -383,25 +359,21 @@ class ConfigManager:
 
         # Vérifier si le dossier temporaire est dans le .gitignore
         try:
-            with open(gitignore_path, 'r', encoding='utf-8') as f:
-                existing_lines = [line.rstrip('\n\r') for line in f.readlines()]
-
-            # Chercher plusieurs variantes possibles
-            found = any(
-                line in existing_lines
-                for line in [ignore_line, ignore_line.rstrip('/'), temp_dir, f"{temp_dir}/"]
-            )
-
-            if found:
-                return f"{c.OK}.gitignore: OK{c.RESET}"
-            else:
-                auto_enabled = self.config.get("auto_add_gitignore", True)
-                if auto_enabled:
-                    return f"{c.ERROR}" + _("Exception .gitignore - sera ajouté") + f"{c.RESET}"
-                else:
-                    return f"{c.WARNING}" + _("Exception .gitignore - manquant") + f"{c.RESET}"
-        except Exception:
+            existing_lines = self._read_gitignore(gitignore_path)
+        except (OSError, UnicodeDecodeError):
             return f"  {c.ERROR}.gitignore: " + _("Erreur lecture") + f"{c.RESET}"
+
+        # Chercher plusieurs variantes possibles
+        found = any(
+            line in existing_lines
+            for line in [ignore_line, ignore_line.rstrip('/'), temp_dir, f"{temp_dir}/"]
+        )
+
+        if found:
+            return f"{c.OK}.gitignore: OK{c.RESET}"
+        if self.config.get("auto_add_gitignore", True):
+            return f"{c.ERROR}" + _("Exception .gitignore - sera ajouté") + f"{c.RESET}"
+        return f"{c.WARNING}" + _("Exception .gitignore - manquant") + f"{c.RESET}"
 
 
 # =============================================================================
@@ -440,7 +412,7 @@ class ToolLauncher:
         abs_script = os.path.abspath(script_path)
         if abs_script.startswith(os.path.abspath(tools_dir) + os.sep):
             rel = os.path.relpath(abs_script, self.base_dir)
-            module_path = rel.replace(os.sep, ".").replace(".py", "")
+            module_path = os.path.splitext(rel)[0].replace(os.sep, ".")
             cmd = [sys.executable, "-m", module_path]
             working_dir = cwd or self.base_dir
         else:
@@ -1008,6 +980,7 @@ def print_cli_usage():
     print("  python LocalizationToolKit.py autosync  (6) [--yes]  # "
           + _("Mettre à jour plugin + langues (AUTOSYNC)"))
     print("  python LocalizationToolKit.py config    (7)       # " + _("Afficher config"))
+    print("  python LocalizationToolKit.py --help    (-h)      # " + _("Afficher cette aide"))
     print("\n" + _("Codes retour : 0 succès, 1 erreur, 2 option inconnue."))
 
 
@@ -1018,6 +991,10 @@ def main():
     if len(sys.argv) > 1:
         cmd = sys.argv[1].lower()
         extra = sys.argv[2:]
+
+        if cmd in ("-h", "--help", "help"):
+            print_cli_usage()
+            sys.exit(0)
 
         # Options acceptées après la commande ; elles ne sont transmises aux
         # outils que si l'utilisateur les a tapées

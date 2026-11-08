@@ -12,13 +12,14 @@ des outils (Extractor, Applicator, Translator, Tools).
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 """
 
 import os
+import re
 from datetime import datetime
 from typing import Optional, List
 
@@ -34,6 +35,10 @@ _i18n_dir = DEFAULT_I18N_DIR
 # Format du timestamp : YYYYMMDD_HHMMSS (15 caractères)
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 TIMESTAMP_LENGTH = 15
+TIMESTAMP_DIR_RE = re.compile(r'^\d{8}_\d{6}$')
+
+# Libellé affiché à la place du chemin du plugin
+PLUGIN_PLACEHOLDER = "<plugin>"
 
 # Mapping des noms d'outils vers leurs dossiers de sortie avec préfixe numérique
 # Le préfixe correspond à l'ordre dans le workflow : 1_Extractor → 2_Applicator → 3_Translator
@@ -145,54 +150,28 @@ def find_all_tool_outputs(plugin_path: str, tool_name: str) -> List[str]:
         >>> find_all_tool_outputs("/path/to/plugin.lrplugin", "Extractor")
         ['/path/.../1_Extractor/20260129_143022', '/path/.../1_Extractor/20260129_120000']
     """
-    import re
-
     i18n_kit = get_i18n_kit_path(plugin_path)
 
-    if not os.path.exists(i18n_kit):
+    if not os.path.isdir(i18n_kit):
         return []
 
-    # Chercher tous les dossiers qui correspondent au pattern: X_ToolName ou ToolName
-    # où X peut être n'importe quel chiffre
-    tool_dir = None
-    normalized_tool = tool_name.lower().replace('_', '').replace('-', '')
-
-    # Lister tous les dossiers dans __i18n_tmp__
-    for dir_name in os.listdir(i18n_kit):
-        dir_path = os.path.join(i18n_kit, dir_name)
-        if not os.path.isdir(dir_path):
+    # Correspondance exacte : dossier actuel (1_Extractor) puis ancien format (Extractor)
+    folder_names = [TOOL_FOLDER_NAMES.get(tool_name, tool_name), tool_name]
+    outputs = []
+    for folder_name in dict.fromkeys(folder_names):
+        tool_dir = os.path.join(i18n_kit, folder_name)
+        if not os.path.isdir(tool_dir):
             continue
+        # Uniquement les sous-dossiers au format YYYYMMDD_HHMMSS
+        outputs.extend(
+            os.path.join(tool_dir, d) for d in os.listdir(tool_dir)
+            if TIMESTAMP_DIR_RE.match(d) and os.path.isdir(os.path.join(tool_dir, d))
+        )
 
-        # Vérifier si c'est le bon outil (avec ou sans préfixe)
-        # Pattern: X_ToolName ou ToolName
-        match = re.match(r'^(\d+_)?(.+)$', dir_name)
-        if match:
-            folder_tool_name = match.group(2)
-            normalized_folder = folder_tool_name.lower().replace('_', '').replace('-', '')
-
-            if normalized_folder == normalized_tool or \
-               normalized_folder.startswith(normalized_tool) or \
-               normalized_tool.startswith(normalized_folder):
-                tool_dir = dir_path
-                break
-
-    if not tool_dir or not os.path.exists(tool_dir):
-        return []
-
-    # Lister uniquement les dossiers au format YYYYMMDD_HHMMSS (15 caractères)
-    dirs = [
-        d for d in os.listdir(tool_dir)
-        if os.path.isdir(os.path.join(tool_dir, d)) and len(d) == TIMESTAMP_LENGTH
-    ]
-
-    if not dirs:
-        return []
-
-    # Tri décroissant (le plus récent en premier)
+    # Tri décroissant sur l'horodatage (le plus récent en premier), tous dossiers confondus.
     # Le format YYYYMMDD_HHMMSS permet un tri lexicographique correct
-    dirs.sort(reverse=True)
-
-    return [os.path.join(tool_dir, d) for d in dirs]
+    outputs.sort(key=os.path.basename, reverse=True)
+    return outputs
 
 
 def find_latest_tool_output(plugin_path: str, tool_name: str) -> Optional[str]:
@@ -350,3 +329,63 @@ def backup_path_for(file_path: str, plugin_path: str, backup_dir: str) -> str:
     if rel_path == os.pardir or rel_path.startswith(os.pardir + os.sep) or os.path.isabs(rel_path):
         rel_path = os.path.basename(file_path)
     return os.path.join(backup_dir, rel_path + '.bak')
+
+
+def display_relative(path: str, plugin_path: str) -> str:
+    """
+    Chemin à afficher : `<plugin>/sous/dossier` si `path` est dans le plugin.
+
+    La comparaison porte sur des composants de chemin entiers (un dossier voisin
+    `plugin.lrplugin-old` n'est pas confondu avec `plugin.lrplugin`) et ignore la
+    casse là où le système de fichiers l'ignore (Windows, via os.path.normcase).
+
+    Args:
+        path: Chemin à afficher
+        plugin_path: Chemin du plugin (vide = pas de raccourci)
+
+    Returns:
+        `<plugin>/…` avec des séparateurs `/`, ou `path` inchangé s'il est hors du plugin
+    """
+    if not path or not plugin_path:
+        return path
+
+    full = os.path.normpath(os.path.abspath(path))
+    plugin = os.path.normpath(os.path.abspath(plugin_path))
+    full_key = os.path.normcase(full)
+    plugin_key = os.path.normcase(plugin)
+
+    if full_key == plugin_key:
+        return PLUGIN_PLACEHOLDER
+    if not full_key.startswith(plugin_key.rstrip(os.sep) + os.sep):
+        return path
+
+    try:
+        relative = os.path.relpath(full, plugin)
+    except ValueError:
+        # Lecteurs différents sous Windows : impossible en pratique après le test ci-dessus
+        return path
+    return "{placeholder}/{relative}".format(placeholder=PLUGIN_PLACEHOLDER, relative=relative.replace(os.sep, "/"))
+
+
+def find_git_root(path: str) -> Optional[str]:
+    """
+    Remonte depuis `path` jusqu'au premier dossier contenant `.git`.
+
+    `.git` peut être un dossier (dépôt classique) ou un fichier (worktree, sous-module).
+
+    Args:
+        path: Dossier de départ (ex: chemin du plugin)
+
+    Returns:
+        Racine du dépôt git, ou None si aucun parent n'en contient
+    """
+    if not path:
+        return None
+    current = os.path.normpath(os.path.abspath(path))
+    while True:
+        if os.path.exists(os.path.join(current, ".git")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            return None
+        current = parent

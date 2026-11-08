@@ -2,7 +2,7 @@
 """
 Nom du fichier : output_formatters.py
 
-Dépendances : core.colors, core.i18n
+Dépendances : core.colors, core.i18n, core.paths
 
 Description :
 Formatage unifié des sorties pour tous les outils (Extractor, Applicator, Translator, etc.).
@@ -12,7 +12,7 @@ des fichiers générés et des résumés avec alignement et mise en forme cohér
 Usage CLI :
     Non pourvu
 
-Date : 2026-02-04
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -20,11 +20,10 @@ Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
 import os
 from typing import Dict, List, Optional, Tuple
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
+from core.paths import display_relative
 
-# Instance couleurs
-c = Colors()
 
 
 class OutputFormatter:
@@ -134,13 +133,7 @@ class OutputFormatter:
         self.print_section_header(_("FICHIERS GÉNÉRÉS"))
 
         # Afficher le dossier de sortie (raccourci si possible)
-        display_path = output_dir
-        if plugin_path and plugin_path in output_dir:
-            # Afficher le chemin relatif au plugin
-            relative = output_dir.replace(plugin_path, "").lstrip(os.sep)
-            # Normaliser les slashes en forward slashes
-            relative = relative.replace("\\", "/")
-            display_path = "<plugin>/{relative}".format(relative=relative)
+        display_path = display_relative(output_dir, plugin_path)
 
         print("\n  [" + _("Sortie") + f"] {c.VALUE}{display_path}{c.RESET}\n")
 
@@ -209,15 +202,9 @@ class OutputFormatter:
         Example:
             full_path: /path/to/plugin.lrplugin/__i18n_tmp__/1_Extractor/20260201_154842
             plugin_path: /path/to/plugin.lrplugin
-            returns: __i18n_tmp__/1_Extractor/20260201_154842
+            returns: <plugin>/__i18n_tmp__/1_Extractor/20260201_154842
         """
-        if plugin_path in full_path:
-            # Obtenir le chemin relatif après le plugin
-            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
-            # Normaliser les slashes en forward slashes
-            relative = relative.replace("\\", "/")
-            return relative
-        return full_path
+        return display_relative(full_path, plugin_path)
 
 
 # Instance globale pour import facile

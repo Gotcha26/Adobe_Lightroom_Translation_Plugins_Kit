@@ -36,7 +36,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core import __version__
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 from .config_loader import get_reference_lang, get_reference_filename, get_update_filename
 
@@ -78,14 +78,23 @@ HEADER_NEW_KEYS_PREFIX = "-- New keys:"
 HEADER_CHANGED_KEYS_PREFIX = "-- Changed keys:"
 HEADER_SOURCE_PREFIX = "-- Source:"
 
+# Marqueurs posés par SYNC au-dessus d'une clé, relus par AUTOSYNC et la mise à
+# jour chirurgicale : seul le préfixe est fixe, le commentaire qui suit est traduit
+MARKER_NEW = "-- [NEW]"
+MARKER_NEEDS_REVIEW = "-- [NEEDS_REVIEW]"
+MARKER_PREFIXES = (MARKER_NEW, MARKER_NEEDS_REVIEW)
+
+
+def is_marker_line(line: str) -> bool:
+    """Vrai si la ligne est un marqueur [NEW] / [NEEDS_REVIEW] posé par SYNC."""
+    return line.strip().startswith(MARKER_PREFIXES)
+
 
 def _header_line(prefix: str, value) -> str:
     """Ligne d'en-tête « prefix value » terminée par un saut de ligne."""
     return f"{prefix} {value}\n"
 
 
-# Instance couleurs
-c = Colors()
 
 
 # =============================================================================
@@ -298,7 +307,7 @@ def update_translation_file_surgical(
             # Clé à supprimer (obsolète ou absente des traductions attendues)
             if key in deleted_keys or (remove_unlisted and key not in translations):
                 # Retirer aussi le marqueur qui la précède s'il existe
-                if output_lines and output_lines[-1].strip().startswith('-- ['):
+                if output_lines and is_marker_line(output_lines[-1]):
                     output_lines.pop()
                 continue
 
@@ -307,7 +316,7 @@ def update_translation_file_surgical(
                 if marker:
                     # Remplacer le marqueur déjà présent au-dessus de la clé au lieu
                     # de l'empiler (relances successives de SYNC)
-                    if output_lines and output_lines[-1].strip().startswith('-- ['):
+                    if output_lines and is_marker_line(output_lines[-1]):
                         output_lines.pop()
                     output_lines.append(f'{marker}\n')
                 # Sans marqueur demandé, un marqueur existant est conservé : c'est

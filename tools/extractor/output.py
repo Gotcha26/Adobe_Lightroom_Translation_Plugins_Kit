@@ -2,7 +2,7 @@
 """
 Nom du fichier : output.py
 
-Dépendances : .models
+Dépendances : .models, core.paths
 
 Description :
 Génération des fichiers de sortie d'extraction: TranslatedStrings_xx.txt, JSON de remplacement,
@@ -28,6 +28,7 @@ from collections import defaultdict
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.i18n import _
+from core.paths import display_relative
 from tools.translator.common import (
     section_for_key, HEADER_SEPARATOR, HEADER_TITLE_PREFIX, HEADER_GENERATED_PREFIX,
     HEADER_TOTAL_KEYS_PREFIX, HEADER_SOURCE_PREFIX,
@@ -75,12 +76,7 @@ class OutputGenerator:
     @staticmethod
     def _shorten_path(full_path: str, plugin_path: str) -> str:
         """Raccourcit le chemin en chemin relatif au plugin."""
-        if plugin_path and plugin_path in full_path:
-            relative = full_path.replace(plugin_path, "").lstrip(os.sep)
-            # Normaliser les slashes en forward slashes
-            relative = relative.replace("\\", "/")
-            return "<plugin>/{relative}".format(relative=relative)
-        return full_path
+        return display_relative(full_path, plugin_path)
 
     def generate_plugin_strings(self, extracted: List[ExtractedString], output_path: str, lang: str = "en"):
         """Génère le fichier TranslatedStrings_xx.txt avec les clés uniques (fichier de référence)."""

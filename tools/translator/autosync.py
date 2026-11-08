@@ -43,10 +43,11 @@ from typing import Dict, List, Tuple
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import find_latest_tool_output, get_tool_output_path, backup_path_for
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 from tools.extractor.main import run_extraction
 from tools.applicator.main import process_plugin_directory
+from .common import is_marker_line
 from .compare import run_compare
 from .config_loader import (
     get_prefix, get_reference_filename, get_reference_lang, get_update_filename, load_config
@@ -55,7 +56,6 @@ from .extract import run_extract
 from .inject import run_inject
 from .sync import run_sync
 
-c = Colors()
 
 
 def find_all_translation_files(plugin_path: str) -> List[str]:
@@ -121,7 +121,7 @@ def clean_markers_from_file(file_path: str):
     cleaned_lines = []
     for line in lines:
         # Supprimer les lignes contenant les marqueurs
-        if '-- [NEW]' in line or '-- [NEEDS_REVIEW]' in line:
+        if is_marker_line(line):
             continue
         cleaned_lines.append(line)
 

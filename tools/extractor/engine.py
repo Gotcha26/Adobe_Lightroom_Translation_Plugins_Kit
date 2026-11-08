@@ -26,7 +26,6 @@ from typing import Dict, List, Tuple, Optional
 # Ajouter la racine du projet au path pour importer core
 # (remonter de 2 niveaux: tools/xxx/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from core.colors import Colors
 from core.i18n import _
 
 from .config import (
@@ -40,8 +39,6 @@ from .utils import (
     is_in_technical_context, unescape_lua_string, block_comment_state
 )
 
-# Instance couleurs
-c = Colors()
 
 
 class MultiLineContext:
@@ -384,7 +381,7 @@ class LocalizableStringExtractor:
             return False
 
         # Vérifier le contexte technique (pour filtrer les headers HTTP etc.)
-        is_tech_context = is_in_technical_context(line)
+        is_tech_context = is_in_technical_context(line, self.rules)
 
         # Déterminer si c'est une ligne concaténée
         is_concat = is_line_concatenated(line) and len(non_localized) > 1

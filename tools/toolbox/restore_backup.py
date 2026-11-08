@@ -14,7 +14,7 @@ Usage CLI :
     python -m tools.toolbox.restore_backup                    # Menu interactif
     python -m tools.toolbox.restore_backup /path/to/plugin    # Chemin direct
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -29,11 +29,9 @@ from typing import List, Tuple, Optional
 # (remonter de 2 niveaux: tools/toolbox/ -> tools/ -> racine)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.paths import get_i18n_kit_path, get_i18n_dir, validate_plugin_path
-from core.colors import Colors
+from core.colors import c
 from core.i18n import _
 
-# Instance globale des couleurs
-c = Colors()
 
 
 def find_applicator_sessions(plugin_path: str) -> List[Tuple[str, str]]:
@@ -186,6 +184,20 @@ def delete_backups(pairs: List[Tuple[str, str]]) -> int:
     return deleted
 
 
+def clear_screen():
+    """Efface l'écran, seulement si la sortie est un terminal (pas en CLI redirigée)."""
+    if sys.stdout is not None and sys.stdout.isatty():
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def count_backup_files(backup_dir: str) -> int:
+    """Nombre de fichiers .bak d'une session, sous-dossiers compris (ex: ui/Dialog.lua.bak)."""
+    return sum(
+        1 for _root, _dirs, files in os.walk(backup_dir)
+        for name in files if name.endswith('.bak')
+    )
+
+
 def format_timestamp(timestamp: str) -> str:
     """Formate un timestamp YYYYMMDD_HHMMSS en format lisible."""
     try:
@@ -210,7 +222,7 @@ def select_backup_session(sessions: List[Tuple[str, str]]) -> Optional[Tuple[str
 
     # Afficher les sessions avec numérotation
     for i, (timestamp, backup_dir) in enumerate(sessions, 1):
-        bak_count = len([f for f in os.listdir(backup_dir) if f.endswith('.bak')])
+        bak_count = count_backup_files(backup_dir)
         formatted = format_timestamp(timestamp)
 
         # Marquer la plus récente (première)
@@ -257,7 +269,7 @@ def interactive_menu(default_plugin_path: str = "") -> Tuple[str, Optional[str]]
     Returns:
         (chemin_plugin, backup_dir ou None)
     """
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear_screen()
     print(c.box_header(_("RESTAURATION DES FICHIERS .bak")))
     print()
 

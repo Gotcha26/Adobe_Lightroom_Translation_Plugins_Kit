@@ -16,7 +16,7 @@ Produit des fichiers de traduction contenant :
 Usage CLI :
 Non fourni
 
-Date : 2026-02-03
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 
@@ -190,10 +190,15 @@ def menu_extract(plugin_path: str = ""):
     # Auto-détection et sélection interactive du dossier UPDATE
     update_dir = None
     if plugin_path:
-        update_dir = select_tool_output_dir(plugin_path, "Translator", "")
+        selected = select_tool_output_dir(plugin_path, "Translator", "")
+        if selected == "":
+            # Annulé par l'utilisateur : retour au menu
+            return None
+        # selected None = erreur déjà affichée : pas d'auto-détection, saisie manuelle ci-dessous.
         # Le dossier choisi peut être une sortie sans UPDATE (COMPARE-LANGS, ADD LANGUAGE)
-        update_dir = (find_update_dir_in(update_dir, get_update_filename()) if update_dir else None) \
-            or find_latest_update_dir(plugin_path, get_update_filename())
+        if selected:
+            update_dir = find_update_dir_in(selected, get_update_filename()) \
+                or find_latest_update_dir(plugin_path, get_update_filename())
         if update_dir:
             print(_("\n{var0}[INFO]{var1} Dossier sélectionné: {var2}{update_dir}{var4}").format(var0=c.INFO, var1=c.RESET, var2=c.VALUE, update_dir=update_dir, var4=c.RESET))
         else:

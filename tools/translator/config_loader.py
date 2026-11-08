@@ -7,7 +7,7 @@ Module centralisé pour charger la configuration de la langue de référence.
 Permet de rendre flexible le système en utilisant config.json["lang"] au lieu
 de hardcoder "en" partout dans le code.
 
-Date : 2026-02-06
+Date : 2026-11-08
 GitHub : https://github.com/Gotcha26/Adobe_Lightroom_Translation_Plugins_Kit
 Auteur : Julien Moreau https://julien-moreau.fr contact@julien-moreau.fr
 """
@@ -64,6 +64,20 @@ def get_config_path() -> Optional[str]:
     return None
 
 
+# Fichiers déjà signalés : load_config est appelé très souvent, un seul avertissement suffit
+_reported_config_errors = set()
+
+
+def _warn_config_error(path: str, error: Exception) -> None:
+    """Signale une fois un fichier de configuration illisible (JSON invalide, etc.)."""
+    key = (path, str(error))
+    if key in _reported_config_errors:
+        return
+    _reported_config_errors.add(key)
+    from core.colors import c
+    print(c.warning(_("Configuration ignorée, fichier illisible {path}: {error}").format(path=path, error=error)))
+
+
 def load_config() -> dict:
     """
     Charge la configuration avec merge config.json + config.local.json.
@@ -83,8 +97,8 @@ def load_config() -> dict:
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
                 config = json.load(f)
-        except Exception:
-            pass
+        except (OSError, ValueError) as exc:
+            _warn_config_error(config_path, exc)
 
     # 2) Surcharger avec config.local.json (local, non versionné)
     config_local_path = os.path.join(root_dir, "config.local.json")
@@ -92,8 +106,8 @@ def load_config() -> dict:
         try:
             with open(config_local_path, 'r', encoding='utf-8') as f:
                 config = {**config, **json.load(f)}
-        except Exception:
-            pass
+        except (OSError, ValueError, TypeError) as exc:
+            _warn_config_error(config_local_path, exc)
 
     return config
 
