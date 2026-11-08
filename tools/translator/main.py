@@ -470,7 +470,7 @@ Exemples:
             if args.translate and args.target:
                 print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
                 stats = run_inject(args.translate, args.target, update_dir)
-                print(c.success(_("{var0}{var1}{var2} traduites + {var3}{var4}{var5} EN par défaut").format(var0=c.GREEN, var1=stats['injected'], var2=c.RESET, var3=c.CYAN, var4=stats['from_en'], var5=c.RESET)))
+                print(c.success(_("{var0}{var1}{var2} traduites + {var3}{var4}{var5} EN par défaut").format(var0=c.GREEN, var1=stats['injected'], var2=c.RESET, var3=c.CYAN, var4=stats['from_ref'], var5=c.RESET)))
             elif translate_dir and args.locales:
                 print(_("{var0}[INFO]{var1} Injection...").format(var0=c.INFO, var1=c.RESET))
                 results = run_inject_from_dir(translate_dir, args.locales, update_dir)
@@ -478,7 +478,7 @@ Exemples:
                     if 'error' in stats:
                         print(_("{var0}[{var1}]{var2} {var3}[ERREUR]{var4}: {var5}").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.ERROR, var4=c.RESET, var5=stats['error']))
                     else:
-                        print(_("{var0}[{var1}]{var2} {var3}[OK]{var4}: {var5}{var6}{var7} traduites + {var8}{var9}{var10} EN").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, var6=stats['injected'], var7=c.RESET, var8=c.CYAN, var9=stats['from_en'], var10=c.RESET))
+                        print(_("{var0}[{var1}]{var2} {var3}[OK]{var4}: {var5}{var6}{var7} traduites + {var8}{var9}{var10} EN").format(var0=c.CYAN, var1=lang.upper(), var2=c.RESET, var3=c.OK, var4=c.RESET, var5=c.GREEN, var6=stats['injected'], var7=c.RESET, var8=c.CYAN, var9=stats['from_ref'], var10=c.RESET))
             else:
                 print(c.error(_("Spécifiez --translate + --target OU --translate-dir + --locales OU --plugin-path + --locales")))
                 sys.exit(1)
